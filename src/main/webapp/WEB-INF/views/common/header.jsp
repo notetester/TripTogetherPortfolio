@@ -3,20 +3,51 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="headerThemeToggleMsg" code="header.theme.toggle"/>
-<spring:message var="headerThemeLightMsg" code="header.theme.light"/>
-<spring:message var="headerThemeDarkMsg" code="header.theme.dark"/>
-<spring:message var="headerNotificationBellMsg" code="header.notification.bell"/>
-<spring:message var="headerNotificationTypeCommunityMsg" code="header.notification.type.community" javaScriptEscape="true"/>
-<spring:message var="headerNotificationTypeInquiryMsg" code="header.notification.type.inquiry" javaScriptEscape="true"/>
-<spring:message var="headerNotificationTypeReportMsg" code="header.notification.type.report" javaScriptEscape="true"/>
-<spring:message var="headerNotificationTypeLevelupMsg" code="header.notification.type.levelup" javaScriptEscape="true"/>
-<spring:message var="headerNotificationTypeGradeMsg" code="header.notification.type.grade" javaScriptEscape="true"/>
-<spring:message var="headerNotificationTypeAccountBlockMsg" code="header.notification.type.accountBlock" javaScriptEscape="true"/>
-<spring:message var="headerNotificationTypeDefaultMsg" code="header.notification.type.default" javaScriptEscape="true"/>
-<spring:message var="headerNotificationCloseMsg" code="header.notification.close" javaScriptEscape="true"/>
-<spring:message var="headerNotificationJustNowMsg" code="header.notification.justNow" javaScriptEscape="true"/>
-<spring:message var="headerNotificationViewMsg" code="header.notification.view" javaScriptEscape="true"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_header_theme_toggle" code="header.theme.toggle"/>
+<spring:message var="msg_header_theme_light" code="header.theme.light"/>
+<spring:message var="msg_header_theme_dark" code="header.theme.dark"/>
+<spring:message var="msg_header_notification_bell" code="header.notification.bell"/>
+<spring:message var="msg_header_notification_type_community_js" code="header.notification.type.community" javaScriptEscape="true"/>
+<spring:message var="msg_header_notification_type_inquiry_js" code="header.notification.type.inquiry" javaScriptEscape="true"/>
+<spring:message var="msg_header_notification_type_report_js" code="header.notification.type.report" javaScriptEscape="true"/>
+<spring:message var="msg_header_notification_type_levelup_js" code="header.notification.type.levelup" javaScriptEscape="true"/>
+<spring:message var="msg_header_notification_type_grade_js" code="header.notification.type.grade" javaScriptEscape="true"/>
+<spring:message var="msg_header_notification_type_accountBlock_js" code="header.notification.type.accountBlock" javaScriptEscape="true"/>
+<spring:message var="msg_header_notification_type_default_js" code="header.notification.type.default" javaScriptEscape="true"/>
+<spring:message var="msg_header_notification_close_js" code="header.notification.close" javaScriptEscape="true"/>
+<spring:message var="msg_header_notification_justNow_js" code="header.notification.justNow" javaScriptEscape="true"/>
+<spring:message var="msg_header_notification_view_js" code="header.notification.view" javaScriptEscape="true"/>
+<spring:message var="msg_header_nav_explore" code="header.nav.explore"/>
+<spring:message var="msg_header_nav_planner" code="header.nav.planner"/>
+<spring:message var="msg_header_nav_courses" code="header.nav.courses"/>
+<spring:message var="msg_header_nav_assistant" code="header.nav.assistant"/>
+<spring:message var="msg_header_nav_community" code="header.nav.community"/>
+<spring:message var="msg_header_nav_shopping" code="header.nav.shopping"/>
+<spring:message var="msg_header_nav_wallet" code="header.nav.wallet"/>
+<spring:message var="msg_header_nav_shop" code="header.nav.shop"/>
+<spring:message var="msg_header_nav_packages" code="header.nav.packages"/>
+<spring:message var="msg_header_nav_packagesManage" code="header.nav.packagesManage"/>
+<spring:message var="msg_header_nav_mypage" code="header.nav.mypage"/>
+<spring:message var="msg_header_nav_admin" code="header.nav.admin"/>
+<spring:message var="msg_header_lang_ko" code="header.lang.ko"/>
+<spring:message var="msg_header_lang_en" code="header.lang.en"/>
+<spring:message var="msg_header_lang_ja" code="header.lang.ja"/>
+<spring:message var="msg_header_lang_zh" code="header.lang.zh"/>
+<spring:message var="msg_header_notification_title" code="header.notification.title"/>
+<spring:message var="msg_header_notification_markAll" code="header.notification.markAll"/>
+<spring:message var="msg_header_notification_empty" code="header.notification.empty"/>
+<spring:message var="msg_header_notification_type_community" code="header.notification.type.community"/>
+<spring:message var="msg_header_notification_type_inquiry" code="header.notification.type.inquiry"/>
+<spring:message var="msg_header_notification_type_report" code="header.notification.type.report"/>
+<spring:message var="msg_header_notification_type_levelup" code="header.notification.type.levelup"/>
+<spring:message var="msg_header_notification_type_grade" code="header.notification.type.grade"/>
+<spring:message var="msg_header_notification_type_accountBlock" code="header.notification.type.accountBlock"/>
+<spring:message var="msg_header_notification_type_default" code="header.notification.type.default"/>
+<spring:message var="msg_header_notification_viewAll" code="header.notification.viewAll"/>
+<spring:message var="msg_header_auth_logout" code="header.auth.logout"/>
+<spring:message var="msg_header_auth_login" code="header.auth.login"/>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -109,61 +140,61 @@
             <span class="logo-text">TripTogether</span>
         </div>
         <nav id="primaryNav">
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/explore'"><spring:message code="header.nav.explore"/></button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/explore'">${msg_header_nav_explore}</button>
 
             <div class="nb-drop">
-                <button type="button" class="nb nb-drop-trigger"><spring:message code="header.nav.planner"/></button>
+                <button type="button" class="nb nb-drop-trigger">${msg_header_nav_planner}</button>
                 <div class="nb-drop-menu">
-                    <a href="${pageContext.request.contextPath}/courses"><spring:message code="header.nav.courses"/></a>
-                    <a href="${pageContext.request.contextPath}/assistant"><spring:message code="header.nav.assistant"/></a>
+                    <a href="${pageContext.request.contextPath}/courses">${msg_header_nav_courses}</a>
+                    <a href="${pageContext.request.contextPath}/assistant">${msg_header_nav_assistant}</a>
                 </div>
             </div>
 
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'"><spring:message code="header.nav.community"/></button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'">${msg_header_nav_community}</button>
 
             <div class="nb-drop">
-                <button type="button" class="nb nb-drop-trigger"><spring:message code="header.nav.shopping"/></button>
+                <button type="button" class="nb nb-drop-trigger">${msg_header_nav_shopping}</button>
                 <div class="nb-drop-menu">
-                    <a href="${pageContext.request.contextPath}/wallet"><spring:message code="header.nav.wallet"/></a>
-                    <a href="${pageContext.request.contextPath}/shop"><spring:message code="header.nav.shop"/></a>
-                    <a href="${pageContext.request.contextPath}/packages"><spring:message code="header.nav.packages"/></a>
+                    <a href="${pageContext.request.contextPath}/wallet">${msg_header_nav_wallet}</a>
+                    <a href="${pageContext.request.contextPath}/shop">${msg_header_nav_shop}</a>
+                    <a href="${pageContext.request.contextPath}/packages">${msg_header_nav_packages}</a>
                     <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userRole == 'BUSINESS' or sessionScope.loginUser.userRole == 'PARTNER')}">
-                        <a href="${pageContext.request.contextPath}/packages/manage"><spring:message code="header.nav.packagesManage"/></a>
+                        <a href="${pageContext.request.contextPath}/packages/manage">${msg_header_nav_packagesManage}</a>
                     </c:if>
                 </div>
             </div>
 
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage'"><spring:message code="header.nav.mypage"/></button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage'">${msg_header_nav_mypage}</button>
             <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userRole == 'ADMIN'}">
-    <button class="nb" onclick="location.href='${pageContext.request.contextPath}/admin'"><spring:message code="header.nav.admin"/></button>
+    <button class="nb" onclick="location.href='${pageContext.request.contextPath}/admin'">${msg_header_nav_admin}</button>
     <button class="admin-mode-btn ${isAdminMode ? 'admin' : 'user'}"
             onclick="toggleViewMode()">
         ${isAdminMode ? '🛡️ ' : '👤 '}
-        <spring:message code="${isAdminMode ? 'header.mode.admin' : 'header.mode.user'}"/>
+        <spring:message var="msg_isAdminMode_header_mode_admin_header_mode_user" code="${isAdminMode ? 'header.mode.admin' : 'header.mode.user'}"/>${msg_isAdminMode_header_mode_admin_header_mode_user}
     </button>
 </c:if>
 
         </nav>
         <div class="hr">
-            <button type="button" class="tt-theme-btn" id="ttThemeBtn" aria-label="${headerThemeToggleMsg}"
-                    data-light-label="${headerThemeLightMsg}"
-                    data-dark-label="${headerThemeDarkMsg}">
+            <button type="button" class="tt-theme-btn" id="ttThemeBtn" aria-label="${msg_header_theme_toggle}"
+                    data-light-label="${msg_header_theme_light}"
+                    data-dark-label="${msg_header_theme_dark}">
                 <span class="tt-theme-icon">🌙</span>
-                <span class="tt-theme-label">${headerThemeDarkMsg}</span>
+                <span class="tt-theme-label">${msg_header_theme_dark}</span>
             </button>
             <label>
                 <select class="lang-sel" id="langSel">
-                    <option value="ko" ${pageContext.response.locale.language == 'ko' ? 'selected' : ''}><spring:message code="header.lang.ko"/></option>
-                    <option value="en" ${pageContext.response.locale.language == 'en' ? 'selected' : ''}><spring:message code="header.lang.en"/></option>
-                    <option value="ja" ${pageContext.response.locale.language == 'ja' ? 'selected' : ''}><spring:message code="header.lang.ja"/></option>
-                    <option value="zh" ${pageContext.response.locale.language == 'zh' ? 'selected' : ''}><spring:message code="header.lang.zh"/></option>
+                    <option value="ko" ${pageContext.response.locale.language == 'ko' ? 'selected' : ''}>${msg_header_lang_ko}</option>
+                    <option value="en" ${pageContext.response.locale.language == 'en' ? 'selected' : ''}>${msg_header_lang_en}</option>
+                    <option value="ja" ${pageContext.response.locale.language == 'ja' ? 'selected' : ''}>${msg_header_lang_ja}</option>
+                    <option value="zh" ${pageContext.response.locale.language == 'zh' ? 'selected' : ''}>${msg_header_lang_zh}</option>
                 </select>
             </label>
             <c:choose>
                 <c:when test="${not empty sessionScope.loginUser}">
                     <%-- 알림 벨 --%>
                     <div class="noti-wrap">
-                        <button type="button" class="noti-bell" id="notiBell" aria-label="${headerNotificationBellMsg}">
+                        <button type="button" class="noti-bell" id="notiBell" aria-label="${msg_header_notification_bell}">
                             <span class="noti-bell-icon">🔔</span>
                             <c:if test="${headerUnreadCount > 0}">
                                 <span class="noti-badge">${headerUnreadCount > 99 ? '99+' : headerUnreadCount}</span>
@@ -171,13 +202,13 @@
                         </button>
                         <div class="noti-dropdown" id="notiDropdown" hidden>
                             <div class="noti-dropdown-head">
-                                <span class="noti-dropdown-title"><spring:message code="header.notification.title"/></span>
-                                <button type="button" class="noti-mark-all" id="notiMarkAll"><spring:message code="header.notification.markAll"/></button>
+                                <span class="noti-dropdown-title">${msg_header_notification_title}</span>
+                                <button type="button" class="noti-mark-all" id="notiMarkAll">${msg_header_notification_markAll}</button>
                             </div>
                             <div class="noti-dropdown-body">
                                 <c:choose>
                                     <c:when test="${empty headerRecentNotifications}">
-                                        <div class="noti-empty"><spring:message code="header.notification.empty"/></div>
+                                        <div class="noti-empty">${msg_header_notification_empty}</div>
                                     </c:when>
                                     <c:otherwise>
                                         <c:forEach var="n" items="${headerRecentNotifications}">
@@ -190,13 +221,13 @@
                                                  data-target="${n.targetUrl}">
                                                 <span class="noti-type">
                                                     <c:choose>
-                                                        <c:when test="${n.sourceType eq 'community'}"><spring:message code="header.notification.type.community"/></c:when>
-                                                        <c:when test="${n.sourceType eq 'inquiry'}"><spring:message code="header.notification.type.inquiry"/></c:when>
-                                                        <c:when test="${n.sourceType eq 'report'}"><spring:message code="header.notification.type.report"/></c:when>
-                                                        <c:when test="${n.sourceType eq 'levelup'}"><spring:message code="header.notification.type.levelup"/></c:when>
-                                                        <c:when test="${n.sourceType eq 'grade'}"><spring:message code="header.notification.type.grade"/></c:when>
-                                                        <c:when test="${n.sourceType eq 'account_block'}"><spring:message code="header.notification.type.accountBlock"/></c:when>
-                                                        <c:otherwise><spring:message code="header.notification.type.default"/></c:otherwise>
+                                                        <c:when test="${n.sourceType eq 'community'}">${msg_header_notification_type_community}</c:when>
+                                                        <c:when test="${n.sourceType eq 'inquiry'}">${msg_header_notification_type_inquiry}</c:when>
+                                                        <c:when test="${n.sourceType eq 'report'}">${msg_header_notification_type_report}</c:when>
+                                                        <c:when test="${n.sourceType eq 'levelup'}">${msg_header_notification_type_levelup}</c:when>
+                                                        <c:when test="${n.sourceType eq 'grade'}">${msg_header_notification_type_grade}</c:when>
+                                                        <c:when test="${n.sourceType eq 'account_block'}">${msg_header_notification_type_accountBlock}</c:when>
+                                                        <c:otherwise>${msg_header_notification_type_default}</c:otherwise>
                                                     </c:choose>
                                                 </span>
                                                 <span class="noti-msg">${n.message}</span>
@@ -209,15 +240,15 @@
                                 </c:choose>
                             </div>
                             <div class="noti-dropdown-foot">
-                                <a href="${pageContext.request.contextPath}/mypage"><spring:message code="header.notification.viewAll"/></a>
+                                <a href="${pageContext.request.contextPath}/mypage">${msg_header_notification_viewAll}</a>
                             </div>
                         </div>
                     </div>
                     <span class="user-nick">${sessionScope.loginUser.nickname}</span>
-                    <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/logout'"><spring:message code="header.auth.logout"/></button>
+                    <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/logout'">${msg_header_auth_logout}</button>
                 </c:when>
                 <c:otherwise>
-                    <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search)"><spring:message code="header.auth.login"/></button>
+                    <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search)">${msg_header_auth_login}</button>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -245,16 +276,16 @@ window.__notificationConfig = {
     ctx: '${pageContext.request.contextPath}',
     locale: '${pageContext.response.locale}',
     labels: {
-        typeCommunity: '${headerNotificationTypeCommunityMsg}',
-        typeInquiry: '${headerNotificationTypeInquiryMsg}',
-        typeReport: '${headerNotificationTypeReportMsg}',
-        typeLevelup: '${headerNotificationTypeLevelupMsg}',
-        typeGrade: '${headerNotificationTypeGradeMsg}',
-        typeAccountBlock: '${headerNotificationTypeAccountBlockMsg}',
-        typeDefault: '${headerNotificationTypeDefaultMsg}',
-        close: '${headerNotificationCloseMsg}',
-        justNow: '${headerNotificationJustNowMsg}',
-        view: '${headerNotificationViewMsg}'
+        typeCommunity: '${msg_header_notification_type_community_js}',
+        typeInquiry: '${msg_header_notification_type_inquiry_js}',
+        typeReport: '${msg_header_notification_type_report_js}',
+        typeLevelup: '${msg_header_notification_type_levelup_js}',
+        typeGrade: '${msg_header_notification_type_grade_js}',
+        typeAccountBlock: '${msg_header_notification_type_accountBlock_js}',
+        typeDefault: '${msg_header_notification_type_default_js}',
+        close: '${msg_header_notification_close_js}',
+        justNow: '${msg_header_notification_justNow_js}',
+        view: '${msg_header_notification_view_js}'
     }
 };
 

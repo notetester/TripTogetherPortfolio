@@ -4,21 +4,65 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_packages_confirmApprove_js" code="admin.packages.confirmApprove" javaScriptEscape="true"/>
+<spring:message var="msg_admin_packages_rejectReasonPlaceholder" code="admin.packages.rejectReasonPlaceholder"/>
+<spring:message var="msg_package_admin_title" code="package.admin.title"/>
+<spring:message var="msg_package_revision_rejectReason" code="package.revision.rejectReason"/>
+<spring:message var="msg_package_admin_approveConfirm" code="package.admin.approveConfirm"/>
+<spring:message var="msg_package_admin_rejectPlaceholder" code="package.admin.rejectPlaceholder"/>
+<spring:message var="msg_package_admin_desc" code="package.admin.desc"/>
+<spring:message var="msg_package_admin_filterStatus" code="package.admin.filterStatus"/>
+<spring:message var="msg_package_admin_filterAll" code="package.admin.filterAll"/>
+<spring:message var="msg_package_status_pending" code="package.status.pending"/>
+<spring:message var="msg_package_status_approved" code="package.status.approved"/>
+<spring:message var="msg_package_status_rejected" code="package.status.rejected"/>
+<spring:message var="msg_package_status_draft" code="package.status.draft"/>
+<spring:message var="msg_package_status_blocked" code="package.status.blocked"/>
+<spring:message var="msg_package_admin_search" code="package.admin.search"/>
+<spring:message var="msg_package_admin_reset" code="package.admin.reset"/>
+<spring:message var="msg_package_revision_adminTitle" code="package.revision.adminTitle"/>
+<spring:message var="msg_package_revision_adminDesc" code="package.revision.adminDesc"/>
+<spring:message var="msg_package_revision_empty" code="package.revision.empty"/>
+<spring:message var="msg_package_revision_beforeAfter" code="package.revision.beforeAfter"/>
+<spring:message var="msg_package_revision_sellerSpot" code="package.revision.sellerSpot"/>
+<spring:message var="msg_package_revision_pricePeriod" code="package.revision.pricePeriod"/>
+<spring:message var="msg_package_revision_requestedAt" code="package.revision.requestedAt"/>
+<spring:message var="msg_package_revision_review" code="package.revision.review"/>
+<spring:message var="msg_package_revision_current" code="package.revision.current"/>
+<spring:message var="msg_package_revision_requested" code="package.revision.requested"/>
+<spring:message var="msg_package_common_always" code="package.common.always"/>
+<spring:message var="msg_package_common_maxPeople" code="package.common.maxPeople"/>
+<spring:message var="msg_package_revision_approve" code="package.revision.approve"/>
+<spring:message var="msg_package_revision_reject" code="package.revision.reject"/>
+<spring:message var="msg_package_admin_thPackage" code="package.admin.thPackage"/>
+<spring:message var="msg_package_admin_thSeller" code="package.admin.thSeller"/>
+<spring:message var="msg_package_admin_thSpot" code="package.admin.thSpot"/>
+<spring:message var="msg_package_admin_thPriceSchedule" code="package.admin.thPriceSchedule"/>
+<spring:message var="msg_package_admin_thStatus" code="package.admin.thStatus"/>
+<spring:message var="msg_package_admin_thReview" code="package.admin.thReview"/>
+<spring:message var="msg_package_admin_noImage" code="package.admin.noImage"/>
+<spring:message var="msg_package_admin_registeredAt" code="package.admin.registeredAt"/>
+<spring:message var="msg_package_status_expired" code="package.status.expired"/>
+<spring:message var="msg_package_manage_expiredHidden" code="package.manage.expiredHidden"/>
+<spring:message var="msg_package_admin_approve" code="package.admin.approve"/>
+<spring:message var="msg_package_admin_reject" code="package.admin.reject"/>
+<spring:message var="msg_package_admin_notPending" code="package.admin.notPending"/>
+<spring:message var="msg_package_admin_noResults" code="package.admin.noResults"/>
 <c:set var="activeMenu" value="packages"/>
-<spring:message var="adminPackagesConfirmApproveMsg" code="admin.packages.confirmApprove" javaScriptEscape="true"/>
-<spring:message var="adminPackagesRejectReasonPlaceholderMsg" code="admin.packages.rejectReasonPlaceholder"/>
-<spring:message code="package.admin.title" var="adminPackagesPageTitle"/>
-<c:set var="pageTitle"  value="${adminPackagesPageTitle}"/>
-<spring:message code="package.revision.rejectReason" var="revisionRejectReasonPlaceholder"/>
-<spring:message code="package.admin.approveConfirm" var="packageApproveConfirm"/>
-<spring:message code="package.admin.rejectPlaceholder" var="packageRejectPlaceholder"/>
+
+
+<c:set var="pageTitle"  value="${msg_package_admin_title}"/>
+
+
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1><spring:message code="package.admin.title"/></h1>
-            <p><spring:message code="package.admin.desc"/></p>
+            <h1>${msg_package_admin_title}</h1>
+            <p>${msg_package_admin_desc}</p>
         </div>
     </div>
 
@@ -34,20 +78,20 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/packages">
                 <div class="adm-filter-bar">
                     <div>
-                        <div class="adm-filter-label"><spring:message code="package.admin.filterStatus"/></div>
+                        <div class="adm-filter-label">${msg_package_admin_filterStatus}</div>
                         <select class="adm-select" name="status">
-                            <option value="ALL" ${status eq 'ALL' ? 'selected' : ''}><spring:message code="package.admin.filterAll"/></option>
-                            <option value="PENDING" ${status eq 'PENDING' ? 'selected' : ''}><spring:message code="package.status.pending"/></option>
-                            <option value="APPROVED" ${status eq 'APPROVED' ? 'selected' : ''}><spring:message code="package.status.approved"/></option>
-                            <option value="REJECTED" ${status eq 'REJECTED' ? 'selected' : ''}><spring:message code="package.status.rejected"/></option>
-                            <option value="DRAFT" ${status eq 'DRAFT' ? 'selected' : ''}><spring:message code="package.status.draft"/></option>
-                            <option value="BLOCKED" ${status eq 'BLOCKED' ? 'selected' : ''}><spring:message code="package.status.blocked"/></option>
+                            <option value="ALL" ${status eq 'ALL' ? 'selected' : ''}>${msg_package_admin_filterAll}</option>
+                            <option value="PENDING" ${status eq 'PENDING' ? 'selected' : ''}>${msg_package_status_pending}</option>
+                            <option value="APPROVED" ${status eq 'APPROVED' ? 'selected' : ''}>${msg_package_status_approved}</option>
+                            <option value="REJECTED" ${status eq 'REJECTED' ? 'selected' : ''}>${msg_package_status_rejected}</option>
+                            <option value="DRAFT" ${status eq 'DRAFT' ? 'selected' : ''}>${msg_package_status_draft}</option>
+                            <option value="BLOCKED" ${status eq 'BLOCKED' ? 'selected' : ''}>${msg_package_status_blocked}</option>
                         </select>
                     </div>
                     <div style="display:flex;gap:6px;align-items:flex-end;">
-                        <button type="submit" class="adm-btn adm-btn-primary"><spring:message code="package.admin.search"/></button>
+                        <button type="submit" class="adm-btn adm-btn-primary">${msg_package_admin_search}</button>
                         <a href="${pageContext.request.contextPath}/admin/packages"
-                           class="adm-btn adm-btn-ghost"><spring:message code="package.admin.reset"/></a>
+                           class="adm-btn adm-btn-ghost">${msg_package_admin_reset}</a>
                     </div>
                 </div>
             </form>
@@ -58,16 +102,16 @@
         <div class="adm-card-body">
             <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:14px;">
                 <div>
-                    <h2 style="margin:0;color:#e2e8f0;font-size:18px;"><spring:message code="package.revision.adminTitle"/></h2>
-                    <p style="margin:6px 0 0;color:#94a3b8;font-size:13px;"><spring:message code="package.revision.adminDesc"/></p>
+                    <h2 style="margin:0;color:#e2e8f0;font-size:18px;">${msg_package_revision_adminTitle}</h2>
+                    <p style="margin:6px 0 0;color:#94a3b8;font-size:13px;">${msg_package_revision_adminDesc}</p>
                 </div>
-                <span class="status-badge PENDING"><spring:message code="package.status.pending"/></span>
+                <span class="status-badge PENDING">${msg_package_status_pending}</span>
             </div>
 
             <c:choose>
                 <c:when test="${empty revisionList}">
                     <div style="padding:24px;border:1px dashed rgba(148,163,184,.32);border-radius:14px;color:#64748b;text-align:center;">
-                        <spring:message code="package.revision.empty"/>
+                        ${msg_package_revision_empty}
                     </div>
                 </c:when>
                 <c:otherwise>
@@ -75,11 +119,11 @@
                         <table class="adm-table">
                             <thead>
                             <tr>
-                                <th><spring:message code="package.revision.beforeAfter"/></th>
-                                <th><spring:message code="package.revision.sellerSpot"/></th>
-                                <th><spring:message code="package.revision.pricePeriod"/></th>
-                                <th><spring:message code="package.revision.requestedAt"/></th>
-                                <th><spring:message code="package.revision.review"/></th>
+                                <th>${msg_package_revision_beforeAfter}</th>
+                                <th>${msg_package_revision_sellerSpot}</th>
+                                <th>${msg_package_revision_pricePeriod}</th>
+                                <th>${msg_package_revision_requestedAt}</th>
+                                <th>${msg_package_revision_review}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -89,9 +133,9 @@
                                         <button type="button"
                                                 class="adm-cell-link"
                                                 onclick="focusPackageReviewAction('revision-${revision.packageRevisionIdx}')">
-                                            <span style="font-size:12px;color:#94a3b8;"><spring:message code="package.revision.current"/></span>
+                                            <span style="font-size:12px;color:#94a3b8;">${msg_package_revision_current}</span>
                                             <span style="font-weight:800;color:#e2e8f0;">${fn:escapeXml(revision.currentPackageTitle)}</span>
-                                            <span style="font-size:12px;color:#38bdf8;margin-top:6px;"><spring:message code="package.revision.requested"/></span>
+                                            <span style="font-size:12px;color:#38bdf8;margin-top:6px;">${msg_package_revision_requested}</span>
                                             <span style="font-weight:800;color:#e2e8f0;">${fn:escapeXml(revision.packageTitle)}</span>
                                             <c:if test="${not empty revision.packageSummary}">
                                                 <span style="font-size:12px;color:#94a3b8;margin-top:4px;max-width:420px;">
@@ -124,13 +168,13 @@
                                                     <c:when test="${not empty revision.startDate or not empty revision.endDate}">
                                                         ${revision.startDate} ~ ${revision.endDate}
                                                     </c:when>
-                                                    <c:otherwise><spring:message code="package.common.always"/></c:otherwise>
+                                                    <c:otherwise>${msg_package_common_always}</c:otherwise>
                                                 </c:choose>
                                             </span>
                                             <span style="font-size:12px;color:#94a3b8;">
-                                                <spring:message code="package.common.minPeople" arguments="${revision.minPeople}"/>
+                                                <spring:message var="msg_package_common_minPeople_args_revision_minPeople" code="package.common.minPeople" arguments="${revision.minPeople}"/>${msg_package_common_minPeople_args_revision_minPeople}
                                                 <c:if test="${not empty revision.maxPeople}">
-                                                    / <spring:message code="package.common.maxPeople"/>
+                                                    / ${msg_package_common_maxPeople}
                                                 </c:if>
                                             </span>
                                         </button>
@@ -146,7 +190,7 @@
                                         <div class="adm-row-actions" id="package-action-revision-${revision.packageRevisionIdx}">
                                             <form method="post" action="${pageContext.request.contextPath}/admin/packages/revisions/${revision.packageRevisionIdx}/approve">
                                                 <button type="submit" class="adm-row-btn detail">
-                                                    <spring:message code="package.revision.approve"/>
+                                                    ${msg_package_revision_approve}
                                                 </button>
                                             </form>
                                             <div class="action-menu-wrap">
@@ -158,16 +202,16 @@
                                                           method="post"
                                                           action="${pageContext.request.contextPath}/admin/packages/revisions/${revision.packageRevisionIdx}/reject">
                                                         <label class="action-menu-head" for="revision-reject-${revision.packageRevisionIdx}">
-                                                            <spring:message code="package.revision.reject"/>
+                                                            ${msg_package_revision_reject}
                                                         </label>
                                                         <input id="revision-reject-${revision.packageRevisionIdx}"
                                                                class="adm-input"
                                                                name="rejectReason"
                                                                maxlength="500"
-                                                               placeholder="${revisionRejectReasonPlaceholder}"
+                                                               placeholder="${msg_package_revision_rejectReason}"
                                                                required>
                                                         <button type="submit" class="action-menu-item danger">
-                                                            <spring:message code="package.revision.reject"/>
+                                                            ${msg_package_revision_reject}
                                                         </button>
                                                     </form>
                                                 </div>
@@ -189,12 +233,12 @@
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th><spring:message code="package.admin.thPackage"/></th>
-                    <th><spring:message code="package.admin.thSeller"/></th>
-                    <th><spring:message code="package.admin.thSpot"/></th>
-                    <th><spring:message code="package.admin.thPriceSchedule"/></th>
-                    <th><spring:message code="package.admin.thStatus"/></th>
-                    <th><spring:message code="package.admin.thReview"/></th>
+                    <th>${msg_package_admin_thPackage}</th>
+                    <th>${msg_package_admin_thSeller}</th>
+                    <th>${msg_package_admin_thSpot}</th>
+                    <th>${msg_package_admin_thPriceSchedule}</th>
+                    <th>${msg_package_admin_thStatus}</th>
+                    <th>${msg_package_admin_thReview}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -210,7 +254,7 @@
                                                  style="width:100%;height:100%;object-fit:cover;">
                                         </c:when>
                                         <c:otherwise>
-                                            <div style="height:100%;display:grid;place-items:center;color:#94a3b8;font-size:11px;font-weight:800;"><spring:message code="package.admin.noImage"/></div>
+                                            <div style="height:100%;display:grid;place-items:center;color:#94a3b8;font-size:11px;font-weight:800;">${msg_package_admin_noImage}</div>
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
@@ -225,7 +269,7 @@
                                             ${fn:escapeXml(pkg.packageSummary)}
                                         </div>
                                     </c:if>
-                                    <div style="font-size:11px;color:#64748b;margin-top:4px;"><spring:message code="package.admin.registeredAt"/></div>
+                                    <div style="font-size:11px;color:#64748b;margin-top:4px;">${msg_package_admin_registeredAt}</div>
                                 </div>
                             </div>
                         </td>
@@ -258,12 +302,12 @@
                                         <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
                                             ${pkg.startDate} ~ ${pkg.endDate}
                                         </c:when>
-                                        <c:otherwise><spring:message code="package.common.always"/></c:otherwise>
+                                        <c:otherwise>${msg_package_common_always}</c:otherwise>
                                     </c:choose>
                                 </span>
                                 <span style="font-size:12px;color:#94a3b8;">
-                                    <spring:message code="package.common.minPeople" arguments="${pkg.minPeople}"/>
-                                    <c:if test="${not empty pkg.maxPeople}"> / <spring:message code="package.common.maxPeople"/></c:if>
+                                    <spring:message var="msg_package_common_minPeople_args_pkg_minPeople" code="package.common.minPeople" arguments="${pkg.minPeople}"/>${msg_package_common_minPeople_args_pkg_minPeople}
+                                    <c:if test="${not empty pkg.maxPeople}"> / ${msg_package_common_maxPeople}</c:if>
                                 </span>
                             </button>
                         </td>
@@ -277,19 +321,19 @@
                                     onclick="focusPackageReviewAction('package-${pkg.packageIdx}')">
                                 <span class="status-badge ${displayStatusClass}">
                                     <c:choose>
-                                        <c:when test="${displayStatusClass eq 'EXPIRED'}"><spring:message code="package.status.expired"/></c:when>
-                                        <c:when test="${displayStatusClass eq 'PENDING'}"><spring:message code="package.status.pending"/></c:when>
-                                        <c:when test="${displayStatusClass eq 'APPROVED'}"><spring:message code="package.status.approved"/></c:when>
-                                        <c:when test="${displayStatusClass eq 'REJECTED'}"><spring:message code="package.status.rejected"/></c:when>
-                                        <c:when test="${displayStatusClass eq 'DRAFT'}"><spring:message code="package.status.draft"/></c:when>
-                                        <c:when test="${displayStatusClass eq 'BLOCKED'}"><spring:message code="package.status.blocked"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'EXPIRED'}">${msg_package_status_expired}</c:when>
+                                        <c:when test="${displayStatusClass eq 'PENDING'}">${msg_package_status_pending}</c:when>
+                                        <c:when test="${displayStatusClass eq 'APPROVED'}">${msg_package_status_approved}</c:when>
+                                        <c:when test="${displayStatusClass eq 'REJECTED'}">${msg_package_status_rejected}</c:when>
+                                        <c:when test="${displayStatusClass eq 'DRAFT'}">${msg_package_status_draft}</c:when>
+                                        <c:when test="${displayStatusClass eq 'BLOCKED'}">${msg_package_status_blocked}</c:when>
                                         <c:otherwise>${fn:escapeXml(pkg.packageStatus)}</c:otherwise>
                                     </c:choose>
                                 </span>
                             </button>
                             <c:if test="${pkg.packageStatus eq 'APPROVED' and pkg.expired}">
                                 <div style="font-size:11px;color:#fbbf24;margin-top:6px;max-width:240px;">
-                                    <spring:message code="package.manage.expiredHidden"/>
+                                    ${msg_package_manage_expiredHidden}
                                 </div>
                             </c:if>
                             <c:if test="${not empty pkg.rejectReason}">
@@ -304,7 +348,7 @@
                                     <div class="adm-row-actions" id="package-action-package-${pkg.packageIdx}">
                                             <form method="post" action="${pageContext.request.contextPath}/admin/packages/${pkg.packageIdx}/approve">
                                                 <button type="submit" class="adm-row-btn detail"
-                                                    onclick="return confirm('${adminPackagesConfirmApproveMsg}');"><spring:message code="package.admin.approve"/></button>
+                                                    onclick="return confirm('${msg_admin_packages_confirmApprove_js}');">${msg_package_admin_approve}</button>
                                             </form>
                                         <div class="action-menu-wrap">
                                             <button type="button"
@@ -315,16 +359,16 @@
                                                       method="post"
                                                       action="${pageContext.request.contextPath}/admin/packages/${pkg.packageIdx}/reject">
                                                     <label class="action-menu-head" for="package-reject-${pkg.packageIdx}">
-                                                        <spring:message code="package.admin.reject"/>
+                                                        ${msg_package_admin_reject}
                                                     </label>
                                                     <input id="package-reject-${pkg.packageIdx}"
                                                            class="adm-input"
                                                            name="rejectReason"
                                                            maxlength="500"
-                                                           placeholder="${adminPackagesRejectReasonPlaceholderMsg}"
+                                                           placeholder="${msg_admin_packages_rejectReasonPlaceholder}"
                                                            required>
                                                     <button type="submit" class="action-menu-item danger">
-                                                        <spring:message code="package.admin.reject"/>
+                                                        ${msg_package_admin_reject}
                                                     </button>
                                                 </form>
                                             </div>
@@ -332,7 +376,7 @@
                                     </div>
                                 </c:when>
                                 <c:otherwise>
-                                    <span style="color:#64748b;font-size:12px;"><spring:message code="package.admin.notPending"/></span>
+                                    <span style="color:#64748b;font-size:12px;">${msg_package_admin_notPending}</span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -342,7 +386,7 @@
                 <c:if test="${empty packageList}">
                     <tr>
                         <td colspan="6" style="text-align:center;padding:40px;color:#64748b;">
-                            <spring:message code="package.admin.noResults"/>
+                            ${msg_package_admin_noResults}
                         </td>
                     </tr>
                 </c:if>

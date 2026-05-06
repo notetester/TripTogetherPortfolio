@@ -2,18 +2,36 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_auth_login_identifier_placeholder" code="auth.login.identifier.placeholder"/>
+<spring:message var="msg_auth_login_password_placeholder" code="auth.login.password.placeholder"/>
+<spring:message var="msg_auth_login_password_title" code="auth.login.password.title"/>
+<spring:message var="msg_auth_login_error_required_js" code="auth.login.error.required" javaScriptEscape="true"/>
+<spring:message var="msg_auth_login_dormant_confirmDefault_js" code="auth.login.dormant.confirmDefault" javaScriptEscape="true"/>
+<spring:message var="msg_auth_login_dormant_confirmGuide_js" code="auth.login.dormant.confirmGuide" javaScriptEscape="true"/>
+<spring:message var="msg_auth_login_dormant_required_js" code="auth.login.dormant.required" javaScriptEscape="true"/>
+<spring:message var="msg_auth_login_dormant_error_js" code="auth.login.dormant.error" javaScriptEscape="true"/>
+<spring:message var="msg_auth_login_error_fail_js" code="auth.login.error.fail" javaScriptEscape="true"/>
+<spring:message var="msg_auth_login_error_server_js" code="auth.login.error.server" javaScriptEscape="true"/>
+<spring:message var="msg_auth_login_title" code="auth.login.title"/>
+<spring:message var="msg_auth_login_subtitle" code="auth.login.subtitle"/>
+<spring:message var="msg_auth_login_kakao" code="auth.login.kakao"/>
+<spring:message var="msg_auth_login_naver" code="auth.login.naver"/>
+<spring:message var="msg_auth_login_google" code="auth.login.google"/>
+<spring:message var="msg_auth_login_or" code="auth.login.or"/>
+<spring:message var="msg_auth_login_identifier" code="auth.login.identifier"/>
+<spring:message var="msg_auth_login_password" code="auth.login.password"/>
+<spring:message var="msg_auth_login_remember" code="auth.login.remember"/>
+<spring:message var="msg_auth_login_findId" code="auth.login.findId"/>
+<spring:message var="msg_auth_login_findPw" code="auth.login.findPw"/>
+<spring:message var="msg_header_auth_login" code="header.auth.login"/>
+<spring:message var="msg_auth_login_noAccount" code="auth.login.noAccount"/>
+<spring:message var="msg_auth_login_register" code="auth.login.register"/>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
-<spring:message var="authLoginIdentifierPlaceholderMsg" code="auth.login.identifier.placeholder"/>
-<spring:message var="authLoginPasswordPlaceholderMsg" code="auth.login.password.placeholder"/>
-<spring:message var="authLoginPasswordTitleMsg" code="auth.login.password.title"/>
-<spring:message var="authLoginErrorRequiredMsg" code="auth.login.error.required" javaScriptEscape="true"/>
-<spring:message var="authLoginDormantConfirmDefaultMsg" code="auth.login.dormant.confirmDefault" javaScriptEscape="true"/>
-<spring:message var="authLoginDormantConfirmGuideMsg" code="auth.login.dormant.confirmGuide" javaScriptEscape="true"/>
-<spring:message var="authLoginDormantRequiredMsg" code="auth.login.dormant.required" javaScriptEscape="true"/>
-<spring:message var="authLoginDormantErrorMsg" code="auth.login.dormant.error" javaScriptEscape="true"/>
-<spring:message var="authLoginErrorFailMsg" code="auth.login.error.fail" javaScriptEscape="true"/>
-<spring:message var="authLoginErrorServerMsg" code="auth.login.error.server" javaScriptEscape="true"/>
+
+
 <html lang="${pageContext.response.locale.language}">
 <body>
 <div class="auth-wrap">
@@ -24,8 +42,8 @@
       <span class="auth-logo-text">TripTogether</span>
     </div>
 
-    <h1 class="auth-title"><spring:message code="auth.login.title"/></h1>
-    <p class="auth-sub"><spring:message code="auth.login.subtitle"/></p>
+    <h1 class="auth-title">${msg_auth_login_title}</h1>
+    <p class="auth-sub">${msg_auth_login_subtitle}</p>
 
     <c:if test="${not empty errorMsg}">
       <div class="auth-error-banner show">⚠️ ${errorMsg}</div>
@@ -35,11 +53,11 @@
     <div class="social-btns">
       <a href="${kakaoAuthUrl}" class="social-btn kakao">
         <span class="social-icon kakao-mark">k</span>
-        <spring:message code="auth.login.kakao"/>
+        ${msg_auth_login_kakao}
       </a>
       <a href="${naverAuthUrl}" class="social-btn naver">
         <span class="social-icon naver-mark">N</span>
-        <spring:message code="auth.login.naver"/>
+        ${msg_auth_login_naver}
       </a>
       <a href="${googleAuthUrl}" class="social-btn google">
         <span class="social-icon google-mark">
@@ -50,46 +68,46 @@
             <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
           </svg>
         </span>
-        <spring:message code="auth.login.google"/>
+        ${msg_auth_login_google}
       </a>
     </div>
 
-    <div class="auth-divider"><spring:message code="auth.login.or"/></div>
+    <div class="auth-divider">${msg_auth_login_or}</div>
 
     <form id="loginForm" onsubmit="return false;">
       <input type="hidden" id="redirect" value="${redirect}">
 
       <div class="form-group">
-        <label class="form-label" for="identifier"><spring:message code="auth.login.identifier"/></label>
+        <label class="form-label" for="identifier">${msg_auth_login_identifier}</label>
         <input class="form-input" type="text" id="identifier" name="identifier"
-               placeholder="${authLoginIdentifierPlaceholderMsg}" autocomplete="username" required>
+               placeholder="${msg_auth_login_identifier_placeholder}" autocomplete="username" required>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="password"><spring:message code="auth.login.password"/></label>
+        <label class="form-label" for="password">${msg_auth_login_password}</label>
         <div class="pw-wrap">
           <input class="form-input" type="password" id="password" name="password"
-                 placeholder="${authLoginPasswordPlaceholderMsg}" autocomplete="current-password" required>
-          <button type="button" class="pw-toggle" id="pwToggle" title="${authLoginPasswordTitleMsg}">👁</button>
+                 placeholder="${msg_auth_login_password_placeholder}" autocomplete="current-password" required>
+          <button type="button" class="pw-toggle" id="pwToggle" title="${msg_auth_login_password_title}">👁</button>
         </div>
       </div>
 
       <div class="auth-row">
         <label class="checkbox-label">
-          <input type="checkbox" id="rememberMe"> <spring:message code="auth.login.remember"/>
+          <input type="checkbox" id="rememberMe"> ${msg_auth_login_remember}
         </label>
         <div style="display:flex; gap:10px; align-items:center;">
-          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-id"><spring:message code="auth.login.findId"/></a>
-          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-pw"><spring:message code="auth.login.findPw"/></a>
+          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-id">${msg_auth_login_findId}</a>
+          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-pw">${msg_auth_login_findPw}</a>
         </div>
       </div>
 
-      <button type="submit" class="btn-submit" id="loginBtn"><spring:message code="header.auth.login"/></button>
+      <button type="submit" class="btn-submit" id="loginBtn">${msg_header_auth_login}</button>
     </form>
 
     <div class="auth-footer">
-      <spring:message code="auth.login.noAccount"/>
-      <a href="${pageContext.request.contextPath}/auth/register"><spring:message code="auth.login.register"/></a>
+      ${msg_auth_login_noAccount}
+      <a href="${pageContext.request.contextPath}/auth/register">${msg_auth_login_register}</a>
     </div>
 
   </div>
@@ -114,7 +132,7 @@
     const errorBanner = document.getElementById('loginError');
 
     if (!identifier || !password) {
-      showError('${authLoginErrorRequiredMsg}');
+      showError('${msg_auth_login_error_required_js}');
       return;
     }
 
@@ -133,10 +151,10 @@
       if (data.success) {
         location.href = data.redirect;
       } else if (data.dormantReleaseRequired) {
-        const dormantMessage = data.message || '${authLoginDormantConfirmDefaultMsg}';
-        const ok = confirm(dormantMessage + '\n\n' + '${authLoginDormantConfirmGuideMsg}');
+        const dormantMessage = data.message || '${msg_auth_login_dormant_confirmDefault_js}';
+        const ok = confirm(dormantMessage + '\n\n' + '${msg_auth_login_dormant_confirmGuide_js}');
         if (!ok) {
-          showError(data.message || '${authLoginDormantRequiredMsg}');
+          showError(data.message || '${msg_auth_login_dormant_required_js}');
           return;
         }
         const releaseRes = await fetch(ctx + '/auth/dormant/release', {
@@ -148,13 +166,13 @@
         if (releaseData.success) {
           location.href = releaseData.redirect;
         } else {
-          showError(releaseData.message || '${authLoginDormantErrorMsg}');
+          showError(releaseData.message || '${msg_auth_login_dormant_error_js}');
         }
       } else {
-        showError(data.message || '${authLoginErrorFailMsg}');
+        showError(data.message || '${msg_auth_login_error_fail_js}');
       }
     } catch (e) {
-      showError('${authLoginErrorServerMsg}');
+      showError('${msg_auth_login_error_server_js}');
     } finally {
       btn.classList.remove('loading');
       btn.disabled = false;

@@ -2,47 +2,118 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_mypage_userId_placeholder" code="mypage.userId.placeholder"/>
+<spring:message var="msg_mypage_email_new" code="mypage.email.new"/>
+<spring:message var="msg_mypage_password_placeholder" code="mypage.password.placeholder"/>
+<spring:message var="msg_mypage_password_confirm_placeholder" code="mypage.password.confirm.placeholder"/>
+<spring:message var="msg_mypage_password_current_placeholder" code="mypage.password.current.placeholder"/>
+<spring:message var="msg_mypage_email_none_js" code="mypage.email.none" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_pendingSuffix_js" code="mypage.email.pendingSuffix" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_enterAndVerify_js" code="mypage.email.enterAndVerify" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_unverified_js" code="mypage.email.unverified" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_verified_js" code="mypage.email.verified" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_verifiedPending_js" code="mypage.email.verifiedPending" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_use_needPassword_js" code="mypage.email.use.needPassword" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_use_enable_js" code="mypage.email.use.enable" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_use_check_js" code="mypage.email.use.check" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_validRequired_js" code="mypage.email.validRequired" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_resend_js" code="mypage.email.resend" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_use_disableWithPassword_js" code="mypage.email.use.disableWithPassword" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_use_disable_js" code="mypage.email.use.disable" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_statusChecked_js" code="mypage.email.statusChecked" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_email_removeWithDisable_js" code="mypage.email.removeWithDisable" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_edit_nicknameDuplicate_js" code="mypage.edit.nicknameDuplicate" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_edit_passwordMatch_js" code="mypage.edit.passwordMatch" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_edit_passwordMismatch_js" code="mypage.edit.passwordMismatch" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_password_minSet_js" code="mypage.password.minSet" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_password_minLength_js" code="mypage.password.minLength" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_social_unlinkConfirm_js" code="mypage.social.unlinkConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_social_unlinkFail_js" code="mypage.social.unlinkFail" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_social_kakao_js" code="mypage.social.kakao" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_social_naver_js" code="mypage.social.naver" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_social_google_js" code="mypage.social.google" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_edit_back" code="mypage.edit.back"/>
+<spring:message var="msg_mypage_edit_title" code="mypage.edit.title"/>
+<spring:message var="msg_mypage_edit_subtitle" code="mypage.edit.subtitle"/>
+<spring:message var="msg_mypage_edit_profile_title" code="mypage.edit.profile.title"/>
+<spring:message var="msg_mypage_edit_profile_subtitle" code="mypage.edit.profile.subtitle"/>
+<spring:message var="msg_mypage_nickname" code="mypage.nickname"/>
+<spring:message var="msg_mypage_nationality" code="mypage.nationality"/>
+<spring:message var="msg_mypage_country_kr" code="mypage.country.kr"/>
+<spring:message var="msg_mypage_country_us" code="mypage.country.us"/>
+<spring:message var="msg_mypage_country_jp" code="mypage.country.jp"/>
+<spring:message var="msg_mypage_country_cn" code="mypage.country.cn"/>
+<spring:message var="msg_mypage_country_gb" code="mypage.country.gb"/>
+<spring:message var="msg_mypage_country_fr" code="mypage.country.fr"/>
+<spring:message var="msg_mypage_country_de" code="mypage.country.de"/>
+<spring:message var="msg_mypage_country_au" code="mypage.country.au"/>
+<spring:message var="msg_mypage_country_ca" code="mypage.country.ca"/>
+<spring:message var="msg_mypage_country_other" code="mypage.country.other"/>
+<spring:message var="msg_mypage_language" code="mypage.language"/>
+<spring:message var="msg_mypage_lang_ko" code="mypage.lang.ko"/>
+<spring:message var="msg_mypage_lang_en" code="mypage.lang.en"/>
+<spring:message var="msg_mypage_lang_ja" code="mypage.lang.ja"/>
+<spring:message var="msg_mypage_lang_zh" code="mypage.lang.zh"/>
+<spring:message var="msg_mypage_save" code="mypage.save"/>
+<spring:message var="msg_mypage_edit_login_title" code="mypage.edit.login.title"/>
+<spring:message var="msg_mypage_edit_login_subtitle" code="mypage.edit.login.subtitle"/>
+<spring:message var="msg_mypage_edit_idLogin" code="mypage.edit.idLogin"/>
+<spring:message var="msg_mypage_available" code="mypage.available"/>
+<spring:message var="msg_mypage_none" code="mypage.none"/>
+<spring:message var="msg_mypage_edit_emailLogin" code="mypage.edit.emailLogin"/>
+<spring:message var="msg_mypage_edit_socialLogin" code="mypage.edit.socialLogin"/>
+<spring:message var="msg_mypage_social_linkedCount" code="mypage.social.linkedCount"/>
+<spring:message var="msg_mypage_profile_userId" code="mypage.profile.userId"/>
+<spring:message var="msg_mypage_userId_once" code="mypage.userId.once"/>
+<spring:message var="msg_mypage_userId_help" code="mypage.userId.help"/>
+<spring:message var="msg_mypage_email_state" code="mypage.email.state"/>
+<spring:message var="msg_mypage_email_none" code="mypage.email.none"/>
+<spring:message var="msg_mypage_email_verified" code="mypage.email.verified"/>
+<spring:message var="msg_mypage_email_unverified" code="mypage.email.unverified"/>
+<spring:message var="msg_mypage_email_change" code="mypage.email.change"/>
+<spring:message var="msg_mypage_email_send" code="mypage.email.send"/>
+<spring:message var="msg_mypage_email_help" code="mypage.email.help"/>
+<spring:message var="msg_mypage_email_use" code="mypage.email.use"/>
+<spring:message var="msg_mypage_email_use_current" code="mypage.email.use.current"/>
+<spring:message var="msg_mypage_email_use_enable" code="mypage.email.use.enable"/>
+<spring:message var="msg_mypage_email_use_needPassword" code="mypage.email.use.needPassword"/>
+<spring:message var="msg_mypage_email_use_check" code="mypage.email.use.check"/>
+<spring:message var="msg_mypage_localPassword" code="mypage.localPassword"/>
+<spring:message var="msg_mypage_password" code="mypage.password"/>
+<spring:message var="msg_mypage_password_confirm" code="mypage.password.confirm"/>
+<spring:message var="msg_mypage_password_firstTime" code="mypage.password.firstTime"/>
+<spring:message var="msg_mypage_loginSave" code="mypage.loginSave"/>
+<spring:message var="msg_mypage_loginWarn" code="mypage.loginWarn"/>
+<spring:message var="msg_mypage_passwordChange" code="mypage.passwordChange"/>
+<spring:message var="msg_mypage_passwordChange_subtitle" code="mypage.passwordChange.subtitle"/>
+<spring:message var="msg_mypage_password_current" code="mypage.password.current"/>
+<spring:message var="msg_mypage_password_new" code="mypage.password.new"/>
+<spring:message var="msg_mypage_social_title" code="mypage.social.title"/>
+<spring:message var="msg_mypage_social_subtitle" code="mypage.social.subtitle"/>
+<spring:message var="msg_mypage_social_kakao" code="mypage.social.kakao"/>
+<spring:message var="msg_mypage_social_status_linked" code="mypage.social.status.linked"/>
+<spring:message var="msg_mypage_social_status_unlinked" code="mypage.social.status.unlinked"/>
+<spring:message var="msg_mypage_social_unlink" code="mypage.social.unlink"/>
+<spring:message var="msg_mypage_social_link" code="mypage.social.link"/>
+<spring:message var="msg_mypage_social_naver" code="mypage.social.naver"/>
+<spring:message var="msg_mypage_social_google" code="mypage.social.google"/>
+<spring:message var="msg_mypage_social_warn" code="mypage.social.warn"/>
+<spring:message var="msg_mypage_edit_done" code="mypage.edit.done"/>
 <c:set var="pageCSS" value="mypage/mypage.css"/>
 <%@ include file="../common/header.jsp" %>
-<spring:message var="mypageUserIdPlaceholderMsg" code="mypage.userId.placeholder"/>
-<spring:message var="mypageEmailNewMsg" code="mypage.email.new"/>
-<spring:message var="mypagePasswordPlaceholderMsg" code="mypage.password.placeholder"/>
-<spring:message var="mypagePasswordConfirmPlaceholderMsg" code="mypage.password.confirm.placeholder"/>
-<spring:message var="mypagePasswordCurrentPlaceholderMsg" code="mypage.password.current.placeholder"/>
-<spring:message var="mypageEmailNoneMsg" code="mypage.email.none" javaScriptEscape="true"/>
-<spring:message var="mypageEmailPendingSuffixMsg" code="mypage.email.pendingSuffix" javaScriptEscape="true"/>
-<spring:message var="mypageEmailEnterAndVerifyMsg" code="mypage.email.enterAndVerify" javaScriptEscape="true"/>
-<spring:message var="mypageEmailUnverifiedMsg" code="mypage.email.unverified" javaScriptEscape="true"/>
-<spring:message var="mypageEmailVerifiedMsg" code="mypage.email.verified" javaScriptEscape="true"/>
-<spring:message var="mypageEmailVerifiedPendingMsg" code="mypage.email.verifiedPending" javaScriptEscape="true"/>
-<spring:message var="mypageEmailUseNeedPasswordMsg" code="mypage.email.use.needPassword" javaScriptEscape="true"/>
-<spring:message var="mypageEmailUseEnableMsg" code="mypage.email.use.enable" javaScriptEscape="true"/>
-<spring:message var="mypageEmailUseCheckMsg" code="mypage.email.use.check" javaScriptEscape="true"/>
-<spring:message var="mypageEmailValidRequiredMsg" code="mypage.email.validRequired" javaScriptEscape="true"/>
-<spring:message var="mypageEmailResendMsg" code="mypage.email.resend" javaScriptEscape="true"/>
-<spring:message var="mypageEmailUseDisableWithPasswordMsg" code="mypage.email.use.disableWithPassword" javaScriptEscape="true"/>
-<spring:message var="mypageEmailUseDisableMsg" code="mypage.email.use.disable" javaScriptEscape="true"/>
-<spring:message var="mypageEmailStatusCheckedMsg" code="mypage.email.statusChecked" javaScriptEscape="true"/>
-<spring:message var="mypageEmailRemoveWithDisableMsg" code="mypage.email.removeWithDisable" javaScriptEscape="true"/>
-<spring:message var="mypageEditNicknameDuplicateMsg" code="mypage.edit.nicknameDuplicate" javaScriptEscape="true"/>
-<spring:message var="mypageEditPasswordMatchMsg" code="mypage.edit.passwordMatch" javaScriptEscape="true"/>
-<spring:message var="mypageEditPasswordMismatchMsg" code="mypage.edit.passwordMismatch" javaScriptEscape="true"/>
-<spring:message var="mypagePasswordMinSetMsg" code="mypage.password.minSet" javaScriptEscape="true"/>
-<spring:message var="mypagePasswordMinLengthMsg" code="mypage.password.minLength" javaScriptEscape="true"/>
-<spring:message var="mypageSocialUnlinkConfirmMsg" code="mypage.social.unlinkConfirm" javaScriptEscape="true"/>
-<spring:message var="mypageSocialUnlinkFailMsg" code="mypage.social.unlinkFail" javaScriptEscape="true"/>
-<spring:message var="mypageSocialKakaoMsg" code="mypage.social.kakao" javaScriptEscape="true"/>
-<spring:message var="mypageSocialNaverMsg" code="mypage.social.naver" javaScriptEscape="true"/>
-<spring:message var="mypageSocialGoogleMsg" code="mypage.social.google" javaScriptEscape="true"/>
+
+
 <html lang="ko">
 <body>
 <div class="mypage-wrap">
   <div class="mypage-inner">
 
     <div class="mypage-header">
-      <button class="mypage-back" onclick="location.href='${pageContext.request.contextPath}/mypage'"><spring:message code="mypage.edit.back"/></button>
-      <h1><spring:message code="mypage.edit.title"/></h1>
-      <p><spring:message code="mypage.edit.subtitle"/></p>
+      <button class="mypage-back" onclick="location.href='${pageContext.request.contextPath}/mypage'">${msg_mypage_edit_back}</button>
+      <h1>${msg_mypage_edit_title}</h1>
+      <p>${msg_mypage_edit_subtitle}</p>
     </div>
 
     <c:if test="${not empty successMsg}">
@@ -56,45 +127,45 @@
       <div class="edit-card-head" onclick="toggleAcc('acc-profile',this)">
         <div class="edit-card-head-icon">👤</div>
         <div>
-          <div class="edit-card-head-title"><spring:message code="mypage.edit.profile.title"/></div>
-          <div class="edit-card-head-sub"><spring:message code="mypage.edit.profile.subtitle"/></div>
+          <div class="edit-card-head-title">${msg_mypage_edit_profile_title}</div>
+          <div class="edit-card-head-sub">${msg_mypage_edit_profile_subtitle}</div>
         </div>
         <span class="edit-card-chevron open">▼</span>
       </div>
       <div class="accordion-body open edit-card-body" id="acc-profile">
         <div class="form-group">
-          <label class="form-label" for="nickname"><spring:message code="mypage.nickname"/></label>
+          <label class="form-label" for="nickname">${msg_mypage_nickname}</label>
           <input class="form-input" type="text" id="nickname" value="${user.nickname}" maxlength="20">
           <div class="field-msg" id="nicknameMsg"></div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="nationality"><spring:message code="mypage.nationality"/></label>
+            <label class="form-label" for="nationality">${msg_mypage_nationality}</label>
             <select class="form-select" id="nationality">
-              <option value="KR" ${user.nationality=='KR'?'selected':''}>🇰🇷 <spring:message code="mypage.country.kr"/></option>
-              <option value="US" ${user.nationality=='US'?'selected':''}>🇺🇸 <spring:message code="mypage.country.us"/></option>
-              <option value="JP" ${user.nationality=='JP'?'selected':''}>🇯🇵 <spring:message code="mypage.country.jp"/></option>
-              <option value="CN" ${user.nationality=='CN'?'selected':''}>🇨🇳 <spring:message code="mypage.country.cn"/></option>
-              <option value="GB" ${user.nationality=='GB'?'selected':''}>🇬🇧 <spring:message code="mypage.country.gb"/></option>
-              <option value="FR" ${user.nationality=='FR'?'selected':''}>🇫🇷 <spring:message code="mypage.country.fr"/></option>
-              <option value="DE" ${user.nationality=='DE'?'selected':''}>🇩🇪 <spring:message code="mypage.country.de"/></option>
-              <option value="AU" ${user.nationality=='AU'?'selected':''}>🇦🇺 <spring:message code="mypage.country.au"/></option>
-              <option value="CA" ${user.nationality=='CA'?'selected':''}>🇨🇦 <spring:message code="mypage.country.ca"/></option>
-              <option value="OTHER" ${user.nationality=='OTHER'?'selected':''}>🌍 <spring:message code="mypage.country.other"/></option>
+              <option value="KR" ${user.nationality=='KR'?'selected':''}>🇰🇷 ${msg_mypage_country_kr}</option>
+              <option value="US" ${user.nationality=='US'?'selected':''}>🇺🇸 ${msg_mypage_country_us}</option>
+              <option value="JP" ${user.nationality=='JP'?'selected':''}>🇯🇵 ${msg_mypage_country_jp}</option>
+              <option value="CN" ${user.nationality=='CN'?'selected':''}>🇨🇳 ${msg_mypage_country_cn}</option>
+              <option value="GB" ${user.nationality=='GB'?'selected':''}>🇬🇧 ${msg_mypage_country_gb}</option>
+              <option value="FR" ${user.nationality=='FR'?'selected':''}>🇫🇷 ${msg_mypage_country_fr}</option>
+              <option value="DE" ${user.nationality=='DE'?'selected':''}>🇩🇪 ${msg_mypage_country_de}</option>
+              <option value="AU" ${user.nationality=='AU'?'selected':''}>🇦🇺 ${msg_mypage_country_au}</option>
+              <option value="CA" ${user.nationality=='CA'?'selected':''}>🇨🇦 ${msg_mypage_country_ca}</option>
+              <option value="OTHER" ${user.nationality=='OTHER'?'selected':''}>🌍 ${msg_mypage_country_other}</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label" for="preferredLang"><spring:message code="mypage.language"/></label>
+            <label class="form-label" for="preferredLang">${msg_mypage_language}</label>
             <select class="form-select" id="preferredLang">
-              <option value="ko" ${user.preferredLang=='ko'?'selected':''}>🇰🇷 <spring:message code="mypage.lang.ko"/></option>
-              <option value="en" ${user.preferredLang=='en'?'selected':''}>🇺🇸 <spring:message code="mypage.lang.en"/></option>
-              <option value="ja" ${user.preferredLang=='ja'?'selected':''}>🇯🇵 <spring:message code="mypage.lang.ja"/></option>
-              <option value="zh" ${user.preferredLang=='zh'?'selected':''}>🇨🇳 <spring:message code="mypage.lang.zh"/></option>
+              <option value="ko" ${user.preferredLang=='ko'?'selected':''}>🇰🇷 ${msg_mypage_lang_ko}</option>
+              <option value="en" ${user.preferredLang=='en'?'selected':''}>🇺🇸 ${msg_mypage_lang_en}</option>
+              <option value="ja" ${user.preferredLang=='ja'?'selected':''}>🇯🇵 ${msg_mypage_lang_ja}</option>
+              <option value="zh" ${user.preferredLang=='zh'?'selected':''}>🇨🇳 ${msg_mypage_lang_zh}</option>
             </select>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
-          <button class="btn-save" id="saveProfileBtn"><spring:message code="mypage.save"/></button>
+          <button class="btn-save" id="saveProfileBtn">${msg_mypage_save}</button>
           <span class="save-msg" id="saveProfileMsg"></span>
         </div>
       </div>
@@ -104,8 +175,8 @@
       <div class="edit-card-head" onclick="toggleAcc('acc-login',this)">
         <div class="edit-card-head-icon">🪪</div>
         <div>
-          <div class="edit-card-head-title"><spring:message code="mypage.edit.login.title"/></div>
-          <div class="edit-card-head-sub"><spring:message code="mypage.edit.login.subtitle"/></div>
+          <div class="edit-card-head-title">${msg_mypage_edit_login_title}</div>
+          <div class="edit-card-head-sub">${msg_mypage_edit_login_subtitle}</div>
         </div>
         <span class="edit-card-chevron">▼</span>
       </div>
@@ -114,23 +185,23 @@
         <input type="hidden" id="profileEmailRequestId" value="${profileEmailRequestId}">
 
         <div style="background:var(--gray-50);border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:8px;">
-          <span class="email-status-badge ${hasUsableIdLogin ? 'verified' : 'unverified'}"><spring:message code="mypage.edit.idLogin"/> <c:choose><c:when test="${hasUsableIdLogin}"><spring:message code="mypage.available"/></c:when><c:otherwise><spring:message code="mypage.none"/></c:otherwise></c:choose></span>
-          <span class="email-status-badge ${hasUsableEmailLogin ? 'verified' : 'unverified'}"><spring:message code="mypage.edit.emailLogin"/> <c:choose><c:when test="${hasUsableEmailLogin}"><spring:message code="mypage.available"/></c:when><c:otherwise><spring:message code="mypage.none"/></c:otherwise></c:choose></span>
-          <span class="email-status-badge ${socialCount gt 0 ? 'verified' : 'unverified'}"><spring:message code="mypage.edit.socialLogin"/> <c:choose><c:when test="${socialCount gt 0}"><spring:message code="mypage.social.linkedCount"/></c:when><c:otherwise><spring:message code="mypage.none"/></c:otherwise></c:choose></span>
+          <span class="email-status-badge ${hasUsableIdLogin ? 'verified' : 'unverified'}">${msg_mypage_edit_idLogin} <c:choose><c:when test="${hasUsableIdLogin}">${msg_mypage_available}</c:when><c:otherwise>${msg_mypage_none}</c:otherwise></c:choose></span>
+          <span class="email-status-badge ${hasUsableEmailLogin ? 'verified' : 'unverified'}">${msg_mypage_edit_emailLogin} <c:choose><c:when test="${hasUsableEmailLogin}">${msg_mypage_available}</c:when><c:otherwise>${msg_mypage_none}</c:otherwise></c:choose></span>
+          <span class="email-status-badge ${socialCount gt 0 ? 'verified' : 'unverified'}">${msg_mypage_edit_socialLogin} <c:choose><c:when test="${socialCount gt 0}">${msg_mypage_social_linkedCount}</c:when><c:otherwise>${msg_mypage_none}</c:otherwise></c:choose></span>
         </div>
 
         <div class="form-group">
-          <label class="form-label"><spring:message code="mypage.profile.userId"/></label>
+          <label class="form-label">${msg_mypage_profile_userId}</label>
           <c:choose>
             <c:when test="${not empty user.userId}">
               <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:12px 14px;font-weight:600;color:var(--gray-800);">
                 ${user.userId}
               </div>
-              <div class="field-msg success"><spring:message code="mypage.userId.once"/></div>
+              <div class="field-msg success">${msg_mypage_userId_once}</div>
             </c:when>
             <c:otherwise>
-              <input class="form-input" type="text" id="localUserId" maxlength="30" placeholder="${mypageUserIdPlaceholderMsg}">
-              <div class="field-msg" id="localUserIdMsg"><spring:message code="mypage.userId.help"/></div>
+              <input class="form-input" type="text" id="localUserId" maxlength="30" placeholder="${msg_mypage_userId_placeholder}">
+              <div class="field-msg" id="localUserIdMsg">${msg_mypage_userId_help}</div>
             </c:otherwise>
           </c:choose>
         </div>
@@ -138,42 +209,42 @@
         <div style="height:1px;background:var(--gray-100);margin:16px 0;"></div>
 
         <div style="background:var(--gray-50);border-radius:10px;padding:14px 16px;margin-bottom:16px;">
-          <div style="font-size:13px;font-weight:600;color:var(--gray-600);margin-bottom:4px;"><spring:message code="mypage.email.state"/></div>
+          <div style="font-size:13px;font-weight:600;color:var(--gray-600);margin-bottom:4px;">${msg_mypage_email_state}</div>
           <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
             <span style="font-size:15px;font-weight:600;color:var(--gray-800);" id="currentEmail">
               <c:choose>
                 <c:when test="${not empty user.userEmail}">${user.userEmail}</c:when>
-                <c:otherwise><spring:message code="mypage.email.none"/></c:otherwise>
+                <c:otherwise>${msg_mypage_email_none}</c:otherwise>
               </c:choose>
             </span>
             <span class="email-status-badge ${user.emailVerified ? 'verified' : 'unverified'}" id="emailStatusBadge">
               <c:choose>
-                <c:when test="${user.emailVerified}"><spring:message code="mypage.email.verified"/></c:when>
-                <c:otherwise><spring:message code="mypage.email.unverified"/></c:otherwise>
+                <c:when test="${user.emailVerified}">${msg_mypage_email_verified}</c:when>
+                <c:otherwise>${msg_mypage_email_unverified}</c:otherwise>
               </c:choose>
             </span>
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="newEmail"><spring:message code="mypage.email.change"/></label>
+          <label class="form-label" for="newEmail">${msg_mypage_email_change}</label>
           <div style="display:flex;gap:8px;">
-            <input class="form-input" type="email" id="newEmail" placeholder="${mypageEmailNewMsg}" style="flex:1;" value="${user.userEmail}">
-            <button class="btn-save" id="sendVerifyBtn" style="white-space:nowrap;padding:10px 16px;"><spring:message code="mypage.email.send"/></button>
+            <input class="form-input" type="email" id="newEmail" placeholder="${msg_mypage_email_new}" style="flex:1;" value="${user.userEmail}">
+            <button class="btn-save" id="sendVerifyBtn" style="white-space:nowrap;padding:10px 16px;">${msg_mypage_email_send}</button>
           </div>
           <div class="field-msg" id="emailMsg"></div>
-          <div class="field-msg"><spring:message code="mypage.email.help"/></div>
+          <div class="field-msg">${msg_mypage_email_help}</div>
         </div>
 
         <div class="toggle-wrap">
           <div>
-            <div class="toggle-label"><spring:message code="mypage.email.use"/></div>
+            <div class="toggle-label">${msg_mypage_email_use}</div>
             <div class="toggle-sub" id="emailLoginSub">
               <c:choose>
-                <c:when test="${user.emailLoginEnabled}"><spring:message code="mypage.email.use.current"/></c:when>
-                <c:when test="${user.emailVerified and user.passwordEnabled}"><spring:message code="mypage.email.use.enable"/></c:when>
-                <c:when test="${user.emailVerified and not user.passwordEnabled}"><spring:message code="mypage.email.use.needPassword"/></c:when>
-                <c:otherwise><spring:message code="mypage.email.use.check"/></c:otherwise>
+                <c:when test="${user.emailLoginEnabled}">${msg_mypage_email_use_current}</c:when>
+                <c:when test="${user.emailVerified and user.passwordEnabled}">${msg_mypage_email_use_enable}</c:when>
+                <c:when test="${user.emailVerified and not user.passwordEnabled}">${msg_mypage_email_use_needPassword}</c:when>
+                <c:otherwise>${msg_mypage_email_use_check}</c:otherwise>
               </c:choose>
             </div>
           </div>
@@ -185,33 +256,33 @@
         <div class="save-msg" id="emailLoginMsg" style="display:block;margin-top:8px;"></div>
 
         <div id="localPasswordBox" style="display:none;margin-top:16px;padding:16px;border:1px dashed var(--gray-200);border-radius:12px;background:var(--gray-50);">
-          <div style="font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:12px;"><spring:message code="mypage.localPassword"/></div>
+          <div style="font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:12px;">${msg_mypage_localPassword}</div>
           <div class="form-group">
-            <label class="form-label" for="loginNewPassword"><spring:message code="mypage.password"/></label>
+            <label class="form-label" for="loginNewPassword">${msg_mypage_password}</label>
             <div class="pw-wrap">
-              <input class="form-input" type="password" id="loginNewPassword" placeholder="${mypagePasswordPlaceholderMsg}" maxlength="64">
+              <input class="form-input" type="password" id="loginNewPassword" placeholder="${msg_mypage_password_placeholder}" maxlength="64">
               <button type="button" class="pw-toggle" id="pt3">👁</button>
             </div>
             <div class="field-msg" id="loginNewPwMsg"></div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="loginConfirmPassword"><spring:message code="mypage.password.confirm"/></label>
+            <label class="form-label" for="loginConfirmPassword">${msg_mypage_password_confirm}</label>
             <div class="pw-wrap">
-              <input class="form-input" type="password" id="loginConfirmPassword" placeholder="${mypagePasswordConfirmPlaceholderMsg}" maxlength="64">
+              <input class="form-input" type="password" id="loginConfirmPassword" placeholder="${msg_mypage_password_confirm_placeholder}" maxlength="64">
               <button type="button" class="pw-toggle" id="pt4">👁</button>
             </div>
             <div class="field-msg" id="loginCfmPwMsg"></div>
           </div>
-          <div class="field-msg success" style="margin-top:4px;"><spring:message code="mypage.password.firstTime"/></div>
+          <div class="field-msg success" style="margin-top:4px;">${msg_mypage_password_firstTime}</div>
         </div>
 
         <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
-          <button class="btn-save" id="saveLoginSettingsBtn"><spring:message code="mypage.loginSave"/></button>
+          <button class="btn-save" id="saveLoginSettingsBtn">${msg_mypage_loginSave}</button>
           <span class="save-msg" id="saveLoginSettingsMsg"></span>
         </div>
 
         <div style="margin-top:12px;padding:10px 14px;background:var(--gray-50);border-radius:8px;font-size:12px;color:var(--gray-500);">
-          <spring:message code="mypage.loginWarn"/>
+          ${msg_mypage_loginWarn}
         </div>
       </div>
     </div>
@@ -221,24 +292,24 @@
         <div class="edit-card-head" onclick="toggleAcc('acc-pw',this)">
           <div class="edit-card-head-icon">🔒</div>
           <div>
-            <div class="edit-card-head-title"><spring:message code="mypage.passwordChange"/></div>
-            <div class="edit-card-head-sub"><spring:message code="mypage.passwordChange.subtitle"/></div>
+            <div class="edit-card-head-title">${msg_mypage_passwordChange}</div>
+            <div class="edit-card-head-sub">${msg_mypage_passwordChange_subtitle}</div>
           </div>
           <span class="edit-card-chevron">▼</span>
         </div>
         <div class="accordion-body edit-card-body" id="acc-pw">
           <div class="form-group">
-            <label class="form-label" for="currentPassword"><spring:message code="mypage.password.current"/></label>
+            <label class="form-label" for="currentPassword">${msg_mypage_password_current}</label>
             <div class="pw-wrap">
-              <input class="form-input" type="password" id="currentPassword" placeholder="${mypagePasswordCurrentPlaceholderMsg}">
+              <input class="form-input" type="password" id="currentPassword" placeholder="${msg_mypage_password_current_placeholder}">
               <button type="button" class="pw-toggle" id="pt0">👁</button>
             </div>
             <div class="field-msg" id="curPwMsg"></div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="newPassword"><spring:message code="mypage.password.new"/></label>
+            <label class="form-label" for="newPassword">${msg_mypage_password_new}</label>
             <div class="pw-wrap">
-              <input class="form-input" type="password" id="newPassword" placeholder="${mypagePasswordPlaceholderMsg}" maxlength="64">
+              <input class="form-input" type="password" id="newPassword" placeholder="${msg_mypage_password_placeholder}" maxlength="64">
               <button type="button" class="pw-toggle" id="pt1">👁</button>
             </div>
             <div class="pw-strength">
@@ -249,15 +320,15 @@
             <div class="field-msg" id="newPwMsg"></div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="confirmPassword"><spring:message code="mypage.password.confirm"/></label>
+            <label class="form-label" for="confirmPassword">${msg_mypage_password_confirm}</label>
             <div class="pw-wrap">
-              <input class="form-input" type="password" id="confirmPassword" placeholder="${mypagePasswordConfirmPlaceholderMsg}" maxlength="64">
+              <input class="form-input" type="password" id="confirmPassword" placeholder="${msg_mypage_password_confirm_placeholder}" maxlength="64">
               <button type="button" class="pw-toggle" id="pt2">👁</button>
             </div>
             <div class="field-msg" id="cfmPwMsg"></div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
-            <button class="btn-save" id="savePwBtn"><spring:message code="mypage.passwordChange"/></button>
+            <button class="btn-save" id="savePwBtn">${msg_mypage_passwordChange}</button>
             <span class="save-msg" id="savePwMsg"></span>
           </div>
         </div>
@@ -268,8 +339,8 @@
       <div class="edit-card-head" onclick="toggleAcc('acc-social',this)">
         <div class="edit-card-head-icon">🔗</div>
         <div>
-          <div class="edit-card-head-title"><spring:message code="mypage.social.title"/></div>
-          <div class="edit-card-head-sub"><spring:message code="mypage.social.subtitle"/></div>
+          <div class="edit-card-head-title">${msg_mypage_social_title}</div>
+          <div class="edit-card-head-sub">${msg_mypage_social_subtitle}</div>
         </div>
         <span class="edit-card-chevron">▼</span>
       </div>
@@ -278,28 +349,28 @@
         <div class="social-link-item">
           <div class="social-link-icon KAKAO"><span class="kakao-mark-box">k</span></div>
           <div class="social-link-info">
-            <div class="social-link-name"><spring:message code="mypage.social.kakao"/></div>
+            <div class="social-link-name">${msg_mypage_social_kakao}</div>
             <div class="social-link-status ${socialLinkMap['KAKAO'] ? 'linked' : ''}">
-              <c:choose><c:when test="${socialLinkMap['KAKAO']}"><spring:message code="mypage.social.status.linked"/></c:when><c:otherwise><spring:message code="mypage.social.status.unlinked"/></c:otherwise></c:choose>
+              <c:choose><c:when test="${socialLinkMap['KAKAO']}">${msg_mypage_social_status_linked}</c:when><c:otherwise>${msg_mypage_social_status_unlinked}</c:otherwise></c:choose>
             </div>
           </div>
           <c:choose>
-            <c:when test="${socialLinkMap['KAKAO']}"><button class="btn-social-action unlink" onclick="unlinkSocial('KAKAO', this)"><spring:message code="mypage.social.unlink"/></button></c:when>
-            <c:otherwise><button class="btn-social-action link" onclick="location.href='${pageContext.request.contextPath}/auth/link/kakao'"><spring:message code="mypage.social.link"/></button></c:otherwise>
+            <c:when test="${socialLinkMap['KAKAO']}"><button class="btn-social-action unlink" onclick="unlinkSocial('KAKAO', this)">${msg_mypage_social_unlink}</button></c:when>
+            <c:otherwise><button class="btn-social-action link" onclick="location.href='${pageContext.request.contextPath}/auth/link/kakao'">${msg_mypage_social_link}</button></c:otherwise>
           </c:choose>
         </div>
 
         <div class="social-link-item">
           <div class="social-link-icon NAVER"><span class="naver-mark-box">N</span></div>
           <div class="social-link-info">
-            <div class="social-link-name"><spring:message code="mypage.social.naver"/></div>
+            <div class="social-link-name">${msg_mypage_social_naver}</div>
             <div class="social-link-status ${socialLinkMap['NAVER'] ? 'linked' : ''}">
-              <c:choose><c:when test="${socialLinkMap['NAVER']}"><spring:message code="mypage.social.status.linked"/></c:when><c:otherwise><spring:message code="mypage.social.status.unlinked"/></c:otherwise></c:choose>
+              <c:choose><c:when test="${socialLinkMap['NAVER']}">${msg_mypage_social_status_linked}</c:when><c:otherwise>${msg_mypage_social_status_unlinked}</c:otherwise></c:choose>
             </div>
           </div>
           <c:choose>
-            <c:when test="${socialLinkMap['NAVER']}"><button class="btn-social-action unlink" onclick="unlinkSocial('NAVER', this)"><spring:message code="mypage.social.unlink"/></button></c:when>
-            <c:otherwise><button class="btn-social-action link" onclick="location.href='${pageContext.request.contextPath}/auth/link/naver'"><spring:message code="mypage.social.link"/></button></c:otherwise>
+            <c:when test="${socialLinkMap['NAVER']}"><button class="btn-social-action unlink" onclick="unlinkSocial('NAVER', this)">${msg_mypage_social_unlink}</button></c:when>
+            <c:otherwise><button class="btn-social-action link" onclick="location.href='${pageContext.request.contextPath}/auth/link/naver'">${msg_mypage_social_link}</button></c:otherwise>
           </c:choose>
         </div>
 
@@ -313,26 +384,26 @@
             </svg>
           </span></div>
           <div class="social-link-info">
-            <div class="social-link-name"><spring:message code="mypage.social.google"/></div>
+            <div class="social-link-name">${msg_mypage_social_google}</div>
             <div class="social-link-status ${socialLinkMap['GOOGLE'] ? 'linked' : ''}">
-              <c:choose><c:when test="${socialLinkMap['GOOGLE']}"><spring:message code="mypage.social.status.linked"/></c:when><c:otherwise><spring:message code="mypage.social.status.unlinked"/></c:otherwise></c:choose>
+              <c:choose><c:when test="${socialLinkMap['GOOGLE']}">${msg_mypage_social_status_linked}</c:when><c:otherwise>${msg_mypage_social_status_unlinked}</c:otherwise></c:choose>
             </div>
           </div>
           <c:choose>
-            <c:when test="${socialLinkMap['GOOGLE']}"><button class="btn-social-action unlink" onclick="unlinkSocial('GOOGLE', this)"><spring:message code="mypage.social.unlink"/></button></c:when>
-            <c:otherwise><button class="btn-social-action link" onclick="location.href='${pageContext.request.contextPath}/auth/link/google'"><spring:message code="mypage.social.link"/></button></c:otherwise>
+            <c:when test="${socialLinkMap['GOOGLE']}"><button class="btn-social-action unlink" onclick="unlinkSocial('GOOGLE', this)">${msg_mypage_social_unlink}</button></c:when>
+            <c:otherwise><button class="btn-social-action link" onclick="location.href='${pageContext.request.contextPath}/auth/link/google'">${msg_mypage_social_link}</button></c:otherwise>
           </c:choose>
         </div>
 
         <div style="margin-top:12px;padding:10px 14px;background:var(--gray-50);border-radius:8px;font-size:12px;color:var(--gray-500);">
-          <spring:message code="mypage.social.warn"/>
+          ${msg_mypage_social_warn}
         </div>
       </div>
     </div>
 
     <div style="text-align:center;margin-top:8px;">
       <form action="${pageContext.request.contextPath}/mypage/edit/done" method="post">
-        <button type="submit" class="btn-save" style="background:var(--gray-100);color:var(--gray-700);box-shadow:none;padding:12px 32px;font-size:15px;">✅ <spring:message code="mypage.edit.done"/></button>
+        <button type="submit" class="btn-save" style="background:var(--gray-100);color:var(--gray-700);box-shadow:none;padding:12px 32px;font-size:15px;">✅ ${msg_mypage_edit_done}</button>
       </form>
     </div>
 
@@ -346,31 +417,31 @@ const hasFixedUserId = ${not empty user.userId ? 'true' : 'false'};
 const originalEmail = '${user.userEmail != null ? user.userEmail : ''}';
 const originalEmailVerified = ${user.emailVerified ? 'true' : 'false'};
 const editMessages = {
-  emailNone: '${mypageEmailNoneMsg}',
-  emailPendingSuffix: '${mypageEmailPendingSuffixMsg}',
-  emailEnterAndVerify: '${mypageEmailEnterAndVerifyMsg}',
-  emailUnverified: '${mypageEmailUnverifiedMsg}',
-  emailVerified: '${mypageEmailVerifiedMsg}',
-  emailVerifiedPending: '${mypageEmailVerifiedPendingMsg}',
-  emailUseNeedPassword: '${mypageEmailUseNeedPasswordMsg}',
-  emailUseEnable: '${mypageEmailUseEnableMsg}',
-  emailUseCheck: '${mypageEmailUseCheckMsg}',
-  emailValidRequired: '${mypageEmailValidRequiredMsg}',
-  emailResend: '${mypageEmailResendMsg}',
-  emailUseDisableWithPassword: '${mypageEmailUseDisableWithPasswordMsg}',
-  emailUseDisable: '${mypageEmailUseDisableMsg}',
-  emailStatusChecked: '${mypageEmailStatusCheckedMsg}',
-  emailRemoveWithDisable: '${mypageEmailRemoveWithDisableMsg}',
-  nicknameDuplicate: '${mypageEditNicknameDuplicateMsg}',
-  passwordMatch: '${mypageEditPasswordMatchMsg}',
-  passwordMismatch: '${mypageEditPasswordMismatchMsg}',
-  passwordMinSet: '${mypagePasswordMinSetMsg}',
-  passwordMinLength: '${mypagePasswordMinLengthMsg}',
-  socialUnlinkConfirm: '${mypageSocialUnlinkConfirmMsg}',
-  socialUnlinkFail: '${mypageSocialUnlinkFailMsg}',
-  providerKakao: '${mypageSocialKakaoMsg}',
-  providerNaver: '${mypageSocialNaverMsg}',
-  providerGoogle: '${mypageSocialGoogleMsg}'
+  emailNone: '${msg_mypage_email_none_js}',
+  emailPendingSuffix: '${msg_mypage_email_pendingSuffix_js}',
+  emailEnterAndVerify: '${msg_mypage_email_enterAndVerify_js}',
+  emailUnverified: '${msg_mypage_email_unverified_js}',
+  emailVerified: '${msg_mypage_email_verified_js}',
+  emailVerifiedPending: '${msg_mypage_email_verifiedPending_js}',
+  emailUseNeedPassword: '${msg_mypage_email_use_needPassword_js}',
+  emailUseEnable: '${msg_mypage_email_use_enable_js}',
+  emailUseCheck: '${msg_mypage_email_use_check_js}',
+  emailValidRequired: '${msg_mypage_email_validRequired_js}',
+  emailResend: '${msg_mypage_email_resend_js}',
+  emailUseDisableWithPassword: '${msg_mypage_email_use_disableWithPassword_js}',
+  emailUseDisable: '${msg_mypage_email_use_disable_js}',
+  emailStatusChecked: '${msg_mypage_email_statusChecked_js}',
+  emailRemoveWithDisable: '${msg_mypage_email_removeWithDisable_js}',
+  nicknameDuplicate: '${msg_mypage_edit_nicknameDuplicate_js}',
+  passwordMatch: '${msg_mypage_edit_passwordMatch_js}',
+  passwordMismatch: '${msg_mypage_edit_passwordMismatch_js}',
+  passwordMinSet: '${msg_mypage_password_minSet_js}',
+  passwordMinLength: '${msg_mypage_password_minLength_js}',
+  socialUnlinkConfirm: '${msg_mypage_social_unlinkConfirm_js}',
+  socialUnlinkFail: '${msg_mypage_social_unlinkFail_js}',
+  providerKakao: '${msg_mypage_social_kakao_js}',
+  providerNaver: '${msg_mypage_social_naver_js}',
+  providerGoogle: '${msg_mypage_social_google_js}'
 };
 
 function formatMessage(template) {

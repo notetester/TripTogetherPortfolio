@@ -2,6 +2,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_auth_verifyEmailResult_success_title" code="auth.verifyEmailResult.success.title"/>
+<spring:message var="msg_auth_verifyEmailResult_success_descHtml" code="auth.verifyEmailResult.success.descHtml"/>
+<spring:message var="msg_auth_verifyEmailResult_success_action" code="auth.verifyEmailResult.success.action"/>
+<spring:message var="msg_auth_verifyEmailResult_fail_title" code="auth.verifyEmailResult.fail.title"/>
+<spring:message var="msg_auth_verifyEmailResult_fail_action" code="auth.verifyEmailResult.fail.action"/>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
 <html lang="${pageContext.response.locale.language}">
@@ -17,20 +24,20 @@
     <c:choose>
       <c:when test="${success}">
         <div style="font-size:56px;margin:16px 0 20px;">✅</div>
-        <h1 class="auth-title"><spring:message code="auth.verifyEmailResult.success.title"/></h1>
-        <p class="auth-sub"><spring:message code="auth.verifyEmailResult.success.descHtml"/></p>
+        <h1 class="auth-title">${msg_auth_verifyEmailResult_success_title}</h1>
+        <p class="auth-sub">${msg_auth_verifyEmailResult_success_descHtml}</p>
         <button class="btn-submit"
                 onclick="location.href='${pageContext.request.contextPath}/mypage/edit'">
-          <spring:message code="auth.verifyEmailResult.success.action"/>
+          ${msg_auth_verifyEmailResult_success_action}
         </button>
       </c:when>
       <c:otherwise>
         <div style="font-size:56px;margin:16px 0 20px;">❌</div>
-        <h1 class="auth-title"><spring:message code="auth.verifyEmailResult.fail.title"/></h1>
+        <h1 class="auth-title">${msg_auth_verifyEmailResult_fail_title}</h1>
         <p class="auth-sub">${error}</p>
         <button class="btn-submit"
                 onclick="location.href='${pageContext.request.contextPath}/mypage/edit'">
-          <spring:message code="auth.verifyEmailResult.fail.action"/>
+          ${msg_auth_verifyEmailResult_fail_action}
         </button>
       </c:otherwise>
     </c:choose>

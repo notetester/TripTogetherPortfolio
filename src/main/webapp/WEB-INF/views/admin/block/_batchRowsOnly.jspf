@@ -1,3 +1,22 @@
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_blocks_defaultPriority" code="admin.blocks.defaultPriority"/>
+<spring:message var="msg_admin_context_ruleAction_block" code="admin.context.ruleAction.block"/>
+<spring:message var="msg_admin_context_ruleAction_allow" code="admin.context.ruleAction.allow"/>
+<spring:message var="msg_admin_blocks_ruleOn" code="admin.blocks.ruleOn"/>
+<spring:message var="msg_admin_blocks_control_batch" code="admin.blocks.control.batch"/>
+<spring:message var="msg_admin_blocks_control_override" code="admin.blocks.control.override"/>
+<spring:message var="msg_admin_blocks_effectiveState" code="admin.blocks.effectiveState"/>
+<spring:message var="msg_admin_blocks_effective_expired" code="admin.blocks.effective.expired"/>
+<spring:message var="msg_admin_common_settings" code="admin.common.settings"/>
+<spring:message var="msg_admin_common_detail" code="admin.common.detail"/>
+<spring:message var="msg_admin_blocks_batchDeactivate" code="admin.blocks.batchDeactivate"/>
+<spring:message var="msg_admin_blocks_batchReactivate" code="admin.blocks.batchReactivate"/>
+<spring:message var="msg_admin_common_noData" code="admin.common.noData"/>
 <c:forEach var="b" items="${batches}">
     <fmt:formatDate var="batchCreatedAtText" value="${b.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
     <fmt:formatDate var="batchUpdatedAtText" value="${b.updatedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
@@ -47,20 +66,20 @@
         <td data-sort-value="${b.defaultRulePriority}">
             <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
                 <span>${b.defaultRulePriority}</span>
-                <span class="adm-cell-link-note"><spring:message code="admin.blocks.defaultPriority"/></span>
+                <span class="adm-cell-link-note">${msg_admin_blocks_defaultPriority}</span>
             </button>
         </td>
         <td data-sort-value="${b.active ? '1' : '0'}">
             <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
                 <span><span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.activeLabel}</span></span>
-                <span style="font-size:12px;color:#94a3b8;"><spring:message code="admin.context.ruleAction.block"/> ${b.blockRuleCount} / <spring:message code="admin.context.ruleAction.allow"/> ${b.allowRuleCount}</span>
+                <span style="font-size:12px;color:#94a3b8;">${msg_admin_context_ruleAction_block} ${b.blockRuleCount} / ${msg_admin_context_ruleAction_allow} ${b.allowRuleCount}</span>
             </button>
         </td>
         <td data-sort-value="${b.totalRuleCount}">
             <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
-                <span><spring:message code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/> / <spring:message code="admin.blocks.ruleOn"/> ${b.activeRuleCount}</span>
-                <span class="adm-cell-link-note"><spring:message code="admin.blocks.control.batch"/> ${b.batchManagedRuleCount} / <spring:message code="admin.blocks.control.override"/> ${b.manualOverrideRuleCount}</span>
-                <span class="adm-cell-link-note"><spring:message code="admin.blocks.effectiveState"/> ${b.effectiveRuleCount} / <spring:message code="admin.blocks.effective.expired"/> ${b.expiredRuleCount}</span>
+                <span><spring:message var="msg_admin_common_totalCountFormat_args_b_totalRuleCount" code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/>${msg_admin_common_totalCountFormat_args_b_totalRuleCount} / ${msg_admin_blocks_ruleOn} ${b.activeRuleCount}</span>
+                <span class="adm-cell-link-note">${msg_admin_blocks_control_batch} ${b.batchManagedRuleCount} / ${msg_admin_blocks_control_override} ${b.manualOverrideRuleCount}</span>
+                <span class="adm-cell-link-note">${msg_admin_blocks_effectiveState} ${b.effectiveRuleCount} / ${msg_admin_blocks_effective_expired} ${b.expiredRuleCount}</span>
             </button>
         </td>
         <td style="max-width:260px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty b.description ? '' : b.description)}">
@@ -88,7 +107,7 @@
                         data-total-rules="${b.totalRuleCount}"
                         data-active-rules="${b.activeRuleCount}"
                         data-effective-rules="${b.effectiveRuleCount}"
-                        data-expired-rules="${b.expiredRuleCount}"><spring:message code="admin.common.settings"/></button>
+                        data-expired-rules="${b.expiredRuleCount}">${msg_admin_common_settings}</button>
                 <div class="action-menu-wrap">
                     <button type="button"
                             class="adm-row-btn detail adm-row-btn-more"
@@ -96,7 +115,7 @@
                     <div class="action-menu">
                         <button type="button"
                                 class="action-menu-item js-open-block-detail"
-                                data-template-id="detail-batch-${b.ipBlockBatchIdx}"><spring:message code="admin.common.detail"/></button>
+                                data-template-id="detail-batch-${b.ipBlockBatchIdx}">${msg_admin_common_detail}</button>
                         <c:if test="${hasBlockPolicyAdmin}">
                             <div class="action-menu-sep"></div>
                             <button type="button"
@@ -109,8 +128,8 @@
                                     data-default-disable-strategy="${b.defaultDisableStrategy}"
                                     data-default-enable-strategy="${b.defaultEnableStrategy}">
                                 <c:choose>
-                                    <c:when test="${b.active}"><spring:message code="admin.blocks.batchDeactivate"/></c:when>
-                                    <c:otherwise><spring:message code="admin.blocks.batchReactivate"/></c:otherwise>
+                                    <c:when test="${b.active}">${msg_admin_blocks_batchDeactivate}</c:when>
+                                    <c:otherwise>${msg_admin_blocks_batchReactivate}</c:otherwise>
                                 </c:choose>
                             </button>
                         </c:if>
@@ -121,5 +140,5 @@
     </tr>
 </c:forEach>
 <c:if test="${empty batches}">
-    <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+    <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;">${msg_admin_common_noData}</td></tr>
 </c:if>

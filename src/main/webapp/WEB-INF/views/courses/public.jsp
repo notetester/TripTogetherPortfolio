@@ -3,34 +3,52 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_courses_public_pageTitle" code="courses.public.pageTitle"/>
+<spring:message var="msg_courses_public_pageDesc" code="courses.public.pageDesc"/>
+<spring:message var="msg_courses_public_top_my" code="courses.public.top.my"/>
+<spring:message var="msg_courses_common_directCreate" code="courses.common.directCreate"/>
+<spring:message var="msg_courses_common_destinationMissing" code="courses.common.destinationMissing"/>
+<spring:message var="msg_courses_common_visibility_public" code="courses.common.visibility.public"/>
+<spring:message var="msg_courses_common_source_ai" code="courses.common.source.ai"/>
+<spring:message var="msg_courses_common_source_manual" code="courses.common.source.manual"/>
+<spring:message var="msg_courses_common_detail" code="courses.common.detail"/>
+<spring:message var="msg_courses_public_action_manageMine" code="courses.public.action.manageMine"/>
+<spring:message var="msg_courses_public_writer_default" code="courses.public.writer.default"/>
+<spring:message var="msg_courses_public_empty_title" code="courses.public.empty.title"/>
+<spring:message var="msg_courses_public_empty_desc" code="courses.public.empty.desc"/>
+<spring:message var="msg_courses_public_empty_action" code="courses.public.empty.action"/>
+<spring:message var="msg_courses_public_filter_keyword_placeholder" code="courses.public.filter.keyword.placeholder"/>
+<spring:message var="msg_courses_public_filter_source_all" code="courses.public.filter.source.all"/>
+<spring:message var="msg_courses_public_filter_mine_all" code="courses.public.filter.mine.all"/>
+<spring:message var="msg_courses_public_filter_mine_only" code="courses.public.filter.mine.only"/>
+<spring:message var="msg_courses_public_filter_search" code="courses.public.filter.search"/>
+<spring:message var="msg_courses_public_filter_reset" code="courses.public.filter.reset"/>
+<spring:message var="msg_courses_public_filter_noResult" code="courses.public.filter.noResult"/>
+<spring:message var="msg_courses_common_field_travelPeriod" code="courses.common.field.travelPeriod"/>
+<spring:message var="msg_courses_common_year_all" code="courses.common.year.all"/>
+<spring:message var="msg_courses_common_year_suffix" code="courses.common.year.suffix"/>
+<spring:message var="msg_course_public_title" code="course.public.title"/>
+<spring:message var="msg_course_public_desc" code="course.public.desc"/>
+<spring:message var="msg_course_action_myPlans" code="course.action.myPlans"/>
+<spring:message var="msg_course_action_manualCreate" code="course.action.manualCreate"/>
+<spring:message var="msg_course_common_destinationEmpty" code="course.common.destinationEmpty"/>
+<spring:message var="msg_course_common_publicTravelCourse" code="course.common.publicTravelCourse"/>
+<spring:message var="msg_course_badge_public" code="course.badge.public"/>
+<spring:message var="msg_course_badge_ai" code="course.badge.ai"/>
+<spring:message var="msg_course_badge_manual" code="course.badge.manual"/>
+<spring:message var="msg_course_badge_mine" code="course.badge.mine"/>
+<spring:message var="msg_course_common_travelPeriod" code="course.common.travelPeriod"/>
+<spring:message var="msg_course_action_detail" code="course.action.detail"/>
+<spring:message var="msg_course_action_manageMyPlan" code="course.action.manageMyPlan"/>
+<spring:message var="msg_course_public_empty_title" code="course.public.empty.title"/>
+<spring:message var="msg_course_public_empty_desc" code="course.public.empty.desc"/>
+<spring:message var="msg_course_public_home" code="course.public.home"/>
 <fmt:setLocale value="${pageContext.response.locale}"/>
 
 <%@ include file="../common/header.jsp" %>
 
-<spring:message code="courses.public.pageTitle" var="coursesPublicPageTitle"/>
-<spring:message code="courses.public.pageDesc" var="coursesPublicPageDesc"/>
-<spring:message code="courses.public.top.my" var="coursesPublicTopMy"/>
-<spring:message code="courses.common.directCreate" var="coursesDirectCreate"/>
-<spring:message code="courses.common.destinationMissing" var="coursesDestinationMissing"/>
-<spring:message code="courses.common.visibility.public" var="coursesVisibilityPublic"/>
-<spring:message code="courses.common.source.ai" var="coursesSourceAi"/>
-<spring:message code="courses.common.source.manual" var="coursesSourceManual"/>
-<spring:message code="courses.common.detail" var="coursesDetailLabel"/>
-<spring:message code="courses.public.action.manageMine" var="coursesManageMine"/>
-<spring:message code="courses.public.writer.default" var="coursesPublicWriterDefault"/>
-<spring:message code="courses.public.empty.title" var="coursesPublicEmptyTitle"/>
-<spring:message code="courses.public.empty.desc" var="coursesPublicEmptyDesc"/>
-<spring:message code="courses.public.empty.action" var="coursesPublicEmptyAction"/>
-<spring:message code="courses.public.filter.keyword.placeholder" var="coursesPublicFilterKeywordPlaceholder"/>
-<spring:message code="courses.public.filter.source.all" var="coursesPublicFilterSourceAll"/>
-<spring:message code="courses.public.filter.mine.all" var="coursesPublicFilterMineAll"/>
-<spring:message code="courses.public.filter.mine.only" var="coursesPublicFilterMineOnly"/>
-<spring:message code="courses.public.filter.search" var="coursesPublicFilterSearch"/>
-<spring:message code="courses.public.filter.reset" var="coursesPublicFilterReset"/>
-<spring:message code="courses.public.filter.noResult" var="coursesPublicFilterNoResult"/>
-<spring:message code="courses.common.field.travelPeriod" var="coursesTravelPeriodLabel"/>
-<spring:message code="courses.common.year.all" var="coursesYearAll"/>
-<spring:message code="courses.common.year.suffix" var="coursesYearSuffix"/>
 
 <style>
     * {
@@ -443,13 +461,13 @@
 <div class="page-wrap">
     <div class="page-header">
         <div>
-            <h1 class="page-title"><spring:message code="course.public.title"/></h1>
-            <p class="page-desc"><spring:message code="course.public.desc"/></p>
+            <h1 class="page-title">${msg_course_public_title}</h1>
+            <p class="page-desc">${msg_course_public_desc}</p>
         </div>
 
         <div class="top-btn-group">
-            <a href="${pageContext.request.contextPath}/courses/my" class="top-btn secondary"><spring:message code="course.action.myPlans"/></a>
-            <a href="${pageContext.request.contextPath}/courses/write" class="top-btn primary"><spring:message code="course.action.manualCreate"/></a>
+            <a href="${pageContext.request.contextPath}/courses/my" class="top-btn secondary">${msg_course_action_myPlans}</a>
+            <a href="${pageContext.request.contextPath}/courses/write" class="top-btn primary">${msg_course_action_manualCreate}</a>
         </div>
     </div>
 
@@ -463,25 +481,25 @@
 
     <div class="public-filter">
         <input type="text" id="searchKeyword" class="filter-input"
-               placeholder="${coursesPublicFilterKeywordPlaceholder}">
+               placeholder="${msg_courses_public_filter_keyword_placeholder}">
 
         <select id="sourceFilter" class="filter-select">
-            <option value="all">${coursesPublicFilterSourceAll}</option>
+            <option value="all">${msg_courses_public_filter_source_all}</option>
             <option value="AI">AI</option>
-            <option value="MANUAL">${coursesSourceManual}</option>
+            <option value="MANUAL">${msg_courses_common_source_manual}</option>
         </select>
 
         <select id="mineFilter" class="filter-select">
-            <option value="all">${coursesPublicFilterMineAll}</option>
-            <option value="mine">${coursesPublicFilterMineOnly}</option>
+            <option value="all">${msg_courses_public_filter_mine_all}</option>
+            <option value="mine">${msg_courses_public_filter_mine_only}</option>
         </select>
 
         <select id="yearFilter" class="filter-select">
-            <option value="all">${coursesYearAll}</option>
+            <option value="all">${msg_courses_common_year_all}</option>
         </select>
 
-        <button type="button" class="filter-btn" onclick="applyPublicFilter()">${coursesPublicFilterSearch}</button>
-        <button type="button" class="filter-btn reset" onclick="resetPublicFilter()">${coursesPublicFilterReset}</button>
+        <button type="button" class="filter-btn" onclick="applyPublicFilter()">${msg_courses_public_filter_search}</button>
+        <button type="button" class="filter-btn reset" onclick="resetPublicFilter()">${msg_courses_public_filter_reset}</button>
     </div>
 
     <c:choose>
@@ -501,7 +519,7 @@
                                 <h2 class="plan-name">${plan.title}</h2>
                                 <c:choose>
                                     <c:when test="${empty plan.destination}">
-                                        <p class="plan-destination"><spring:message code="course.common.destinationEmpty"/></p>
+                                        <p class="plan-destination">${msg_course_common_destinationEmpty}</p>
                                     </c:when>
                                     <c:otherwise>
                                         <p class="plan-destination">${plan.destination}</p>
@@ -510,36 +528,36 @@
                                 <p class="plan-writer">
                                     <c:choose>
                                         <c:when test="${not empty plan.nickname}">
-                                            <spring:message code="course.common.travelCourseOf" arguments="${plan.nickname}"/>
+                                            <spring:message var="msg_course_common_travelCourseOf_args_plan_nickname" code="course.common.travelCourseOf" arguments="${plan.nickname}"/>${msg_course_common_travelCourseOf_args_plan_nickname}
                                         </c:when>
                                         <c:otherwise>
-                                            <spring:message code="course.common.publicTravelCourse"/>
+                                            ${msg_course_common_publicTravelCourse}
                                         </c:otherwise>
                                     </c:choose>
                                 </p>
                             </div>
 
                             <div class="badge-group">
-                                <span class="badge public"><spring:message code="course.badge.public"/></span>
+                                <span class="badge public">${msg_course_badge_public}</span>
 
                                 <c:choose>
                                     <c:when test="${plan.plan_source eq 'AI'}">
-                                        <span class="badge ai"><spring:message code="course.badge.ai"/></span>
+                                        <span class="badge ai">${msg_course_badge_ai}</span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="badge manual"><spring:message code="course.badge.manual"/></span>
+                                        <span class="badge manual">${msg_course_badge_manual}</span>
                                     </c:otherwise>
                                 </c:choose>
 
                                 <c:if test="${loginUserIdx eq plan.user_idx}">
-                                    <span class="badge mine"><spring:message code="course.badge.mine"/></span>
+                                    <span class="badge mine">${msg_course_badge_mine}</span>
                                 </c:if>
                             </div>
                         </div>
 
                         <div class="plan-info">
                             <div class="info-row">
-                                <span class="info-label"><spring:message code="course.common.travelPeriod"/></span>
+                                <span class="info-label">${msg_course_common_travelPeriod}</span>
                                 <span class="info-value">
                                     <fmt:formatDate value="${plan.start_date}" pattern="yyyy-MM-dd"/>
                                     ~
@@ -550,12 +568,12 @@
 
                         <div class="card-btn-group">
                             <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}" class="card-btn my">
-                                <spring:message code="course.action.detail"/>
+                                ${msg_course_action_detail}
                             </a>
 
                             <c:if test="${loginUserIdx eq plan.user_idx}">
                                 <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}" class="card-btn detail">
-                                    <spring:message code="course.action.manageMyPlan"/>
+                                    ${msg_course_action_manageMyPlan}
                                 </a>
                             </c:if>
                         </div>
@@ -563,15 +581,15 @@
                 </c:forEach>
             </div>
             <div id="noResultBox" class="no-result-box">
-                ${coursesPublicFilterNoResult}
+                ${msg_courses_public_filter_noResult}
             </div>
         </c:when>
 
         <c:otherwise>
             <div class="empty-box">
-                <h2 class="empty-title"><spring:message code="course.public.empty.title"/></h2>
-                <p class="empty-desc"><spring:message code="course.public.empty.desc"/></p>
-                <a href="${pageContext.request.contextPath}/courses" class="empty-btn"><spring:message code="course.public.home"/></a>
+                <h2 class="empty-title">${msg_course_public_empty_title}</h2>
+                <p class="empty-desc">${msg_course_public_empty_desc}</p>
+                <a href="${pageContext.request.contextPath}/courses" class="empty-btn">${msg_course_public_home}</a>
             </div>
         </c:otherwise>
     </c:choose>
@@ -583,7 +601,7 @@
         const cards = document.querySelectorAll('.plan-card');
         const yearSet = new Set();
 
-        yearFilter.innerHTML = '<option value="all">${coursesYearAll}</option>';
+        yearFilter.innerHTML = '<option value="all">${msg_courses_common_year_all}</option>';
 
         cards.forEach(card => {
             const startDate = card.dataset.startDate || '';
@@ -608,7 +626,7 @@
             .forEach(year => {
                 const option = document.createElement('option');
                 option.value = String(year);
-                option.textContent = year + '${coursesYearSuffix}';
+                option.textContent = year + '${msg_courses_common_year_suffix}';
                 yearFilter.appendChild(option);
             });
     }

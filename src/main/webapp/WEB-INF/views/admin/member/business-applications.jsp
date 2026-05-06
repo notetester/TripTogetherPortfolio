@@ -4,25 +4,59 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_common_search" code="admin.common.search"/>
+<spring:message var="msg_admin_blocks_mode_label" code="admin.blocks.mode.label"/>
+<spring:message var="msg_admin_blocks_mode_tipClient" code="admin.blocks.mode.tipClient"/>
+<spring:message var="msg_admin_blocks_mode_tipServer" code="admin.blocks.mode.tipServer"/>
+<spring:message var="msg_admin_business_rejectReasonPlaceholder" code="admin.business.rejectReasonPlaceholder"/>
+<spring:message var="msg_admin_blocks_js_dashSortReset_js" code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_exportSelected_js" code="admin.common.exportSelected" javaScriptEscape="true"/>
+<spring:message var="msg_admin_business_rejectReasonPlaceholder_js" code="admin.business.rejectReasonPlaceholder" javaScriptEscape="true"/>
+<spring:message var="msg_admin_business_noResults_js" code="admin.business.noResults" javaScriptEscape="true"/>
+<spring:message var="msg_admin_business_pageTitle" code="admin.business.pageTitle"/>
+<spring:message var="msg_admin_business_pageSubtitle" code="admin.business.pageSubtitle"/>
+<spring:message var="msg_admin_common_all" code="admin.common.all"/>
+<spring:message var="msg_admin_business_column_applicant" code="admin.business.column.applicant"/>
+<spring:message var="msg_admin_business_column_companyInfo" code="admin.business.column.companyInfo"/>
+<spring:message var="msg_admin_business_managerSearch" code="admin.business.managerSearch"/>
+<spring:message var="msg_admin_business_businessNumberSearch" code="admin.business.businessNumberSearch"/>
+<spring:message var="msg_admin_business_filter_status" code="admin.business.filter.status"/>
+<spring:message var="msg_admin_business_status_pending" code="admin.business.status.pending"/>
+<spring:message var="msg_admin_business_status_approved" code="admin.business.status.approved"/>
+<spring:message var="msg_admin_business_status_rejected" code="admin.business.status.rejected"/>
+<spring:message var="msg_admin_business_column_requestedRole" code="admin.business.column.requestedRole"/>
+<spring:message var="msg_admin_business_role_business" code="admin.business.role.business"/>
+<spring:message var="msg_admin_business_role_partner" code="admin.business.role.partner"/>
+<spring:message var="msg_admin_business_column_appliedAt" code="admin.business.column.appliedAt"/>
+<spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
+<spring:message var="msg_admin_common_export" code="admin.common.export"/>
+<spring:message var="msg_admin_common_exportAll" code="admin.common.exportAll"/>
+<spring:message var="msg_admin_common_exportFiltered" code="admin.common.exportFiltered"/>
+<spring:message var="msg_admin_common_exportSelected" code="admin.common.exportSelected"/>
+<spring:message var="msg_admin_blocks_mode_client" code="admin.blocks.mode.client"/>
+<spring:message var="msg_admin_blocks_mode_server" code="admin.blocks.mode.server"/>
+<spring:message var="msg_admin_common_pageSize" code="admin.common.pageSize"/>
+<spring:message var="msg_admin_common_selectedCount" code="admin.common.selectedCount"/>
+<spring:message var="msg_admin_common_clearSelection" code="admin.common.clearSelection"/>
+<spring:message var="msg_admin_common_status" code="admin.common.status"/>
+<spring:message var="msg_admin_business_column_review" code="admin.business.column.review"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_common_close" code="admin.common.close"/>
 <c:set var="activeMenu" value="businessApplications"/>
-<spring:message var="adminCommonSearchMsg" code="admin.common.search"/>
-<spring:message var="adminBlocksModeLabelMsg" code="admin.blocks.mode.label"/>
-<spring:message var="adminBlocksModeTipClientMsg" code="admin.blocks.mode.tipClient"/>
-<spring:message var="adminBlocksModeTipServerMsg" code="admin.blocks.mode.tipServer"/>
-<spring:message var="adminBusinessRejectReasonPlaceholderMsg" code="admin.business.rejectReasonPlaceholder"/>
-<spring:message var="adminBlocksJsDashSortResetMsg" code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>
-<spring:message var="adminCommonExportSelectedMsg" code="admin.common.exportSelected" javaScriptEscape="true"/>
-<spring:message var="adminBusinessRejectReasonPlaceholderMsg2" code="admin.business.rejectReasonPlaceholder" javaScriptEscape="true"/>
-<spring:message var="adminBusinessNoResultsMsg" code="admin.business.noResults" javaScriptEscape="true"/>
-<spring:message code="admin.business.pageTitle" var="adminBusinessPageTitle"/>
-<c:set var="pageTitle"  value="${adminBusinessPageTitle}"/>
+
+
+<c:set var="pageTitle"  value="${msg_admin_business_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1><spring:message code="admin.business.pageTitle"/></h1>
-            <p><spring:message code="admin.business.pageSubtitle"/></p>
+            <h1>${msg_admin_business_pageTitle}</h1>
+            <p>${msg_admin_business_pageSubtitle}</p>
         </div>
     </div>
 
@@ -38,43 +72,43 @@
             <form id="businessSearchForm" method="get" action="${pageContext.request.contextPath}/admin/business-applications">
                 <div class="adm-filter-bar">
                     <div style="flex:1;min-width:240px;">
-                        <div class="adm-filter-label">${adminCommonSearchMsg}</div>
+                        <div class="adm-filter-label">${msg_admin_common_search}</div>
                         <div style="display:flex;gap:6px;">
                             <select class="adm-select" name="searchType" style="width:132px;">
-                                <option value="all" ${search.searchType eq 'all' ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
-                                <option value="applicant" ${search.searchType eq 'applicant' ? 'selected' : ''}><spring:message code="admin.business.column.applicant"/></option>
-                                <option value="company" ${search.searchType eq 'company' ? 'selected' : ''}><spring:message code="admin.business.column.companyInfo"/></option>
-                                <option value="manager" ${search.searchType eq 'manager' ? 'selected' : ''}><spring:message code="admin.business.managerSearch"/></option>
-                                <option value="businessNumber" ${search.searchType eq 'businessNumber' ? 'selected' : ''}><spring:message code="admin.business.businessNumberSearch"/></option>
+                                <option value="all" ${search.searchType eq 'all' ? 'selected' : ''}>${msg_admin_common_all}</option>
+                                <option value="applicant" ${search.searchType eq 'applicant' ? 'selected' : ''}>${msg_admin_business_column_applicant}</option>
+                                <option value="company" ${search.searchType eq 'company' ? 'selected' : ''}>${msg_admin_business_column_companyInfo}</option>
+                                <option value="manager" ${search.searchType eq 'manager' ? 'selected' : ''}>${msg_admin_business_managerSearch}</option>
+                                <option value="businessNumber" ${search.searchType eq 'businessNumber' ? 'selected' : ''}>${msg_admin_business_businessNumberSearch}</option>
                             </select>
                             <div class="adm-search-box" style="flex:1;">
                                 <span class="adm-search-ico">🔍</span>
-                                <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}" placeholder="${adminCommonSearchMsg}">
+                                <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}" placeholder="${msg_admin_common_search}">
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.business.filter.status"/></div>
+                        <div class="adm-filter-label">${msg_admin_business_filter_status}</div>
                         <select class="adm-select" name="status">
-                            <option value="ALL" ${search.status eq 'ALL' ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
-                            <option value="PENDING" ${search.status eq 'PENDING' ? 'selected' : ''}><spring:message code="admin.business.status.pending"/></option>
-                            <option value="APPROVED" ${search.status eq 'APPROVED' ? 'selected' : ''}><spring:message code="admin.business.status.approved"/></option>
-                            <option value="REJECTED" ${search.status eq 'REJECTED' ? 'selected' : ''}><spring:message code="admin.business.status.rejected"/></option>
+                            <option value="ALL" ${search.status eq 'ALL' ? 'selected' : ''}>${msg_admin_common_all}</option>
+                            <option value="PENDING" ${search.status eq 'PENDING' ? 'selected' : ''}>${msg_admin_business_status_pending}</option>
+                            <option value="APPROVED" ${search.status eq 'APPROVED' ? 'selected' : ''}>${msg_admin_business_status_approved}</option>
+                            <option value="REJECTED" ${search.status eq 'REJECTED' ? 'selected' : ''}>${msg_admin_business_status_rejected}</option>
                         </select>
                     </div>
 
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.business.column.requestedRole"/></div>
+                        <div class="adm-filter-label">${msg_admin_business_column_requestedRole}</div>
                         <select class="adm-select" name="requestedRole">
-                            <option value="ALL" ${search.requestedRole eq 'ALL' ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
-                            <option value="BUSINESS" ${search.requestedRole eq 'BUSINESS' ? 'selected' : ''}><spring:message code="admin.business.role.business"/></option>
-                            <option value="PARTNER" ${search.requestedRole eq 'PARTNER' ? 'selected' : ''}><spring:message code="admin.business.role.partner"/></option>
+                            <option value="ALL" ${search.requestedRole eq 'ALL' ? 'selected' : ''}>${msg_admin_common_all}</option>
+                            <option value="BUSINESS" ${search.requestedRole eq 'BUSINESS' ? 'selected' : ''}>${msg_admin_business_role_business}</option>
+                            <option value="PARTNER" ${search.requestedRole eq 'PARTNER' ? 'selected' : ''}>${msg_admin_business_role_partner}</option>
                         </select>
                     </div>
 
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.business.column.appliedAt"/></div>
+                        <div class="adm-filter-label">${msg_admin_business_column_appliedAt}</div>
                         <div style="display:flex;gap:4px;align-items:center;">
                             <input class="adm-input" type="date" name="dateFrom" value="${search.dateFrom}" style="width:130px;">
                             <span style="color:#475569;font-size:12px;">~</span>
@@ -83,8 +117,8 @@
                     </div>
 
                     <div style="display:flex;gap:6px;align-items:flex-end;">
-                        <button type="submit" class="adm-btn adm-btn-primary">🔍 <spring:message code="admin.common.searchButton"/></button>
-                        <button type="button" class="adm-btn adm-btn-ghost" onclick="resetBusinessFilters()"><spring:message code="admin.common.reset"/></button>
+                        <button type="submit" class="adm-btn adm-btn-primary">🔍 ${msg_admin_common_searchButton}</button>
+                        <button type="button" class="adm-btn adm-btn-ghost" onclick="resetBusinessFilters()">${msg_admin_common_reset}</button>
                     </div>
 
                     <input type="hidden" name="page" value="${paging.currentPage}">
@@ -99,7 +133,7 @@
     <div class="adm-card js-business-section-card adm-managed-section-card" data-section="businessApplications" data-enhanced="true" style="overflow:visible;">
         <div class="adm-card-head">
             <div class="adm-card-title">
-                🏢 <spring:message code="admin.business.pageTitle"/>
+                🏢 ${msg_admin_business_pageTitle}
                 <span id="businessTotalLabel" style="font-size:12px;font-weight:400;color:#475569;">총 ${total}건</span>
             </div>
             <div style="position:relative;display:flex;align-items:center;gap:8px;">
@@ -107,11 +141,11 @@
                     <option value="csv">CSV</option>
                     <option value="excel">Excel</option>
                 </select>
-                <button type="button" class="adm-btn adm-btn-ghost js-business-export-toggle"><spring:message code="admin.common.export"/> ▾</button>
+                <button type="button" class="adm-btn adm-btn-ghost js-business-export-toggle">${msg_admin_common_export} ▾</button>
                 <div id="businessExportDropdown" class="adm-export-dropdown">
-                    <button type="button" class="adm-export-item" onclick="exportBusinessData('all')"><spring:message code="admin.common.exportAll"/></button>
-                    <button type="button" class="adm-export-item" onclick="exportBusinessData('search')"><spring:message code="admin.common.exportFiltered"/></button>
-                    <button type="button" class="adm-export-item" id="businessExportSelectedBtn" disabled onclick="exportBusinessData('selected')"><spring:message code="admin.common.exportSelected"/> (0)</button>
+                    <button type="button" class="adm-export-item" onclick="exportBusinessData('all')">${msg_admin_common_exportAll}</button>
+                    <button type="button" class="adm-export-item" onclick="exportBusinessData('search')">${msg_admin_common_exportFiltered}</button>
+                    <button type="button" class="adm-export-item" id="businessExportSelectedBtn" disabled onclick="exportBusinessData('selected')">${msg_admin_common_exportSelected} (0)</button>
                 </div>
             </div>
         </div>
@@ -119,25 +153,25 @@
         <div class="adm-local-toolbar adm-managed-local-toolbar">
             <div class="adm-local-toolbar-group adm-managed-toolbar-actions">
                 <button type="button" class="adm-dash-sort-reset js-business-sort-reset" style="display:none;" onclick="resetBusinessSort()"></button>
-                <select class="adm-select" id="businessModeSelect" title="${adminBlocksModeLabelMsg}">
-                    <option value="client" title="${adminBlocksModeTipClientMsg}"><spring:message code="admin.blocks.mode.client"/></option>
-                    <option value="server" title="${adminBlocksModeTipServerMsg}"><spring:message code="admin.blocks.mode.server"/></option>
+                <select class="adm-select" id="businessModeSelect" title="${msg_admin_blocks_mode_label}">
+                    <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
+                    <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
                 </select>
                 <select class="adm-select" id="businessSizeSelect" style="width:90px;" onchange="changeBusinessSize(this.value)">
-                    <option value="10"  ${search.size==10  ? 'selected' : ''}><spring:message code="admin.common.pageSize"/></option>
-                    <option value="20"  ${search.size==20  ? 'selected' : ''}><spring:message code="admin.common.pageSize"/></option>
-                    <option value="50"  ${search.size==50  ? 'selected' : ''}><spring:message code="admin.common.pageSize"/></option>
-                    <option value="100" ${search.size==100 ? 'selected' : ''}><spring:message code="admin.common.pageSize"/></option>
+                    <option value="10"  ${search.size==10  ? 'selected' : ''}>${msg_admin_common_pageSize}</option>
+                    <option value="20"  ${search.size==20  ? 'selected' : ''}>${msg_admin_common_pageSize}</option>
+                    <option value="50"  ${search.size==50  ? 'selected' : ''}>${msg_admin_common_pageSize}</option>
+                    <option value="100" ${search.size==100 ? 'selected' : ''}>${msg_admin_common_pageSize}</option>
                 </select>
             </div>
         </div>
 
         <div id="businessBulkBar" style="display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 16px;margin:0 0 12px;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><strong id="businessBulkCount">0</strong><spring:message code="admin.common.selectedCount"/></span>
-            <button type="button" class="adm-btn adm-btn-primary" style="font-size:12px;" onclick="bulkApproveBusiness()"><spring:message code="admin.business.status.approved"/></button>
-            <input class="adm-input" id="businessBulkRejectReason" maxlength="500" style="max-width:260px;" placeholder="${adminBusinessRejectReasonPlaceholderMsg}">
-            <button type="button" class="adm-btn adm-btn-danger" style="font-size:12px;" onclick="bulkRejectBusiness()"><spring:message code="admin.business.status.rejected"/></button>
-            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;margin-left:auto;" onclick="clearBusinessSelection()"><spring:message code="admin.common.clearSelection"/></button>
+            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><strong id="businessBulkCount">0</strong>${msg_admin_common_selectedCount}</span>
+            <button type="button" class="adm-btn adm-btn-primary" style="font-size:12px;" onclick="bulkApproveBusiness()">${msg_admin_business_status_approved}</button>
+            <input class="adm-input" id="businessBulkRejectReason" maxlength="500" style="max-width:260px;" placeholder="${msg_admin_business_rejectReasonPlaceholder}">
+            <button type="button" class="adm-btn adm-btn-danger" style="font-size:12px;" onclick="bulkRejectBusiness()">${msg_admin_business_status_rejected}</button>
+            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;margin-left:auto;" onclick="clearBusinessSelection()">${msg_admin_common_clearSelection}</button>
         </div>
 
         <div class="adm-table-wrap" style="overflow:visible;">
@@ -145,12 +179,12 @@
                 <thead>
                 <tr>
                     <th style="width:40px;text-align:center;"><input type="checkbox" id="businessCheckAll" class="adm-check" onchange="toggleAllBusiness(this)"></th>
-                    <th class="js-business-sort" data-sort="applicant" onclick="businessSortBy('applicant')" style="cursor:pointer;user-select:none;"><spring:message code="admin.business.column.applicant"/></th>
-                    <th class="js-business-sort" data-sort="requestedRole" onclick="businessSortBy('requestedRole')" style="cursor:pointer;user-select:none;"><spring:message code="admin.business.column.requestedRole"/></th>
-                    <th class="js-business-sort" data-sort="company" onclick="businessSortBy('company')" style="cursor:pointer;user-select:none;"><spring:message code="admin.business.column.companyInfo"/></th>
-                    <th class="js-business-sort" data-sort="status" onclick="businessSortBy('status')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/></th>
-                    <th class="js-business-sort" data-sort="createdAt" onclick="businessSortBy('createdAt')" style="cursor:pointer;user-select:none;"><spring:message code="admin.business.column.appliedAt"/></th>
-                    <th><spring:message code="admin.business.column.review"/></th>
+                    <th class="js-business-sort" data-sort="applicant" onclick="businessSortBy('applicant')" style="cursor:pointer;user-select:none;">${msg_admin_business_column_applicant}</th>
+                    <th class="js-business-sort" data-sort="requestedRole" onclick="businessSortBy('requestedRole')" style="cursor:pointer;user-select:none;">${msg_admin_business_column_requestedRole}</th>
+                    <th class="js-business-sort" data-sort="company" onclick="businessSortBy('company')" style="cursor:pointer;user-select:none;">${msg_admin_business_column_companyInfo}</th>
+                    <th class="js-business-sort" data-sort="status" onclick="businessSortBy('status')" style="cursor:pointer;user-select:none;">${msg_admin_common_status}</th>
+                    <th class="js-business-sort" data-sort="createdAt" onclick="businessSortBy('createdAt')" style="cursor:pointer;user-select:none;">${msg_admin_business_column_appliedAt}</th>
+                    <th>${msg_admin_business_column_review}</th>
                 </tr>
                 </thead>
                 <tbody id="businessRowsBody">
@@ -162,9 +196,9 @@
         <div class="adm-local-pagination" data-section="businessApplications" id="businessPaging">
             <div class="adm-local-page-info js-business-page-info" data-section="businessApplications">총 ${total}건 / 현재 ${fn:length(applicationList)}건</div>
             <div class="adm-local-page-actions">
-                <button type="button" class="adm-btn adm-btn-ghost js-business-prev" onclick="goBusinessPage(businessSectionState.page - 1)"><spring:message code="admin.common.prev"/></button>
+                <button type="button" class="adm-btn adm-btn-ghost js-business-prev" onclick="goBusinessPage(businessSectionState.page - 1)">${msg_admin_common_prev}</button>
                 <span class="js-business-page-state" data-section="businessApplications">${paging.currentPage} / ${paging.totalPage}</span>
-                <button type="button" class="adm-btn adm-btn-ghost js-business-next" onclick="goBusinessPage(businessSectionState.page + 1)"><spring:message code="admin.common.next"/></button>
+                <button type="button" class="adm-btn adm-btn-ghost js-business-next" onclick="goBusinessPage(businessSectionState.page + 1)">${msg_admin_common_next}</button>
             </div>
         </div>
     </div>
@@ -181,7 +215,7 @@
         <div class="adm-modal-foot" style="gap:8px;justify-content:flex-end;">
             <button class="adm-btn adm-btn-ghost" type="button" id="businessApplicationDetailMemberBtn">회원 설정</button>
             <button class="adm-btn adm-btn-primary" type="button" id="businessApplicationDetailReviewBtn">검토 위치로 이동</button>
-            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeBusinessApplicationDetailModal()"><spring:message code="admin.common.close"/></button>
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeBusinessApplicationDetailModal()">${msg_admin_common_close}</button>
         </div>
     </div>
 </div>
@@ -190,11 +224,11 @@
 const BUSINESS_CTX = '${pageContext.request.contextPath}';
 const BUSINESS_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
 const BUSINESS_MSG = {
-    sortReset: '${adminBlocksJsDashSortResetMsg}',
-    exportSelected: '${adminCommonExportSelectedMsg}',
+    sortReset: '${msg_admin_blocks_js_dashSortReset_js}',
+    exportSelected: '${msg_admin_common_exportSelected_js}',
     selectedMissing: '선택된 항목이 없습니다.',
-    rejectReasonMissing: '${adminBusinessRejectReasonPlaceholderMsg2}',
-    noResults: '${adminBusinessNoResultsMsg}'
+    rejectReasonMissing: '${msg_admin_business_rejectReasonPlaceholder_js}',
+    noResults: '${msg_admin_business_noResults_js}'
 };
 const businessSectionState = {
     mode: 'SERVER',

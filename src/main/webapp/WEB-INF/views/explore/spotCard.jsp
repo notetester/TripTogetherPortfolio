@@ -1,5 +1,9 @@
-<spring:message var="exploreCardFavoriteMsg" code="explore.card.favorite"/>
-<spring:message var="exploreCardLikeMsg" code="explore.card.like"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_explore_card_favorite" code="explore.card.favorite"/>
+<spring:message var="msg_explore_card_like" code="explore.card.like"/>
+
+
 ﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -18,14 +22,14 @@
     <div class="spot-card__actions">
       <button class="action-btn fav-btn ${spot.favorited ? 'active' : ''}"
               type="button"
-              title="${exploreCardFavoriteMsg}"
-              aria-label="${exploreCardFavoriteMsg}">
+              title="${msg_explore_card_favorite}"
+              aria-label="${msg_explore_card_favorite}">
         <c:out value="${spot.favorited ? '⭐' : '☆'}"/>
       </button>
       <button class="action-btn like-btn ${spot.liked ? 'active' : ''}"
               type="button"
-              title="${exploreCardLikeMsg}"
-              aria-label="${exploreCardLikeMsg}">
+              title="${msg_explore_card_like}"
+              aria-label="${msg_explore_card_like}">
         <c:out value="${spot.liked ? '❤️' : '🤍'}"/>
       </button>
     </div>

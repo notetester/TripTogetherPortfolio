@@ -3,6 +3,84 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_community_region_africa" code="community.region.africa"/>
+<spring:message var="msg_community_region_asia" code="community.region.asia"/>
+<spring:message var="msg_community_region_etc" code="community.region.etc"/>
+<spring:message var="msg_community_region_europe" code="community.region.europe"/>
+<spring:message var="msg_community_region_northAmerica" code="community.region.northAmerica"/>
+<spring:message var="msg_community_region_oceania" code="community.region.oceania"/>
+<spring:message var="msg_community_region_southAmerica" code="community.region.southAmerica"/>
+<spring:message var="msg_community_type_photo" code="community.type.photo"/>
+<spring:message var="msg_community_type_question" code="community.type.question"/>
+<spring:message var="msg_community_type_review" code="community.type.review"/>
+<spring:message var="msg_community_type_tip" code="community.type.tip"/>
+<spring:message var="msg_community_write_content_placeholder" code="community.write.content.placeholder"/>
+<spring:message var="msg_community_write_tag_hint" code="community.write.tag.hint"/>
+<spring:message var="msg_community_write_tag_placeholder" code="community.write.tag.placeholder"/>
+<spring:message var="msg_community_write_title_placeholder" code="community.write.title.placeholder"/>
+<spring:message var="msg_community_write_back" code="community.write.back"/>
+<spring:message var="msg_community_write_title_edit" code="community.write.title.edit"/>
+<spring:message var="msg_community_write_title_reset" code="community.write.title.reset"/>
+<spring:message var="msg_community_write_title_label" code="community.write.title.label"/>
+<spring:message var="msg_community_write_tag_label" code="community.write.tag.label"/>
+<spring:message var="msg_community_write_tag_autoRegion" code="community.write.tag.autoRegion"/>
+<spring:message var="msg_community_write_content_label" code="community.write.content.label"/>
+<spring:message var="msg_community_write_cancel" code="community.write.cancel"/>
+<spring:message var="msg_community_write_submit_edit" code="community.write.submit.edit"/>
+<spring:message var="msg_community_write_submit_create" code="community.write.submit.create"/>
+<spring:message var="msg_community_write_type_label" code="community.write.type.label"/>
+<spring:message var="msg_community_write_region_label" code="community.write.region.label"/>
+<spring:message var="msg_community_write_guide_label" code="community.write.guide.label"/>
+<spring:message var="msg_community_write_guide_default_1" code="community.write.guide.default.1"/>
+<spring:message var="msg_community_write_guide_default_2" code="community.write.guide.default.2"/>
+<spring:message var="msg_community_write_guide_default_3" code="community.write.guide.default.3"/>
+<spring:message var="msg_community_write_guide_default_4" code="community.write.guide.default.4"/>
+<spring:message var="msg_community_region_africa_js" code="community.region.africa" javaScriptEscape="true"/>
+<spring:message var="msg_community_region_asia_js" code="community.region.asia" javaScriptEscape="true"/>
+<spring:message var="msg_community_region_etc_js" code="community.region.etc" javaScriptEscape="true"/>
+<spring:message var="msg_community_region_europe_js" code="community.region.europe" javaScriptEscape="true"/>
+<spring:message var="msg_community_region_northAmerica_js" code="community.region.northAmerica" javaScriptEscape="true"/>
+<spring:message var="msg_community_region_oceania_js" code="community.region.oceania" javaScriptEscape="true"/>
+<spring:message var="msg_community_region_southAmerica_js" code="community.region.southAmerica" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_content_photoOnly_js" code="community.write.content.photoOnly" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_content_placeholder_js" code="community.write.content.placeholder" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_error_contentRequired_js" code="community.write.error.contentRequired" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_error_generic_js" code="community.write.error.generic" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_error_photoRequired_js" code="community.write.error.photoRequired" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_error_regionTagLocked_js" code="community.write.error.regionTagLocked" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_error_titleRequired_js" code="community.write.error.titleRequired" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_guide_photo_1_js" code="community.write.guide.photo.1" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_guide_photo_2_js" code="community.write.guide.photo.2" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_guide_photo_3_js" code="community.write.guide.photo.3" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_guide_photo_requirement_js" code="community.write.guide.photo.requirement" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_photoCount_label_js" code="community.write.photoCount.label" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_guide_question_1_js" code="community.write.guide.question.1" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_guide_question_2_js" code="community.write.guide.question.2" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_guide_review_1_js" code="community.write.guide.review.1" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_guide_review_2_js" code="community.write.guide.review.2" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_guide_review_3_js" code="community.write.guide.review.3" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_guide_tip_1_js" code="community.write.guide.tip.1" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_guide_tip_2_js" code="community.write.guide.tip.2" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_guide_tip_3_js" code="community.write.guide.tip.3" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_resetConfirm_js" code="community.write.resetConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_tipCategory_food_js" code="community.write.tipCategory.food" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_tipCategory_label_js" code="community.write.tipCategory.label" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_tipCategory_money_js" code="community.write.tipCategory.money" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_tipCategory_other_js" code="community.write.tipCategory.other" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_tipCategory_safety_js" code="community.write.tipCategory.safety" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_tipCategory_stay_js" code="community.write.tipCategory.stay" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_tipCategory_transport_js" code="community.write.tipCategory.transport" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_title_photo_create_js" code="community.write.title.photo.create" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_title_photo_edit_js" code="community.write.title.photo.edit" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_title_question_create_js" code="community.write.title.question.create" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_title_question_edit_js" code="community.write.title.question.edit" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_title_review_create_js" code="community.write.title.review.create" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_title_review_edit_js" code="community.write.title.review.edit" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_title_tip_create_js" code="community.write.title.tip.create" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_title_tip_edit_js" code="community.write.title.tip.edit" javaScriptEscape="true"/>
+<spring:message var="msg_community_write_cancelConfirm_js" code="community.write.cancelConfirm" javaScriptEscape="true"/>
 <%--
   커뮤니티 글쓰기/수정 페이지
   글쓰기: GET /community/write      → model에 post 없음
@@ -13,21 +91,6 @@
 <c:set var="pageCSS" value="community/community_write.css"/>
 <%@ include file="../common/header.jsp" %>
 
-<spring:message code="community.region.africa" var="communityRegionAfricaLabel"/>
-<spring:message code="community.region.asia" var="communityRegionAsiaLabel"/>
-<spring:message code="community.region.etc" var="communityRegionEtcLabel"/>
-<spring:message code="community.region.europe" var="communityRegionEuropeLabel"/>
-<spring:message code="community.region.northAmerica" var="communityRegionNorthAmericaLabel"/>
-<spring:message code="community.region.oceania" var="communityRegionOceaniaLabel"/>
-<spring:message code="community.region.southAmerica" var="communityRegionSouthAmericaLabel"/>
-<spring:message code="community.type.photo" var="communityTypePhotoLabel"/>
-<spring:message code="community.type.question" var="communityTypeQuestionLabel"/>
-<spring:message code="community.type.review" var="communityTypeReviewLabel"/>
-<spring:message code="community.type.tip" var="communityTypeTipLabel"/>
-<spring:message code="community.write.content.placeholder" var="communityWriteContentPlaceholder"/>
-<spring:message code="community.write.tag.hint" var="communityWriteTagHintLabel"/>
-<spring:message code="community.write.tag.placeholder" var="communityWriteTagPlaceholder"/>
-<spring:message code="community.write.title.placeholder" var="communityWriteTitlePlaceholder"/>
 
 <%-- Summernote CDN (WYSIWYG 에디터) --%>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.9.1/dist/summernote-lite.min.css">
@@ -75,11 +138,11 @@
 <div class="write-wrap">
 
   <div class="write-top-bar">
-    <button class="back-btn" onclick="cancelWrite()">&#8592; <spring:message code="community.write.back"/></button>
+    <button class="back-btn" onclick="cancelWrite()">&#8592; ${msg_community_write_back}</button>
     <h2 class="write-page-title" id="writePageTitle">
       <c:choose>
-        <c:when test="${isEdit}"><spring:message code="community.write.title.edit"/></c:when>
-        <c:otherwise><span class="write-title-reset" onclick="resetWrite()"><spring:message code="community.write.title.reset"/></span></c:otherwise>
+        <c:when test="${isEdit}">${msg_community_write_title_edit}</c:when>
+        <c:otherwise><span class="write-title-reset" onclick="resetWrite()">${msg_community_write_title_reset}</span></c:otherwise>
       </c:choose>
     </h2>
   </div>
@@ -98,10 +161,10 @@
         <%-- 제목 --%>
         <div class="write-section">
           <label class="section-label" for="writeTitle">
-            <spring:message code="community.write.title.label"/> <span class="required">*</span>
+            ${msg_community_write_title_label} <span class="required">*</span>
           </label>
           <input type="text" id="writeTitle" name="title" class="write-input"
-                 placeholder="${communityWriteTitlePlaceholder}" maxlength="100"
+                 placeholder="${msg_community_write_title_placeholder}" maxlength="100"
                  value="${isEdit ? post.title : ''}"
                  oninput="document.getElementById('titleCount').textContent=this.value.length">
           <div class="input-counter">
@@ -112,17 +175,17 @@
         <%-- 해시태그 --%>
         <div class="write-section">
           <label class="section-label">
-            <spring:message code="community.write.tag.label"/>
-            <span class="section-label-sub">(<spring:message code="community.write.tag.autoRegion"/>)</span>
+            ${msg_community_write_tag_label}
+            <span class="section-label-sub">(${msg_community_write_tag_autoRegion})</span>
           </label>
           <div class="tag-input-wrap" id="tagInputWrap">
             <div class="tag-list" id="tagList"></div>
             <input type="text" id="tagInput" class="tag-input"
-                   placeholder="${communityWriteTagPlaceholder}" maxlength="20"
+                   placeholder="${msg_community_write_tag_placeholder}" maxlength="20"
                    onkeydown="addTag(event)">
           </div>
           <input type="hidden" id="tagsHidden" name="tags">
-          <p class="input-hint">${communityWriteTagHintLabel}</p>
+          <p class="input-hint">${msg_community_write_tag_hint}</p>
         </div>
 
           <%-- 유형별 추가 입력 (JS로 동적 렌더링) --%>
@@ -131,23 +194,23 @@
         <%-- 본문 --%>
         <div class="write-section">
           <label class="section-label" for="writeContent">
-            <spring:message code="community.write.content.label"/> <span class="required">*</span>
+            ${msg_community_write_content_label} <span class="required">*</span>
           </label>
           <div id="photoCountBadge" class="photo-count-badge is-short" hidden>
             <span class="photo-count-icon">&#128247;</span>
             <span id="photoCountText"></span>
           </div>
           <textarea id="writeContent" name="content" class="write-textarea"
-                    placeholder="${communityWriteContentPlaceholder}"><c:if test="${isEdit}">${fn:escapeXml(post.content)}</c:if></textarea>
+                    placeholder="${msg_community_write_content_placeholder}"><c:if test="${isEdit}">${fn:escapeXml(post.content)}</c:if></textarea>
           <div class="input-counter">
             <span id="contentCount">0</span>/3000
           </div>
           <div class="write-bottom-actions">
-            <button type="button" class="btn-cancel" onclick="cancelWrite()"><spring:message code="community.write.cancel"/></button>
+            <button type="button" class="btn-cancel" onclick="cancelWrite()">${msg_community_write_cancel}</button>
             <button type="button" class="btn-submit" onclick="submitWrite()">
               <c:choose>
-                <c:when test="${isEdit}"><spring:message code="community.write.submit.edit"/></c:when>
-                <c:otherwise><spring:message code="community.write.submit.create"/></c:otherwise>
+                <c:when test="${isEdit}">${msg_community_write_submit_edit}</c:when>
+                <c:otherwise>${msg_community_write_submit_create}</c:otherwise>
               </c:choose>
             </button>
           </div>
@@ -160,64 +223,64 @@
 
         <%-- 게시글 유형 --%>
         <div class="aside-card">
-          <div class="aside-card-title"><spring:message code="community.write.type.label"/> <span class="required">*</span></div>
+          <div class="aside-card-title">${msg_community_write_type_label} <span class="required">*</span></div>
           <input type="hidden" id="postType" name="postType"
                  value="${isEdit ? post.postType : 'review'}">
           <div class="type-select-grid">
             <button type="button" class="type-select-btn ${(!isEdit || post.postType eq 'review') ? 'active' : ''}"
                     data-type="review" onclick="selectType('review', this)">
               <span class="type-btn-icon">&#128172;</span>
-              <span class="type-btn-label">${communityTypeReviewLabel}</span>
+              <span class="type-btn-label">${msg_community_type_review}</span>
             </button>
             <button type="button" class="type-select-btn ${(isEdit && post.postType eq 'photo') ? 'active' : ''}"
                     data-type="photo" onclick="selectType('photo', this)">
               <span class="type-btn-icon">&#128247;</span>
-              <span class="type-btn-label">${communityTypePhotoLabel}</span>
+              <span class="type-btn-label">${msg_community_type_photo}</span>
             </button>
             <button type="button" class="type-select-btn ${(isEdit && post.postType eq 'tip') ? 'active' : ''}"
                     data-type="tip" onclick="selectType('tip', this)">
               <span class="type-btn-icon">&#128161;</span>
-              <span class="type-btn-label">${communityTypeTipLabel}</span>
+              <span class="type-btn-label">${msg_community_type_tip}</span>
             </button>
             <button type="button" class="type-select-btn ${(isEdit && post.postType eq 'question') ? 'active' : ''}"
                     data-type="question" onclick="selectType('question', this)">
               <span class="type-btn-icon">&#10067;</span>
-              <span class="type-btn-label">${communityTypeQuestionLabel}</span>
+              <span class="type-btn-label">${msg_community_type_question}</span>
             </button>
           </div>
         </div>
 
         <%-- 지역 선택 --%>
         <div class="aside-card">
-          <div class="aside-card-title"><spring:message code="community.write.region.label"/> <span class="required">*</span></div>
+          <div class="aside-card-title">${msg_community_write_region_label} <span class="required">*</span></div>
           <input type="hidden" id="regionInput" name="region"
                  value="${isEdit ? post.region : 'asia'}">
           <div class="region-select-list">
             <button type="button" class="region-select-btn ${(!isEdit || post.region eq 'asia') ? 'active' : ''}"
-                    data-region="asia" onclick="selectRegion('asia', this)">&#127759; ${communityRegionAsiaLabel}</button>
+                    data-region="asia" onclick="selectRegion('asia', this)">&#127759; ${msg_community_region_asia}</button>
             <button type="button" class="region-select-btn ${(isEdit && post.region eq 'europe') ? 'active' : ''}"
-                    data-region="europe" onclick="selectRegion('europe', this)">&#127957; ${communityRegionEuropeLabel}</button>
+                    data-region="europe" onclick="selectRegion('europe', this)">&#127957; ${msg_community_region_europe}</button>
             <button type="button" class="region-select-btn ${(isEdit && post.region eq 'africa') ? 'active' : ''}"
-                    data-region="africa" onclick="selectRegion('africa', this)">&#127758; ${communityRegionAfricaLabel}</button>
+                    data-region="africa" onclick="selectRegion('africa', this)">&#127758; ${msg_community_region_africa}</button>
             <button type="button" class="region-select-btn ${(isEdit && post.region eq 'north_america') ? 'active' : ''}"
-                    data-region="north_america" onclick="selectRegion('north_america', this)">&#127482;&#127480; ${communityRegionNorthAmericaLabel}</button>
+                    data-region="north_america" onclick="selectRegion('north_america', this)">&#127482;&#127480; ${msg_community_region_northAmerica}</button>
             <button type="button" class="region-select-btn ${(isEdit && post.region eq 'south_america') ? 'active' : ''}"
-                    data-region="south_america" onclick="selectRegion('south_america', this)">&#127475;&#127480; ${communityRegionSouthAmericaLabel}</button>
+                    data-region="south_america" onclick="selectRegion('south_america', this)">&#127475;&#127480; ${msg_community_region_southAmerica}</button>
             <button type="button" class="region-select-btn ${(isEdit && post.region eq 'oceania') ? 'active' : ''}"
-                    data-region="oceania" onclick="selectRegion('oceania', this)">&#127944; ${communityRegionOceaniaLabel}</button>
+                    data-region="oceania" onclick="selectRegion('oceania', this)">&#127944; ${msg_community_region_oceania}</button>
             <button type="button" class="region-select-btn ${(isEdit && post.region eq 'etc') ? 'active' : ''}"
-                    data-region="etc" onclick="selectRegion('etc', this)">&#127760; ${communityRegionEtcLabel}</button>
+                    data-region="etc" onclick="selectRegion('etc', this)">&#127760; ${msg_community_region_etc}</button>
           </div>
         </div>
 
         <%-- 작성 가이드 --%>
         <div class="aside-card guide-card">
-          <div class="aside-card-title">&#128221; <spring:message code="community.write.guide.label"/></div>
+          <div class="aside-card-title">&#128221; ${msg_community_write_guide_label}</div>
           <ul class="guide-list" id="guideList">
-            <li><spring:message code="community.write.guide.default.1"/></li>
-            <li><spring:message code="community.write.guide.default.2"/></li>
-            <li><spring:message code="community.write.guide.default.3"/></li>
-            <li><spring:message code="community.write.guide.default.4"/></li>
+            <li>${msg_community_write_guide_default_1}</li>
+            <li>${msg_community_write_guide_default_2}</li>
+            <li>${msg_community_write_guide_default_3}</li>
+            <li>${msg_community_write_guide_default_4}</li>
           </ul>
         </div>
 
@@ -234,50 +297,6 @@ var tags     = [];
 /* 사진 유형 검증용: content 본문에 img 최소 장수 */
 var PHOTO_MIN_IMAGES = 3;
 
-<spring:message code="community.region.africa" javaScriptEscape="true" var="communityRegionAfricaJs"/>
-<spring:message code="community.region.asia" javaScriptEscape="true" var="communityRegionAsiaJs"/>
-<spring:message code="community.region.etc" javaScriptEscape="true" var="communityRegionEtcJs"/>
-<spring:message code="community.region.europe" javaScriptEscape="true" var="communityRegionEuropeJs"/>
-<spring:message code="community.region.northAmerica" javaScriptEscape="true" var="communityRegionNorthAmericaJs"/>
-<spring:message code="community.region.oceania" javaScriptEscape="true" var="communityRegionOceaniaJs"/>
-<spring:message code="community.region.southAmerica" javaScriptEscape="true" var="communityRegionSouthAmericaJs"/>
-<spring:message code="community.write.content.photoOnly" javaScriptEscape="true" var="communityWriteContentPhotoOnlyJs"/>
-<spring:message code="community.write.content.placeholder" javaScriptEscape="true" var="communityWriteContentPlaceholderJs"/>
-<spring:message code="community.write.error.contentRequired" javaScriptEscape="true" var="communityWriteErrorContentRequiredJs"/>
-<spring:message code="community.write.error.generic" javaScriptEscape="true" var="communityWriteErrorGenericJs"/>
-<spring:message code="community.write.error.photoRequired" javaScriptEscape="true" var="communityWriteErrorPhotoRequiredJs"/>
-<spring:message code="community.write.error.regionTagLocked" javaScriptEscape="true" var="communityWriteErrorRegionTagLockedJs"/>
-<spring:message code="community.write.error.titleRequired" javaScriptEscape="true" var="communityWriteErrorTitleRequiredJs"/>
-<spring:message code="community.write.guide.photo.1" javaScriptEscape="true" var="communityWriteGuidePhoto1Js"/>
-<spring:message code="community.write.guide.photo.2" javaScriptEscape="true" var="communityWriteGuidePhoto2Js"/>
-<spring:message code="community.write.guide.photo.3" javaScriptEscape="true" var="communityWriteGuidePhoto3Js"/>
-<spring:message code="community.write.guide.photo.requirement" javaScriptEscape="true" var="communityWriteGuidePhotoRequirementJs"/>
-<spring:message code="community.write.photoCount.label" javaScriptEscape="true" var="communityWritePhotoCountLabelJs"/>
-<spring:message code="community.write.guide.question.1" javaScriptEscape="true" var="communityWriteGuideQuestion1Js"/>
-<spring:message code="community.write.guide.question.2" javaScriptEscape="true" var="communityWriteGuideQuestion2Js"/>
-<spring:message code="community.write.guide.review.1" javaScriptEscape="true" var="communityWriteGuideReview1Js"/>
-<spring:message code="community.write.guide.review.2" javaScriptEscape="true" var="communityWriteGuideReview2Js"/>
-<spring:message code="community.write.guide.review.3" javaScriptEscape="true" var="communityWriteGuideReview3Js"/>
-<spring:message code="community.write.guide.tip.1" javaScriptEscape="true" var="communityWriteGuideTip1Js"/>
-<spring:message code="community.write.guide.tip.2" javaScriptEscape="true" var="communityWriteGuideTip2Js"/>
-<spring:message code="community.write.guide.tip.3" javaScriptEscape="true" var="communityWriteGuideTip3Js"/>
-<spring:message code="community.write.resetConfirm" javaScriptEscape="true" var="communityWriteResetConfirmJs"/>
-<spring:message code="community.write.tipCategory.food" javaScriptEscape="true" var="communityWriteTipCategoryFoodJs"/>
-<spring:message code="community.write.tipCategory.label" javaScriptEscape="true" var="communityWriteTipCategoryLabelJs"/>
-<spring:message code="community.write.tipCategory.money" javaScriptEscape="true" var="communityWriteTipCategoryMoneyJs"/>
-<spring:message code="community.write.tipCategory.other" javaScriptEscape="true" var="communityWriteTipCategoryOtherJs"/>
-<spring:message code="community.write.tipCategory.safety" javaScriptEscape="true" var="communityWriteTipCategorySafetyJs"/>
-<spring:message code="community.write.tipCategory.stay" javaScriptEscape="true" var="communityWriteTipCategoryStayJs"/>
-<spring:message code="community.write.tipCategory.transport" javaScriptEscape="true" var="communityWriteTipCategoryTransportJs"/>
-<spring:message code="community.write.title.photo.create" javaScriptEscape="true" var="communityWriteTitlePhotoCreateJs"/>
-<spring:message code="community.write.title.photo.edit" javaScriptEscape="true" var="communityWriteTitlePhotoEditJs"/>
-<spring:message code="community.write.title.question.create" javaScriptEscape="true" var="communityWriteTitleQuestionCreateJs"/>
-<spring:message code="community.write.title.question.edit" javaScriptEscape="true" var="communityWriteTitleQuestionEditJs"/>
-<spring:message code="community.write.title.review.create" javaScriptEscape="true" var="communityWriteTitleReviewCreateJs"/>
-<spring:message code="community.write.title.review.edit" javaScriptEscape="true" var="communityWriteTitleReviewEditJs"/>
-<spring:message code="community.write.title.tip.create" javaScriptEscape="true" var="communityWriteTitleTipCreateJs"/>
-<spring:message code="community.write.title.tip.edit" javaScriptEscape="true" var="communityWriteTitleTipEditJs"/>
-<spring:message code="community.write.cancelConfirm" javaScriptEscape="true" var="communityWriteCancelConfirmJs"/>
 
 function formatMessage(template, value) {
   return template.replace('{0}', value);
@@ -300,63 +319,63 @@ function htmlToPlainText(html) {
 }
 
 var writeMessages = {
-  cancelConfirm: '${communityWriteCancelConfirmJs}',
-  contentPhotoOnly: '${communityWriteContentPhotoOnlyJs}',
-  contentPlaceholder: '${communityWriteContentPlaceholderJs}',
-  photoCountLabel: '${communityWritePhotoCountLabelJs}',
+  cancelConfirm: '${msg_community_write_cancelConfirm_js}',
+  contentPhotoOnly: '${msg_community_write_content_photoOnly_js}',
+  contentPlaceholder: '${msg_community_write_content_placeholder_js}',
+  photoCountLabel: '${msg_community_write_photoCount_label_js}',
   errors: {
-    contentRequired: '${communityWriteErrorContentRequiredJs}',
-    generic: '${communityWriteErrorGenericJs}',
-    photoRequired: '${communityWriteErrorPhotoRequiredJs}',
-    regionTagLocked: '${communityWriteErrorRegionTagLockedJs}',
-    titleRequired: '${communityWriteErrorTitleRequiredJs}'
+    contentRequired: '${msg_community_write_error_contentRequired_js}',
+    generic: '${msg_community_write_error_generic_js}',
+    photoRequired: '${msg_community_write_error_photoRequired_js}',
+    regionTagLocked: '${msg_community_write_error_regionTagLocked_js}',
+    titleRequired: '${msg_community_write_error_titleRequired_js}'
   },
   guides: {
     photo: [
-      '${communityWriteGuidePhotoRequirementJs}',
-      '${communityWriteGuidePhoto1Js}',
-      '${communityWriteGuidePhoto2Js}',
-      '${communityWriteGuidePhoto3Js}'
+      '${msg_community_write_guide_photo_requirement_js}',
+      '${msg_community_write_guide_photo_1_js}',
+      '${msg_community_write_guide_photo_2_js}',
+      '${msg_community_write_guide_photo_3_js}'
     ],
     question: [
-      '${communityWriteGuideQuestion1Js}',
-      '${communityWriteGuideQuestion2Js}'
+      '${msg_community_write_guide_question_1_js}',
+      '${msg_community_write_guide_question_2_js}'
     ],
     review: [
-      '${communityWriteGuideReview1Js}',
-      '${communityWriteGuideReview2Js}',
-      '${communityWriteGuideReview3Js}'
+      '${msg_community_write_guide_review_1_js}',
+      '${msg_community_write_guide_review_2_js}',
+      '${msg_community_write_guide_review_3_js}'
     ],
     tip: [
-      '${communityWriteGuideTip1Js}',
-      '${communityWriteGuideTip2Js}',
-      '${communityWriteGuideTip3Js}'
+      '${msg_community_write_guide_tip_1_js}',
+      '${msg_community_write_guide_tip_2_js}',
+      '${msg_community_write_guide_tip_3_js}'
     ]
   },
   regionLabels: {
-    africa: '${communityRegionAfricaJs}',
-    asia: '${communityRegionAsiaJs}',
-    etc: '${communityRegionEtcJs}',
-    europe: '${communityRegionEuropeJs}',
-    north_america: '${communityRegionNorthAmericaJs}',
-    oceania: '${communityRegionOceaniaJs}',
-    south_america: '${communityRegionSouthAmericaJs}'
+    africa: '${msg_community_region_africa_js}',
+    asia: '${msg_community_region_asia_js}',
+    etc: '${msg_community_region_etc_js}',
+    europe: '${msg_community_region_europe_js}',
+    north_america: '${msg_community_region_northAmerica_js}',
+    oceania: '${msg_community_region_oceania_js}',
+    south_america: '${msg_community_region_southAmerica_js}'
   },
-  resetConfirm: '${communityWriteResetConfirmJs}',
+  resetConfirm: '${msg_community_write_resetConfirm_js}',
   tipCategories: {
-    food: '${communityWriteTipCategoryFoodJs}',
-    label: '${communityWriteTipCategoryLabelJs}',
-    money: '${communityWriteTipCategoryMoneyJs}',
-    other: '${communityWriteTipCategoryOtherJs}',
-    safety: '${communityWriteTipCategorySafetyJs}',
-    stay: '${communityWriteTipCategoryStayJs}',
-    transport: '${communityWriteTipCategoryTransportJs}'
+    food: '${msg_community_write_tipCategory_food_js}',
+    label: '${msg_community_write_tipCategory_label_js}',
+    money: '${msg_community_write_tipCategory_money_js}',
+    other: '${msg_community_write_tipCategory_other_js}',
+    safety: '${msg_community_write_tipCategory_safety_js}',
+    stay: '${msg_community_write_tipCategory_stay_js}',
+    transport: '${msg_community_write_tipCategory_transport_js}'
   },
   titles: {
-    photo: { create: '${communityWriteTitlePhotoCreateJs}', edit: '${communityWriteTitlePhotoEditJs}' },
-    question: { create: '${communityWriteTitleQuestionCreateJs}', edit: '${communityWriteTitleQuestionEditJs}' },
-    review: { create: '${communityWriteTitleReviewCreateJs}', edit: '${communityWriteTitleReviewEditJs}' },
-    tip: { create: '${communityWriteTitleTipCreateJs}', edit: '${communityWriteTitleTipEditJs}' }
+    photo: { create: '${msg_community_write_title_photo_create_js}', edit: '${msg_community_write_title_photo_edit_js}' },
+    question: { create: '${msg_community_write_title_question_create_js}', edit: '${msg_community_write_title_question_edit_js}' },
+    review: { create: '${msg_community_write_title_review_create_js}', edit: '${msg_community_write_title_review_edit_js}' },
+    tip: { create: '${msg_community_write_title_tip_create_js}', edit: '${msg_community_write_title_tip_edit_js}' }
   }
 };
 

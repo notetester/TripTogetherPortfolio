@@ -1,13 +1,100 @@
-<spring:message var="walletChargeLimitMessageMsg" code="wallet.charge.limitMessage" javaScriptEscape="true"/>
-<spring:message var="walletChargeErrorMinMsg" code="wallet.charge.error.min" javaScriptEscape="true"/>
-<spring:message var="walletChargeErrorStepMsg" code="wallet.charge.error.step" javaScriptEscape="true"/>
-<spring:message var="walletChargeTossPrepareErrorMsg" code="wallet.charge.toss.prepareError" javaScriptEscape="true"/>
-<spring:message var="walletChargeTossRequestErrorMsg" code="wallet.charge.toss.requestError" javaScriptEscape="true"/>
-<spring:message var="walletChargeTossSdkUnavailableMsg" code="wallet.charge.toss.sdkUnavailable" javaScriptEscape="true"/>
-<spring:message var="walletPaymentOrderTossChargeMsg" code="wallet.payment.order.tossCharge" javaScriptEscape="true"/>
-<spring:message var="walletChargeTossUnavailableMsg" code="wallet.charge.toss.unavailable" javaScriptEscape="true"/>
-<spring:message var="walletBenefitToggleShowMsg" code="wallet.benefit.toggle.show" javaScriptEscape="true"/>
-<spring:message var="walletBenefitToggleHideMsg" code="wallet.benefit.toggle.hide" javaScriptEscape="true"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_wallet_charge_limitMessage_js" code="wallet.charge.limitMessage" javaScriptEscape="true"/>
+<spring:message var="msg_wallet_charge_error_min_js" code="wallet.charge.error.min" javaScriptEscape="true"/>
+<spring:message var="msg_wallet_charge_error_step_js" code="wallet.charge.error.step" javaScriptEscape="true"/>
+<spring:message var="msg_wallet_charge_toss_prepareError_js" code="wallet.charge.toss.prepareError" javaScriptEscape="true"/>
+<spring:message var="msg_wallet_charge_toss_requestError_js" code="wallet.charge.toss.requestError" javaScriptEscape="true"/>
+<spring:message var="msg_wallet_charge_toss_sdkUnavailable_js" code="wallet.charge.toss.sdkUnavailable" javaScriptEscape="true"/>
+<spring:message var="msg_wallet_payment_order_tossCharge_js" code="wallet.payment.order.tossCharge" javaScriptEscape="true"/>
+<spring:message var="msg_wallet_charge_toss_unavailable_js" code="wallet.charge.toss.unavailable" javaScriptEscape="true"/>
+<spring:message var="msg_wallet_benefit_toggle_show_js" code="wallet.benefit.toggle.show" javaScriptEscape="true"/>
+<spring:message var="msg_wallet_benefit_toggle_hide_js" code="wallet.benefit.toggle.hide" javaScriptEscape="true"/>
+<spring:message var="msg_wallet_charge_limit" code="wallet.charge.limit"/>
+<spring:message var="msg_wallet_hero_eyebrow" code="wallet.hero.eyebrow"/>
+<spring:message var="msg_wallet_title" code="wallet.title"/>
+<spring:message var="msg_wallet_subtitle" code="wallet.subtitle"/>
+<spring:message var="msg_wallet_summary_title" code="wallet.summary.title"/>
+<spring:message var="msg_wallet_summary_desc" code="wallet.summary.desc"/>
+<spring:message var="msg_wallet_stat_cash" code="wallet.stat.cash"/>
+<spring:message var="msg_wallet_stat_unit_cash" code="wallet.stat.unit.cash"/>
+<spring:message var="msg_wallet_stat_mileage" code="wallet.stat.mileage"/>
+<spring:message var="msg_wallet_stat_unit_mileage" code="wallet.stat.unit.mileage"/>
+<spring:message var="msg_wallet_stat_point" code="wallet.stat.point"/>
+<spring:message var="msg_wallet_stat_unit_point" code="wallet.stat.unit.point"/>
+<spring:message var="msg_wallet_stat_grade" code="wallet.stat.grade"/>
+<spring:message var="msg_wallet_grade_BRONZE" code="wallet.grade.BRONZE"/>
+<spring:message var="msg_wallet_grade_SILVER" code="wallet.grade.SILVER"/>
+<spring:message var="msg_wallet_grade_GOLD" code="wallet.grade.GOLD"/>
+<spring:message var="msg_wallet_grade_DIAMOND" code="wallet.grade.DIAMOND"/>
+<spring:message var="msg_wallet_grade_PLATINUM" code="wallet.grade.PLATINUM"/>
+<spring:message var="msg_wallet_stat_level" code="wallet.stat.level"/>
+<spring:message var="msg_wallet_stat_exp" code="wallet.stat.exp"/>
+<spring:message var="msg_wallet_stat_unit_exp" code="wallet.stat.unit.exp"/>
+<spring:message var="msg_wallet_charge_title" code="wallet.charge.title"/>
+<spring:message var="msg_wallet_charge_toss_desc" code="wallet.charge.toss.desc"/>
+<spring:message var="msg_wallet_charge_desc" code="wallet.charge.desc"/>
+<spring:message var="msg_wallet_charge_amount" code="wallet.charge.amount"/>
+<spring:message var="msg_wallet_charge_currency" code="wallet.charge.currency"/>
+<spring:message var="msg_wallet_charge_preview_cash" code="wallet.charge.preview.cash"/>
+<spring:message var="msg_wallet_charge_preview_mileage" code="wallet.charge.preview.mileage"/>
+<spring:message var="msg_wallet_charge_toss_button" code="wallet.charge.toss.button"/>
+<spring:message var="msg_wallet_charge_toss_notice" code="wallet.charge.toss.notice"/>
+<spring:message var="msg_wallet_notice_mileage" code="wallet.notice.mileage"/>
+<spring:message var="msg_wallet_notice_history" code="wallet.notice.history"/>
+<spring:message var="msg_wallet_charge_submit" code="wallet.charge.submit"/>
+<spring:message var="msg_wallet_notice_simulation" code="wallet.notice.simulation"/>
+<spring:message var="msg_wallet_payment_title" code="wallet.payment.title"/>
+<spring:message var="msg_wallet_payment_desc" code="wallet.payment.desc"/>
+<spring:message var="msg_wallet_payment_empty" code="wallet.payment.empty"/>
+<spring:message var="msg_wallet_payment_order_manualCharge" code="wallet.payment.order.manualCharge"/>
+<spring:message var="msg_wallet_payment_order_tossCharge" code="wallet.payment.order.tossCharge"/>
+<spring:message var="msg_wallet_payment_amount" code="wallet.payment.amount"/>
+<spring:message var="msg_wallet_payment_mileage" code="wallet.payment.mileage"/>
+<spring:message var="msg_wallet_paymentStatus_COMPLETED" code="wallet.paymentStatus.COMPLETED"/>
+<spring:message var="msg_wallet_paymentStatus_READY" code="wallet.paymentStatus.READY"/>
+<spring:message var="msg_wallet_paymentStatus_CANCELLED" code="wallet.paymentStatus.CANCELLED"/>
+<spring:message var="msg_wallet_paymentStatus_REFUNDED" code="wallet.paymentStatus.REFUNDED"/>
+<spring:message var="msg_wallet_pagination_prev" code="wallet.pagination.prev"/>
+<spring:message var="msg_wallet_pagination_next" code="wallet.pagination.next"/>
+<spring:message var="msg_wallet_history_title" code="wallet.history.title"/>
+<spring:message var="msg_wallet_history_desc" code="wallet.history.desc"/>
+<spring:message var="msg_wallet_history_empty" code="wallet.history.empty"/>
+<spring:message var="msg_wallet_history_col_date" code="wallet.history.col.date"/>
+<spring:message var="msg_wallet_history_col_asset" code="wallet.history.col.asset"/>
+<spring:message var="msg_wallet_history_col_type" code="wallet.history.col.type"/>
+<spring:message var="msg_wallet_history_col_amount" code="wallet.history.col.amount"/>
+<spring:message var="msg_wallet_history_col_balance" code="wallet.history.col.balance"/>
+<spring:message var="msg_wallet_history_col_detail" code="wallet.history.col.detail"/>
+<spring:message var="msg_wallet_assetType_CASH" code="wallet.assetType.CASH"/>
+<spring:message var="msg_wallet_assetType_MILEAGE" code="wallet.assetType.MILEAGE"/>
+<spring:message var="msg_wallet_changeType_CHARGE" code="wallet.changeType.CHARGE"/>
+<spring:message var="msg_wallet_changeType_EARN" code="wallet.changeType.EARN"/>
+<spring:message var="msg_wallet_changeType_USE" code="wallet.changeType.USE"/>
+<spring:message var="msg_wallet_changeType_REFUND" code="wallet.changeType.REFUND"/>
+<spring:message var="msg_wallet_changeType_ADJUST" code="wallet.changeType.ADJUST"/>
+<spring:message var="msg_wallet_history_detail_cashCharge" code="wallet.history.detail.cashCharge"/>
+<spring:message var="msg_wallet_history_detail_mileageReward" code="wallet.history.detail.mileageReward"/>
+<spring:message var="msg_wallet_benefit_title" code="wallet.benefit.title"/>
+<spring:message var="msg_wallet_benefit_desc" code="wallet.benefit.desc"/>
+<spring:message var="msg_wallet_benefit_toggle_hide" code="wallet.benefit.toggle.hide"/>
+<spring:message var="msg_wallet_benefit_banner_badge" code="wallet.benefit.banner.badge"/>
+<spring:message var="msg_wallet_benefit_banner_line1" code="wallet.benefit.banner.line1"/>
+<spring:message var="msg_wallet_benefit_banner_line2" code="wallet.benefit.banner.line2"/>
+<spring:message var="msg_wallet_benefit_col_grade" code="wallet.benefit.col.grade"/>
+<spring:message var="msg_wallet_benefit_col_monthlyPayment" code="wallet.benefit.col.monthlyPayment"/>
+<spring:message var="msg_wallet_benefit_col_discountRate" code="wallet.benefit.col.discountRate"/>
+<spring:message var="msg_wallet_benefit_col_description" code="wallet.benefit.col.description"/>
+<spring:message var="msg_wallet_benefit_empty" code="wallet.benefit.empty"/>
+<spring:message var="msg_wallet_benefit_current" code="wallet.benefit.current"/>
+<spring:message var="msg_wallet_benefit_amountUnit" code="wallet.benefit.amountUnit"/>
+<spring:message var="msg_wallet_benefit_policy_bronze" code="wallet.benefit.policy.bronze"/>
+<spring:message var="msg_wallet_benefit_policy_silver" code="wallet.benefit.policy.silver"/>
+<spring:message var="msg_wallet_benefit_policy_gold" code="wallet.benefit.policy.gold"/>
+<spring:message var="msg_wallet_benefit_policy_diamond" code="wallet.benefit.policy.diamond"/>
+<spring:message var="msg_wallet_benefit_policy_platinum" code="wallet.benefit.policy.platinum"/>
+
+
 ﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -17,16 +104,16 @@
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
 <c:set var="pageCSS" value="wallet/wallet.css"/>
-<spring:message code="wallet.charge.limit" var="walletChargeLimitMessage"/>
+
 <%@ include file="../common/header.jsp" %>
 <body>
 
 <div class="wallet-wrap">
     <div class="wallet-hero">
         <div class="wallet-hero__content">
-            <p class="wallet-hero__eyebrow"><spring:message code="wallet.hero.eyebrow"/></p>
-            <h1><spring:message code="wallet.title"/></h1>
-            <p class="wallet-hero__desc"><spring:message code="wallet.subtitle"/></p>
+            <p class="wallet-hero__eyebrow">${msg_wallet_hero_eyebrow}</p>
+            <h1>${msg_wallet_title}</h1>
+            <p class="wallet-hero__desc">${msg_wallet_subtitle}</p>
         </div>
     </div>
 
@@ -40,42 +127,42 @@
 
         <section class="wallet-card">
             <div class="wallet-card__head">
-                <h2><spring:message code="wallet.summary.title"/></h2>
-                <p><spring:message code="wallet.summary.desc"/></p>
+                <h2>${msg_wallet_summary_title}</h2>
+                <p>${msg_wallet_summary_desc}</p>
             </div>
             <div class="wallet-summary-grid">
                 <div class="wallet-stat wallet-stat--cash">
-                    <div class="wallet-stat__label"><spring:message code="wallet.stat.cash"/></div>
-                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.cashBalance}" pattern="#,##0"/> <spring:message code="wallet.stat.unit.cash"/></div>
+                    <div class="wallet-stat__label">${msg_wallet_stat_cash}</div>
+                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.cashBalance}" pattern="#,##0"/> ${msg_wallet_stat_unit_cash}</div>
                 </div>
                 <div class="wallet-stat wallet-stat--mileage">
-                    <div class="wallet-stat__label"><spring:message code="wallet.stat.mileage"/></div>
-                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.mileageBalance}" pattern="#,##0"/> <spring:message code="wallet.stat.unit.mileage"/></div>
+                    <div class="wallet-stat__label">${msg_wallet_stat_mileage}</div>
+                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.mileageBalance}" pattern="#,##0"/> ${msg_wallet_stat_unit_mileage}</div>
                 </div>
                 <div class="wallet-stat wallet-stat--point">
-                    <div class="wallet-stat__label"><spring:message code="wallet.stat.point"/></div>
-                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.pointBalance}" pattern="#,##0"/> <spring:message code="wallet.stat.unit.point"/></div>
+                    <div class="wallet-stat__label">${msg_wallet_stat_point}</div>
+                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.pointBalance}" pattern="#,##0"/> ${msg_wallet_stat_unit_point}</div>
                 </div>
                 <div class="wallet-stat wallet-stat--grade">
-                    <div class="wallet-stat__label"><spring:message code="wallet.stat.grade"/></div>
+                    <div class="wallet-stat__label">${msg_wallet_stat_grade}</div>
                     <div class="wallet-stat__value">
                         <c:choose>
-                            <c:when test="${user.memberGrade eq 'BRONZE'}"><spring:message code="wallet.grade.BRONZE"/></c:when>
-                            <c:when test="${user.memberGrade eq 'SILVER'}"><spring:message code="wallet.grade.SILVER"/></c:when>
-                            <c:when test="${user.memberGrade eq 'GOLD'}"><spring:message code="wallet.grade.GOLD"/></c:when>
-                            <c:when test="${user.memberGrade eq 'DIAMOND'}"><spring:message code="wallet.grade.DIAMOND"/></c:when>
-                            <c:when test="${user.memberGrade eq 'PLATINUM'}"><spring:message code="wallet.grade.PLATINUM"/></c:when>
+                            <c:when test="${user.memberGrade eq 'BRONZE'}">${msg_wallet_grade_BRONZE}</c:when>
+                            <c:when test="${user.memberGrade eq 'SILVER'}">${msg_wallet_grade_SILVER}</c:when>
+                            <c:when test="${user.memberGrade eq 'GOLD'}">${msg_wallet_grade_GOLD}</c:when>
+                            <c:when test="${user.memberGrade eq 'DIAMOND'}">${msg_wallet_grade_DIAMOND}</c:when>
+                            <c:when test="${user.memberGrade eq 'PLATINUM'}">${msg_wallet_grade_PLATINUM}</c:when>
                             <c:otherwise>${user.memberGrade}</c:otherwise>
                         </c:choose>
                     </div>
                 </div>
                 <div class="wallet-stat wallet-stat--level">
-                    <div class="wallet-stat__label"><spring:message code="wallet.stat.level"/></div>
+                    <div class="wallet-stat__label">${msg_wallet_stat_level}</div>
                     <div class="wallet-stat__value">Lv.${user.levelNo}</div>
                 </div>
                 <div class="wallet-stat wallet-stat--exp">
-                    <div class="wallet-stat__label"><spring:message code="wallet.stat.exp"/></div>
-                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.expPoints}" pattern="#,##0"/> <spring:message code="wallet.stat.unit.exp"/></div>
+                    <div class="wallet-stat__label">${msg_wallet_stat_exp}</div>
+                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.expPoints}" pattern="#,##0"/> ${msg_wallet_stat_unit_exp}</div>
                 </div>
             </div>
         </section>
@@ -83,13 +170,13 @@
         <div class="wallet-two-col">
             <section class="wallet-card">
                 <div class="wallet-card__head">
-                    <h2><spring:message code="wallet.charge.title"/></h2>
+                    <h2>${msg_wallet_charge_title}</h2>
                     <c:choose>
                         <c:when test="${tossEnabled}">
-                            <p><spring:message code="wallet.charge.toss.desc"/></p>
+                            <p>${msg_wallet_charge_toss_desc}</p>
                         </c:when>
                         <c:otherwise>
-                            <p><spring:message code="wallet.charge.desc"/></p>
+                            <p>${msg_wallet_charge_desc}</p>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -101,20 +188,20 @@
                     <button type="button" class="wallet-preset-btn" onclick="setChargeAmount(100000)">100,000</button>
                 </div>
 
-                <label for="amount"><spring:message code="wallet.charge.amount"/></label>
+                <label for="amount">${msg_wallet_charge_amount}</label>
                 <div class="wallet-charge-input">
                     <input id="amount" name="amount" type="number" min="1000" max="1000000" step="100" value="10000" required>
-                    <span><spring:message code="wallet.charge.currency"/></span>
+                    <span>${msg_wallet_charge_currency}</span>
                 </div>
-                <p class="wallet-charge-limit" id="chargeLimitMessage">${walletChargeLimitMessage}</p>
+                <p class="wallet-charge-limit" id="chargeLimitMessage">${msg_wallet_charge_limit}</p>
 
                 <div class="wallet-charge-preview">
                     <div>
-                        <span><spring:message code="wallet.charge.preview.cash"/></span>
+                        <span>${msg_wallet_charge_preview_cash}</span>
                         <strong id="chargeCashPreview">10,000 C</strong>
                     </div>
                     <div>
-                        <span><spring:message code="wallet.charge.preview.mileage"/></span>
+                        <span>${msg_wallet_charge_preview_mileage}</span>
                         <strong id="chargeMileagePreview">1,000 M</strong>
                     </div>
                 </div>
@@ -122,22 +209,22 @@
                 <c:choose>
                     <c:when test="${tossEnabled}">
                         <button type="button" id="walletTossChargeButton" class="wallet-submit-btn" onclick="requestTossCharge()">
-                            <spring:message code="wallet.charge.toss.button"/>
+                            ${msg_wallet_charge_toss_button}
                         </button>
                         <ul class="wallet-notice-list">
-                            <li><spring:message code="wallet.charge.toss.notice"/></li>
-                            <li><spring:message code="wallet.notice.mileage"/></li>
-                            <li><spring:message code="wallet.notice.history"/></li>
+                            <li>${msg_wallet_charge_toss_notice}</li>
+                            <li>${msg_wallet_notice_mileage}</li>
+                            <li>${msg_wallet_notice_history}</li>
                         </ul>
                     </c:when>
                     <c:otherwise>
                         <form class="wallet-charge-form" method="post" action="${pageContext.request.contextPath}/wallet/charge">
-                            <button type="submit" class="wallet-submit-btn"><spring:message code="wallet.charge.submit"/></button>
+                            <button type="submit" class="wallet-submit-btn">${msg_wallet_charge_submit}</button>
                         </form>
                         <ul class="wallet-notice-list">
-                            <li><spring:message code="wallet.notice.simulation"/></li>
-                            <li><spring:message code="wallet.notice.mileage"/></li>
-                            <li><spring:message code="wallet.notice.history"/></li>
+                            <li>${msg_wallet_notice_simulation}</li>
+                            <li>${msg_wallet_notice_mileage}</li>
+                            <li>${msg_wallet_notice_history}</li>
                         </ul>
                     </c:otherwise>
                 </c:choose>
@@ -145,13 +232,13 @@
 
             <section class="wallet-card">
                 <div class="wallet-card__head">
-                    <h2><spring:message code="wallet.payment.title"/></h2>
-                    <p><spring:message code="wallet.payment.desc"/></p>
+                    <h2>${msg_wallet_payment_title}</h2>
+                    <p>${msg_wallet_payment_desc}</p>
                 </div>
 
                 <c:choose>
                     <c:when test="${empty paymentHistory}">
-                        <div class="wallet-empty"><spring:message code="wallet.payment.empty"/></div>
+                        <div class="wallet-empty">${msg_wallet_payment_empty}</div>
                     </c:when>
                     <c:otherwise>
                         <div class="wallet-history-list">
@@ -161,10 +248,10 @@
                                         <strong>
                                         <c:choose>
                                                 <c:when test="${payment.sourceType eq 'MANUAL_CHARGE'}">
-                                                    <spring:message code="wallet.payment.order.manualCharge"/>
+                                                    ${msg_wallet_payment_order_manualCharge}
                                                 </c:when>
                                                 <c:when test="${payment.sourceType eq 'TOSS_CHARGE'}">
-                                                    <spring:message code="wallet.payment.order.tossCharge"/>
+                                                    ${msg_wallet_payment_order_tossCharge}
                                                 </c:when>
                                                 <c:otherwise>
                                                     ${payment.orderName}
@@ -174,14 +261,14 @@
                                         <span>${fn:replace(fn:substring(payment.createdAt, 0, 16), 'T', ' ')}</span>
                                     </div>
                                     <div class="wallet-history-item__sub">
-                                        <span><spring:message code="wallet.payment.amount"/> <fmt:formatNumber value="${payment.finalAmount}" pattern="#,##0"/> C</span>
-                                        <span><spring:message code="wallet.payment.mileage"/> +<fmt:formatNumber value="${payment.earnedMileage}" pattern="#,##0"/> M</span>
+                                        <span>${msg_wallet_payment_amount} <fmt:formatNumber value="${payment.finalAmount}" pattern="#,##0"/> C</span>
+                                        <span>${msg_wallet_payment_mileage} +<fmt:formatNumber value="${payment.earnedMileage}" pattern="#,##0"/> M</span>
                                         <span class="wallet-status">
                                             <c:choose>
-                                                <c:when test="${payment.paymentStatus eq 'COMPLETED'}"><spring:message code="wallet.paymentStatus.COMPLETED"/></c:when>
-                                                <c:when test="${payment.paymentStatus eq 'READY'}"><spring:message code="wallet.paymentStatus.READY"/></c:when>
-                                                <c:when test="${payment.paymentStatus eq 'CANCELLED'}"><spring:message code="wallet.paymentStatus.CANCELLED"/></c:when>
-                                                <c:when test="${payment.paymentStatus eq 'REFUNDED'}"><spring:message code="wallet.paymentStatus.REFUNDED"/></c:when>
+                                                <c:when test="${payment.paymentStatus eq 'COMPLETED'}">${msg_wallet_paymentStatus_COMPLETED}</c:when>
+                                                <c:when test="${payment.paymentStatus eq 'READY'}">${msg_wallet_paymentStatus_READY}</c:when>
+                                                <c:when test="${payment.paymentStatus eq 'CANCELLED'}">${msg_wallet_paymentStatus_CANCELLED}</c:when>
+                                                <c:when test="${payment.paymentStatus eq 'REFUNDED'}">${msg_wallet_paymentStatus_REFUNDED}</c:when>
                                                 <c:otherwise>${payment.paymentStatus}</c:otherwise>
                                             </c:choose>
                                         </span>
@@ -190,9 +277,9 @@
                             </c:forEach>
                         </div>
                         <div class="wallet-pagination" id="paymentPagination" style="display:none;">
-                            <button type="button" class="wallet-page-btn" id="paymentPrevBtn"><spring:message code="wallet.pagination.prev"/></button>
+                            <button type="button" class="wallet-page-btn" id="paymentPrevBtn">${msg_wallet_pagination_prev}</button>
                             <span class="wallet-page-info" id="paymentPageInfo"></span>
-                            <button type="button" class="wallet-page-btn" id="paymentNextBtn"><spring:message code="wallet.pagination.next"/></button>
+                            <button type="button" class="wallet-page-btn" id="paymentNextBtn">${msg_wallet_pagination_next}</button>
                         </div>
                     </c:otherwise>
                 </c:choose>
@@ -201,24 +288,24 @@
 
         <section class="wallet-card">
             <div class="wallet-card__head">
-                <h2><spring:message code="wallet.history.title"/></h2>
-                <p><spring:message code="wallet.history.desc"/></p>
+                <h2>${msg_wallet_history_title}</h2>
+                <p>${msg_wallet_history_desc}</p>
             </div>
             <c:choose>
                 <c:when test="${empty walletHistory}">
-                    <div class="wallet-empty"><spring:message code="wallet.history.empty"/></div>
+                    <div class="wallet-empty">${msg_wallet_history_empty}</div>
                 </c:when>
                 <c:otherwise>
                     <div class="wallet-table-wrap">
                         <table class="wallet-table">
                             <thead>
                             <tr>
-                                <th><spring:message code="wallet.history.col.date"/></th>
-                                <th><spring:message code="wallet.history.col.asset"/></th>
-                                <th><spring:message code="wallet.history.col.type"/></th>
-                                <th><spring:message code="wallet.history.col.amount"/></th>
-                                <th><spring:message code="wallet.history.col.balance"/></th>
-                                <th><spring:message code="wallet.history.col.detail"/></th>
+                                <th>${msg_wallet_history_col_date}</th>
+                                <th>${msg_wallet_history_col_asset}</th>
+                                <th>${msg_wallet_history_col_type}</th>
+                                <th>${msg_wallet_history_col_amount}</th>
+                                <th>${msg_wallet_history_col_balance}</th>
+                                <th>${msg_wallet_history_col_detail}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -227,18 +314,18 @@
                                     <td>${fn:replace(fn:substring(history.createdAt, 0, 16), 'T', ' ')}</td>
                                     <td>
                                         <c:choose>
-                                            <c:when test="${history.assetType eq 'CASH'}"><spring:message code="wallet.assetType.CASH"/></c:when>
-                                            <c:when test="${history.assetType eq 'MILEAGE'}"><spring:message code="wallet.assetType.MILEAGE"/></c:when>
+                                            <c:when test="${history.assetType eq 'CASH'}">${msg_wallet_assetType_CASH}</c:when>
+                                            <c:when test="${history.assetType eq 'MILEAGE'}">${msg_wallet_assetType_MILEAGE}</c:when>
                                             <c:otherwise>${history.assetType}</c:otherwise>
                                         </c:choose>
                                     </td>
                                     <td>
                                         <c:choose>
-                                            <c:when test="${history.changeType eq 'CHARGE'}"><spring:message code="wallet.changeType.CHARGE"/></c:when>
-                                            <c:when test="${history.changeType eq 'EARN'}"><spring:message code="wallet.changeType.EARN"/></c:when>
-                                            <c:when test="${history.changeType eq 'USE'}"><spring:message code="wallet.changeType.USE"/></c:when>
-                                            <c:when test="${history.changeType eq 'REFUND'}"><spring:message code="wallet.changeType.REFUND"/></c:when>
-                                            <c:when test="${history.changeType eq 'ADJUST'}"><spring:message code="wallet.changeType.ADJUST"/></c:when>
+                                            <c:when test="${history.changeType eq 'CHARGE'}">${msg_wallet_changeType_CHARGE}</c:when>
+                                            <c:when test="${history.changeType eq 'EARN'}">${msg_wallet_changeType_EARN}</c:when>
+                                            <c:when test="${history.changeType eq 'USE'}">${msg_wallet_changeType_USE}</c:when>
+                                            <c:when test="${history.changeType eq 'REFUND'}">${msg_wallet_changeType_REFUND}</c:when>
+                                            <c:when test="${history.changeType eq 'ADJUST'}">${msg_wallet_changeType_ADJUST}</c:when>
                                             <c:otherwise>${history.changeType}</c:otherwise>
                                         </c:choose>
                                     </td>
@@ -256,10 +343,10 @@
                                     <td>
                                         <c:choose>
                                             <c:when test="${history.assetType eq 'CASH' and history.changeType eq 'CHARGE' and not empty history.relatedPaymentIdx}">
-                                                <spring:message code="wallet.history.detail.cashCharge"/>
+                                                ${msg_wallet_history_detail_cashCharge}
                                             </c:when>
                                             <c:when test="${history.assetType eq 'MILEAGE' and history.changeType eq 'EARN' and not empty history.relatedPaymentIdx}">
-                                                <spring:message code="wallet.history.detail.mileageReward"/>
+                                                ${msg_wallet_history_detail_mileageReward}
                                             </c:when>
                                             <c:otherwise>
                                                 ${history.detailMessage}
@@ -272,9 +359,9 @@
                         </table>
                     </div>
                     <div class="wallet-pagination" id="historyPagination" style="display:none;">
-                        <button type="button" class="wallet-page-btn" id="historyPrevBtn"><spring:message code="wallet.pagination.prev"/></button>
+                        <button type="button" class="wallet-page-btn" id="historyPrevBtn">${msg_wallet_pagination_prev}</button>
                         <span class="wallet-page-info" id="historyPageInfo"></span>
-                        <button type="button" class="wallet-page-btn" id="historyNextBtn"><spring:message code="wallet.pagination.next"/></button>
+                        <button type="button" class="wallet-page-btn" id="historyNextBtn">${msg_wallet_pagination_next}</button>
                     </div>
                 </c:otherwise>
             </c:choose>
@@ -283,20 +370,20 @@
         <section class="wallet-card">
             <div class="wallet-card__head wallet-benefit-head">
                 <div>
-                <h2><spring:message code="wallet.benefit.title"/></h2>
-                <p><spring:message code="wallet.benefit.desc"/></p>
+                <h2>${msg_wallet_benefit_title}</h2>
+                <p>${msg_wallet_benefit_desc}</p>
                 </div>
                 <button type="button" class="wallet-benefit-toggle" id="walletBenefitToggle">
-                    <spring:message code="wallet.benefit.toggle.hide"/>
+                    ${msg_wallet_benefit_toggle_hide}
                 </button>
             </div>
 
             <div class="wallet-benefit-body" id="walletBenefitBody">
             <div class="wallet-benefit-banner">
-                <span class="wallet-benefit-banner__badge"><spring:message code="wallet.benefit.banner.badge"/></span>
+                <span class="wallet-benefit-banner__badge">${msg_wallet_benefit_banner_badge}</span>
                 <p>
-                    <spring:message code="wallet.benefit.banner.line1"/><br>
-                    <spring:message code="wallet.benefit.banner.line2"/>
+                    ${msg_wallet_benefit_banner_line1}<br>
+                    ${msg_wallet_benefit_banner_line2}
                 </p>
             </div>
 
@@ -304,17 +391,17 @@
                 <table class="wallet-benefit-table">
                     <thead>
                     <tr>
-                        <th><spring:message code="wallet.benefit.col.grade"/></th>
-                        <th><spring:message code="wallet.benefit.col.monthlyPayment"/></th>
-                        <th><spring:message code="wallet.benefit.col.discountRate"/></th>
-                        <th><spring:message code="wallet.benefit.col.description"/></th>
+                        <th>${msg_wallet_benefit_col_grade}</th>
+                        <th>${msg_wallet_benefit_col_monthlyPayment}</th>
+                        <th>${msg_wallet_benefit_col_discountRate}</th>
+                        <th>${msg_wallet_benefit_col_description}</th>
                     </tr>
                     </thead>
                     <tbody>
                     <c:choose>
                         <c:when test="${empty gradePolicies}">
                             <tr>
-                                <td colspan="4"><spring:message code="wallet.benefit.empty"/></td>
+                                <td colspan="4">${msg_wallet_benefit_empty}</td>
                             </tr>
                         </c:when>
                         <c:otherwise>
@@ -323,36 +410,36 @@
                                     <td>
                                         <strong>
                                             <c:choose>
-                                                <c:when test="${policy.memberGrade eq 'BRONZE'}"><spring:message code="wallet.grade.BRONZE"/></c:when>
-                                                <c:when test="${policy.memberGrade eq 'SILVER'}"><spring:message code="wallet.grade.SILVER"/></c:when>
-                                                <c:when test="${policy.memberGrade eq 'GOLD'}"><spring:message code="wallet.grade.GOLD"/></c:when>
-                                                <c:when test="${policy.memberGrade eq 'DIAMOND'}"><spring:message code="wallet.grade.DIAMOND"/></c:when>
-                                                <c:when test="${policy.memberGrade eq 'PLATINUM'}"><spring:message code="wallet.grade.PLATINUM"/></c:when>
+                                                <c:when test="${policy.memberGrade eq 'BRONZE'}">${msg_wallet_grade_BRONZE}</c:when>
+                                                <c:when test="${policy.memberGrade eq 'SILVER'}">${msg_wallet_grade_SILVER}</c:when>
+                                                <c:when test="${policy.memberGrade eq 'GOLD'}">${msg_wallet_grade_GOLD}</c:when>
+                                                <c:when test="${policy.memberGrade eq 'DIAMOND'}">${msg_wallet_grade_DIAMOND}</c:when>
+                                                <c:when test="${policy.memberGrade eq 'PLATINUM'}">${msg_wallet_grade_PLATINUM}</c:when>
                                                 <c:otherwise>${policy.memberGrade}</c:otherwise>
                                             </c:choose>
                                         </strong>
                                         <c:if test="${user.memberGrade eq policy.memberGrade}">
-                                            <span class="wallet-current-badge"><spring:message code="wallet.benefit.current"/></span>
+                                            <span class="wallet-current-badge">${msg_wallet_benefit_current}</span>
                                         </c:if>
                                     </td>
-                                    <td><fmt:formatNumber value="${policy.minMonthlyPayment}" pattern="#,##0"/> <spring:message code="wallet.benefit.amountUnit"/></td>
+                                    <td><fmt:formatNumber value="${policy.minMonthlyPayment}" pattern="#,##0"/> ${msg_wallet_benefit_amountUnit}</td>
                                     <td><fmt:formatNumber value="${policy.discountRate}" pattern="#,##0.##"/>%</td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${policy.memberGrade eq 'BRONZE'}">
-                                                <spring:message code="wallet.benefit.policy.bronze"/>
+                                                ${msg_wallet_benefit_policy_bronze}
                                             </c:when>
                                             <c:when test="${policy.memberGrade eq 'SILVER'}">
-                                                <spring:message code="wallet.benefit.policy.silver"/>
+                                                ${msg_wallet_benefit_policy_silver}
                                             </c:when>
                                             <c:when test="${policy.memberGrade eq 'GOLD'}">
-                                                <spring:message code="wallet.benefit.policy.gold"/>
+                                                ${msg_wallet_benefit_policy_gold}
                                             </c:when>
                                             <c:when test="${policy.memberGrade eq 'DIAMOND'}">
-                                                <spring:message code="wallet.benefit.policy.diamond"/>
+                                                ${msg_wallet_benefit_policy_diamond}
                                             </c:when>
                                             <c:when test="${policy.memberGrade eq 'PLATINUM'}">
-                                                <spring:message code="wallet.benefit.policy.platinum"/>
+                                                ${msg_wallet_benefit_policy_platinum}
                                             </c:when>
                                             <c:otherwise>
                                                 ${policy.description}
@@ -380,12 +467,12 @@
 </c:if>
 <script>
   const WALLET_MESSAGES = {
-    chargeLimitMessage: '${walletChargeLimitMessageMsg}',
-    chargeMinMessage: '${walletChargeErrorMinMsg}',
-    chargeStepMessage: '${walletChargeErrorStepMsg}',
-    tossPrepareError: '${walletChargeTossPrepareErrorMsg}',
-    tossRequestError: '${walletChargeTossRequestErrorMsg}',
-    tossSdkUnavailable: '${walletChargeTossSdkUnavailableMsg}'
+    chargeLimitMessage: '${msg_wallet_charge_limitMessage_js}',
+    chargeMinMessage: '${msg_wallet_charge_error_min_js}',
+    chargeStepMessage: '${msg_wallet_charge_error_step_js}',
+    tossPrepareError: '${msg_wallet_charge_toss_prepareError_js}',
+    tossRequestError: '${msg_wallet_charge_toss_requestError_js}',
+    tossSdkUnavailable: '${msg_wallet_charge_toss_sdkUnavailable_js}'
   };
 
   function formatNumber(value) {
@@ -397,7 +484,7 @@
   var TOSS_SUCCESS_URL = '${tossSuccessUrl}';
   var TOSS_FAIL_URL = '${tossFailUrl}';
   var TOSS_PREPARE_URL = '${pageContext.request.contextPath}/wallet/charge/prepare';
-  var TOSS_ORDER_NAME = '${walletPaymentOrderTossChargeMsg}';
+  var TOSS_ORDER_NAME = '${msg_wallet_payment_order_tossCharge_js}';
   var TOSS_SDK_READY = typeof window.TossPayments === 'function';
 
   function updateChargePreview() {
@@ -449,7 +536,7 @@
     if (!input) return;
 
     if (!TOSS_ENABLED) {
-      alert('${walletChargeTossUnavailableMsg}');
+      alert('${msg_wallet_charge_toss_unavailable_js}');
       return;
     }
 
@@ -564,8 +651,8 @@
     // ===== 등급 혜택 아코디언 =====
     var benefitToggle = document.getElementById('walletBenefitToggle');
     var benefitBody   = document.getElementById('walletBenefitBody');
-    var BENEFIT_SHOW  = '${walletBenefitToggleShowMsg}';
-    var BENEFIT_HIDE  = '${walletBenefitToggleHideMsg}';
+    var BENEFIT_SHOW  = '${msg_wallet_benefit_toggle_show_js}';
+    var BENEFIT_HIDE  = '${msg_wallet_benefit_toggle_hide_js}';
     if (benefitToggle && benefitBody) {
       benefitToggle.addEventListener('click', function() {
         var hidden = benefitBody.style.display === 'none';

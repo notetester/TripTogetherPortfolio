@@ -3,20 +3,28 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_common_edit_js" code="admin.common.edit" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_org_pageTitle" code="superAdmin.org.pageTitle"/>
+<spring:message var="msg_superAdmin_org_cardTitle" code="superAdmin.org.cardTitle"/>
+<spring:message var="msg_superAdmin_org_cardDescription" code="superAdmin.org.cardDescription"/>
+<spring:message var="msg_superAdmin_org_empty" code="superAdmin.org.empty"/>
+<c:set var="pageTitle" value="${msg_superAdmin_org_pageTitle}"/>
 <c:set var="activeMenu" value="org"/>
-<spring:message var="adminCommonEditMsg" code="admin.common.edit" javaScriptEscape="true"/>
-<spring:message code="superAdmin.org.pageTitle" var="pageTitle"/>
+
+
 <%@ include file="layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="superAdmin.org.cardTitle"/></div>
-            <div style="font-size:13px;color:#94a3b8;"><spring:message code="superAdmin.org.cardDescription"/></div>
+            <div class="adm-card-title">${msg_superAdmin_org_cardTitle}</div>
+            <div style="font-size:13px;color:#94a3b8;">${msg_superAdmin_org_cardDescription}</div>
         </div>
         <div class="adm-card-body">
             <div id="org-chart"></div>
-            <div id="org-empty" style="display:none;text-align:center;padding:60px;color:#94a3b8;"><spring:message code="superAdmin.org.empty"/></div>
+            <div id="org-empty" style="display:none;text-align:center;padding:60px;color:#94a3b8;">${msg_superAdmin_org_empty}</div>
         </div>
     </div>
 </div>
@@ -87,7 +95,7 @@ function renderNode(node, depth) {
         + '<div class="sa-org-name">' + node.nickname + '</div>'
         + title + dept + permBadge
         + '</div>'
-        + '<a href="' + CTX + '/superAdmin/members/' + node.userIdx + '/edit" class="sa-org-edit">${adminCommonEditMsg}</a>'
+        + '<a href="' + CTX + '/superAdmin/members/' + node.userIdx + '/edit" class="sa-org-edit">${msg_admin_common_edit_js}</a>'
         + '</div>'
         + childrenHtml
         + '</div>';

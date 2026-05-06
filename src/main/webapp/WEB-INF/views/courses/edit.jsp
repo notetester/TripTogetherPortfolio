@@ -4,47 +4,87 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="coursesCommonSpotIndexedMsg" code="courses.common.spotIndexed" javaScriptEscape="true"/>
-<spring:message var="coursesCommonFilterAllSpotsMsg" code="courses.common.filter.allSpots" javaScriptEscape="true"/>
-<spring:message var="coursesCommonFilterResultMsg" code="courses.common.filter.result" javaScriptEscape="true"/>
-<spring:message var="coursesCommonValueEmptyInputMsg" code="courses.common.value.emptyInput" javaScriptEscape="true"/>
-<spring:message var="coursesCommonVisibilityPublicMsg" code="courses.common.visibility.public" javaScriptEscape="true"/>
-<spring:message var="coursesCommonVisibilityPrivateMsg" code="courses.common.visibility.private" javaScriptEscape="true"/>
-<spring:message var="coursesCommonDeleteMsg" code="courses.common.delete" javaScriptEscape="true"/>
-<spring:message var="coursesCommonFieldPlaceNameMsg" code="courses.common.field.placeName" javaScriptEscape="true"/>
-<spring:message var="coursesCommonPlaceholderPlaceExampleMsg" code="courses.common.placeholder.placeExample" javaScriptEscape="true"/>
-<spring:message var="coursesCommonHelpPlaceStoredMsg" code="courses.common.help.placeStored" javaScriptEscape="true"/>
-<spring:message var="coursesCommonFieldVisitDateMsg" code="courses.common.field.visitDate" javaScriptEscape="true"/>
-<spring:message var="coursesCommonFieldVisitOrderMsg" code="courses.common.field.visitOrder" javaScriptEscape="true"/>
-<spring:message var="coursesCommonCountWithUnitMsg" code="courses.common.countWithUnit" javaScriptEscape="true"/>
-<spring:message var="coursesCommonConfirmDeleteSpotMsg" code="courses.common.confirm.deleteSpot" javaScriptEscape="true"/>
-<spring:message var="coursesCommonAlertMinSpotMsg" code="courses.common.alert.minSpot" javaScriptEscape="true"/>
-<spring:message var="coursesCommonAlertPlaceRequiredMsg" code="courses.common.alert.placeRequired" javaScriptEscape="true"/>
-<spring:message var="coursesCommonAlertVisitDateRequiredMsg" code="courses.common.alert.visitDateRequired" javaScriptEscape="true"/>
-<spring:message var="coursesCommonAlertOrderRequiredMsg" code="courses.common.alert.orderRequired" javaScriptEscape="true"/>
-<spring:message var="coursesCommonAlertDuplicateOrderMsg" code="courses.common.alert.duplicateOrder" javaScriptEscape="true"/>
-<spring:message code="course.write.dateFormatHint" javaScriptEscape="true" var="courseDateFormatHintJs"/>
-<spring:message code="course.write.notEntered" javaScriptEscape="true" var="courseNotEnteredJs"/>
-<spring:message code="course.write.countSuffix" javaScriptEscape="true" var="courseCountSuffixJs"/>
-<spring:message code="course.badge.public" javaScriptEscape="true" var="coursePublicLabelJs"/>
-<spring:message code="course.badge.private" javaScriptEscape="true" var="coursePrivateLabelJs"/>
-<spring:message code="course.form.spotLabel" javaScriptEscape="true" var="courseSpotLabelJs"/>
-<spring:message code="course.action.delete" javaScriptEscape="true" var="courseDeleteLabelJs"/>
-<spring:message code="course.form.placeName" javaScriptEscape="true" var="coursePlaceNameLabelJs"/>
-<spring:message code="course.form.visitDate" javaScriptEscape="true" var="courseVisitDateLabelJs"/>
-<spring:message code="course.form.visitOrder" javaScriptEscape="true" var="courseVisitOrderLabelJs"/>
-<spring:message code="course.edit.placePlaceholder" javaScriptEscape="true" var="courseEditPlacePlaceholderJs"/>
-<spring:message code="course.write.placeFieldMsg" javaScriptEscape="true" var="coursePlaceFieldMsgJs"/>
-<spring:message code="course.edit.filterAllVisible" javaScriptEscape="true" var="courseFilterAllVisibleJs"/>
-<spring:message code="course.edit.filterVisiblePrefix" javaScriptEscape="true" var="courseFilterVisiblePrefixJs"/>
-<spring:message code="course.edit.filterVisibleSuffix" javaScriptEscape="true" var="courseFilterVisibleSuffixJs"/>
-<spring:message code="course.edit.confirmRemoveSpot" javaScriptEscape="true" var="courseConfirmRemoveSpotJs"/>
-<spring:message code="course.validation.spotRequired" javaScriptEscape="true" var="courseValidationSpotRequiredJs"/>
-<spring:message code="course.validation.placeRequired" javaScriptEscape="true" var="courseValidationPlaceRequiredJs"/>
-<spring:message code="course.validation.visitDateRequired" javaScriptEscape="true" var="courseValidationVisitDateRequiredJs"/>
-<spring:message code="course.validation.visitOrderRequired" javaScriptEscape="true" var="courseValidationVisitOrderRequiredJs"/>
-<spring:message code="course.validation.duplicateVisitOrder" javaScriptEscape="true" var="courseValidationDuplicateVisitOrderJs"/>
 
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_courses_common_spotIndexed_js" code="courses.common.spotIndexed" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_filter_allSpots_js" code="courses.common.filter.allSpots" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_filter_result_js" code="courses.common.filter.result" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_value_emptyInput_js" code="courses.common.value.emptyInput" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_visibility_public_js" code="courses.common.visibility.public" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_visibility_private_js" code="courses.common.visibility.private" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_delete_js" code="courses.common.delete" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_field_placeName_js" code="courses.common.field.placeName" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_placeholder_placeExample_js" code="courses.common.placeholder.placeExample" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_help_placeStored_js" code="courses.common.help.placeStored" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_field_visitDate_js" code="courses.common.field.visitDate" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_field_visitOrder_js" code="courses.common.field.visitOrder" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_countWithUnit_js" code="courses.common.countWithUnit" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_confirm_deleteSpot_js" code="courses.common.confirm.deleteSpot" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_alert_minSpot_js" code="courses.common.alert.minSpot" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_alert_placeRequired_js" code="courses.common.alert.placeRequired" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_alert_visitDateRequired_js" code="courses.common.alert.visitDateRequired" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_alert_orderRequired_js" code="courses.common.alert.orderRequired" javaScriptEscape="true"/>
+<spring:message var="msg_courses_common_alert_duplicateOrder_js" code="courses.common.alert.duplicateOrder" javaScriptEscape="true"/>
+<spring:message var="msg_course_write_dateFormatHint_js" code="course.write.dateFormatHint" javaScriptEscape="true"/>
+<spring:message var="msg_course_write_notEntered_js" code="course.write.notEntered" javaScriptEscape="true"/>
+<spring:message var="msg_course_write_countSuffix_js" code="course.write.countSuffix" javaScriptEscape="true"/>
+<spring:message var="msg_course_badge_public_js" code="course.badge.public" javaScriptEscape="true"/>
+<spring:message var="msg_course_badge_private_js" code="course.badge.private" javaScriptEscape="true"/>
+<spring:message var="msg_course_form_spotLabel_js" code="course.form.spotLabel" javaScriptEscape="true"/>
+<spring:message var="msg_course_action_delete_js" code="course.action.delete" javaScriptEscape="true"/>
+<spring:message var="msg_course_form_placeName_js" code="course.form.placeName" javaScriptEscape="true"/>
+<spring:message var="msg_course_form_visitDate_js" code="course.form.visitDate" javaScriptEscape="true"/>
+<spring:message var="msg_course_form_visitOrder_js" code="course.form.visitOrder" javaScriptEscape="true"/>
+<spring:message var="msg_course_edit_placePlaceholder_js" code="course.edit.placePlaceholder" javaScriptEscape="true"/>
+<spring:message var="msg_course_write_placeFieldMsg_js" code="course.write.placeFieldMsg" javaScriptEscape="true"/>
+<spring:message var="msg_course_edit_filterAllVisible_js" code="course.edit.filterAllVisible" javaScriptEscape="true"/>
+<spring:message var="msg_course_edit_filterVisiblePrefix_js" code="course.edit.filterVisiblePrefix" javaScriptEscape="true"/>
+<spring:message var="msg_course_edit_filterVisibleSuffix_js" code="course.edit.filterVisibleSuffix" javaScriptEscape="true"/>
+<spring:message var="msg_course_edit_confirmRemoveSpot_js" code="course.edit.confirmRemoveSpot" javaScriptEscape="true"/>
+<spring:message var="msg_course_validation_spotRequired_js" code="course.validation.spotRequired" javaScriptEscape="true"/>
+<spring:message var="msg_course_validation_placeRequired_js" code="course.validation.placeRequired" javaScriptEscape="true"/>
+<spring:message var="msg_course_validation_visitDateRequired_js" code="course.validation.visitDateRequired" javaScriptEscape="true"/>
+<spring:message var="msg_course_validation_visitOrderRequired_js" code="course.validation.visitOrderRequired" javaScriptEscape="true"/>
+<spring:message var="msg_course_validation_duplicateVisitOrder_js" code="course.validation.duplicateVisitOrder" javaScriptEscape="true"/>
+<spring:message var="msg_course_edit_backToDetail" code="course.edit.backToDetail"/>
+<spring:message var="msg_course_detail_edit_title" code="course.detail.edit.title"/>
+<spring:message var="msg_course_detail_edit_desc" code="course.detail.edit.desc"/>
+<spring:message var="msg_course_edit_statusEditing" code="course.edit.statusEditing"/>
+<spring:message var="msg_course_write_basicInfo" code="course.write.basicInfo"/>
+<spring:message var="msg_course_edit_basicInfoDesc" code="course.edit.basicInfoDesc"/>
+<spring:message var="msg_course_form_title" code="course.form.title"/>
+<spring:message var="msg_course_form_destination" code="course.form.destination"/>
+<spring:message var="msg_course_write_destinationFieldMsg" code="course.write.destinationFieldMsg"/>
+<spring:message var="msg_course_form_startDate" code="course.form.startDate"/>
+<spring:message var="msg_course_write_dateFormatHint" code="course.write.dateFormatHint"/>
+<spring:message var="msg_course_form_endDate" code="course.form.endDate"/>
+<spring:message var="msg_course_write_visitSpots" code="course.write.visitSpots"/>
+<spring:message var="msg_course_edit_visitSpotsDesc" code="course.edit.visitSpotsDesc"/>
+<spring:message var="msg_course_edit_spotHelper" code="course.edit.spotHelper"/>
+<spring:message var="msg_course_detail_filterGuide" code="course.detail.filterGuide"/>
+<spring:message var="msg_course_action_resetFilter" code="course.action.resetFilter"/>
+<spring:message var="msg_course_edit_filterAllVisible" code="course.edit.filterAllVisible"/>
+<spring:message var="msg_course_form_spotLabel" code="course.form.spotLabel"/>
+<spring:message var="msg_course_action_delete" code="course.action.delete"/>
+<spring:message var="msg_course_form_placeName" code="course.form.placeName"/>
+<spring:message var="msg_course_write_placeFieldMsg" code="course.write.placeFieldMsg"/>
+<spring:message var="msg_course_form_visitDate" code="course.form.visitDate"/>
+<spring:message var="msg_course_form_visitOrder" code="course.form.visitOrder"/>
+<spring:message var="msg_course_action_addSpot" code="course.action.addSpot"/>
+<spring:message var="msg_course_write_publicSetting" code="course.write.publicSetting"/>
+<spring:message var="msg_course_edit_publicSettingDesc" code="course.edit.publicSettingDesc"/>
+<spring:message var="msg_course_write_publicToggle" code="course.write.publicToggle"/>
+<spring:message var="msg_course_edit_publicToggleDesc" code="course.edit.publicToggleDesc"/>
+<spring:message var="msg_course_write_summary" code="course.write.summary"/>
+<spring:message var="msg_course_edit_summaryDesc" code="course.edit.summaryDesc"/>
+<spring:message var="msg_course_common_travelPeriod" code="course.common.travelPeriod"/>
+<spring:message var="msg_course_form_spotCount" code="course.form.spotCount"/>
+<spring:message var="msg_course_write_countSuffix" code="course.write.countSuffix"/>
+<spring:message var="msg_course_form_publicStatus" code="course.form.publicStatus"/>
+<spring:message var="msg_course_badge_public" code="course.badge.public"/>
+<spring:message var="msg_course_badge_private" code="course.badge.private"/>
+<spring:message var="msg_course_action_cancel" code="course.action.cancel"/>
+<spring:message var="msg_course_edit_completeEdit" code="course.edit.completeEdit"/>
 <%@ include file="../common/header.jsp" %>
 
 <c:set var="planSourceValue" value="${empty travelPlan.plan_source ? 'manual' : travelPlan.plan_source}" />
@@ -526,15 +566,15 @@
 <main class="course-edit-page">
     <div class="page-inner">
         <a href="${pageContext.request.contextPath}/courses/detail?planId=${travelPlan.plan_id}" class="back-link">
-            <spring:message code="course.edit.backToDetail"/>
+            ${msg_course_edit_backToDetail}
         </a>
 
         <div class="page-header">
             <div>
-                <h1 class="page-title"><spring:message code="course.detail.edit.title"/></h1>
-                <p class="page-desc"><spring:message code="course.detail.edit.desc"/></p>
+                <h1 class="page-title">${msg_course_detail_edit_title}</h1>
+                <p class="page-desc">${msg_course_detail_edit_desc}</p>
             </div>
-            <div class="status-chip"><spring:message code="course.edit.statusEditing"/></div>
+            <div class="status-chip">${msg_course_edit_statusEditing}</div>
         </div>
 
         <form id="travelPlanForm" action="${pageContext.request.contextPath}/courses/edit" method="post">
@@ -546,13 +586,13 @@
                 <div class="edit-main">
                     <section class="card content-card">
                         <div class="card-head">
-                            <h2><spring:message code="course.write.basicInfo"/></h2>
-                            <p><spring:message code="course.edit.basicInfoDesc"/></p>
+                            <h2>${msg_course_write_basicInfo}</h2>
+                            <p>${msg_course_edit_basicInfoDesc}</p>
                         </div>
 
                         <div class="card-body">
                             <div class="form-group">
-                                <label class="form-label" for="title"><spring:message code="course.form.title"/></label>
+                                <label class="form-label" for="title">${msg_course_form_title}</label>
                                 <input type="text"
                                        id="title"
                                        name="title"
@@ -562,7 +602,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label" for="destination"><spring:message code="course.form.destination"/></label>
+                                <label class="form-label" for="destination">${msg_course_form_destination}</label>
                                 <input type="text"
                                        id="destination"
                                        name="destination"
@@ -571,13 +611,13 @@
                                        autocomplete="off"
                                        required>
                                 <div class="field-msg">
-                                    <spring:message code="course.write.destinationFieldMsg"/>
+                                    ${msg_course_write_destinationFieldMsg}
                                 </div>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label class="form-label" for="startDate"><spring:message code="course.form.startDate"/></label>
+                                    <label class="form-label" for="startDate">${msg_course_form_startDate}</label>
                                     <input type="date"
                                            id="startDate"
                                            name="start_date"
@@ -585,11 +625,11 @@
                                            value="${startDateFormatted}"
                                            aria-describedby="editStartDateFormatHint"
                                            required>
-                                    <div class="field-msg" id="editStartDateFormatHint"><spring:message code="course.write.dateFormatHint"/></div>
+                                    <div class="field-msg" id="editStartDateFormatHint">${msg_course_write_dateFormatHint}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label" for="endDate"><spring:message code="course.form.endDate"/></label>
+                                    <label class="form-label" for="endDate">${msg_course_form_endDate}</label>
                                     <input type="date"
                                            id="endDate"
                                            name="end_date"
@@ -597,7 +637,7 @@
                                            value="${endDateFormatted}"
                                            aria-describedby="editEndDateFormatHint"
                                            required>
-                                    <div class="field-msg" id="editEndDateFormatHint"><spring:message code="course.write.dateFormatHint"/></div>
+                                    <div class="field-msg" id="editEndDateFormatHint">${msg_course_write_dateFormatHint}</div>
                                 </div>
                             </div>
                         </div>
@@ -605,23 +645,23 @@
 
                     <section class="card content-card">
                         <div class="card-head">
-                            <h2><spring:message code="course.write.visitSpots"/></h2>
-                            <p><spring:message code="course.edit.visitSpotsDesc"/></p>
+                            <h2>${msg_course_write_visitSpots}</h2>
+                            <p>${msg_course_edit_visitSpotsDesc}</p>
                         </div>
 
                         <div class="card-body">
                             <div class="field-msg" style="margin-bottom:16px;">
-                                <spring:message code="course.edit.spotHelper"/>
+                                ${msg_course_edit_spotHelper}
                             </div>
 
                             <div class="spot-filter-bar">
                                 <div class="spot-filter-left">
-                                    <label for="spotDateFilter" class="spot-filter-label"><spring:message code="course.detail.filterGuide"/></label>
+                                    <label for="spotDateFilter" class="spot-filter-label">${msg_course_detail_filterGuide}</label>
                                     <input type="date" id="spotDateFilter" class="spot-filter-input">
-                                    <div class="field-msg"><spring:message code="course.write.dateFormatHint"/></div>
-                                    <button type="button" id="resetSpotFilterBtn" class="spot-filter-reset"><spring:message code="course.action.resetFilter"/></button>
+                                    <div class="field-msg">${msg_course_write_dateFormatHint}</div>
+                                    <button type="button" id="resetSpotFilterBtn" class="spot-filter-reset">${msg_course_action_resetFilter}</button>
                                 </div>
-                                <div class="spot-filter-right" id="spotFilterResultText"><spring:message code="course.edit.filterAllVisible"/></div>
+                                <div class="spot-filter-right" id="spotFilterResultText">${msg_course_edit_filterAllVisible}</div>
                             </div>
 
                             <div id="spotList" class="spot-list">
@@ -632,36 +672,36 @@
                                         <div class="spot-head">
                                             <div class="spot-head-left">
                                                 <span class="spot-badge">${s.index + 1}</span>
-                                                <span><spring:message code="course.form.spotLabel"/> ${s.index + 1}</span>
+                                                <span>${msg_course_form_spotLabel} ${s.index + 1}</span>
                                             </div>
-                                            <button type="button" class="remove-btn"><spring:message code="course.action.delete"/></button>
+                                            <button type="button" class="remove-btn">${msg_course_action_delete}</button>
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="form-label"><spring:message code="course.form.placeName"/></label>
+                                            <label class="form-label">${msg_course_form_placeName}</label>
                                             <input type="text"
                                                    class="form-input"
                                                    data-field="place_name"
                                                    name="spotList[${s.index}].place_name"
                                                    value="${spot.place_name}"
                                                    required>
-                                            <div class="field-msg"><spring:message code="course.write.placeFieldMsg"/></div>
+                                            <div class="field-msg">${msg_course_write_placeFieldMsg}</div>
                                         </div>
 
                                         <div class="form-row" style="margin-top:16px;">
                                             <div class="form-group">
-                                                <label class="form-label"><spring:message code="course.form.visitDate"/></label>
+                                                <label class="form-label">${msg_course_form_visitDate}</label>
                                                 <input type="date"
                                                        class="form-input"
                                                        data-field="visit_date"
                                                        name="spotList[${s.index}].visit_date"
                                                        value="${spotVisitDate}"
                                                        required>
-                                                <div class="field-msg"><spring:message code="course.write.dateFormatHint"/></div>
+                                                <div class="field-msg">${msg_course_write_dateFormatHint}</div>
                                             </div>
 
                                             <div class="form-group">
-                                                <label class="form-label"><spring:message code="course.form.visitOrder"/></label>
+                                                <label class="form-label">${msg_course_form_visitOrder}</label>
                                                 <input type="number"
                                                        class="form-input"
                                                        data-field="visit_order"
@@ -676,7 +716,7 @@
                             </div>
 
                             <button type="button" id="addSpotBtn" class="secondary-btn" style="margin-top:16px;">
-                                + <spring:message code="course.action.addSpot"/>
+                                + ${msg_course_action_addSpot}
                             </button>
                         </div>
                     </section>
@@ -685,15 +725,15 @@
                 <aside class="edit-side">
                     <section class="card content-card">
                         <div class="card-head">
-                            <h2><spring:message code="course.write.publicSetting"/></h2>
-                            <p><spring:message code="course.edit.publicSettingDesc"/></p>
+                            <h2>${msg_course_write_publicSetting}</h2>
+                            <p>${msg_course_edit_publicSettingDesc}</p>
                         </div>
 
                         <div class="card-body">
                             <div class="toggle-row">
                                 <div>
-                                    <div class="form-label" style="margin-bottom:6px;"><spring:message code="course.write.publicToggle"/></div>
-                                    <div class="field-msg"><spring:message code="course.edit.publicToggleDesc"/></div>
+                                    <div class="form-label" style="margin-bottom:6px;">${msg_course_write_publicToggle}</div>
+                                    <div class="field-msg">${msg_course_edit_publicToggleDesc}</div>
                                 </div>
 
                                 <label class="switch">
@@ -706,34 +746,34 @@
 
                     <section class="card content-card">
                         <div class="card-head">
-                            <h2><spring:message code="course.write.summary"/></h2>
-                            <p><spring:message code="course.edit.summaryDesc"/></p>
+                            <h2>${msg_course_write_summary}</h2>
+                            <p>${msg_course_edit_summaryDesc}</p>
                         </div>
 
                         <div class="card-body">
                             <div class="summary-box">
                                 <div class="summary-row">
-                                    <span><spring:message code="course.form.title"/></span>
+                                    <span>${msg_course_form_title}</span>
                                     <strong id="summaryTitle">${travelPlan.title}</strong>
                                 </div>
                                 <div class="summary-row">
-                                    <span><spring:message code="course.form.destination"/></span>
+                                    <span>${msg_course_form_destination}</span>
                                     <strong id="summaryDestination">${travelPlan.destination}</strong>
                                 </div>
                                 <div class="summary-row">
-                                    <span><spring:message code="course.common.travelPeriod"/></span>
+                                    <span>${msg_course_common_travelPeriod}</span>
                                     <strong id="summaryPeriod">${startDateFormatted} ~ ${endDateFormatted}</strong>
                                 </div>
                                 <div class="summary-row">
-                                    <span><spring:message code="course.form.spotCount"/></span>
-                                    <strong id="summaryCount"><c:out value="${fn:length(travelPlan.spotList)}"/><spring:message code="course.write.countSuffix"/></strong>
+                                    <span>${msg_course_form_spotCount}</span>
+                                    <strong id="summaryCount"><c:out value="${fn:length(travelPlan.spotList)}"/>${msg_course_write_countSuffix}</strong>
                                 </div>
                                 <div class="summary-row">
-                                    <span><spring:message code="course.form.publicStatus"/></span>
+                                    <span>${msg_course_form_publicStatus}</span>
                                     <strong id="summaryPublic">
                                         <c:choose>
-                                            <c:when test="${travelPlan.is_public == 1}"><spring:message code="course.badge.public"/></c:when>
-                                            <c:otherwise><spring:message code="course.badge.private"/></c:otherwise>
+                                            <c:when test="${travelPlan.is_public == 1}">${msg_course_badge_public}</c:when>
+                                            <c:otherwise>${msg_course_badge_private}</c:otherwise>
                                         </c:choose>
                                     </strong>
                                 </div>
@@ -741,8 +781,8 @@
 
                             <div class="form-actions" style="margin-top:24px;">
                                 <a href="${pageContext.request.contextPath}/courses/detail?planId=${travelPlan.plan_id}"
-                                   class="secondary-btn"><spring:message code="course.action.cancel"/></a>
-                                <button type="submit" class="primary-btn"><spring:message code="course.edit.completeEdit"/></button>
+                                   class="secondary-btn">${msg_course_action_cancel}</a>
+                                <button type="submit" class="primary-btn">${msg_course_edit_completeEdit}</button>
                             </div>
                         </div>
                     </section>
@@ -754,25 +794,25 @@
 
 <script>
     const courseEditMessages = {
-        spotIndexed: "${coursesCommonSpotIndexedMsg}",
-        allSpots: "${coursesCommonFilterAllSpotsMsg}",
-        filterResult: "${coursesCommonFilterResultMsg}",
-        emptyInput: "${coursesCommonValueEmptyInputMsg}",
-        publicLabel: "${coursesCommonVisibilityPublicMsg}",
-        privateLabel: "${coursesCommonVisibilityPrivateMsg}",
-        deleteLabel: "${coursesCommonDeleteMsg}",
-        placeNameLabel: "${coursesCommonFieldPlaceNameMsg}",
-        placePlaceholder: "${coursesCommonPlaceholderPlaceExampleMsg}",
-        placeHelp: "${coursesCommonHelpPlaceStoredMsg}",
-        visitDateLabel: "${coursesCommonFieldVisitDateMsg}",
-        visitOrderLabel: "${coursesCommonFieldVisitOrderMsg}",
-        countWithUnit: "${coursesCommonCountWithUnitMsg}",
-        deleteSpotConfirm: "${coursesCommonConfirmDeleteSpotMsg}",
-        minSpot: "${coursesCommonAlertMinSpotMsg}",
-        placeRequired: "${coursesCommonAlertPlaceRequiredMsg}",
-        visitDateRequired: "${coursesCommonAlertVisitDateRequiredMsg}",
-        orderRequired: "${coursesCommonAlertOrderRequiredMsg}",
-        duplicateOrder: "${coursesCommonAlertDuplicateOrderMsg}"
+        spotIndexed: "${msg_courses_common_spotIndexed_js}",
+        allSpots: "${msg_courses_common_filter_allSpots_js}",
+        filterResult: "${msg_courses_common_filter_result_js}",
+        emptyInput: "${msg_courses_common_value_emptyInput_js}",
+        publicLabel: "${msg_courses_common_visibility_public_js}",
+        privateLabel: "${msg_courses_common_visibility_private_js}",
+        deleteLabel: "${msg_courses_common_delete_js}",
+        placeNameLabel: "${msg_courses_common_field_placeName_js}",
+        placePlaceholder: "${msg_courses_common_placeholder_placeExample_js}",
+        placeHelp: "${msg_courses_common_help_placeStored_js}",
+        visitDateLabel: "${msg_courses_common_field_visitDate_js}",
+        visitOrderLabel: "${msg_courses_common_field_visitOrder_js}",
+        countWithUnit: "${msg_courses_common_countWithUnit_js}",
+        deleteSpotConfirm: "${msg_courses_common_confirm_deleteSpot_js}",
+        minSpot: "${msg_courses_common_alert_minSpot_js}",
+        placeRequired: "${msg_courses_common_alert_placeRequired_js}",
+        visitDateRequired: "${msg_courses_common_alert_visitDateRequired_js}",
+        orderRequired: "${msg_courses_common_alert_orderRequired_js}",
+        duplicateOrder: "${msg_courses_common_alert_duplicateOrder_js}"
     };
 
     function formatCourseMessage(template, ...values) {
@@ -801,27 +841,27 @@
     const summaryPublicEl = document.getElementById("summaryPublic");
 
     const COURSE_EDIT_TEXT = {
-        spotLabel: "${courseSpotLabelJs}",
-        deleteLabel: "${courseDeleteLabelJs}",
-        placeNameLabel: "${coursePlaceNameLabelJs}",
-        visitDateLabel: "${courseVisitDateLabelJs}",
-        visitOrderLabel: "${courseVisitOrderLabelJs}",
-        placePlaceholder: "${courseEditPlacePlaceholderJs}",
-        placeFieldMsg: "${coursePlaceFieldMsgJs}",
-        dateFormatHint: "${courseDateFormatHintJs}",
-        notEntered: "${courseNotEnteredJs}",
-        countSuffix: "${courseCountSuffixJs}",
-        publicLabel: "${coursePublicLabelJs}",
-        privateLabel: "${coursePrivateLabelJs}",
-        filterAllVisible: "${courseFilterAllVisibleJs}",
-        filterVisiblePrefix: "${courseFilterVisiblePrefixJs}",
-        filterVisibleSuffix: "${courseFilterVisibleSuffixJs}",
-        confirmRemoveSpot: "${courseConfirmRemoveSpotJs}",
-        validationSpotRequired: "${courseValidationSpotRequiredJs}",
-        validationPlaceRequired: "${courseValidationPlaceRequiredJs}",
-        validationVisitDateRequired: "${courseValidationVisitDateRequiredJs}",
-        validationVisitOrderRequired: "${courseValidationVisitOrderRequiredJs}",
-        validationDuplicateVisitOrder: "${courseValidationDuplicateVisitOrderJs}"
+        spotLabel: "${msg_course_form_spotLabel_js}",
+        deleteLabel: "${msg_course_action_delete_js}",
+        placeNameLabel: "${msg_course_form_placeName_js}",
+        visitDateLabel: "${msg_course_form_visitDate_js}",
+        visitOrderLabel: "${msg_course_form_visitOrder_js}",
+        placePlaceholder: "${msg_course_edit_placePlaceholder_js}",
+        placeFieldMsg: "${msg_course_write_placeFieldMsg_js}",
+        dateFormatHint: "${msg_course_write_dateFormatHint_js}",
+        notEntered: "${msg_course_write_notEntered_js}",
+        countSuffix: "${msg_course_write_countSuffix_js}",
+        publicLabel: "${msg_course_badge_public_js}",
+        privateLabel: "${msg_course_badge_private_js}",
+        filterAllVisible: "${msg_course_edit_filterAllVisible_js}",
+        filterVisiblePrefix: "${msg_course_edit_filterVisiblePrefix_js}",
+        filterVisibleSuffix: "${msg_course_edit_filterVisibleSuffix_js}",
+        confirmRemoveSpot: "${msg_course_edit_confirmRemoveSpot_js}",
+        validationSpotRequired: "${msg_course_validation_spotRequired_js}",
+        validationPlaceRequired: "${msg_course_validation_placeRequired_js}",
+        validationVisitDateRequired: "${msg_course_validation_visitDateRequired_js}",
+        validationVisitOrderRequired: "${msg_course_validation_visitOrderRequired_js}",
+        validationDuplicateVisitOrder: "${msg_course_validation_duplicateVisitOrder_js}"
     };
 
     function refreshSpotIndexes() {

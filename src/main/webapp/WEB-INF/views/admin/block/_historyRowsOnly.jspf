@@ -1,3 +1,15 @@
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_common_sameTarget" code="admin.common.sameTarget"/>
+<spring:message var="msg_admin_common_sameBatch" code="admin.common.sameBatch"/>
+<spring:message var="msg_admin_blocks_currentSetting" code="admin.blocks.currentSetting"/>
+<spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
+<spring:message var="msg_admin_common_detail" code="admin.common.detail"/>
+<spring:message var="msg_admin_common_noData" code="admin.common.noData"/>
 <c:forEach var="h" items="${histories}">
     <c:set var="historyCurrentType" value="IP_RULE"/>
     <c:if test="${h.blockScope == 'USER_ACTION'}">
@@ -47,7 +59,7 @@
                         data-section="histories"
                         data-field="target"
                         data-keyword="${fn:escapeXml(h.blockTargetKey)}">
-                    <spring:message code="admin.common.sameTarget"/>
+                    ${msg_admin_common_sameTarget}
                 </button>
                 <c:if test="${not empty h.ipBlockBatchIdx}">
                     <button type="button"
@@ -55,7 +67,7 @@
                             data-section="histories"
                             data-field="batch"
                             data-keyword="${fn:escapeXml(empty h.batchCode ? h.batchName : h.batchCode)}">
-                        <spring:message code="admin.common.sameBatch"/>
+                        ${msg_admin_common_sameBatch}
                     </button>
                 </c:if>
             </div>
@@ -120,7 +132,7 @@
                         data-target-key="${fn:escapeXml(h.blockTargetKey)}"
                         data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
                         data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
-                        data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.blocks.currentSetting"/></button>
+                        data-template-id="detail-history-${h.blockIdx}">${msg_admin_blocks_currentSetting}</button>
                 <div class="action-menu-wrap">
                     <button type="button"
                             class="adm-row-btn detail adm-row-btn-more"
@@ -130,11 +142,11 @@
                             <button type="button"
                                     class="action-menu-item js-open-ip-context"
                                     data-ip-address="${h.blockedIp}"
-                                    data-default-tab="blocks"><spring:message code="admin.common.viewDetail"/></button>
+                                    data-default-tab="blocks">${msg_admin_common_viewDetail}</button>
                         </c:if>
                         <button type="button"
                                 class="action-menu-item js-open-block-detail"
-                                data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.common.detail"/></button>
+                                data-template-id="detail-history-${h.blockIdx}">${msg_admin_common_detail}</button>
                     </div>
                 </div>
             </div>
@@ -142,5 +154,5 @@
     </tr>
 </c:forEach>
 <c:if test="${empty histories}">
-    <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+    <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;">${msg_admin_common_noData}</td></tr>
 </c:if>

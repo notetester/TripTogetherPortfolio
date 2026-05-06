@@ -1,3 +1,13 @@
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_common_sameTarget" code="admin.common.sameTarget"/>
+<spring:message var="msg_admin_common_sameBatch" code="admin.common.sameBatch"/>
+<spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
+<spring:message var="msg_admin_common_noData" code="admin.common.noData"/>
 <c:forEach var="r" items="${ipBlocks}">
     <fmt:formatDate var="ipRuleBlockedAtText" value="${r.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
     <c:set var="ipRuleExpiresText" value=""/>
@@ -50,7 +60,7 @@
                         data-section="ip-rules"
                         data-field="target"
                         data-keyword="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}">
-                    <spring:message code="admin.common.sameTarget"/>
+                    ${msg_admin_common_sameTarget}
                 </button>
                 <c:if test="${not empty r.ipBlockBatchIdx}">
                     <button type="button"
@@ -58,7 +68,7 @@
                             data-section="ip-rules"
                             data-field="batch"
                             data-keyword="${fn:escapeXml(empty r.batchCode ? r.batchName : r.batchCode)}">
-                        <spring:message code="admin.common.sameBatch"/>
+                        ${msg_admin_common_sameBatch}
                     </button>
                 </c:if>
             </div>
@@ -133,7 +143,7 @@
                             <button type="button"
                                     class="action-menu-item js-open-ip-context"
                                     data-ip-address="${r.ipAddress}"
-                                    data-default-tab="blocks"><spring:message code="admin.common.viewDetail"/></button>
+                                    data-default-tab="blocks">${msg_admin_common_viewDetail}</button>
                         </c:if>
                         <button type="button"
                                 class="action-menu-item js-open-block-detail"
@@ -158,5 +168,5 @@
     </tr>
 </c:forEach>
 <c:if test="${empty ipBlocks}">
-    <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+    <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;">${msg_admin_common_noData}</td></tr>
 </c:if>

@@ -3,51 +3,83 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_superAdmin_permissionCodes_form_codePlaceholder" code="superAdmin.permissionCodes.form.codePlaceholder"/>
+<spring:message var="msg_superAdmin_permissionCodes_form_displayNamePlaceholder" code="superAdmin.permissionCodes.form.displayNamePlaceholder"/>
+<spring:message var="msg_superAdmin_permissionCodes_form_descriptionPlaceholder" code="superAdmin.permissionCodes.form.descriptionPlaceholder"/>
+<spring:message var="msg_superAdmin_permissionCodes_modal_adminSearchPlaceholder" code="superAdmin.permissionCodes.modal.adminSearchPlaceholder"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_required_js" code="superAdmin.permissionCodes.toast.required" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_createFailed_js" code="superAdmin.permissionCodes.toast.createFailed" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_created_js" code="superAdmin.permissionCodes.toast.created" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_confirm_activate_js" code="superAdmin.permissionCodes.confirm.activate" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_confirm_deactivate_js" code="superAdmin.permissionCodes.confirm.deactivate" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_updated_js" code="superAdmin.permissionCodes.toast.updated" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_updateFailed_js" code="superAdmin.permissionCodes.toast.updateFailed" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_confirm_deleteEmpty_js" code="superAdmin.permissionCodes.confirm.deleteEmpty" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_confirm_deleteWithAdmins_js" code="superAdmin.permissionCodes.confirm.deleteWithAdmins" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_deleted_js" code="superAdmin.permissionCodes.toast.deleted" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_deleteFailed_js" code="superAdmin.permissionCodes.toast.deleteFailed" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_modal_detailTitleSuffix_js" code="superAdmin.permissionCodes.modal.detailTitleSuffix" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_loading_js" code="superAdmin.permissionCodes.loading" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_noPermissions_js" code="superAdmin.permissionCodes.noPermissions" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_noGroups_js" code="superAdmin.permissionCodes.noGroups" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_noAdmins_js" code="superAdmin.permissionCodes.noAdmins" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_action_remove_js" code="superAdmin.permissionCodes.action.remove" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_action_revoke_js" code="superAdmin.permissionCodes.action.revoke" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_permissionRequired_js" code="superAdmin.permissionCodes.toast.permissionRequired" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_permissionAdded_js" code="superAdmin.permissionCodes.toast.permissionAdded" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_permissionAddFailed_js" code="superAdmin.permissionCodes.toast.permissionAddFailed" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_confirm_removePermission_js" code="superAdmin.permissionCodes.confirm.removePermission" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_permissionRemoved_js" code="superAdmin.permissionCodes.toast.permissionRemoved" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_permissionRemoveFailed_js" code="superAdmin.permissionCodes.toast.permissionRemoveFailed" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_groupRequired_js" code="superAdmin.permissionCodes.toast.groupRequired" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_groupAdded_js" code="superAdmin.permissionCodes.toast.groupAdded" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_groupAddFailed_js" code="superAdmin.permissionCodes.toast.groupAddFailed" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_confirm_removeGroup_js" code="superAdmin.permissionCodes.confirm.removeGroup" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_groupRemoved_js" code="superAdmin.permissionCodes.toast.groupRemoved" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_groupRemoveFailed_js" code="superAdmin.permissionCodes.toast.groupRemoveFailed" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_searchRequired_js" code="superAdmin.permissionCodes.toast.searchRequired" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_searchEmpty_js" code="superAdmin.permissionCodes.searchEmpty" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_action_assign_js" code="superAdmin.permissionCodes.action.assign" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_confirm_assignAdmin_js" code="superAdmin.permissionCodes.confirm.assignAdmin" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_templateAssigned_js" code="superAdmin.permissionCodes.toast.templateAssigned" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_templateAssignFailed_js" code="superAdmin.permissionCodes.toast.templateAssignFailed" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_confirm_revokeAdmin_js" code="superAdmin.permissionCodes.confirm.revokeAdmin" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_templateRevoked_js" code="superAdmin.permissionCodes.toast.templateRevoked" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_toast_templateRevokeFailed_js" code="superAdmin.permissionCodes.toast.templateRevokeFailed" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_permissionCodes_pageTitle" code="superAdmin.permissionCodes.pageTitle"/>
+<spring:message var="msg_superAdmin_permissionCodes_cardTitle" code="superAdmin.permissionCodes.cardTitle"/>
+<spring:message var="msg_superAdmin_permissionCodes_cardDescription" code="superAdmin.permissionCodes.cardDescription"/>
+<spring:message var="msg_superAdmin_permissionCodes_createButton" code="superAdmin.permissionCodes.createButton"/>
+<spring:message var="msg_superAdmin_permissionCodes_empty" code="superAdmin.permissionCodes.empty"/>
+<spring:message var="msg_superAdmin_permissionCodes_list_count" code="superAdmin.permissionCodes.list.count"/>
+<spring:message var="msg_superAdmin_permissionCodes_status_active" code="superAdmin.permissionCodes.status.active"/>
+<spring:message var="msg_superAdmin_permissionCodes_status_inactive" code="superAdmin.permissionCodes.status.inactive"/>
+<spring:message var="msg_superAdmin_permissionCodes_action_detail" code="superAdmin.permissionCodes.action.detail"/>
+<spring:message var="msg_superAdmin_permissionCodes_action_deactivate" code="superAdmin.permissionCodes.action.deactivate"/>
+<spring:message var="msg_superAdmin_permissionCodes_action_activate" code="superAdmin.permissionCodes.action.activate"/>
+<spring:message var="msg_superAdmin_permissionCodes_action_delete" code="superAdmin.permissionCodes.action.delete"/>
+<spring:message var="msg_superAdmin_permissionCodes_modal_createTitle" code="superAdmin.permissionCodes.modal.createTitle"/>
+<spring:message var="msg_superAdmin_permissionCodes_form_code" code="superAdmin.permissionCodes.form.code"/>
+<spring:message var="msg_superAdmin_permissionCodes_form_displayName" code="superAdmin.permissionCodes.form.displayName"/>
+<spring:message var="msg_superAdmin_permissionCodes_form_description" code="superAdmin.permissionCodes.form.description"/>
+<spring:message var="msg_admin_common_cancel" code="admin.common.cancel"/>
+<spring:message var="msg_superAdmin_permissionCodes_action_create" code="superAdmin.permissionCodes.action.create"/>
+<spring:message var="msg_superAdmin_permissionCodes_modal_detailTitleSuffix" code="superAdmin.permissionCodes.modal.detailTitleSuffix"/>
+<spring:message var="msg_superAdmin_permissionCodes_modal_addPermission" code="superAdmin.permissionCodes.modal.addPermission"/>
+<spring:message var="msg_superAdmin_permissionCodes_loading" code="superAdmin.permissionCodes.loading"/>
+<spring:message var="msg_superAdmin_permissionCodes_modal_permissionSelectPlaceholder" code="superAdmin.permissionCodes.modal.permissionSelectPlaceholder"/>
+<spring:message var="msg_superAdmin_permissionCodes_action_add" code="superAdmin.permissionCodes.action.add"/>
+<spring:message var="msg_superAdmin_permissionCodes_modal_addGroup" code="superAdmin.permissionCodes.modal.addGroup"/>
+<spring:message var="msg_superAdmin_permissionCodes_modal_groupSelectPlaceholder" code="superAdmin.permissionCodes.modal.groupSelectPlaceholder"/>
+<spring:message var="msg_superAdmin_permissionCodes_modal_assignedAdmins" code="superAdmin.permissionCodes.modal.assignedAdmins"/>
+<spring:message var="msg_superAdmin_permissionCodes_searchButton" code="superAdmin.permissionCodes.searchButton"/>
+<spring:message var="msg_superAdmin_permissionCodes_modal_close" code="superAdmin.permissionCodes.modal.close"/>
+<c:set var="pageTitle" value="${msg_superAdmin_permissionCodes_pageTitle}"/>
 <c:set var="activeMenu" value="permissionCodes"/>
-<spring:message var="superadminPermissionCodesFormCodePlaceholderMsg" code="superAdmin.permissionCodes.form.codePlaceholder"/>
-<spring:message var="superadminPermissionCodesFormDisplayNamePlaceholderMsg" code="superAdmin.permissionCodes.form.displayNamePlaceholder"/>
-<spring:message var="superadminPermissionCodesFormDescriptionPlaceholderMsg" code="superAdmin.permissionCodes.form.descriptionPlaceholder"/>
-<spring:message var="superadminPermissionCodesModalAdminSearchPlaceholderMsg" code="superAdmin.permissionCodes.modal.adminSearchPlaceholder"/>
-<spring:message var="superadminPermissionCodesToastRequiredMsg" code="superAdmin.permissionCodes.toast.required" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastCreateFailedMsg" code="superAdmin.permissionCodes.toast.createFailed" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastCreatedMsg" code="superAdmin.permissionCodes.toast.created" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesConfirmActivateMsg" code="superAdmin.permissionCodes.confirm.activate" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesConfirmDeactivateMsg" code="superAdmin.permissionCodes.confirm.deactivate" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastUpdatedMsg" code="superAdmin.permissionCodes.toast.updated" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastUpdateFailedMsg" code="superAdmin.permissionCodes.toast.updateFailed" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesConfirmDeleteEmptyMsg" code="superAdmin.permissionCodes.confirm.deleteEmpty" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesConfirmDeleteWithAdminsMsg" code="superAdmin.permissionCodes.confirm.deleteWithAdmins" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastDeletedMsg" code="superAdmin.permissionCodes.toast.deleted" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastDeleteFailedMsg" code="superAdmin.permissionCodes.toast.deleteFailed" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesModalDetailTitleSuffixMsg" code="superAdmin.permissionCodes.modal.detailTitleSuffix" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesLoadingMsg" code="superAdmin.permissionCodes.loading" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesNoPermissionsMsg" code="superAdmin.permissionCodes.noPermissions" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesNoGroupsMsg" code="superAdmin.permissionCodes.noGroups" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesNoAdminsMsg" code="superAdmin.permissionCodes.noAdmins" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesActionRemoveMsg" code="superAdmin.permissionCodes.action.remove" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesActionRevokeMsg" code="superAdmin.permissionCodes.action.revoke" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastPermissionRequiredMsg" code="superAdmin.permissionCodes.toast.permissionRequired" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastPermissionAddedMsg" code="superAdmin.permissionCodes.toast.permissionAdded" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastPermissionAddFailedMsg" code="superAdmin.permissionCodes.toast.permissionAddFailed" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesConfirmRemovePermissionMsg" code="superAdmin.permissionCodes.confirm.removePermission" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastPermissionRemovedMsg" code="superAdmin.permissionCodes.toast.permissionRemoved" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastPermissionRemoveFailedMsg" code="superAdmin.permissionCodes.toast.permissionRemoveFailed" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastGroupRequiredMsg" code="superAdmin.permissionCodes.toast.groupRequired" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastGroupAddedMsg" code="superAdmin.permissionCodes.toast.groupAdded" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastGroupAddFailedMsg" code="superAdmin.permissionCodes.toast.groupAddFailed" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesConfirmRemoveGroupMsg" code="superAdmin.permissionCodes.confirm.removeGroup" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastGroupRemovedMsg" code="superAdmin.permissionCodes.toast.groupRemoved" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastGroupRemoveFailedMsg" code="superAdmin.permissionCodes.toast.groupRemoveFailed" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastSearchRequiredMsg" code="superAdmin.permissionCodes.toast.searchRequired" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesSearchEmptyMsg" code="superAdmin.permissionCodes.searchEmpty" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesActionAssignMsg" code="superAdmin.permissionCodes.action.assign" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesConfirmAssignAdminMsg" code="superAdmin.permissionCodes.confirm.assignAdmin" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastTemplateAssignedMsg" code="superAdmin.permissionCodes.toast.templateAssigned" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastTemplateAssignFailedMsg" code="superAdmin.permissionCodes.toast.templateAssignFailed" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesConfirmRevokeAdminMsg" code="superAdmin.permissionCodes.confirm.revokeAdmin" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastTemplateRevokedMsg" code="superAdmin.permissionCodes.toast.templateRevoked" javaScriptEscape="true"/>
-<spring:message var="superadminPermissionCodesToastTemplateRevokeFailedMsg" code="superAdmin.permissionCodes.toast.templateRevokeFailed" javaScriptEscape="true"/>
-<spring:message code="superAdmin.permissionCodes.pageTitle" var="pageTitle"/>
+
+
 <%@ include file="layout.jsp" %>
 
 <div class="adm-content">
@@ -56,10 +88,10 @@
         <div class="adm-card-body">
             <div style="display:flex;align-items:center;justify-content:space-between;">
                 <div>
-                    <div style="font-size:15px;font-weight:700;margin-bottom:4px;"><spring:message code="superAdmin.permissionCodes.cardTitle"/></div>
-                    <div style="font-size:13px;color:#94a3b8;"><spring:message code="superAdmin.permissionCodes.cardDescription"/></div>
+                    <div style="font-size:15px;font-weight:700;margin-bottom:4px;">${msg_superAdmin_permissionCodes_cardTitle}</div>
+                    <div style="font-size:13px;color:#94a3b8;">${msg_superAdmin_permissionCodes_cardDescription}</div>
                 </div>
-                <button class="adm-btn adm-btn-primary" onclick="openCreateModal()"><spring:message code="superAdmin.permissionCodes.createButton"/></button>
+                <button class="adm-btn adm-btn-primary" onclick="openCreateModal()">${msg_superAdmin_permissionCodes_createButton}</button>
             </div>
         </div>
     </div>
@@ -68,7 +100,7 @@
         <div class="adm-card-body" style="padding:0;">
             <c:choose>
                 <c:when test="${empty codeList}">
-                    <div style="text-align:center;padding:60px;color:#94a3b8;"><spring:message code="superAdmin.permissionCodes.empty"/></div>
+                    <div style="text-align:center;padding:60px;color:#94a3b8;">${msg_superAdmin_permissionCodes_empty}</div>
                 </c:when>
                 <c:otherwise>
                     <c:forEach var="c" items="${codeList}">
@@ -80,34 +112,34 @@
                             <div class="sa-group-name">${fn:escapeXml(c.displayName)}</div>
                             <div class="sa-group-desc">${fn:escapeXml(c.description)}</div>
                         </div>
-                        <div class="sa-group-cnt"><spring:message code="superAdmin.permissionCodes.list.count"/></div>
+                        <div class="sa-group-cnt">${msg_superAdmin_permissionCodes_list_count}</div>
                         <div>
                             <c:choose>
-                                <c:when test="${c.active}"><span class="adm-badge adm-badge-green"><spring:message code="superAdmin.permissionCodes.status.active"/></span></c:when>
-                                <c:otherwise><span class="adm-badge"><spring:message code="superAdmin.permissionCodes.status.inactive"/></span></c:otherwise>
+                                <c:when test="${c.active}"><span class="adm-badge adm-badge-green">${msg_superAdmin_permissionCodes_status_active}</span></c:when>
+                                <c:otherwise><span class="adm-badge">${msg_superAdmin_permissionCodes_status_inactive}</span></c:otherwise>
                             </c:choose>
                         </div>
                         <div style="display:flex;gap:6px;">
                             <button class="adm-btn adm-btn-sm adm-btn-ghost"
                                     data-code="${fn:escapeXml(c.adminPermissionCode)}"
                                     data-name="${fn:escapeXml(c.displayName)}"
-                                    onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))"><spring:message code="superAdmin.permissionCodes.action.detail"/></button>
+                                    onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">${msg_superAdmin_permissionCodes_action_detail}</button>
                             <c:choose>
                                 <c:when test="${c.active}">
                                     <button class="adm-btn adm-btn-sm adm-btn-danger"
                                             data-code="${fn:escapeXml(c.adminPermissionCode)}"
-                                            onclick="toggleCode(this.getAttribute('data-code'), false)"><spring:message code="superAdmin.permissionCodes.action.deactivate"/></button>
+                                            onclick="toggleCode(this.getAttribute('data-code'), false)">${msg_superAdmin_permissionCodes_action_deactivate}</button>
                                 </c:when>
                                 <c:otherwise>
                                     <button class="adm-btn adm-btn-sm adm-btn-primary"
                                             data-code="${fn:escapeXml(c.adminPermissionCode)}"
-                                            onclick="toggleCode(this.getAttribute('data-code'), true)"><spring:message code="superAdmin.permissionCodes.action.activate"/></button>
+                                            onclick="toggleCode(this.getAttribute('data-code'), true)">${msg_superAdmin_permissionCodes_action_activate}</button>
                                 </c:otherwise>
                             </c:choose>
                             <button class="adm-btn adm-btn-sm"
                                     style="background:#1e2330;color:#94a3b8;border:1px solid #2d3748;"
                                     data-code="${fn:escapeXml(c.adminPermissionCode)}"
-                                    onclick="deleteCode(this.getAttribute('data-code'))"><spring:message code="superAdmin.permissionCodes.action.delete"/></button>
+                                    onclick="deleteCode(this.getAttribute('data-code'))">${msg_superAdmin_permissionCodes_action_delete}</button>
                         </div>
                     </div>
                     </c:forEach>
@@ -121,28 +153,28 @@
 <div class="adm-modal-overlay" id="createModal">
     <div class="adm-modal" style="width:460px;max-width:95vw;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title"><spring:message code="superAdmin.permissionCodes.modal.createTitle"/></div>
+            <div class="adm-modal-title">${msg_superAdmin_permissionCodes_modal_createTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('createModal')">✕</button>
         </div>
         <div class="adm-modal-body">
             <div class="sa-form-grid" style="grid-template-columns:1fr;">
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="superAdmin.permissionCodes.form.code"/> <span style="color:#ef4444;">*</span></label>
-                    <input class="adm-input" id="newCode" type="text" placeholder="${superadminPermissionCodesFormCodePlaceholderMsg}" style="text-transform:uppercase;">
+                    <label class="sa-form-label">${msg_superAdmin_permissionCodes_form_code} <span style="color:#ef4444;">*</span></label>
+                    <input class="adm-input" id="newCode" type="text" placeholder="${msg_superAdmin_permissionCodes_form_codePlaceholder}" style="text-transform:uppercase;">
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="superAdmin.permissionCodes.form.displayName"/> <span style="color:#ef4444;">*</span></label>
-                    <input class="adm-input" id="newName" type="text" placeholder="${superadminPermissionCodesFormDisplayNamePlaceholderMsg}">
+                    <label class="sa-form-label">${msg_superAdmin_permissionCodes_form_displayName} <span style="color:#ef4444;">*</span></label>
+                    <input class="adm-input" id="newName" type="text" placeholder="${msg_superAdmin_permissionCodes_form_displayNamePlaceholder}">
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="superAdmin.permissionCodes.form.description"/></label>
-                    <input class="adm-input" id="newDesc" type="text" placeholder="${superadminPermissionCodesFormDescriptionPlaceholderMsg}">
+                    <label class="sa-form-label">${msg_superAdmin_permissionCodes_form_description}</label>
+                    <input class="adm-input" id="newDesc" type="text" placeholder="${msg_superAdmin_permissionCodes_form_descriptionPlaceholder}">
                 </div>
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost"   onclick="closeModal('createModal')"><spring:message code="admin.common.cancel"/></button>
-            <button class="adm-btn adm-btn-primary"  onclick="createCode()"><spring:message code="superAdmin.permissionCodes.action.create"/></button>
+            <button class="adm-btn adm-btn-ghost"   onclick="closeModal('createModal')">${msg_admin_common_cancel}</button>
+            <button class="adm-btn adm-btn-primary"  onclick="createCode()">${msg_superAdmin_permissionCodes_action_create}</button>
         </div>
     </div>
 </div>
@@ -151,55 +183,55 @@
 <div class="adm-modal-overlay" id="detailModal">
     <div class="adm-modal" style="width:600px;max-width:95vw;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="detailModalTitle"><spring:message code="superAdmin.permissionCodes.modal.detailTitleSuffix"/></div>
+            <div class="adm-modal-title" id="detailModalTitle">${msg_superAdmin_permissionCodes_modal_detailTitleSuffix}</div>
             <button class="adm-modal-close" onclick="closeModal('detailModal')">✕</button>
         </div>
         <div class="adm-modal-body">
 
-            <div class="sa-section-title"><spring:message code="superAdmin.permissionCodes.modal.addPermission"/></div>
+            <div class="sa-section-title">${msg_superAdmin_permissionCodes_modal_addPermission}</div>
             <div id="permItemList" style="margin-bottom:16px;">
-                <div style="text-align:center;padding:16px;color:#94a3b8;"><spring:message code="superAdmin.permissionCodes.loading"/></div>
+                <div style="text-align:center;padding:16px;color:#94a3b8;">${msg_superAdmin_permissionCodes_loading}</div>
             </div>
             <div style="display:flex;gap:8px;margin-bottom:20px;">
                 <select class="adm-select" id="addPermSelect" style="flex:1;">
-                    <option value=""><spring:message code="superAdmin.permissionCodes.modal.permissionSelectPlaceholder"/></option>
+                    <option value="">${msg_superAdmin_permissionCodes_modal_permissionSelectPlaceholder}</option>
                     <c:forEach var="p" items="${permissionPolicies}">
                         <option value="${fn:escapeXml(p.permissionCode)}">${fn:escapeXml(p.displayName)} (${fn:escapeXml(p.permissionCode)})</option>
                     </c:forEach>
                 </select>
-                <button class="adm-btn adm-btn-primary" onclick="addPermItem()"><spring:message code="superAdmin.permissionCodes.action.add"/></button>
+                <button class="adm-btn adm-btn-primary" onclick="addPermItem()">${msg_superAdmin_permissionCodes_action_add}</button>
             </div>
 
-            <div class="sa-section-title"><spring:message code="superAdmin.permissionCodes.modal.addGroup"/></div>
+            <div class="sa-section-title">${msg_superAdmin_permissionCodes_modal_addGroup}</div>
             <div id="groupItemList" style="margin-bottom:16px;">
-                <div style="text-align:center;padding:16px;color:#94a3b8;"><spring:message code="superAdmin.permissionCodes.loading"/></div>
+                <div style="text-align:center;padding:16px;color:#94a3b8;">${msg_superAdmin_permissionCodes_loading}</div>
             </div>
             <div style="display:flex;gap:8px;margin-bottom:20px;">
                 <select class="adm-select" id="addGroupSelect" style="flex:1;">
-                    <option value=""><spring:message code="superAdmin.permissionCodes.modal.groupSelectPlaceholder"/></option>
+                    <option value="">${msg_superAdmin_permissionCodes_modal_groupSelectPlaceholder}</option>
                     <c:forEach var="g" items="${groupList}">
                         <c:if test="${g.active}">
                         <option value="${fn:escapeXml(g.groupCode)}">${fn:escapeXml(g.displayName)} (${fn:escapeXml(g.groupCode)})</option>
                         </c:if>
                     </c:forEach>
                 </select>
-                <button class="adm-btn adm-btn-primary" onclick="addGroupItem()"><spring:message code="superAdmin.permissionCodes.action.add"/></button>
+                <button class="adm-btn adm-btn-primary" onclick="addGroupItem()">${msg_superAdmin_permissionCodes_action_add}</button>
             </div>
 
-            <div class="sa-section-title"><spring:message code="superAdmin.permissionCodes.modal.assignedAdmins"/></div>
+            <div class="sa-section-title">${msg_superAdmin_permissionCodes_modal_assignedAdmins}</div>
             <div style="display:flex;gap:8px;margin-bottom:10px;">
-                <input class="adm-input" id="adminSearchInput" type="text" placeholder="${superadminPermissionCodesModalAdminSearchPlaceholderMsg}" style="flex:1;"
+                <input class="adm-input" id="adminSearchInput" type="text" placeholder="${msg_superAdmin_permissionCodes_modal_adminSearchPlaceholder}" style="flex:1;"
                        onkeydown="if(event.key==='Enter') searchAdminsToAssign()">
-                <button class="adm-btn adm-btn-primary" onclick="searchAdminsToAssign()"><spring:message code="superAdmin.permissionCodes.searchButton"/></button>
+                <button class="adm-btn adm-btn-primary" onclick="searchAdminsToAssign()">${msg_superAdmin_permissionCodes_searchButton}</button>
             </div>
             <div id="adminSearchResult" style="margin-bottom:12px;"></div>
             <div id="adminList" style="margin-bottom:8px;">
-                <div style="text-align:center;padding:16px;color:#94a3b8;"><spring:message code="superAdmin.permissionCodes.loading"/></div>
+                <div style="text-align:center;padding:16px;color:#94a3b8;">${msg_superAdmin_permissionCodes_loading}</div>
             </div>
 
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" onclick="closeModal('detailModal')"><spring:message code="superAdmin.permissionCodes.modal.close"/></button>
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('detailModal')">${msg_superAdmin_permissionCodes_modal_close}</button>
         </div>
     </div>
 </div>
@@ -208,45 +240,45 @@
 const CTX = '${pageContext.request.contextPath}';
 let currentCode = null;
 const PERMISSION_CODE_MESSAGES = {
-    required: '${superadminPermissionCodesToastRequiredMsg}',
-    createFailed: '${superadminPermissionCodesToastCreateFailedMsg}',
-    created: '${superadminPermissionCodesToastCreatedMsg}',
-    confirmActivate: '${superadminPermissionCodesConfirmActivateMsg}',
-    confirmDeactivate: '${superadminPermissionCodesConfirmDeactivateMsg}',
-    updated: '${superadminPermissionCodesToastUpdatedMsg}',
-    updateFailed: '${superadminPermissionCodesToastUpdateFailedMsg}',
-    confirmDeleteEmpty: '${superadminPermissionCodesConfirmDeleteEmptyMsg}',
-    confirmDeleteWithAdmins: '${superadminPermissionCodesConfirmDeleteWithAdminsMsg}',
-    deleted: '${superadminPermissionCodesToastDeletedMsg}',
-    deleteFailed: '${superadminPermissionCodesToastDeleteFailedMsg}',
-    detailSuffix: '${superadminPermissionCodesModalDetailTitleSuffixMsg}',
-    loading: '${superadminPermissionCodesLoadingMsg}',
-    noPermissions: '${superadminPermissionCodesNoPermissionsMsg}',
-    noGroups: '${superadminPermissionCodesNoGroupsMsg}',
-    noAdmins: '${superadminPermissionCodesNoAdminsMsg}',
-    removeAction: '${superadminPermissionCodesActionRemoveMsg}',
-    revokeAction: '${superadminPermissionCodesActionRevokeMsg}',
-    permissionRequired: '${superadminPermissionCodesToastPermissionRequiredMsg}',
-    permissionAdded: '${superadminPermissionCodesToastPermissionAddedMsg}',
-    permissionAddFailed: '${superadminPermissionCodesToastPermissionAddFailedMsg}',
-    confirmRemovePermission: '${superadminPermissionCodesConfirmRemovePermissionMsg}',
-    permissionRemoved: '${superadminPermissionCodesToastPermissionRemovedMsg}',
-    permissionRemoveFailed: '${superadminPermissionCodesToastPermissionRemoveFailedMsg}',
-    groupRequired: '${superadminPermissionCodesToastGroupRequiredMsg}',
-    groupAdded: '${superadminPermissionCodesToastGroupAddedMsg}',
-    groupAddFailed: '${superadminPermissionCodesToastGroupAddFailedMsg}',
-    confirmRemoveGroup: '${superadminPermissionCodesConfirmRemoveGroupMsg}',
-    groupRemoved: '${superadminPermissionCodesToastGroupRemovedMsg}',
-    groupRemoveFailed: '${superadminPermissionCodesToastGroupRemoveFailedMsg}',
-    searchRequired: '${superadminPermissionCodesToastSearchRequiredMsg}',
-    searchEmpty: '${superadminPermissionCodesSearchEmptyMsg}',
-    assignAction: '${superadminPermissionCodesActionAssignMsg}',
-    confirmAssignAdmin: '${superadminPermissionCodesConfirmAssignAdminMsg}',
-    templateAssigned: '${superadminPermissionCodesToastTemplateAssignedMsg}',
-    templateAssignFailed: '${superadminPermissionCodesToastTemplateAssignFailedMsg}',
-    confirmRevokeAdmin: '${superadminPermissionCodesConfirmRevokeAdminMsg}',
-    templateRevoked: '${superadminPermissionCodesToastTemplateRevokedMsg}',
-    templateRevokeFailed: '${superadminPermissionCodesToastTemplateRevokeFailedMsg}'
+    required: '${msg_superAdmin_permissionCodes_toast_required_js}',
+    createFailed: '${msg_superAdmin_permissionCodes_toast_createFailed_js}',
+    created: '${msg_superAdmin_permissionCodes_toast_created_js}',
+    confirmActivate: '${msg_superAdmin_permissionCodes_confirm_activate_js}',
+    confirmDeactivate: '${msg_superAdmin_permissionCodes_confirm_deactivate_js}',
+    updated: '${msg_superAdmin_permissionCodes_toast_updated_js}',
+    updateFailed: '${msg_superAdmin_permissionCodes_toast_updateFailed_js}',
+    confirmDeleteEmpty: '${msg_superAdmin_permissionCodes_confirm_deleteEmpty_js}',
+    confirmDeleteWithAdmins: '${msg_superAdmin_permissionCodes_confirm_deleteWithAdmins_js}',
+    deleted: '${msg_superAdmin_permissionCodes_toast_deleted_js}',
+    deleteFailed: '${msg_superAdmin_permissionCodes_toast_deleteFailed_js}',
+    detailSuffix: '${msg_superAdmin_permissionCodes_modal_detailTitleSuffix_js}',
+    loading: '${msg_superAdmin_permissionCodes_loading_js}',
+    noPermissions: '${msg_superAdmin_permissionCodes_noPermissions_js}',
+    noGroups: '${msg_superAdmin_permissionCodes_noGroups_js}',
+    noAdmins: '${msg_superAdmin_permissionCodes_noAdmins_js}',
+    removeAction: '${msg_superAdmin_permissionCodes_action_remove_js}',
+    revokeAction: '${msg_superAdmin_permissionCodes_action_revoke_js}',
+    permissionRequired: '${msg_superAdmin_permissionCodes_toast_permissionRequired_js}',
+    permissionAdded: '${msg_superAdmin_permissionCodes_toast_permissionAdded_js}',
+    permissionAddFailed: '${msg_superAdmin_permissionCodes_toast_permissionAddFailed_js}',
+    confirmRemovePermission: '${msg_superAdmin_permissionCodes_confirm_removePermission_js}',
+    permissionRemoved: '${msg_superAdmin_permissionCodes_toast_permissionRemoved_js}',
+    permissionRemoveFailed: '${msg_superAdmin_permissionCodes_toast_permissionRemoveFailed_js}',
+    groupRequired: '${msg_superAdmin_permissionCodes_toast_groupRequired_js}',
+    groupAdded: '${msg_superAdmin_permissionCodes_toast_groupAdded_js}',
+    groupAddFailed: '${msg_superAdmin_permissionCodes_toast_groupAddFailed_js}',
+    confirmRemoveGroup: '${msg_superAdmin_permissionCodes_confirm_removeGroup_js}',
+    groupRemoved: '${msg_superAdmin_permissionCodes_toast_groupRemoved_js}',
+    groupRemoveFailed: '${msg_superAdmin_permissionCodes_toast_groupRemoveFailed_js}',
+    searchRequired: '${msg_superAdmin_permissionCodes_toast_searchRequired_js}',
+    searchEmpty: '${msg_superAdmin_permissionCodes_searchEmpty_js}',
+    assignAction: '${msg_superAdmin_permissionCodes_action_assign_js}',
+    confirmAssignAdmin: '${msg_superAdmin_permissionCodes_confirm_assignAdmin_js}',
+    templateAssigned: '${msg_superAdmin_permissionCodes_toast_templateAssigned_js}',
+    templateAssignFailed: '${msg_superAdmin_permissionCodes_toast_templateAssignFailed_js}',
+    confirmRevokeAdmin: '${msg_superAdmin_permissionCodes_confirm_revokeAdmin_js}',
+    templateRevoked: '${msg_superAdmin_permissionCodes_toast_templateRevoked_js}',
+    templateRevokeFailed: '${msg_superAdmin_permissionCodes_toast_templateRevokeFailed_js}'
 };
 
 function formatPermissionCodeMessage(template) {

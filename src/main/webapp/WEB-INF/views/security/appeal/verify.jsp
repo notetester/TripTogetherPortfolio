@@ -3,12 +3,23 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<spring:message var="emailPlaceholder" code="security.appeal.form.email.placeholder"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_security_appeal_form_email_placeholder" code="security.appeal.form.email.placeholder"/>
+<spring:message var="msg_security_appeal_verify_pageTitle" code="security.appeal.verify.pageTitle"/>
+<spring:message var="msg_security_appeal_verify_title" code="security.appeal.verify.title"/>
+<spring:message var="msg_security_appeal_verify_lead" code="security.appeal.verify.lead"/>
+<spring:message var="msg_security_appeal_form_requestId" code="security.appeal.form.requestId"/>
+<spring:message var="msg_security_appeal_form_blockType" code="security.appeal.form.blockType"/>
+<spring:message var="msg_security_appeal_form_email" code="security.appeal.form.email"/>
+<spring:message var="msg_security_appeal_verify_submit" code="security.appeal.verify.submit"/>
+<spring:message var="msg_security_appeal_verify_notice" code="security.appeal.verify.notice"/>
+<spring:message var="msg_security_appeal_result_lookupLink" code="security.appeal.result.lookupLink"/>
 <!DOCTYPE html>
 <html lang="${pageLang}">
 <head>
     <meta charset="UTF-8">
-    <title><spring:message code="security.appeal.verify.pageTitle"/></title>
+    <title>${msg_security_appeal_verify_pageTitle}</title>
     <style>
         body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#f8fafc; font-family:Arial,'Noto Sans KR',sans-serif; color:#0f172a; }
         .card { width:min(680px, calc(100vw - 32px)); background:#fff; border:1px solid #e2e8f0; border-radius:22px; padding:34px; box-shadow:0 24px 70px rgba(15,23,42,.12); }
@@ -28,8 +39,8 @@
 </head>
 <body>
 <main class="card">
-    <h1><spring:message code="security.appeal.verify.title"/></h1>
-    <p><spring:message code="security.appeal.verify.lead"/></p>
+    <h1>${msg_security_appeal_verify_title}</h1>
+    <p>${msg_security_appeal_verify_lead}</p>
 
     <c:if test="${not empty form.errorMessage}">
         <div class="error"><c:out value="${form.errorMessage}"/></div>
@@ -37,20 +48,20 @@
 
     <c:if test="${form.valid}">
         <div class="info">
-            <div><strong><spring:message code="security.appeal.form.requestId"/></strong>: <c:out value="${form.requestId}" default="-"/></div>
-            <div><strong><spring:message code="security.appeal.form.blockType"/></strong>: <c:out value="${form.blockKind}" default="-"/> / <c:out value="${form.blockMatchType}" default="-"/></div>
+            <div><strong>${msg_security_appeal_form_requestId}</strong>: <c:out value="${form.requestId}" default="-"/></div>
+            <div><strong>${msg_security_appeal_form_blockType}</strong>: <c:out value="${form.blockKind}" default="-"/> / <c:out value="${form.blockMatchType}" default="-"/></div>
         </div>
         <form method="post" action="${pageContext.request.contextPath}/security/appeal/verify">
             <input type="hidden" name="requestId" value="${fn:escapeXml(requestId)}"/>
             <input type="hidden" name="lang" value="${fn:escapeXml(pageLang)}"/>
-            <label><spring:message code="security.appeal.form.email"/>
-                <input type="email" name="submitterEmail" required maxlength="320" placeholder="${emailPlaceholder}">
+            <label>${msg_security_appeal_form_email}
+                <input type="email" name="submitterEmail" required maxlength="320" placeholder="${msg_security_appeal_form_email_placeholder}">
             </label>
-            <button type="submit"><spring:message code="security.appeal.verify.submit"/></button>
+            <button type="submit">${msg_security_appeal_verify_submit}</button>
         </form>
-        <p class="note"><spring:message code="security.appeal.verify.notice"/></p>
+        <p class="note">${msg_security_appeal_verify_notice}</p>
     </c:if>
-    <a class="btn" href="${pageContext.request.contextPath}/security/appeal/result?lang=${fn:escapeXml(pageLang)}"><spring:message code="security.appeal.result.lookupLink"/></a>
+    <a class="btn" href="${pageContext.request.contextPath}/security/appeal/result?lang=${fn:escapeXml(pageLang)}">${msg_security_appeal_result_lookupLink}</a>
 </main>
 </body>
 </html>

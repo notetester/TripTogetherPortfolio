@@ -4,26 +4,86 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="communitySearchPlaceholderMsg" code="community.search.placeholder"/>
-<spring:message var="communityTodayCloseMsg" code="community.today.close" javaScriptEscape="true"/>
-<spring:message var="communityTodayOpenMsg" code="community.today.open" javaScriptEscape="true"/>
-<spring:message var="communityAdminDeleteConfirmMsg" code="community.admin.delete.confirm" javaScriptEscape="true"/>
-<spring:message var="communityAdminDeleteFailMsg" code="community.admin.delete.fail" javaScriptEscape="true"/>
-<spring:message var="communityAdminClearBlurConfirmMsg" code="community.admin.clearBlur.confirm" javaScriptEscape="true"/>
-<spring:message var="communityAdminClearBlurFailMsg" code="community.admin.clearBlur.fail" javaScriptEscape="true"/>
-<spring:message var="communityAdminSelectedMsg" code="community.admin.selected" javaScriptEscape="true"/>
-<spring:message var="communityAdminNoneSelectedMsg" code="community.admin.noneSelected" javaScriptEscape="true"/>
-<spring:message var="communityAdminDeleteMsg" code="community.admin.delete" javaScriptEscape="true"/>
-<spring:message var="communityAdminBlockUserMsg" code="community.admin.block.user" javaScriptEscape="true"/>
-<spring:message var="communityAdminBlockIpMsg" code="community.admin.block.ip" javaScriptEscape="true"/>
-<spring:message var="communityAdminBlockBothMsg" code="community.admin.block.both" javaScriptEscape="true"/>
-<spring:message var="communityAdminBlockDeleteUserMsg" code="community.admin.blockDelete.user" javaScriptEscape="true"/>
-<spring:message var="communityAdminBlockDeleteIpMsg" code="community.admin.blockDelete.ip" javaScriptEscape="true"/>
-<spring:message var="communityAdminBlockDeleteBothMsg" code="community.admin.blockDelete.both" javaScriptEscape="true"/>
-<spring:message var="communityDetailBulkPostsConfirmMsg" code="community.detail.bulk.posts.confirm" javaScriptEscape="true"/>
-<spring:message var="communityDetailBulkDoneMsg" code="community.detail.bulk.done" javaScriptEscape="true"/>
-<spring:message var="communityDetailBulkFailMsg" code="community.detail.bulk.fail" javaScriptEscape="true"/>
-<spring:message var="communityDetailRequestFailMsg" code="community.detail.request.fail" javaScriptEscape="true"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_community_search_placeholder" code="community.search.placeholder"/>
+<spring:message var="msg_community_today_close_js" code="community.today.close" javaScriptEscape="true"/>
+<spring:message var="msg_community_today_open_js" code="community.today.open" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_delete_confirm_js" code="community.admin.delete.confirm" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_delete_fail_js" code="community.admin.delete.fail" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_clearBlur_confirm_js" code="community.admin.clearBlur.confirm" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_clearBlur_fail_js" code="community.admin.clearBlur.fail" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_selected_js" code="community.admin.selected" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_noneSelected_js" code="community.admin.noneSelected" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_delete_js" code="community.admin.delete" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_block_user_js" code="community.admin.block.user" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_block_ip_js" code="community.admin.block.ip" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_block_both_js" code="community.admin.block.both" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_blockDelete_user_js" code="community.admin.blockDelete.user" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_blockDelete_ip_js" code="community.admin.blockDelete.ip" javaScriptEscape="true"/>
+<spring:message var="msg_community_admin_blockDelete_both_js" code="community.admin.blockDelete.both" javaScriptEscape="true"/>
+<spring:message var="msg_community_detail_bulk_posts_confirm_js" code="community.detail.bulk.posts.confirm" javaScriptEscape="true"/>
+<spring:message var="msg_community_detail_bulk_done_js" code="community.detail.bulk.done" javaScriptEscape="true"/>
+<spring:message var="msg_community_detail_bulk_fail_js" code="community.detail.bulk.fail" javaScriptEscape="true"/>
+<spring:message var="msg_community_detail_request_fail_js" code="community.detail.request.fail" javaScriptEscape="true"/>
+<spring:message var="msg_community_title" code="community.title"/>
+<spring:message var="msg_community_subtitle" code="community.subtitle"/>
+<spring:message var="msg_community_today_title" code="community.today.title"/>
+<spring:message var="msg_community_today_close" code="community.today.close"/>
+<spring:message var="msg_community_type_review" code="community.type.review"/>
+<spring:message var="msg_community_type_photo" code="community.type.photo"/>
+<spring:message var="msg_community_type_tip" code="community.type.tip"/>
+<spring:message var="msg_community_type_question" code="community.type.question"/>
+<spring:message var="msg_community_tip_transport" code="community.tip.transport"/>
+<spring:message var="msg_community_tip_accom" code="community.tip.accom"/>
+<spring:message var="msg_community_tip_food" code="community.tip.food"/>
+<spring:message var="msg_community_tip_money" code="community.tip.money"/>
+<spring:message var="msg_community_tip_safety" code="community.tip.safety"/>
+<spring:message var="msg_community_tip_etc" code="community.tip.etc"/>
+<spring:message var="msg_community_question_solved" code="community.question.solved"/>
+<spring:message var="msg_community_question_unsolved" code="community.question.unsolved"/>
+<spring:message var="msg_community_blocked_ai" code="community.blocked.ai"/>
+<spring:message var="msg_community_blocked_report" code="community.blocked.report"/>
+<spring:message var="msg_community_region_all" code="community.region.all"/>
+<spring:message var="msg_community_region_asia" code="community.region.asia"/>
+<spring:message var="msg_community_region_europe" code="community.region.europe"/>
+<spring:message var="msg_community_region_africa" code="community.region.africa"/>
+<spring:message var="msg_community_region_northAmerica" code="community.region.northAmerica"/>
+<spring:message var="msg_community_region_southAmerica" code="community.region.southAmerica"/>
+<spring:message var="msg_community_region_oceania" code="community.region.oceania"/>
+<spring:message var="msg_community_region_etc" code="community.region.etc"/>
+<spring:message var="msg_community_search_all" code="community.search.all"/>
+<spring:message var="msg_community_search_title" code="community.search.title"/>
+<spring:message var="msg_community_search_content" code="community.search.content"/>
+<spring:message var="msg_community_search_tag" code="community.search.tag"/>
+<spring:message var="msg_community_search_author" code="community.search.author"/>
+<spring:message var="msg_community_search_comment" code="community.search.comment"/>
+<spring:message var="msg_community_write" code="community.write"/>
+<spring:message var="msg_community_sort_latest" code="community.sort.latest"/>
+<spring:message var="msg_community_sort_popular" code="community.sort.popular"/>
+<spring:message var="msg_community_sort_views" code="community.sort.views"/>
+<spring:message var="msg_community_total" code="community.total"/>
+<spring:message var="msg_community_search_result" code="community.search.result"/>
+<spring:message var="msg_community_search_clear" code="community.search.clear"/>
+<spring:message var="msg_community_latest_title" code="community.latest.title"/>
+<spring:message var="msg_community_admin_selectAll" code="community.admin.selectAll"/>
+<spring:message var="msg_community_admin_selected" code="community.admin.selected"/>
+<spring:message var="msg_community_admin_delete" code="community.admin.delete"/>
+<spring:message var="msg_community_admin_block" code="community.admin.block"/>
+<spring:message var="msg_community_admin_block_user" code="community.admin.block.user"/>
+<spring:message var="msg_community_admin_block_ip" code="community.admin.block.ip"/>
+<spring:message var="msg_community_admin_block_both" code="community.admin.block.both"/>
+<spring:message var="msg_community_admin_blockDelete" code="community.admin.blockDelete"/>
+<spring:message var="msg_community_admin_blockDelete_user" code="community.admin.blockDelete.user"/>
+<spring:message var="msg_community_admin_blockDelete_ip" code="community.admin.blockDelete.ip"/>
+<spring:message var="msg_community_admin_blockDelete_both" code="community.admin.blockDelete.both"/>
+<spring:message var="msg_community_empty_search" code="community.empty.search"/>
+<spring:message var="msg_community_empty_default" code="community.empty.default"/>
+<spring:message var="msg_community_badge_ai" code="community.badge.ai"/>
+<spring:message var="msg_community_badge_report" code="community.badge.report"/>
+<spring:message var="msg_community_badge_post" code="community.badge.post"/>
+<spring:message var="msg_community_badge_user" code="community.badge.user"/>
+<spring:message var="msg_community_admin_clearBlur" code="community.admin.clearBlur"/>
 <%--
   커뮤니티 목록 페이지
   Controller: GET /community/list
@@ -52,16 +112,16 @@
             <div>
                 <h1><a href="${pageContext.request.contextPath}/community/list"
                        onclick="sessionStorage.removeItem('todayPopularClosed')"
-                       style="color:inherit;text-decoration:none;cursor:pointer;"><spring:message code="community.title"/></a></h1>
-                <p class="comm-sub"><spring:message code="community.subtitle"/></p>
+                       style="color:inherit;text-decoration:none;cursor:pointer;">${msg_community_title}</a></h1>
+                <p class="comm-sub">${msg_community_subtitle}</p>
             </div>
         </div>
 
         <%-- 오늘 인기 여행 이야기 섹션 --%>
         <c:if test="${not empty popularList}">
             <div class="comm-section-title comm-section-title-today">
-                <spring:message code="community.today.title"/>
-                <button class="comm-section-toggle" id="todayToggleBtn" onclick="toggleTodaySection()"><spring:message code="community.today.close"/></button>
+                ${msg_community_today_title}
+                <button class="comm-section-toggle" id="todayToggleBtn" onclick="toggleTodaySection()">${msg_community_today_close}</button>
             </div>
             <div id="todayPopularGrid">
                 <div class="comm-carousel-outer">
@@ -92,31 +152,31 @@
                                         </c:choose>
                                         <span class="post-type-badge type-${post.postType}">
                                             <c:choose>
-                                                <c:when test="${post.postType eq 'review'}"><spring:message code="community.type.review"/></c:when>
-                                                <c:when test="${post.postType eq 'photo'}"><spring:message code="community.type.photo"/></c:when>
-                                                <c:when test="${post.postType eq 'tip'}"><spring:message code="community.type.tip"/></c:when>
-                                                <c:when test="${post.postType eq 'question'}"><spring:message code="community.type.question"/></c:when>
+                                                <c:when test="${post.postType eq 'review'}">${msg_community_type_review}</c:when>
+                                                <c:when test="${post.postType eq 'photo'}">${msg_community_type_photo}</c:when>
+                                                <c:when test="${post.postType eq 'tip'}">${msg_community_type_tip}</c:when>
+                                                <c:when test="${post.postType eq 'question'}">${msg_community_type_question}</c:when>
                                             </c:choose>
                                         </span>
                                         <c:if test="${post.postType eq 'tip' and not empty post.tipCategory}">
                                             <span class="post-type-badge type-tip-sub ${post.tipCategory}">
                                                 <c:choose>
-                                                    <c:when test="${post.tipCategory eq 'transport'}"><spring:message code="community.tip.transport"/></c:when>
-                                                    <c:when test="${post.tipCategory eq 'accom'}"><spring:message code="community.tip.accom"/></c:when>
-                                                    <c:when test="${post.tipCategory eq 'food'}"><spring:message code="community.tip.food"/></c:when>
-                                                    <c:when test="${post.tipCategory eq 'money'}"><spring:message code="community.tip.money"/></c:when>
-                                                    <c:when test="${post.tipCategory eq 'safety'}"><spring:message code="community.tip.safety"/></c:when>
-                                                    <c:otherwise><spring:message code="community.tip.etc"/></c:otherwise>
+                                                    <c:when test="${post.tipCategory eq 'transport'}">${msg_community_tip_transport}</c:when>
+                                                    <c:when test="${post.tipCategory eq 'accom'}">${msg_community_tip_accom}</c:when>
+                                                    <c:when test="${post.tipCategory eq 'food'}">${msg_community_tip_food}</c:when>
+                                                    <c:when test="${post.tipCategory eq 'money'}">${msg_community_tip_money}</c:when>
+                                                    <c:when test="${post.tipCategory eq 'safety'}">${msg_community_tip_safety}</c:when>
+                                                    <c:otherwise>${msg_community_tip_etc}</c:otherwise>
                                                 </c:choose>
                                             </span>
                                         </c:if>
                                         <c:if test="${post.postType eq 'question'}">
                                             <c:choose>
                                                 <c:when test="${post.isSolved}">
-                                                    <span class="post-type-badge type-question-sub solved"><spring:message code="community.question.solved"/></span>
+                                                    <span class="post-type-badge type-question-sub solved">${msg_community_question_solved}</span>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <span class="post-type-badge type-question-sub unsolved"><spring:message code="community.question.unsolved"/></span>
+                                                    <span class="post-type-badge type-question-sub unsolved">${msg_community_question_unsolved}</span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </c:if>
@@ -136,8 +196,8 @@
                                     <c:if test="${isBlurred}">
                                         <div class="report-blurred-overlay">
                                             <c:choose>
-                                                <c:when test="${post.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
-                                                <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                                <c:when test="${post.aiFlagged}">${msg_community_blocked_ai}</c:when>
+                                                <c:otherwise>${msg_community_blocked_report}</c:otherwise>
                                             </c:choose>
                                         </div>
                                     </c:if>
@@ -155,35 +215,35 @@
         <div class="region-tabs">
             <a href="${pageContext.request.contextPath}/community/list?region=all&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${empty param.region or param.region eq 'all' ? 'active' : ''}">
-                <spring:message code="community.region.all"/>
+                ${msg_community_region_all}
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=asia&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'asia' ? 'active' : ''}">
-                <spring:message code="community.region.asia"/>
+                ${msg_community_region_asia}
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=europe&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'europe' ? 'active' : ''}">
-                <spring:message code="community.region.europe"/>
+                ${msg_community_region_europe}
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=africa&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'africa' ? 'active' : ''}">
-                <spring:message code="community.region.africa"/>
+                ${msg_community_region_africa}
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=north_america&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'north_america' ? 'active' : ''}">
-                <spring:message code="community.region.northAmerica"/>
+                ${msg_community_region_northAmerica}
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=south_america&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'south_america' ? 'active' : ''}">
-                <spring:message code="community.region.southAmerica"/>
+                ${msg_community_region_southAmerica}
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=oceania&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'oceania' ? 'active' : ''}">
-                <spring:message code="community.region.oceania"/>
+                ${msg_community_region_oceania}
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=etc&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'etc' ? 'active' : ''}">
-                <spring:message code="community.region.etc"/>
+                ${msg_community_region_etc}
             </a>
         </div>
 
@@ -196,23 +256,23 @@
                     <input type="hidden" name="sort" value="${param.sort}">
                     <div class="comm-search-box">
                         <select name="searchType" class="comm-search-select">
-                            <option value="all"    ${empty param.searchType or param.searchType eq 'all'     ? 'selected' : ''}><spring:message code="community.search.all"/></option>
-                            <option value="title"   ${param.searchType eq 'title'   ? 'selected' : ''}><spring:message code="community.search.title"/></option>
-                            <option value="content" ${param.searchType eq 'content' ? 'selected' : ''}><spring:message code="community.search.content"/></option>
-                            <option value="tag"     ${param.searchType eq 'tag'     ? 'selected' : ''}><spring:message code="community.search.tag"/></option>
-                            <option value="author"  ${param.searchType eq 'author'  ? 'selected' : ''}><spring:message code="community.search.author"/></option>
-                            <option value="comment" ${param.searchType eq 'comment' ? 'selected' : ''}><spring:message code="community.search.comment"/></option>
+                            <option value="all"    ${empty param.searchType or param.searchType eq 'all'     ? 'selected' : ''}>${msg_community_search_all}</option>
+                            <option value="title"   ${param.searchType eq 'title'   ? 'selected' : ''}>${msg_community_search_title}</option>
+                            <option value="content" ${param.searchType eq 'content' ? 'selected' : ''}>${msg_community_search_content}</option>
+                            <option value="tag"     ${param.searchType eq 'tag'     ? 'selected' : ''}>${msg_community_search_tag}</option>
+                            <option value="author"  ${param.searchType eq 'author'  ? 'selected' : ''}>${msg_community_search_author}</option>
+                            <option value="comment" ${param.searchType eq 'comment' ? 'selected' : ''}>${msg_community_search_comment}</option>
                         </select>
                         <span class="comm-search-divider"></span>
                         <input type="text" name="keyword" class="comm-search-input"
                                value="${param.keyword}"
-                               placeholder="${communitySearchPlaceholderMsg}">
+                               placeholder="${msg_community_search_placeholder}">
                         <button type="submit" class="comm-search-btn">&#128269;</button>
                     </div>
                 </form>
                 <button class="btn-write"
                         onclick="location.href='${pageContext.request.contextPath}/community/write'">
-                    &#43; <spring:message code="community.write"/>
+                    &#43; ${msg_community_write}
                 </button>
             </div>
         </div>
@@ -253,62 +313,62 @@
     <div class="comm-filter-bar">
         <div class="type-filters">
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=all&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="type-btn ${empty param.type or param.type eq 'all' ? 'active' : ''}"><spring:message code="community.region.all"/></a>
+               class="type-btn ${empty param.type or param.type eq 'all' ? 'active' : ''}">${msg_community_region_all}</a>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=review&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="type-btn ${param.type eq 'review' ? 'active' : ''}">&#128172; <spring:message code="community.type.review"/></a>
+               class="type-btn ${param.type eq 'review' ? 'active' : ''}">&#128172; ${msg_community_type_review}</a>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=photo&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="type-btn ${param.type eq 'photo' ? 'active' : ''}">&#128247; <spring:message code="community.type.photo"/></a>
+               class="type-btn ${param.type eq 'photo' ? 'active' : ''}">&#128247; ${msg_community_type_photo}</a>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=tip&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="type-btn ${param.type eq 'tip' ? 'active' : ''}">&#128161; <spring:message code="community.type.tip"/></a>
+               class="type-btn ${param.type eq 'tip' ? 'active' : ''}">&#128161; ${msg_community_type_tip}</a>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=question&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="type-btn ${param.type eq 'question' ? 'active' : ''}">&#10067; <spring:message code="community.type.question"/></a>
+               class="type-btn ${param.type eq 'question' ? 'active' : ''}">&#10067; ${msg_community_type_question}</a>
         </div>
         <div class="sort-area">
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=latest&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="sort-btn ${empty param.sort or param.sort eq 'latest' ? 'active' : ''}"><spring:message code="community.sort.latest"/></a>
+               class="sort-btn ${empty param.sort or param.sort eq 'latest' ? 'active' : ''}">${msg_community_sort_latest}</a>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=popular&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="sort-btn ${param.sort eq 'popular' ? 'active' : ''}"><spring:message code="community.sort.popular"/></a>
+               class="sort-btn ${param.sort eq 'popular' ? 'active' : ''}">${msg_community_sort_popular}</a>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=views&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="sort-btn ${param.sort eq 'views' ? 'active' : ''}"><spring:message code="community.sort.views"/></a>
-            <span class="total-count"><spring:message code="community.total"/></span>
+               class="sort-btn ${param.sort eq 'views' ? 'active' : ''}">${msg_community_sort_views}</a>
+            <span class="total-count">${msg_community_total}</span>
         </div>
     </div>
 
     <%-- 검색 결과 표시 --%>
     <c:if test="${not empty param.keyword}">
         <div class="search-result-bar">
-            <span><spring:message code="community.search.result"/></span>
+            <span>${msg_community_search_result}</span>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=${param.sort}"
-               class="search-clear-btn">&#10005; <spring:message code="community.search.clear"/></a>
+               class="search-clear-btn">&#10005; ${msg_community_search_clear}</a>
         </div>
     </c:if>
 
     <%-- 최신 여행 이야기 섹션 타이틀 --%>
-    <div class="comm-section-title"><spring:message code="community.latest.title"/></div>
+    <div class="comm-section-title">${msg_community_latest_title}</div>
 
     <%-- 어드민 일괄 처리 툴바 --%>
     <c:if test="${isAdminMode}">
         <div class="comm-admin-toolbar" id="adminToolbar">
             <label class="comm-admin-chk-all">
-                <input type="checkbox" id="chkAll"> <spring:message code="community.admin.selectAll"/>
+                <input type="checkbox" id="chkAll"> ${msg_community_admin_selectAll}
             </label>
-            <span class="comm-admin-selected-count" id="selectedCount"><spring:message code="community.admin.selected"/></span>
+            <span class="comm-admin-selected-count" id="selectedCount">${msg_community_admin_selected}</span>
             <div class="comm-admin-actions">
-                <button class="comm-admin-btn btn-delete" onclick="doBulkAction('delete')"><spring:message code="community.admin.delete"/></button>
+                <button class="comm-admin-btn btn-delete" onclick="doBulkAction('delete')">${msg_community_admin_delete}</button>
                 <div class="comm-admin-dropdown">
-                    <button class="comm-admin-btn btn-block-user"><spring:message code="community.admin.block"/> ▾</button>
+                    <button class="comm-admin-btn btn-block-user">${msg_community_admin_block} ▾</button>
                     <div class="comm-admin-dropdown-menu">
-                        <button onclick="doBulkAction('blockUser')"><spring:message code="community.admin.block.user"/></button>
-                        <button onclick="doBulkAction('blockIp')"><spring:message code="community.admin.block.ip"/></button>
-                        <button onclick="doBulkAction('blockBoth')"><spring:message code="community.admin.block.both"/></button>
+                        <button onclick="doBulkAction('blockUser')">${msg_community_admin_block_user}</button>
+                        <button onclick="doBulkAction('blockIp')">${msg_community_admin_block_ip}</button>
+                        <button onclick="doBulkAction('blockBoth')">${msg_community_admin_block_both}</button>
                     </div>
                 </div>
                 <div class="comm-admin-dropdown">
-                    <button class="comm-admin-btn btn-block-delete"><spring:message code="community.admin.blockDelete"/> ▾</button>
+                    <button class="comm-admin-btn btn-block-delete">${msg_community_admin_blockDelete} ▾</button>
                     <div class="comm-admin-dropdown-menu">
-                        <button onclick="doBulkAction('blockUserAndDelete')"><spring:message code="community.admin.blockDelete.user"/></button>
-                        <button onclick="doBulkAction('blockIpAndDelete')"><spring:message code="community.admin.blockDelete.ip"/></button>
-                        <button onclick="doBulkAction('blockAndDelete')"><spring:message code="community.admin.blockDelete.both"/></button>
+                        <button onclick="doBulkAction('blockUserAndDelete')">${msg_community_admin_blockDelete_user}</button>
+                        <button onclick="doBulkAction('blockIpAndDelete')">${msg_community_admin_blockDelete_ip}</button>
+                        <button onclick="doBulkAction('blockAndDelete')">${msg_community_admin_blockDelete_both}</button>
                     </div>
                 </div>
             </div>
@@ -330,15 +390,15 @@
                     <div class="empty-icon">&#9992;</div>
                     <c:choose>
                         <c:when test="${not empty param.keyword}">
-                            <p><spring:message code="community.empty.search"/></p>
+                            <p>${msg_community_empty_search}</p>
                         </c:when>
                         <c:otherwise>
-                            <p><spring:message code="community.empty.default"/></p>
+                            <p>${msg_community_empty_default}</p>
                         </c:otherwise>
                     </c:choose>
                     <button class="btn-write"
                             onclick="location.href='${pageContext.request.contextPath}/community/write'">
-                        <spring:message code="community.write"/>
+                        ${msg_community_write}
                     </button>
                 </div>
             </c:when>
@@ -382,31 +442,31 @@
                                     </c:choose>
                                     <span class="post-type-badge type-${post.postType}">
     <c:choose>
-        <c:when test="${post.postType eq 'review'}"><spring:message code="community.type.review"/></c:when>
-        <c:when test="${post.postType eq 'photo'}"><spring:message code="community.type.photo"/></c:when>
-        <c:when test="${post.postType eq 'tip'}"><spring:message code="community.type.tip"/></c:when>
-        <c:when test="${post.postType eq 'question'}"><spring:message code="community.type.question"/></c:when>
+        <c:when test="${post.postType eq 'review'}">${msg_community_type_review}</c:when>
+        <c:when test="${post.postType eq 'photo'}">${msg_community_type_photo}</c:when>
+        <c:when test="${post.postType eq 'tip'}">${msg_community_type_tip}</c:when>
+        <c:when test="${post.postType eq 'question'}">${msg_community_type_question}</c:when>
     </c:choose>
 </span>
 <c:if test="${post.postType eq 'tip' and not empty post.tipCategory}">
     <span class="post-type-badge type-tip-sub ${post.tipCategory}">
         <c:choose>
-            <c:when test="${post.tipCategory eq 'transport'}"><spring:message code="community.tip.transport"/></c:when>
-            <c:when test="${post.tipCategory eq 'accom'}"><spring:message code="community.tip.accom"/></c:when>
-            <c:when test="${post.tipCategory eq 'food'}"><spring:message code="community.tip.food"/></c:when>
-            <c:when test="${post.tipCategory eq 'money'}"><spring:message code="community.tip.money"/></c:when>
-            <c:when test="${post.tipCategory eq 'safety'}"><spring:message code="community.tip.safety"/></c:when>
-            <c:otherwise><spring:message code="community.tip.etc"/></c:otherwise>
+            <c:when test="${post.tipCategory eq 'transport'}">${msg_community_tip_transport}</c:when>
+            <c:when test="${post.tipCategory eq 'accom'}">${msg_community_tip_accom}</c:when>
+            <c:when test="${post.tipCategory eq 'food'}">${msg_community_tip_food}</c:when>
+            <c:when test="${post.tipCategory eq 'money'}">${msg_community_tip_money}</c:when>
+            <c:when test="${post.tipCategory eq 'safety'}">${msg_community_tip_safety}</c:when>
+            <c:otherwise>${msg_community_tip_etc}</c:otherwise>
         </c:choose>
     </span>
 </c:if>
 <c:if test="${post.postType eq 'question'}">
     <c:choose>
         <c:when test="${post.isSolved}">
-            <span class="post-type-badge type-question-sub solved"><spring:message code="community.question.solved"/></span>
+            <span class="post-type-badge type-question-sub solved">${msg_community_question_solved}</span>
         </c:when>
         <c:otherwise>
-            <span class="post-type-badge type-question-sub unsolved"><spring:message code="community.question.unsolved"/></span>
+            <span class="post-type-badge type-question-sub unsolved">${msg_community_question_unsolved}</span>
         </c:otherwise>
     </c:choose>
 </c:if>
@@ -439,30 +499,30 @@
                             <c:if test="${isBlurred}">
                                 <div class="report-blurred-overlay" onclick="removeReportBlur(this)">
                                     <c:choose>
-                                        <c:when test="${post.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
-                                        <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                        <c:when test="${post.aiFlagged}">${msg_community_blocked_ai}</c:when>
+                                        <c:otherwise>${msg_community_blocked_report}</c:otherwise>
                                     </c:choose>
                                 </div>
                             </c:if>
                             <c:if test="${isAdminMode}">
                                 <c:choose>
                                     <c:when test="${post.aiFlagged}">
-                                        <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                                        <span class="blocked-badge">${msg_community_badge_ai}</span>
                                     </c:when>
                                     <c:when test="${post.postStatus eq 'ACTIVE' and post.reportCount >= reportThreshold}">
-                                        <span class="blocked-badge"><spring:message code="community.badge.report"/></span>
+                                        <span class="blocked-badge">${msg_community_badge_report}</span>
                                     </c:when>
                                     <c:when test="${post.postStatus eq 'BLOCKED'}">
-                                        <span class="blocked-badge"><spring:message code="community.badge.post"/></span>
+                                        <span class="blocked-badge">${msg_community_badge_post}</span>
                                     </c:when>
                                     <c:when test="${post.accountStatus eq 'BLOCKED'}">
-                                        <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
+                                        <span class="blocked-badge">${msg_community_badge_user}</span>
                                     </c:when>
                                 </c:choose>
                                 <c:if test="${post.aiFlagged or post.reportCount >= reportThreshold}">
                                     <button class="post-admin-clear-blur-btn" data-id="${post.postId}"
                                             onclick="adminClearPostBlur(event, ${post.postId})">
-                                        <spring:message code="community.admin.clearBlur"/>
+                                        ${msg_community_admin_clearBlur}
                                     </button>
                                 </c:if>
                             </c:if>
@@ -500,23 +560,23 @@
                 <input type="hidden" name="sort" value="${param.sort}">
                 <div class="comm-search-box">
                     <select name="searchType" class="comm-search-select">
-                        <option value="all"    ${empty param.searchType or param.searchType eq 'all'     ? 'selected' : ''}><spring:message code="community.search.all"/></option>
-                        <option value="title"   ${param.searchType eq 'title'   ? 'selected' : ''}><spring:message code="community.search.title"/></option>
-                        <option value="content" ${param.searchType eq 'content' ? 'selected' : ''}><spring:message code="community.search.content"/></option>
-                        <option value="tag"     ${param.searchType eq 'tag'     ? 'selected' : ''}><spring:message code="community.search.tag"/></option>
-                        <option value="author"  ${param.searchType eq 'author'  ? 'selected' : ''}><spring:message code="community.search.author"/></option>
-                        <option value="comment" ${param.searchType eq 'comment' ? 'selected' : ''}><spring:message code="community.search.comment"/></option>
+                        <option value="all"    ${empty param.searchType or param.searchType eq 'all'     ? 'selected' : ''}>${msg_community_search_all}</option>
+                        <option value="title"   ${param.searchType eq 'title'   ? 'selected' : ''}>${msg_community_search_title}</option>
+                        <option value="content" ${param.searchType eq 'content' ? 'selected' : ''}>${msg_community_search_content}</option>
+                        <option value="tag"     ${param.searchType eq 'tag'     ? 'selected' : ''}>${msg_community_search_tag}</option>
+                        <option value="author"  ${param.searchType eq 'author'  ? 'selected' : ''}>${msg_community_search_author}</option>
+                        <option value="comment" ${param.searchType eq 'comment' ? 'selected' : ''}>${msg_community_search_comment}</option>
                     </select>
                     <span class="comm-search-divider"></span>
                     <input type="text" name="keyword" class="comm-search-input"
                            value="${param.keyword}"
-                           placeholder="${communitySearchPlaceholderMsg}">
+                           placeholder="${msg_community_search_placeholder}">
                     <button type="submit" class="comm-search-btn">&#128269;</button>
                 </div>
             </form>
             <button class="btn-write"
                     onclick="location.href='${pageContext.request.contextPath}/community/write'">
-                &#43; <spring:message code="community.write"/>
+                &#43; ${msg_community_write}
             </button>
         </div>
     </div>
@@ -533,11 +593,11 @@
         if (!grid) return;
         if (grid.style.display === 'none') {
             grid.style.display = '';
-            btn.textContent = '${communityTodayCloseMsg}';
+            btn.textContent = '${msg_community_today_close_js}';
             sessionStorage.removeItem(STORAGE_KEY);
         } else {
             grid.style.display = 'none';
-            btn.textContent = '${communityTodayOpenMsg}';
+            btn.textContent = '${msg_community_today_open_js}';
             sessionStorage.setItem(STORAGE_KEY, '1');
         }
     }
@@ -547,7 +607,7 @@
         var btn  = document.getElementById('todayToggleBtn');
         if (sessionStorage.getItem(STORAGE_KEY) === '1') {
             if (grid) grid.style.display = 'none';
-            if (btn)  btn.textContent = '${communityTodayOpenMsg}';
+            if (btn)  btn.textContent = '${msg_community_today_open_js}';
         }
     })();
 
@@ -642,14 +702,14 @@
 
     function adminDeletePost(event, postId) {
         event.stopPropagation();
-        if (!confirm('${communityAdminDeleteConfirmMsg}')) return;
+        if (!confirm('${msg_community_admin_delete_confirm_js}')) return;
         fetch('${pageContext.request.contextPath}/community/' + postId, {
             method: 'DELETE',
             headers: {'X-Requested-With': 'XMLHttpRequest'}
         })
             .then(function (res) {
                 if (res.ok) location.reload();
-                else alert('${communityAdminDeleteFailMsg}');
+                else alert('${msg_community_admin_delete_fail_js}');
             });
     }
 
@@ -662,14 +722,14 @@
 
     function adminClearPostBlur(event, postId) {
         event.stopPropagation();
-        if (!confirm('${communityAdminClearBlurConfirmMsg}')) return;
+        if (!confirm('${msg_community_admin_clearBlur_confirm_js}')) return;
         fetch('${pageContext.request.contextPath}/community/' + postId + '/clear-blur', {
             method: 'POST',
             headers: {'X-Requested-With': 'XMLHttpRequest'}
         })
             .then(function (res) {
                 if (res.ok) location.reload();
-                else alert('${communityAdminClearBlurFailMsg}');
+                else alert('${msg_community_admin_clearBlur_fail_js}');
             });
     }
 
@@ -685,7 +745,7 @@
 
         function updateCount() {
             var n = getChecked().length;
-            countLabel.textContent = '${communityAdminSelectedMsg}'.replace('__COUNT__', n);
+            countLabel.textContent = '${msg_community_admin_selected_js}'.replace('__COUNT__', n);
         }
 
         /* 전체선택 */
@@ -708,18 +768,18 @@
 
     window.doBulkAction = function (action) {
         var checked = Array.from(document.querySelectorAll('.comm-admin-chk:checked'));
-            if (checked.length === 0) { alert('${communityAdminNoneSelectedMsg}'); return; }
+            if (checked.length === 0) { alert('${msg_community_admin_noneSelected_js}'); return; }
 
         var labels = {
-                'delete':              '${communityAdminDeleteMsg}',
-                'blockUser':           '${communityAdminBlockUserMsg}',
-                'blockIp':             '${communityAdminBlockIpMsg}',
-                'blockBoth':           '${communityAdminBlockBothMsg}',
-                'blockUserAndDelete':  '${communityAdminBlockDeleteUserMsg}',
-                'blockIpAndDelete':    '${communityAdminBlockDeleteIpMsg}',
-                'blockAndDelete':      '${communityAdminBlockDeleteBothMsg}'
+                'delete':              '${msg_community_admin_delete_js}',
+                'blockUser':           '${msg_community_admin_block_user_js}',
+                'blockIp':             '${msg_community_admin_block_ip_js}',
+                'blockBoth':           '${msg_community_admin_block_both_js}',
+                'blockUserAndDelete':  '${msg_community_admin_blockDelete_user_js}',
+                'blockIpAndDelete':    '${msg_community_admin_blockDelete_ip_js}',
+                'blockAndDelete':      '${msg_community_admin_blockDelete_both_js}'
             };
-        var confirmMessage = '${communityDetailBulkPostsConfirmMsg}'
+        var confirmMessage = '${msg_community_detail_bulk_posts_confirm_js}'
             .replace('__COUNT__', checked.length)
             .replace('__ACTION__', labels[action]);
         if (!confirm(confirmMessage)) return;
@@ -737,13 +797,13 @@
         .then(function (res) { return res.json(); })
         .then(function (data) {
             if (data.success) {
-                alert('${communityDetailBulkDoneMsg}');
+                alert('${msg_community_detail_bulk_done_js}');
                 location.reload();
             } else {
-                alert('${communityDetailBulkFailMsg}'.replace('__MSG__', data.message || ''));
+                alert('${msg_community_detail_bulk_fail_js}'.replace('__MSG__', data.message || ''));
             }
         })
-        .catch(function () { alert('${communityDetailRequestFailMsg}'); });
+        .catch(function () { alert('${msg_community_detail_request_fail_js}'); });
     };
 </script>
 

@@ -4,38 +4,77 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_explore_filter_searchPlaceholder" code="admin.explore.filter.searchPlaceholder"/>
+<spring:message var="msg_admin_translation_label_exploreReviewContent" code="admin.translation.label.exploreReviewContent"/>
+<spring:message var="msg_admin_explore_reviews_bulk_selected_js" code="admin.explore.reviews.bulk.selected" javaScriptEscape="true"/>
+<spring:message var="msg_admin_explore_reviews_confirm_blockOne_js" code="admin.explore.reviews.confirm.blockOne" javaScriptEscape="true"/>
+<spring:message var="msg_admin_explore_reviews_confirm_blockBulk_js" code="admin.explore.reviews.confirm.blockBulk" javaScriptEscape="true"/>
+<spring:message var="msg_admin_explore_reviews_error_requestFailed_js" code="admin.explore.reviews.error.requestFailed" javaScriptEscape="true"/>
+<spring:message var="msg_admin_explore_reviews_error_noSelection_js" code="admin.explore.reviews.error.noSelection" javaScriptEscape="true"/>
+<spring:message var="msg_admin_explore_reviews_pageTitle" code="admin.explore.reviews.pageTitle"/>
+<spring:message var="msg_admin_explore_tabs_spots" code="admin.explore.tabs.spots"/>
+<spring:message var="msg_admin_explore_tabs_reviews" code="admin.explore.tabs.reviews"/>
+<spring:message var="msg_admin_explore_reviews_kpi_total" code="admin.explore.reviews.kpi.total"/>
+<spring:message var="msg_admin_explore_reviews_kpi_activeCount" code="admin.explore.reviews.kpi.activeCount"/>
+<spring:message var="msg_admin_explore_reviews_kpi_blocked" code="admin.explore.reviews.kpi.blocked"/>
+<spring:message var="msg_admin_explore_reviews_kpi_blockedSub" code="admin.explore.reviews.kpi.blockedSub"/>
+<spring:message var="msg_admin_explore_filter_status" code="admin.explore.filter.status"/>
+<spring:message var="msg_admin_common_all" code="admin.common.all"/>
+<spring:message var="msg_admin_explore_reviewStatus_active" code="admin.explore.reviewStatus.active"/>
+<spring:message var="msg_admin_explore_reviewStatus_blocked" code="admin.explore.reviewStatus.blocked"/>
+<spring:message var="msg_admin_explore_filter_search" code="admin.explore.filter.search"/>
+<spring:message var="msg_admin_explore_searchType_name" code="admin.explore.searchType.name"/>
+<spring:message var="msg_admin_explore_searchType_nickname" code="admin.explore.searchType.nickname"/>
+<spring:message var="msg_admin_explore_searchType_content" code="admin.explore.searchType.content"/>
+<spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
+<spring:message var="msg_admin_explore_reviews_listTitle" code="admin.explore.reviews.listTitle"/>
+<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
+<spring:message var="msg_admin_explore_reviews_action_bulkBlock" code="admin.explore.reviews.action.bulkBlock"/>
+<spring:message var="msg_admin_explore_detail_reviewId" code="admin.explore.detail.reviewId"/>
+<spring:message var="msg_admin_explore_reviews_table_spot" code="admin.explore.reviews.table.spot"/>
+<spring:message var="msg_admin_explore_reviews_table_author" code="admin.explore.reviews.table.author"/>
+<spring:message var="msg_admin_explore_reviews_table_rating" code="admin.explore.reviews.table.rating"/>
+<spring:message var="msg_admin_explore_reviews_table_content" code="admin.explore.reviews.table.content"/>
+<spring:message var="msg_admin_common_status" code="admin.common.status"/>
+<spring:message var="msg_admin_explore_reviews_table_createdAt" code="admin.explore.reviews.table.createdAt"/>
+<spring:message var="msg_admin_common_action" code="admin.common.action"/>
+<spring:message var="msg_admin_explore_detail_userView" code="admin.explore.detail.userView"/>
+<spring:message var="msg_admin_common_actionLabel" code="admin.common.actionLabel"/>
+<spring:message var="msg_admin_explore_reviews_action_block" code="admin.explore.reviews.action.block"/>
+<spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
+<spring:message var="msg_admin_explore_reviews_empty" code="admin.explore.reviews.empty"/>
+<spring:message var="msg_admin_common_previous" code="admin.common.previous"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_common_pageStatus" code="admin.common.pageStatus"/>
 <c:set var="activeMenu" value="explore"/>
-<spring:message var="adminExploreFilterSearchPlaceholderMsg" code="admin.explore.filter.searchPlaceholder"/>
-<spring:message var="adminTranslationLabelExploreReviewContentMsg" code="admin.translation.label.exploreReviewContent"/>
-<spring:message var="adminExploreReviewsBulkSelectedMsg" code="admin.explore.reviews.bulk.selected" javaScriptEscape="true"/>
-<spring:message var="adminExploreReviewsConfirmBlockOneMsg" code="admin.explore.reviews.confirm.blockOne" javaScriptEscape="true"/>
-<spring:message var="adminExploreReviewsConfirmBlockBulkMsg" code="admin.explore.reviews.confirm.blockBulk" javaScriptEscape="true"/>
-<spring:message var="adminExploreReviewsErrorRequestFailedMsg" code="admin.explore.reviews.error.requestFailed" javaScriptEscape="true"/>
-<spring:message var="adminExploreReviewsErrorNoSelectionMsg" code="admin.explore.reviews.error.noSelection" javaScriptEscape="true"/>
-<spring:message code="admin.explore.reviews.pageTitle" var="adminExploreReviewsPageTitle"/>
-<c:set var="pageTitle" value="${adminExploreReviewsPageTitle}"/>
+
+
+<c:set var="pageTitle" value="${msg_admin_explore_reviews_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-admin-tabs">
         <a class="adm-tab" href="${pageContext.request.contextPath}/admin/explore">
-            <spring:message code="admin.explore.tabs.spots"/>
+            ${msg_admin_explore_tabs_spots}
         </a>
         <a class="adm-tab active" href="${pageContext.request.contextPath}/admin/explore/reviews">
-            <spring:message code="admin.explore.tabs.reviews"/>
+            ${msg_admin_explore_tabs_reviews}
         </a>
     </div>
 
     <div class="adm-summary-grid" style="grid-template-columns:repeat(2, minmax(0, 1fr));">
         <div class="adm-summary-card">
-            <div class="adm-summary-label"><spring:message code="admin.explore.reviews.kpi.total"/></div>
+            <div class="adm-summary-label">${msg_admin_explore_reviews_kpi_total}</div>
             <div class="adm-summary-value">${stats.totalReviews}</div>
-            <div class="adm-summary-sub"><spring:message code="admin.explore.reviews.kpi.activeCount"/></div>
+            <div class="adm-summary-sub">${msg_admin_explore_reviews_kpi_activeCount}</div>
         </div>
         <div class="adm-summary-card">
-            <div class="adm-summary-label"><spring:message code="admin.explore.reviews.kpi.blocked"/></div>
+            <div class="adm-summary-label">${msg_admin_explore_reviews_kpi_blocked}</div>
             <div class="adm-summary-value">${stats.blockedReviews}</div>
-            <div class="adm-summary-sub"><spring:message code="admin.explore.reviews.kpi.blockedSub"/></div>
+            <div class="adm-summary-sub">${msg_admin_explore_reviews_kpi_blockedSub}</div>
         </div>
     </div>
 
@@ -44,28 +83,28 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/explore/reviews">
                 <div class="adm-filter-bar" style="flex-wrap:wrap;gap:12px;">
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.explore.filter.status"/></div>
+                        <div class="adm-filter-label">${msg_admin_explore_filter_status}</div>
                         <select class="adm-select" name="reviewStatus">
-                            <option value="ALL" ${search.reviewStatus=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="ACTIVE" ${search.reviewStatus=='ACTIVE'?'selected':''}><spring:message code="admin.explore.reviewStatus.active"/></option>
-                            <option value="BLOCKED" ${search.reviewStatus=='BLOCKED'?'selected':''}><spring:message code="admin.explore.reviewStatus.blocked"/></option>
+                            <option value="ALL" ${search.reviewStatus=='ALL'?'selected':''}>${msg_admin_common_all}</option>
+                            <option value="ACTIVE" ${search.reviewStatus=='ACTIVE'?'selected':''}>${msg_admin_explore_reviewStatus_active}</option>
+                            <option value="BLOCKED" ${search.reviewStatus=='BLOCKED'?'selected':''}>${msg_admin_explore_reviewStatus_blocked}</option>
                         </select>
                     </div>
                     <div style="flex:1;min-width:220px;">
-                        <div class="adm-filter-label"><spring:message code="admin.explore.filter.search"/></div>
+                        <div class="adm-filter-label">${msg_admin_explore_filter_search}</div>
                         <div style="display:flex;gap:6px;">
                             <select class="adm-select" name="searchType" style="width:120px;">
-                                <option value="all" ${search.searchType=='all'?'selected':''}><spring:message code="admin.common.all"/></option>
-                                <option value="name" ${search.searchType=='name'?'selected':''}><spring:message code="admin.explore.searchType.name"/></option>
-                                <option value="nickname" ${search.searchType=='nickname'?'selected':''}><spring:message code="admin.explore.searchType.nickname"/></option>
-                                <option value="content" ${search.searchType=='content'?'selected':''}><spring:message code="admin.explore.searchType.content"/></option>
+                                <option value="all" ${search.searchType=='all'?'selected':''}>${msg_admin_common_all}</option>
+                                <option value="name" ${search.searchType=='name'?'selected':''}>${msg_admin_explore_searchType_name}</option>
+                                <option value="nickname" ${search.searchType=='nickname'?'selected':''}>${msg_admin_explore_searchType_nickname}</option>
+                                <option value="content" ${search.searchType=='content'?'selected':''}>${msg_admin_explore_searchType_content}</option>
                             </select>
-                            <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${adminExploreFilterSearchPlaceholderMsg}" style="flex:1;">
+                            <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_explore_filter_searchPlaceholder}" style="flex:1;">
                         </div>
                     </div>
                     <div style="display:flex;align-items:flex-end;gap:6px;">
-                        <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
-                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/explore/reviews"><spring:message code="admin.common.reset"/></a>
+                        <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/explore/reviews">${msg_admin_common_reset}</a>
                     </div>
                 </div>
             </form>
@@ -75,12 +114,12 @@
     <div class="adm-card">
         <div class="adm-card-head">
             <div style="display:flex;align-items:center;gap:12px;">
-                <div class="adm-card-title"><spring:message code="admin.explore.reviews.listTitle"/></div>
-                <div class="adm-muted-inline"><spring:message code="admin.common.totalCount"/></div>
+                <div class="adm-card-title">${msg_admin_explore_reviews_listTitle}</div>
+                <div class="adm-muted-inline">${msg_admin_common_totalCount}</div>
             </div>
             <div id="bulkBar" style="display:none;gap:8px;align-items:center;">
                 <span id="bulkCount" class="adm-muted-inline"></span>
-                <button class="adm-btn adm-btn-ghost" type="button" onclick="bulkAction('block')"><spring:message code="admin.explore.reviews.action.bulkBlock"/></button>
+                <button class="adm-btn adm-btn-ghost" type="button" onclick="bulkAction('block')">${msg_admin_explore_reviews_action_bulkBlock}</button>
             </div>
         </div>
         <div class="adm-table-wrap">
@@ -88,14 +127,14 @@
                 <thead>
                 <tr>
                     <th style="width:36px;"><input type="checkbox" id="checkAll"></th>
-                    <th style="width:70px;"><spring:message code="admin.explore.detail.reviewId"/></th>
-                    <th style="width:180px;"><spring:message code="admin.explore.reviews.table.spot"/></th>
-                    <th style="width:120px;"><spring:message code="admin.explore.reviews.table.author"/></th>
-                    <th style="width:70px;"><spring:message code="admin.explore.reviews.table.rating"/></th>
-                    <th><spring:message code="admin.explore.reviews.table.content"/></th>
-                    <th style="width:80px;"><spring:message code="admin.common.status"/></th>
-                    <th style="width:90px;"><spring:message code="admin.explore.reviews.table.createdAt"/></th>
-                    <th style="width:90px;"><spring:message code="admin.common.action"/></th>
+                    <th style="width:70px;">${msg_admin_explore_detail_reviewId}</th>
+                    <th style="width:180px;">${msg_admin_explore_reviews_table_spot}</th>
+                    <th style="width:120px;">${msg_admin_explore_reviews_table_author}</th>
+                    <th style="width:70px;">${msg_admin_explore_reviews_table_rating}</th>
+                    <th>${msg_admin_explore_reviews_table_content}</th>
+                    <th style="width:80px;">${msg_admin_common_status}</th>
+                    <th style="width:90px;">${msg_admin_explore_reviews_table_createdAt}</th>
+                    <th style="width:90px;">${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -106,7 +145,7 @@
                         <td>
                             <a href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}" class="adm-cell-link">
                                 <span style="font-weight:700;color:#e2e8f0;">${fn:escapeXml(review.spotName)}</span>
-                                <span class="adm-cell-link-note"><spring:message code="admin.explore.detail.userView"/></span>
+                                <span class="adm-cell-link-note">${msg_admin_explore_detail_userView}</span>
                             </a>
                         </td>
                         <td>
@@ -130,7 +169,7 @@
                                     class="adm-cell-link js-focus-review-action"
                                     data-review-idx="${review.reviewIdx}">
                                 <span style="font-size:12px;color:#d97706;">${review.rating}/5</span>
-                                <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
+                                <span class="adm-cell-link-note">${msg_admin_common_actionLabel}</span>
                             </button>
                         </td>
                         <td>
@@ -143,11 +182,11 @@
                                         <c:otherwise>${fn:escapeXml(review.content)}</c:otherwise>
                                     </c:choose>
                                 </span>
-                                <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
+                                <span class="adm-cell-link-note">${msg_admin_common_actionLabel}</span>
                             </button>
                             <c:if test="${not empty review.content}">
                                 <div class="adm-tr-inline js-admin-translation-widget"
-                                     data-label="${adminTranslationLabelExploreReviewContentMsg}"
+                                     data-label="${msg_admin_translation_label_exploreReviewContent}"
                                      data-source-type="EXPLORE_REVIEW"
                                      data-source-idx="${review.reviewIdx}"
                                      data-field-name="content"
@@ -161,11 +200,11 @@
                                     data-review-idx="${review.reviewIdx}">
                                 <span class="status-badge ${review.displayStatus}">
                                     <c:choose>
-                                        <c:when test="${review.displayStatus == 'ACTIVE'}"><spring:message code="admin.explore.reviewStatus.active"/></c:when>
-                                        <c:otherwise><spring:message code="admin.explore.reviewStatus.blocked"/></c:otherwise>
+                                        <c:when test="${review.displayStatus == 'ACTIVE'}">${msg_admin_explore_reviewStatus_active}</c:when>
+                                        <c:otherwise>${msg_admin_explore_reviewStatus_blocked}</c:otherwise>
                                     </c:choose>
                                 </span>
-                                <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
+                                <span class="adm-cell-link-note">${msg_admin_common_actionLabel}</span>
                             </button>
                         </td>
                         <td>
@@ -173,31 +212,31 @@
                                     class="adm-cell-link js-focus-review-action"
                                     data-review-idx="${review.reviewIdx}">
                                 <span class="adm-muted-inline"><fmt:formatDate value="${review.createdAtDate}" type="date" dateStyle="short"/></span>
-                                <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
+                                <span class="adm-cell-link-note">${msg_admin_common_actionLabel}</span>
                             </button>
                         </td>
                         <td>
                             <div id="review-action-${review.reviewIdx}" class="adm-row-actions" style="justify-content:flex-start;">
                                 <c:if test="${review.displayStatus != 'BLOCKED'}">
-                                    <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${review.reviewIdx}" onclick="actionReview(this, 'block')"><spring:message code="admin.explore.reviews.action.block"/></button>
+                                    <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${review.reviewIdx}" onclick="actionReview(this, 'block')">${msg_admin_explore_reviews_action_block}</button>
                                 </c:if>
-                                <a class="adm-row-btn more" href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}"><spring:message code="admin.common.viewDetail"/></a>
+                                <a class="adm-row-btn more" href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}">${msg_admin_common_viewDetail}</a>
                             </div>
                         </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="9" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.explore.reviews.empty"/></td></tr>
+                    <tr><td colspan="9" style="text-align:center;padding:40px;color:#475569;">${msg_admin_explore_reviews_empty}</td></tr>
                 </c:if>
                 </tbody>
             </table>
         </div>
         <c:if test="${paging.totalPage > 1}">
             <div class="adm-paging">
-                <c:if test="${paging.prev}"><button class="adm-page-btn" type="button" onclick="goPage(${paging.startPage - 1})"><spring:message code="admin.common.previous"/></button></c:if>
+                <c:if test="${paging.prev}"><button class="adm-page-btn" type="button" onclick="goPage(${paging.startPage - 1})">${msg_admin_common_previous}</button></c:if>
                 <c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="pg"><button class="adm-page-btn ${pg == paging.currentPage ? 'active' : ''}" type="button" onclick="goPage(${pg})">${pg}</button></c:forEach>
-                <c:if test="${paging.next}"><button class="adm-page-btn" type="button" onclick="goPage(${paging.endPage + 1})"><spring:message code="admin.common.next"/></button></c:if>
-                <span class="adm-page-info"><spring:message code="admin.common.pageStatus"/></span>
+                <c:if test="${paging.next}"><button class="adm-page-btn" type="button" onclick="goPage(${paging.endPage + 1})">${msg_admin_common_next}</button></c:if>
+                <span class="adm-page-info">${msg_admin_common_pageStatus}</span>
             </div>
         </c:if>
     </div>
@@ -206,11 +245,11 @@
 <script>
 var ctx = '${pageContext.request.contextPath}';
 var EXPLORE_REVIEW_MSG = {
-    bulkSelectedTemplate: '${adminExploreReviewsBulkSelectedMsg}',
-    confirmBlockOne: '${adminExploreReviewsConfirmBlockOneMsg}',
-    confirmBlockBulk: '${adminExploreReviewsConfirmBlockBulkMsg}',
-    requestFailed: '${adminExploreReviewsErrorRequestFailedMsg}',
-    noSelection: '${adminExploreReviewsErrorNoSelectionMsg}'
+    bulkSelectedTemplate: '${msg_admin_explore_reviews_bulk_selected_js}',
+    confirmBlockOne: '${msg_admin_explore_reviews_confirm_blockOne_js}',
+    confirmBlockBulk: '${msg_admin_explore_reviews_confirm_blockBulk_js}',
+    requestFailed: '${msg_admin_explore_reviews_error_requestFailed_js}',
+    noSelection: '${msg_admin_explore_reviews_error_noSelection_js}'
 };
 
 document.getElementById('checkAll').addEventListener('change', function() {

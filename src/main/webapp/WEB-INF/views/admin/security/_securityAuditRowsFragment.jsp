@@ -4,8 +4,31 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="adminTranslationLabelSecurityFailReasonMsg" code="admin.translation.label.securityFailReason"/>
-<spring:message var="adminTranslationLabelSecurityDetailMessageMsg" code="admin.translation.label.securityDetailMessage"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_translation_label_securityFailReason" code="admin.translation.label.securityFailReason"/>
+<spring:message var="msg_admin_translation_label_securityDetailMessage" code="admin.translation.label.securityDetailMessage"/>
+<spring:message var="msg_admin_common_sameDate" code="admin.common.sameDate"/>
+<spring:message var="msg_admin_common_unidentified" code="admin.common.unidentified"/>
+<spring:message var="msg_admin_security_actorSystem" code="admin.security.actorSystem"/>
+<spring:message var="msg_admin_security_eventType_findId" code="admin.security.eventType.findId"/>
+<spring:message var="msg_admin_security_eventType_findPassword" code="admin.security.eventType.findPassword"/>
+<spring:message var="msg_admin_security_eventType_resetPassword" code="admin.security.eventType.resetPassword"/>
+<spring:message var="msg_admin_security_eventType_passwordChange" code="admin.security.eventType.passwordChange"/>
+<spring:message var="msg_admin_security_eventType_emailVerify" code="admin.security.eventType.emailVerify"/>
+<spring:message var="msg_admin_security_eventType_emailLoginToggle" code="admin.security.eventType.emailLoginToggle"/>
+<spring:message var="msg_admin_common_sameValue" code="admin.common.sameValue"/>
+<spring:message var="msg_admin_security_stage_request" code="admin.security.stage.request"/>
+<spring:message var="msg_admin_security_stage_issue" code="admin.security.stage.issue"/>
+<spring:message var="msg_admin_security_stage_verify" code="admin.security.stage.verify"/>
+<spring:message var="msg_admin_security_stage_complete" code="admin.security.stage.complete"/>
+<spring:message var="msg_admin_common_sameEmail" code="admin.common.sameEmail"/>
+<spring:message var="msg_admin_common_success" code="admin.common.success"/>
+<spring:message var="msg_admin_common_fail" code="admin.common.fail"/>
+<spring:message var="msg_admin_common_sameIp" code="admin.common.sameIp"/>
+<spring:message var="msg_admin_common_trace" code="admin.common.trace"/>
+<spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
+<spring:message var="msg_admin_common_noResults" code="admin.common.noResults"/>
 <c:forEach items="${list}" var="item" varStatus="st">
     <fmt:formatDate var="itemDateFilter" value="${item.occurredAtDate}" pattern="yyyy-MM-dd"/>
     <fmt:formatDate var="itemTimeDisplay" value="${item.occurredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
@@ -32,7 +55,7 @@
                     data-date="${itemDateFilter}"
                     onclick="filterSecurityByDate(this.dataset.date)">
                 <span>${itemTimeDisplay}</span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                <span class="adm-cell-link-note">${msg_admin_common_sameDate}</span>
             </button>
         </td>
         <td>
@@ -51,7 +74,7 @@
                                 style="color:#94a3b8;">@${fn:escapeXml(item.userId)}</button>
                     </div>
                 </c:when>
-                <c:otherwise><span style="color:#64748b;"><spring:message code="admin.common.unidentified"/></span></c:otherwise>
+                <c:otherwise><span style="color:#64748b;">${msg_admin_common_unidentified}</span></c:otherwise>
             </c:choose>
         </td>
         <td>
@@ -70,33 +93,33 @@
                                 style="color:#94a3b8;">@${fn:escapeXml(item.actorUserId)}</button>
                     </div>
                 </c:when>
-                <c:otherwise><span style="color:#64748b;"><spring:message code="admin.security.actorSystem"/></span></c:otherwise>
+                <c:otherwise><span style="color:#64748b;">${msg_admin_security_actorSystem}</span></c:otherwise>
             </c:choose>
         </td>
         <td>
             <button type="button" class="adm-cell-link" data-param-name="eventType" data-param-value="${item.eventType}" onclick="applySecuritySelectFilter(this)">
                 <span><c:choose>
-                    <c:when test="${item.eventType eq 'FIND_ID'}"><spring:message code="admin.security.eventType.findId"/></c:when>
-                    <c:when test="${item.eventType eq 'FIND_PASSWORD'}"><spring:message code="admin.security.eventType.findPassword"/></c:when>
-                    <c:when test="${item.eventType eq 'RESET_PASSWORD'}"><spring:message code="admin.security.eventType.resetPassword"/></c:when>
-                    <c:when test="${item.eventType eq 'PASSWORD_CHANGE'}"><spring:message code="admin.security.eventType.passwordChange"/></c:when>
-                    <c:when test="${item.eventType eq 'EMAIL_VERIFY'}"><spring:message code="admin.security.eventType.emailVerify"/></c:when>
-                    <c:when test="${item.eventType eq 'EMAIL_LOGIN_TOGGLE'}"><spring:message code="admin.security.eventType.emailLoginToggle"/></c:when>
+                    <c:when test="${item.eventType eq 'FIND_ID'}">${msg_admin_security_eventType_findId}</c:when>
+                    <c:when test="${item.eventType eq 'FIND_PASSWORD'}">${msg_admin_security_eventType_findPassword}</c:when>
+                    <c:when test="${item.eventType eq 'RESET_PASSWORD'}">${msg_admin_security_eventType_resetPassword}</c:when>
+                    <c:when test="${item.eventType eq 'PASSWORD_CHANGE'}">${msg_admin_security_eventType_passwordChange}</c:when>
+                    <c:when test="${item.eventType eq 'EMAIL_VERIFY'}">${msg_admin_security_eventType_emailVerify}</c:when>
+                    <c:when test="${item.eventType eq 'EMAIL_LOGIN_TOGGLE'}">${msg_admin_security_eventType_emailLoginToggle}</c:when>
                     <c:otherwise><c:out value="${item.eventType}"/></c:otherwise>
                 </c:choose></span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                <span class="adm-cell-link-note">${msg_admin_common_sameValue}</span>
             </button>
         </td>
         <td>
             <button type="button" class="adm-cell-link" data-param-name="eventStage" data-param-value="${item.eventStage}" onclick="applySecuritySelectFilter(this)">
                 <span><c:choose>
-                    <c:when test="${item.eventStage eq 'REQUEST'}"><spring:message code="admin.security.stage.request"/></c:when>
-                    <c:when test="${item.eventStage eq 'ISSUE'}"><spring:message code="admin.security.stage.issue"/></c:when>
-                    <c:when test="${item.eventStage eq 'VERIFY'}"><spring:message code="admin.security.stage.verify"/></c:when>
-                    <c:when test="${item.eventStage eq 'COMPLETE'}"><spring:message code="admin.security.stage.complete"/></c:when>
+                    <c:when test="${item.eventStage eq 'REQUEST'}">${msg_admin_security_stage_request}</c:when>
+                    <c:when test="${item.eventStage eq 'ISSUE'}">${msg_admin_security_stage_issue}</c:when>
+                    <c:when test="${item.eventStage eq 'VERIFY'}">${msg_admin_security_stage_verify}</c:when>
+                    <c:when test="${item.eventStage eq 'COMPLETE'}">${msg_admin_security_stage_complete}</c:when>
                     <c:otherwise><c:out value="${item.eventStage}"/></c:otherwise>
                 </c:choose></span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                <span class="adm-cell-link-note">${msg_admin_common_sameValue}</span>
             </button>
         </td>
         <td>
@@ -104,7 +127,7 @@
                 <c:when test="${not empty item.inputIdentifier}">
                     <button type="button" class="adm-cell-link" data-keyword="${fn:escapeXml(item.inputIdentifier)}" onclick="applySecurityKeywordFilter(this)">
                         <span><c:out value="${item.inputIdentifier}"/></span>
-                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                        <span class="adm-cell-link-note">${msg_admin_common_sameValue}</span>
                     </button>
                 </c:when>
                 <c:otherwise>-</c:otherwise>
@@ -115,7 +138,7 @@
                 <c:when test="${not empty item.targetEmail}">
                     <button type="button" class="adm-cell-link" data-keyword="${fn:escapeXml(item.targetEmail)}" onclick="applySecurityKeywordFilter(this)">
                         <span><c:out value="${item.targetEmail}"/></span>
-                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameEmail"/></span>
+                        <span class="adm-cell-link-note">${msg_admin_common_sameEmail}</span>
                     </button>
                 </c:when>
                 <c:otherwise>-</c:otherwise>
@@ -124,8 +147,8 @@
         <td>
             <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="${item.success ? 'SUCCESS' : 'FAIL'}" onclick="applySecuritySelectFilter(this)">
                 <c:choose>
-                    <c:when test="${item.success}"><span class="status-badge ACTIVE"><spring:message code="admin.common.success"/></span></c:when>
-                    <c:otherwise><span class="status-badge DELETED"><spring:message code="admin.common.fail"/></span></c:otherwise>
+                    <c:when test="${item.success}"><span class="status-badge ACTIVE">${msg_admin_common_success}</span></c:when>
+                    <c:otherwise><span class="status-badge DELETED">${msg_admin_common_fail}</span></c:otherwise>
                 </c:choose>
             </button>
         </td>
@@ -135,10 +158,10 @@
                     <c:when test="${not empty item.failReason}">
                         <button type="button" class="adm-cell-link" data-keyword="${fn:escapeXml(item.failReason)}" onclick="applySecurityKeywordFilter(this)">
                             <span><c:out value="${item.failReason}"/></span>
-                            <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                            <span class="adm-cell-link-note">${msg_admin_common_sameValue}</span>
                         </button>
                         <div class="adm-tr-inline js-admin-translation-widget"
-                             data-label="${adminTranslationLabelSecurityFailReasonMsg}"
+                             data-label="${msg_admin_translation_label_securityFailReason}"
                              data-source-type="SECURITY_AUDIT"
                              data-source-idx="${item.securityIdx}"
                              data-field-name="fail_reason"
@@ -150,7 +173,7 @@
                 <c:if test="${not empty item.detailMessage}">
                     <div class="adm-cell-link-note adm-ellipsis-line" style="margin-top:6px;"><c:out value="${item.detailMessage}"/></div>
                     <div class="adm-tr-inline js-admin-translation-widget"
-                         data-label="${adminTranslationLabelSecurityDetailMessageMsg}"
+                         data-label="${msg_admin_translation_label_securityDetailMessage}"
                          data-source-type="SECURITY_AUDIT"
                          data-source-idx="${item.securityIdx}"
                          data-field-name="detail_message"
@@ -167,7 +190,7 @@
                             data-ip-address="${fn:escapeXml(item.ipAddress)}"
                             data-default-tab="security">
                         <span style="color:#93c5fd;">${fn:escapeXml(item.ipAddress)}</span>
-                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameIp"/></span>
+                        <span class="adm-cell-link-note">${msg_admin_common_sameIp}</span>
                     </button>
                 </c:when>
                 <c:otherwise>-</c:otherwise>
@@ -183,10 +206,10 @@
                         <span class="adm-ellipsis-line" style="font-size:12px;color:#cbd5e1;"><c:out value="${securityRequestKey}"/></span>
                         <c:choose>
                             <c:when test="${empty item.requestId and not empty item.flowTraceId}">
-                                <span class="adm-cell-link-note adm-ellipsis-line"><spring:message code="admin.common.trace"/></span>
+                                <span class="adm-cell-link-note adm-ellipsis-line">${msg_admin_common_trace}</span>
                             </c:when>
                             <c:when test="${not empty item.requestId and not empty item.flowTraceId and item.requestId ne item.flowTraceId}">
-                                <span class="adm-cell-link-note adm-ellipsis-line"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
+                                <span class="adm-cell-link-note adm-ellipsis-line">${msg_admin_common_trace}: <c:out value="${item.flowTraceId}"/></span>
                             </c:when>
                         </c:choose>
                     </button>
@@ -212,11 +235,11 @@
                     data-flow-trace="${fn:escapeXml(item.flowTraceId)}"
                     data-user-agent="${fn:escapeXml(item.userAgent)}"
                     onclick="openSecurityDetail(this)">
-                <spring:message code="admin.common.viewDetail"/>
+                ${msg_admin_common_viewDetail}
             </button>
         </td>
     </tr>
 </c:forEach>
 <c:if test="${empty list}">
-    <tr class="adm-local-empty"><td colspan="13" style="text-align:center;padding:40px;color:#64748b;"><spring:message code="admin.common.noResults"/></td></tr>
+    <tr class="adm-local-empty"><td colspan="13" style="text-align:center;padding:40px;color:#64748b;">${msg_admin_common_noResults}</td></tr>
 </c:if>

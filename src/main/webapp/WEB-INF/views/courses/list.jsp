@@ -4,48 +4,50 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_courses_list_scope_my_title" code="courses.list.scope.my.title"/>
+<spring:message var="msg_courses_list_scope_my_desc" code="courses.list.scope.my.desc"/>
+<spring:message var="msg_courses_list_scope_my_tab" code="courses.list.scope.my.tab"/>
+<spring:message var="msg_courses_list_scope_public_title" code="courses.list.scope.public.title"/>
+<spring:message var="msg_courses_list_scope_public_desc" code="courses.list.scope.public.desc"/>
+<spring:message var="msg_courses_list_scope_public_tab" code="courses.list.scope.public.tab"/>
+<spring:message var="msg_courses_list_empty_title" code="courses.list.empty.title"/>
+<spring:message var="msg_courses_list_empty_desc" code="courses.list.empty.desc"/>
+<spring:message var="msg_courses_my_createButton" code="courses.my.createButton"/>
+<spring:message var="msg_courses_common_all" code="courses.common.all"/>
+<spring:message var="msg_courses_common_source_manual" code="courses.common.source.manual"/>
+<spring:message var="msg_courses_common_source_ai" code="courses.common.source.ai"/>
+<spring:message var="msg_courses_common_period_all" code="courses.common.period.all"/>
+<spring:message var="msg_courses_common_period_upcoming" code="courses.common.period.upcoming"/>
+<spring:message var="msg_courses_common_period_now" code="courses.common.period.now"/>
+<spring:message var="msg_courses_common_period_past" code="courses.common.period.past"/>
+<spring:message var="msg_courses_common_year_all" code="courses.common.year.all"/>
+<spring:message var="msg_courses_common_year_suffix" code="courses.common.year.suffix"/>
+<spring:message var="msg_courses_common_visibility_all" code="courses.common.visibility.all"/>
+<spring:message var="msg_courses_common_visibility_public" code="courses.common.visibility.public"/>
+<spring:message var="msg_courses_common_visibility_private" code="courses.common.visibility.private"/>
+<spring:message var="msg_courses_list_filter_searchPlaceholder" code="courses.list.filter.searchPlaceholder"/>
+<spring:message var="msg_courses_common_planCount_prefix" code="courses.common.planCount.prefix"/>
+<spring:message var="msg_courses_common_planCount_suffix" code="courses.common.planCount.suffix"/>
+<spring:message var="msg_courses_common_detail" code="courses.common.detail"/>
+<spring:message var="msg_courses_common_edit" code="courses.common.edit"/>
+<spring:message var="msg_courses_common_delete" code="courses.common.delete"/>
+<spring:message var="msg_courses_common_confirmDelete" code="courses.common.confirmDelete"/>
+<spring:message var="msg_courses_common_destinationMissing" code="courses.common.destinationMissing"/>
+<spring:message var="msg_courses_common_summary_ai" code="courses.common.summary.ai"/>
+<spring:message var="msg_courses_common_summary_manual" code="courses.common.summary.manual"/>
+<spring:message var="msg_courses_common_detailArrow" code="courses.common.detailArrow"/>
+<spring:message var="msg_courses_common_filter_noResult_title" code="courses.common.filter.noResult.title"/>
+<spring:message var="msg_courses_common_filter_noResult_desc" code="courses.common.filter.noResult.desc"/>
 <%@ include file="../common/header.jsp" %>
 
-<spring:message code="courses.list.scope.my.title" var="coursesListMyTitle"/>
-<spring:message code="courses.list.scope.my.desc" var="coursesListMyDesc"/>
-<spring:message code="courses.list.scope.my.tab" var="coursesListMyTab"/>
-<spring:message code="courses.list.scope.public.title" var="coursesListPublicTitle"/>
-<spring:message code="courses.list.scope.public.desc" var="coursesListPublicDesc"/>
-<spring:message code="courses.list.scope.public.tab" var="coursesListPublicTab"/>
-<spring:message code="courses.list.empty.title" var="coursesListEmptyTitle"/>
-<spring:message code="courses.list.empty.desc" var="coursesListEmptyDesc"/>
-<spring:message code="courses.my.createButton" var="coursesMyCreateButton"/>
-<spring:message code="courses.common.all" var="coursesAllLabel"/>
-<spring:message code="courses.common.source.manual" var="coursesSourceManual"/>
-<spring:message code="courses.common.source.ai" var="coursesSourceAi"/>
-<spring:message code="courses.common.period.all" var="coursesPeriodAll"/>
-<spring:message code="courses.common.period.upcoming" var="coursesPeriodUpcoming"/>
-<spring:message code="courses.common.period.now" var="coursesPeriodNow"/>
-<spring:message code="courses.common.period.past" var="coursesPeriodPast"/>
-<spring:message code="courses.common.year.all" var="coursesYearAll"/>
-<spring:message code="courses.common.year.suffix" var="coursesYearSuffix"/>
-<spring:message code="courses.common.visibility.all" var="coursesVisibilityAll"/>
-<spring:message code="courses.common.visibility.public" var="coursesVisibilityPublic"/>
-<spring:message code="courses.common.visibility.private" var="coursesVisibilityPrivate"/>
-<spring:message code="courses.list.filter.searchPlaceholder" var="coursesSearchPlaceholder"/>
-<spring:message code="courses.common.planCount.prefix" var="coursesPlanCountPrefix"/>
-<spring:message code="courses.common.planCount.suffix" var="coursesPlanCountSuffix"/>
-<spring:message code="courses.common.detail" var="coursesDetailLabel"/>
-<spring:message code="courses.common.edit" var="coursesEditLabel"/>
-<spring:message code="courses.common.delete" var="coursesDeleteLabel"/>
-<spring:message code="courses.common.confirmDelete" var="coursesDeleteConfirm"/>
-<spring:message code="courses.common.destinationMissing" var="coursesDestinationMissing"/>
-<spring:message code="courses.common.summary.ai" var="coursesSummaryAi"/>
-<spring:message code="courses.common.summary.manual" var="coursesSummaryManual"/>
-<spring:message code="courses.common.detailArrow" var="coursesDetailArrow"/>
-<spring:message code="courses.common.filter.noResult.title" var="coursesNoResultTitle"/>
-<spring:message code="courses.common.filter.noResult.desc" var="coursesNoResultDesc"/>
 
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
 <head>
     <meta charset="UTF-8">
-    <title><c:choose><c:when test="${scope eq 'public'}">${coursesListPublicTitle}</c:when><c:otherwise>${coursesListMyTitle}</c:otherwise></c:choose></title>
+    <title><c:choose><c:when test="${scope eq 'public'}">${msg_courses_list_scope_public_title}</c:when><c:otherwise>${msg_courses_list_scope_my_title}</c:otherwise></c:choose></title>
     <style>
         * {
             box-sizing: border-box;
@@ -502,12 +504,12 @@
             <div>
                 <c:choose>
                     <c:when test="${scope eq 'public'}">
-                        <h1 class="page-title">${coursesListPublicTitle}</h1>
-                        <div class="page-desc">${coursesListPublicDesc}</div>
+                        <h1 class="page-title">${msg_courses_list_scope_public_title}</h1>
+                        <div class="page-desc">${msg_courses_list_scope_public_desc}</div>
                     </c:when>
                     <c:otherwise>
-                        <h1 class="page-title">${coursesListMyTitle}</h1>
-                        <div class="page-desc">${coursesListMyDesc}</div>
+                        <h1 class="page-title">${msg_courses_list_scope_my_title}</h1>
+                        <div class="page-desc">${msg_courses_list_scope_my_desc}</div>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -515,12 +517,12 @@
             <div class="scope-tab-group" style="display:flex; gap:10px; margin-bottom:20px;">
                 <a href="${pageContext.request.contextPath}/courses/list?scope=my"
                    class="tab-btn ${scope ne 'public' ? 'active' : ''}">
-                    ${coursesListMyTab}
+                    ${msg_courses_list_scope_my_tab}
                 </a>
 
                 <a href="${pageContext.request.contextPath}/courses/list?scope=public"
                    class="tab-btn ${scope eq 'public' ? 'active' : ''}">
-                    ${coursesListPublicTab}
+                    ${msg_courses_list_scope_public_tab}
                 </a>
             </div>
         </div>
@@ -528,9 +530,9 @@
         <c:choose>
             <c:when test="${empty travelPlanList}">
                 <div class="empty-box">
-                    <h3>${coursesListEmptyTitle}</h3>
-                    <p>${coursesListEmptyDesc}</p>
-                    <a href="${pageContext.request.contextPath}/courses/write" class="empty-action">${coursesMyCreateButton}</a>
+                    <h3>${msg_courses_list_empty_title}</h3>
+                    <p>${msg_courses_list_empty_desc}</p>
+                    <a href="${pageContext.request.contextPath}/courses/write" class="empty-action">${msg_courses_my_createButton}</a>
                 </div>
             </c:when>
 
@@ -538,38 +540,38 @@
                 <div class="filter-panel">
                     <div class="filter-top">
                         <div class="tab-group" id="sourceTabs">
-                            <button type="button" class="tab-btn active" data-source="all">${coursesAllLabel}</button>
-                            <button type="button" class="tab-btn" data-source="MANUAL">${coursesSourceManual}</button>
-                            <button type="button" class="tab-btn" data-source="AI">${coursesSourceAi}</button>
+                            <button type="button" class="tab-btn active" data-source="all">${msg_courses_common_all}</button>
+                            <button type="button" class="tab-btn" data-source="MANUAL">${msg_courses_common_source_manual}</button>
+                            <button type="button" class="tab-btn" data-source="AI">${msg_courses_common_source_ai}</button>
                         </div>
 
                         <div class="plan-count">
-                            ${coursesPlanCountPrefix} <span id="visiblePlanCount">0</span> ${coursesPlanCountSuffix}
+                            ${msg_courses_common_planCount_prefix} <span id="visiblePlanCount">0</span> ${msg_courses_common_planCount_suffix}
                         </div>
                     </div>
 
                     <div class="filter-bottom">
                         <div class="filter-controls">
                             <select id="tripStatusFilter" class="filter-select">
-                                <option value="all">${coursesPeriodAll}</option>
-                                <option value="upcoming">${coursesPeriodUpcoming}</option>
-                                <option value="now">${coursesPeriodNow}</option>
-                                <option value="past">${coursesPeriodPast}</option>
+                                <option value="all">${msg_courses_common_period_all}</option>
+                                <option value="upcoming">${msg_courses_common_period_upcoming}</option>
+                                <option value="now">${msg_courses_common_period_now}</option>
+                                <option value="past">${msg_courses_common_period_past}</option>
                             </select>
 
                             <select id="yearFilter" class="filter-select">
-                                <option value="all">${coursesYearAll}</option>
+                                <option value="all">${msg_courses_common_year_all}</option>
                             </select>
 
                             <select id="visibilityFilter" class="filter-select">
-                                <option value="all">${coursesVisibilityAll}</option>
-                                <option value="public">${coursesVisibilityPublic}</option>
-                                <option value="private">${coursesVisibilityPrivate}</option>
+                                <option value="all">${msg_courses_common_visibility_all}</option>
+                                <option value="public">${msg_courses_common_visibility_public}</option>
+                                <option value="private">${msg_courses_common_visibility_private}</option>
                             </select>
                         </div>
 
                         <div class="filter-controls">
-                            <input type="text" id="searchInput" class="search-input" placeholder="${coursesSearchPlaceholder}"/>
+                            <input type="text" id="searchInput" class="search-input" placeholder="${msg_courses_list_filter_searchPlaceholder}"/>
                         </div>
                     </div>
                 </div>
@@ -583,7 +585,7 @@
                         <fmt:formatDate value="${plan.end_date}" pattern="yyyyMMdd" var="endDateNumber"/>
 
                         <c:set var="sourceValue" value="${empty plan.plan_source ? 'MANUAL' : fn:toUpperCase(plan.plan_source)}"/>
-                        <c:set var="destinationValue" value="${empty plan.destination ? coursesDestinationMissing : plan.destination}"/>
+                        <c:set var="destinationValue" value="${empty plan.destination ? msg_courses_common_destinationMissing : plan.destination}"/>
                         <c:set var="publicValue" value="${plan.is_public == 1 ? 'public' : 'private'}"/>
 
                         <div class="plan-card plan-item"
@@ -605,14 +607,14 @@
                                     <div class="quick-action-wrap">
                                         <button type="button" class="quick-action-btn">⋯</button>
                                     <div class="quick-menu">
-                                            <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}">${coursesDetailLabel}</a>
-                                            <a href="${pageContext.request.contextPath}/courses/edit?planId=${plan.plan_id}">${coursesEditLabel}</a>
+                                            <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}">${msg_courses_common_detail}</a>
+                                            <a href="${pageContext.request.contextPath}/courses/edit?planId=${plan.plan_id}">${msg_courses_common_edit}</a>
                                             <form method="post"
                                                   action="${pageContext.request.contextPath}/courses/delete"
-                                                  onsubmit="return confirm('${fn:escapeXml(coursesDeleteConfirm)}');"
+                                                  onsubmit="return confirm('${fn:escapeXml(msg_courses_common_confirmDelete)}');"
                                                   style="margin: 0;">
                                                 <input type="hidden" name="planId" value="${plan.plan_id}">
-                                                <button type="submit">${coursesDeleteLabel}</button>
+                                                <button type="submit">${msg_courses_common_delete}</button>
                                             </form>
                                         </div>
                                     </div>
@@ -624,19 +626,19 @@
 
                                 <c:choose>
                                     <c:when test="${sourceValue eq 'AI'}">
-                                        <span class="badge source-ai">${coursesSourceAi}</span>
+                                        <span class="badge source-ai">${msg_courses_common_source_ai}</span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="badge source-manual">${coursesSourceManual}</span>
+                                        <span class="badge source-manual">${msg_courses_common_source_manual}</span>
                                     </c:otherwise>
                                 </c:choose>
 
                                 <c:choose>
                                     <c:when test="${plan.is_public == 1}">
-                                        <span class="badge public">${coursesVisibilityPublic}</span>
+                                        <span class="badge public">${msg_courses_common_visibility_public}</span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="badge private">${coursesVisibilityPrivate}</span>
+                                        <span class="badge private">${msg_courses_common_visibility_private}</span>
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -645,10 +647,10 @@
                             <div class="plan-meta">
                                 <c:choose>
                                 <c:when test="${sourceValue eq 'AI'}">
-                                        ${coursesSummaryAi}
+                                        ${msg_courses_common_summary_ai}
                                     </c:when>
                                     <c:otherwise>
-                                        ${coursesSummaryManual}
+                                        ${msg_courses_common_summary_manual}
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -657,7 +659,7 @@
                                 <span></span>
                                 <a class="detail-link"
                                    href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}">
-                                    ${coursesDetailArrow}
+                                    ${msg_courses_common_detailArrow}
                                 </a>
                             </div>
                         </div>
@@ -665,9 +667,9 @@
                 </div>
 
                 <div class="empty-box no-result" id="noResultBox">
-                    <h3>${coursesNoResultTitle}</h3>
-                    <p>${coursesNoResultDesc}</p>
-                    <a href="${pageContext.request.contextPath}/courses/write" class="empty-action">${coursesMyCreateButton}</a>
+                    <h3>${msg_courses_common_filter_noResult_title}</h3>
+                    <p>${msg_courses_common_filter_noResult_desc}</p>
+                    <a href="${pageContext.request.contextPath}/courses/write" class="empty-action">${msg_courses_my_createButton}</a>
                 </div>
             </c:otherwise>
         </c:choose>
@@ -752,7 +754,7 @@
             sortedYears.forEach(function (year) {
                 const option = document.createElement('option');
                 option.value = year;
-                option.textContent = year + '${fn:escapeXml(coursesYearSuffix)}';
+                option.textContent = year + '${fn:escapeXml(msg_courses_common_year_suffix)}';
                 yearFilter.appendChild(option);
             });
         }

@@ -4,138 +4,317 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_blocks_kpi_tooltip_numUserBlocks_js" code="admin.blocks.kpi.tooltip.numUserBlocks" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_kpi_tooltip_denTotalUsers_js" code="admin.blocks.kpi.tooltip.denTotalUsers" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_kpi_tooltip_numActivePolicies_js" code="admin.blocks.kpi.tooltip.numActivePolicies" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_kpi_tooltip_denTotalIpRules_js" code="admin.blocks.kpi.tooltip.denTotalIpRules" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_kpi_tooltip_numTodayBlocks_js" code="admin.blocks.kpi.tooltip.numTodayBlocks" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_kpi_tooltip_denTotalHistory_js" code="admin.blocks.kpi.tooltip.denTotalHistory" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_kpi_tooltip_numActiveBatches_js" code="admin.blocks.kpi.tooltip.numActiveBatches" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_kpi_tooltip_denTotalBatches_js" code="admin.blocks.kpi.tooltip.denTotalBatches" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_searchPlaceholder" code="admin.blocks.searchPlaceholder"/>
+<spring:message var="msg_admin_blocks_userBlocks_searchPlaceholder" code="admin.blocks.userBlocks.searchPlaceholder"/>
+<spring:message var="msg_admin_blocks_mode_label" code="admin.blocks.mode.label"/>
+<spring:message var="msg_admin_blocks_mode_tipClient" code="admin.blocks.mode.tipClient"/>
+<spring:message var="msg_admin_blocks_mode_tipServer" code="admin.blocks.mode.tipServer"/>
+<spring:message var="msg_admin_blocks_ipRules_searchPlaceholder" code="admin.blocks.ipRules.searchPlaceholder"/>
+<spring:message var="msg_admin_blocks_batches_searchPlaceholder" code="admin.blocks.batches.searchPlaceholder"/>
+<spring:message var="msg_admin_blocks_histories_searchPlaceholder" code="admin.blocks.histories.searchPlaceholder"/>
+<spring:message var="msg_admin_blocks_detailTitle" code="admin.blocks.detailTitle" htmlEscape="true"/>
+<spring:message var="msg_admin_common_noData_js" code="admin.common.noData" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_noMatchingData_js" code="admin.common.noMatchingData" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_totalCountFormat_js" code="admin.common.totalCountFormat" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_currentCountFormat_js" code="admin.common.currentCountFormat" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_loading_js" code="admin.common.loading" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_close_js" code="admin.common.close" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_fetchError_js" code="admin.context.fetchError" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_settings_js" code="admin.common.settings" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_detail_js" code="admin.common.detail" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_history_js" code="admin.common.history" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_memberTitle_js" code="admin.context.memberTitle" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_tab_info_js" code="admin.context.tab.info" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_tab_logins_js" code="admin.context.tab.logins" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_saved_js" code="admin.common.saved" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_saveFailed_js" code="admin.common.saveFailed" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_created_js" code="admin.common.created" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_createFailed_js" code="admin.common.createFailed" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_updated_js" code="admin.common.updated" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_updateFailed_js" code="admin.common.updateFailed" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_released_js" code="admin.common.released" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_releaseFailed_js" code="admin.common.releaseFailed" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_batchSettingsNotFound_js" code="admin.blocks.batchSettingsNotFound" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_detailTitle_js" code="admin.blocks.detailTitle" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_userBlockHistory_js" code="admin.blocks.userBlockHistory" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_ipRuleHistory_js" code="admin.blocks.ipRuleHistory" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_confirmRuleOn_js" code="admin.blocks.confirmRuleOn" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_confirmRuleOff_js" code="admin.blocks.confirmRuleOff" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_confirmReturnToBatch_js" code="admin.blocks.confirmReturnToBatch" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_confirmReleaseUserBlock_js" code="admin.blocks.confirmReleaseUserBlock" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_historyCurrentMissing_js" code="admin.blocks.historyCurrentMissing" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_batchToggleEnableSummary_js" code="admin.blocks.batchToggleEnableSummary" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_batchToggleDisableSummary_js" code="admin.blocks.batchToggleDisableSummary" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_keepBlocked_js" code="admin.blocks.keepBlocked" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_releaseBlock_js" code="admin.blocks.releaseBlock" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_effective_effective_js" code="admin.blocks.effective.effective" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_effective_ruleInactive_js" code="admin.blocks.effective.ruleInactive" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_effective_batchInactive_js" code="admin.blocks.effective.batchInactive" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_effective_expired_js" code="admin.blocks.effective.expired" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_individualRule_js" code="admin.blocks.individualRule" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_ruleOn_js" code="admin.blocks.ruleOn" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_pagePrefix_js" code="admin.common.pagePrefix" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_export_js" code="admin.common.export" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_exportAll_js" code="admin.common.exportAll" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_exportFiltered_js" code="admin.common.exportFiltered" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_exportSelected_js" code="admin.common.exportSelected" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_selectedCount_js" code="admin.common.selectedCount" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_bulkRelease_js" code="admin.common.bulkRelease" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_clearSelection_js" code="admin.common.clearSelection" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_processError_js" code="admin.common.processError" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_dashViewUserBlocks_js" code="admin.blocks.js.dashViewUserBlocks" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_dashViewIpRules_js" code="admin.blocks.js.dashViewIpRules" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_dashViewBatches_js" code="admin.blocks.js.dashViewBatches" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_dashViewHistories_js" code="admin.blocks.js.dashViewHistories" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_dashViewAll_js" code="admin.blocks.js.dashViewAll" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_dashSortTip_js" code="admin.blocks.js.dashSortTip" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_dashSortReset_js" code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_serverFetchError_js" code="admin.blocks.js.serverFetchError" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_bulkActivate_js" code="admin.blocks.js.bulkActivate" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_bulkDeactivate_js" code="admin.blocks.js.bulkDeactivate" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_noSelection_js" code="admin.blocks.js.noSelection" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_confirmBulkRelease_js" code="admin.blocks.js.confirmBulkRelease" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_confirmBulkActivate_js" code="admin.blocks.js.confirmBulkActivate" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_confirmBulkDeactivate_js" code="admin.blocks.js.confirmBulkDeactivate" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_js_done_js" code="admin.blocks.js.done" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_yes_js" code="admin.common.yes" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_no_js" code="admin.common.no" javaScriptEscape="true"/>
+<spring:message var="msg_admin_members_noLinkedProvider_js" code="admin.members.noLinkedProvider" javaScriptEscape="true"/>
+<spring:message var="msg_admin_social_kakao_js" code="admin.social.kakao" javaScriptEscape="true"/>
+<spring:message var="msg_admin_social_naver_js" code="admin.social.naver" javaScriptEscape="true"/>
+<spring:message var="msg_admin_social_google_js" code="admin.social.google" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_memberNo_js" code="admin.context.memberNo" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_userId_js" code="admin.context.userId" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_nickname_js" code="admin.context.nickname" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_email_js" code="admin.context.email" javaScriptEscape="true"/>
+<spring:message var="msg_admin_members_accountStatus_js" code="admin.members.accountStatus" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_role_js" code="admin.common.role" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_nationality_js" code="admin.context.nationality" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_preferredLanguage_js" code="admin.context.preferredLanguage" javaScriptEscape="true"/>
+<spring:message var="msg_admin_members_emailVerified_js" code="admin.members.emailVerified" javaScriptEscape="true"/>
+<spring:message var="msg_admin_members_emailLoginEnabled_js" code="admin.members.emailLoginEnabled" javaScriptEscape="true"/>
+<spring:message var="msg_admin_members_passwordLoginEnabled_js" code="admin.members.passwordLoginEnabled" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_createdAt_js" code="admin.context.createdAt" javaScriptEscape="true"/>
+<spring:message var="msg_admin_members_socialLinked_js" code="admin.members.socialLinked" javaScriptEscape="true"/>
+<spring:message var="msg_admin_members_loginSuccess_js" code="admin.members.loginSuccess" javaScriptEscape="true"/>
+<spring:message var="msg_admin_members_loginFailure_js" code="admin.members.loginFailure" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_lastLogin_js" code="admin.context.lastLogin" javaScriptEscape="true"/>
+<spring:message var="msg_admin_context_empty_logins_js" code="admin.context.empty.logins" javaScriptEscape="true"/>
+<spring:message var="msg_admin_logs_success_js" code="admin.logs.success" javaScriptEscape="true"/>
+<spring:message var="msg_admin_logs_failure_js" code="admin.logs.failure" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_time_js" code="admin.common.time" javaScriptEscape="true"/>
+<spring:message var="msg_admin_logs_provider_js" code="admin.logs.provider" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_result_js" code="admin.blocks.result" javaScriptEscape="true"/>
+<spring:message var="msg_admin_logs_failReason_js" code="admin.logs.failReason" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_ip_js" code="admin.common.ip" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_batches_editTitle_js" code="admin.blocks.batches.editTitle" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_control_batch_js" code="admin.blocks.control.batch" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_control_override_js" code="admin.blocks.control.override" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_control_manual_js" code="admin.blocks.control.manual" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_userBlocks_editTitle_js" code="admin.blocks.userBlocks.editTitle" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_ipRules_editTitle_js" code="admin.blocks.ipRules.editTitle" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_batchReactivate_js" code="admin.blocks.batchReactivate" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_batchDeactivate_js" code="admin.blocks.batchDeactivate" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_policyFeed_uploading_js" code="admin.blocks.policyFeed.uploading" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_policyFeed_uploadSuccess_js" code="admin.blocks.policyFeed.uploadSuccess" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_policyFeed_uploadFailed_js" code="admin.blocks.policyFeed.uploadFailed" javaScriptEscape="true"/>
+<spring:message var="msg_admin_blocks_pageTitle" code="admin.blocks.pageTitle"/>
+<spring:message var="msg_admin_blocks_individualRule" code="admin.blocks.individualRule"/>
+<spring:message var="msg_admin_members_none" code="admin.members.none"/>
+<spring:message var="msg_admin_common_settings" code="admin.common.settings"/>
+<spring:message var="msg_admin_common_history" code="admin.common.history"/>
+<spring:message var="msg_admin_blocks_ruleOff" code="admin.blocks.ruleOff"/>
+<spring:message var="msg_admin_blocks_ruleOn" code="admin.blocks.ruleOn"/>
+<spring:message var="msg_admin_blocks_returnToBatch" code="admin.blocks.returnToBatch"/>
+<spring:message var="msg_admin_blocks_kpi_activeUserBlocks" code="admin.blocks.kpi.activeUserBlocks"/>
+<spring:message var="msg_admin_blocks_dashboard_stat_userBlocks" code="admin.blocks.dashboard.stat.userBlocks"/>
+<spring:message var="msg_admin_blocks_kpi_activePolicies" code="admin.blocks.kpi.activePolicies"/>
+<spring:message var="msg_admin_blocks_dashboard_stat_ipRules" code="admin.blocks.dashboard.stat.ipRules"/>
+<spring:message var="msg_admin_blocks_kpi_history" code="admin.blocks.kpi.history"/>
+<spring:message var="msg_admin_blocks_dashboard_stat_history" code="admin.blocks.dashboard.stat.history"/>
+<spring:message var="msg_admin_blocks_kpi_activeBatches" code="admin.blocks.kpi.activeBatches"/>
+<spring:message var="msg_admin_blocks_dashboard_stat_batches" code="admin.blocks.dashboard.stat.batches"/>
+<spring:message var="msg_admin_blocks_runtimeCache_title" code="admin.blocks.runtimeCache.title"/>
+<spring:message var="msg_admin_blocks_runtimeCache_desc" code="admin.blocks.runtimeCache.desc"/>
+<spring:message var="msg_admin_blocks_runtimeCache_sync" code="admin.blocks.runtimeCache.sync"/>
+<spring:message var="msg_admin_blocks_policyFeed_title" code="admin.blocks.policyFeed.title"/>
+<spring:message var="msg_admin_blocks_policyFeed_desc" code="admin.blocks.policyFeed.desc"/>
+<spring:message var="msg_admin_blocks_policyFeed_sourceName" code="admin.blocks.policyFeed.sourceName"/>
+<spring:message var="msg_admin_context_ruleAction" code="admin.context.ruleAction"/>
+<spring:message var="msg_admin_context_ruleAction_block" code="admin.context.ruleAction.block"/>
+<spring:message var="msg_admin_context_ruleAction_allow" code="admin.context.ruleAction.allow"/>
+<spring:message var="msg_admin_blocks_policyFeed_file" code="admin.blocks.policyFeed.file"/>
+<spring:message var="msg_admin_blocks_policyFeed_upload" code="admin.blocks.policyFeed.upload"/>
+<spring:message var="msg_admin_blocks_globalSearch" code="admin.blocks.globalSearch"/>
+<spring:message var="msg_admin_blocks_ruleState" code="admin.blocks.ruleState"/>
+<spring:message var="msg_admin_common_all" code="admin.common.all"/>
+<spring:message var="msg_admin_blocks_scope" code="admin.blocks.scope"/>
+<spring:message var="msg_admin_blocks_scope_userAction" code="admin.blocks.scope.userAction"/>
+<spring:message var="msg_admin_blocks_scope_global" code="admin.blocks.scope.global"/>
+<spring:message var="msg_admin_blocks_scope_autoDetection" code="admin.blocks.scope.autoDetection"/>
+<spring:message var="msg_admin_blocks_controlMode" code="admin.blocks.controlMode"/>
+<spring:message var="msg_admin_blocks_control_manual" code="admin.blocks.control.manual"/>
+<spring:message var="msg_admin_blocks_control_batch" code="admin.blocks.control.batch"/>
+<spring:message var="msg_admin_blocks_control_override" code="admin.blocks.control.override"/>
+<spring:message var="msg_admin_blocks_matchType" code="admin.blocks.matchType"/>
+<spring:message var="msg_admin_blocks_match_singleIp" code="admin.blocks.match.singleIp"/>
+<spring:message var="msg_admin_blocks_match_cidr" code="admin.blocks.match.cidr"/>
+<spring:message var="msg_admin_blocks_match_range" code="admin.blocks.match.range"/>
+<spring:message var="msg_admin_blocks_match_country" code="admin.blocks.match.country"/>
+<spring:message var="msg_admin_blocks_match_asn" code="admin.blocks.match.asn"/>
+<spring:message var="msg_admin_context_category" code="admin.context.category"/>
+<spring:message var="msg_admin_blocks_category_manual" code="admin.blocks.category.manual"/>
+<spring:message var="msg_admin_blocks_category_spam" code="admin.blocks.category.spam"/>
+<spring:message var="msg_admin_blocks_category_abuse" code="admin.blocks.category.abuse"/>
+<spring:message var="msg_admin_blocks_category_bruteForce" code="admin.blocks.category.bruteForce"/>
+<spring:message var="msg_admin_blocks_category_geo" code="admin.blocks.category.geo"/>
+<spring:message var="msg_admin_blocks_category_vpn" code="admin.blocks.category.vpn"/>
+<spring:message var="msg_admin_blocks_category_security" code="admin.blocks.category.security"/>
+<spring:message var="msg_admin_blocks_effectiveState" code="admin.blocks.effectiveState"/>
+<spring:message var="msg_admin_blocks_effective_effective" code="admin.blocks.effective.effective"/>
+<spring:message var="msg_admin_blocks_effective_ruleInactive" code="admin.blocks.effective.ruleInactive"/>
+<spring:message var="msg_admin_blocks_effective_batchInactive" code="admin.blocks.effective.batchInactive"/>
+<spring:message var="msg_admin_blocks_effective_expired" code="admin.blocks.effective.expired"/>
+<spring:message var="msg_admin_context_batch" code="admin.context.batch"/>
+<spring:message var="msg_admin_common_apply" code="admin.common.apply"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
+<spring:message var="msg_admin_layout_menu_dashboard" code="admin.layout.menu.dashboard"/>
+<spring:message var="msg_admin_blocks_section_userBlocks" code="admin.blocks.section.userBlocks"/>
+<spring:message var="msg_admin_blocks_section_ipRules" code="admin.blocks.section.ipRules"/>
+<spring:message var="msg_admin_blocks_section_batches" code="admin.blocks.section.batches"/>
+<spring:message var="msg_admin_blocks_section_histories" code="admin.blocks.section.histories"/>
+<spring:message var="msg_admin_blocks_dashboard_title" code="admin.blocks.dashboard.title"/>
+<spring:message var="msg_admin_blocks_dashboard_sub" code="admin.blocks.dashboard.sub"/>
+<spring:message var="msg_admin_blocks_dashboard_insight_priorityTitle" code="admin.blocks.dashboard.insight.priorityTitle"/>
+<spring:message var="msg_admin_blocks_dashboard_insight_priority1" code="admin.blocks.dashboard.insight.priority1"/>
+<spring:message var="msg_admin_blocks_dashboard_insight_priority2" code="admin.blocks.dashboard.insight.priority2"/>
+<spring:message var="msg_admin_blocks_dashboard_insight_priority3" code="admin.blocks.dashboard.insight.priority3"/>
+<spring:message var="msg_admin_blocks_dashboard_insight_quickNavTitle" code="admin.blocks.dashboard.insight.quickNavTitle"/>
+<spring:message var="msg_admin_blocks_dashboard_insight_userBlocksChip" code="admin.blocks.dashboard.insight.userBlocksChip"/>
+<spring:message var="msg_admin_blocks_dashboard_insight_ipRulesChip" code="admin.blocks.dashboard.insight.ipRulesChip"/>
+<spring:message var="msg_admin_blocks_dashboard_insight_historyChip" code="admin.blocks.dashboard.insight.historyChip"/>
+<spring:message var="msg_admin_blocks_dashboard_recentUserBlocks" code="admin.blocks.dashboard.recentUserBlocks"/>
+<spring:message var="msg_admin_blocks_dashboard_topFive" code="admin.blocks.dashboard.topFive"/>
+<spring:message var="msg_admin_common_member" code="admin.common.member"/>
+<spring:message var="msg_admin_common_target" code="admin.common.target"/>
+<spring:message var="msg_admin_common_status" code="admin.common.status"/>
+<spring:message var="msg_admin_common_action" code="admin.common.action"/>
+<spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
+<spring:message var="msg_admin_common_sameTarget" code="admin.common.sameTarget"/>
+<spring:message var="msg_admin_common_noData" code="admin.common.noData"/>
+<spring:message var="msg_admin_blocks_dashboard_recentIpRules" code="admin.blocks.dashboard.recentIpRules"/>
+<spring:message var="msg_admin_blocks_dashboard_ipRulesSub" code="admin.blocks.dashboard.ipRulesSub"/>
+<spring:message var="msg_admin_common_actionLabel" code="admin.common.actionLabel"/>
+<spring:message var="msg_admin_common_sameBatch" code="admin.common.sameBatch"/>
+<spring:message var="msg_admin_blocks_dashboard_recentBatchOps" code="admin.blocks.dashboard.recentBatchOps"/>
+<spring:message var="msg_admin_blocks_dashboard_batchOpsSub" code="admin.blocks.dashboard.batchOpsSub"/>
+<spring:message var="msg_admin_blocks_impact" code="admin.blocks.impact"/>
+<spring:message var="msg_admin_blocks_dashboard_recentHistory" code="admin.blocks.dashboard.recentHistory"/>
+<spring:message var="msg_admin_blocks_dashboard_historySub" code="admin.blocks.dashboard.historySub"/>
+<spring:message var="msg_admin_common_time" code="admin.common.time"/>
+<spring:message var="msg_admin_blocks_changeKind" code="admin.blocks.changeKind"/>
+<spring:message var="msg_admin_blocks_result" code="admin.blocks.result"/>
+<spring:message var="msg_admin_blocks_currentSetting" code="admin.blocks.currentSetting"/>
+<spring:message var="msg_admin_blocks_userBlocks_title" code="admin.blocks.userBlocks.title"/>
+<spring:message var="msg_admin_blocks_userBlocks_sub" code="admin.blocks.userBlocks.sub"/>
+<spring:message var="msg_admin_common_export" code="admin.common.export"/>
+<spring:message var="msg_admin_common_exportAll" code="admin.common.exportAll"/>
+<spring:message var="msg_admin_common_exportFiltered" code="admin.common.exportFiltered"/>
+<spring:message var="msg_admin_common_exportSelected" code="admin.common.exportSelected"/>
+<spring:message var="msg_admin_blocks_filter_allFields" code="admin.blocks.filter.allFields"/>
+<spring:message var="msg_admin_blocks_filter_memberNickname" code="admin.blocks.filter.memberNickname"/>
+<spring:message var="msg_admin_blocks_filter_memberUserId" code="admin.blocks.filter.memberUserId"/>
+<spring:message var="msg_admin_blocks_filter_blockTarget" code="admin.blocks.filter.blockTarget"/>
+<spring:message var="msg_admin_common_reason" code="admin.common.reason"/>
+<spring:message var="msg_admin_blocks_filter_blockType" code="admin.blocks.filter.blockType"/>
+<spring:message var="msg_admin_blocks_filter_blockedDate" code="admin.blocks.filter.blockedDate"/>
+<spring:message var="msg_admin_blocks_filter_expireDate" code="admin.blocks.filter.expireDate"/>
+<spring:message var="msg_admin_blocks_mode_client" code="admin.blocks.mode.client"/>
+<spring:message var="msg_admin_blocks_mode_server" code="admin.blocks.mode.server"/>
+<spring:message var="msg_admin_common_pageSize" code="admin.common.pageSize"/>
+<spring:message var="msg_admin_common_selectedCount" code="admin.common.selectedCount"/>
+<spring:message var="msg_admin_common_bulkRelease" code="admin.common.bulkRelease"/>
+<spring:message var="msg_admin_common_clearSelection" code="admin.common.clearSelection"/>
+<spring:message var="msg_admin_blocks_blockAndExpire" code="admin.blocks.blockAndExpire"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_blocks_ipRules_title" code="admin.blocks.ipRules.title"/>
+<spring:message var="msg_admin_blocks_ipRules_sub" code="admin.blocks.ipRules.sub"/>
+<spring:message var="msg_admin_blocks_createBatch" code="admin.blocks.createBatch"/>
+<spring:message var="msg_admin_blocks_addRule" code="admin.blocks.addRule"/>
+<spring:message var="msg_admin_blocks_filter_ipOrTarget" code="admin.blocks.filter.ipOrTarget"/>
+<spring:message var="msg_admin_blocks_filter_reasonMemo" code="admin.blocks.filter.reasonMemo"/>
+<spring:message var="msg_admin_context_priority" code="admin.context.priority"/>
+<spring:message var="msg_admin_blocks_filter_policyControlCategory" code="admin.blocks.filter.policyControlCategory"/>
+<spring:message var="msg_admin_blocks_actionControl" code="admin.blocks.actionControl"/>
+<spring:message var="msg_admin_blocks_batches_sub" code="admin.blocks.batches.sub"/>
+<spring:message var="msg_admin_blocks_filter_batchNameCode" code="admin.blocks.filter.batchNameCode"/>
+<spring:message var="msg_admin_blocks_filter_source" code="admin.blocks.filter.source"/>
+<spring:message var="msg_admin_blocks_description" code="admin.blocks.description"/>
+<spring:message var="msg_admin_blocks_filter_basePolicy" code="admin.blocks.filter.basePolicy"/>
+<spring:message var="msg_admin_blocks_filter_recentUpdated" code="admin.blocks.filter.recentUpdated"/>
+<spring:message var="msg_admin_blocks_batch" code="admin.blocks.batch"/>
+<spring:message var="msg_admin_blocks_basePolicy" code="admin.blocks.basePolicy"/>
+<spring:message var="msg_admin_blocks_currentState" code="admin.blocks.currentState"/>
+<spring:message var="msg_admin_blocks_ruleStats" code="admin.blocks.ruleStats"/>
+<spring:message var="msg_admin_blocks_histories_sub" code="admin.blocks.histories.sub"/>
+<spring:message var="msg_admin_blocks_filter_reasonDescription" code="admin.blocks.filter.reasonDescription"/>
+<spring:message var="msg_admin_blocks_detailTitle_v2" code="admin.blocks.detailTitle"/>
+<spring:message var="msg_admin_context_memberTitle" code="admin.context.memberTitle"/>
+<spring:message var="msg_admin_common_loading" code="admin.common.loading"/>
+<spring:message var="msg_admin_common_close" code="admin.common.close"/>
+<spring:message var="msg_admin_blocks_userBlocks_editTitle" code="admin.blocks.userBlocks.editTitle"/>
+<spring:message var="msg_admin_blocks_targetKey" code="admin.blocks.targetKey"/>
+<spring:message var="msg_admin_blocks_blockedAt" code="admin.blocks.blockedAt"/>
+<spring:message var="msg_admin_blocks_syncedAt" code="admin.blocks.syncedAt"/>
+<spring:message var="msg_admin_blocks_keepBlocked" code="admin.blocks.keepBlocked"/>
+<spring:message var="msg_admin_blocks_releaseBlock" code="admin.blocks.releaseBlock"/>
+<spring:message var="msg_admin_context_expiresAt" code="admin.context.expiresAt"/>
+<spring:message var="msg_admin_common_plusDays" code="admin.common.plusDays"/>
+<spring:message var="msg_admin_common_indefinite" code="admin.common.indefinite"/>
+<spring:message var="msg_admin_common_relatedHistory" code="admin.common.relatedHistory"/>
+<spring:message var="msg_admin_common_save" code="admin.common.save"/>
+<spring:message var="msg_admin_blocks_ipRules_editTitle" code="admin.blocks.ipRules.editTitle"/>
+<spring:message var="msg_admin_context_createdAt" code="admin.context.createdAt"/>
+<spring:message var="msg_admin_blocks_policyReason" code="admin.blocks.policyReason"/>
+<spring:message var="msg_admin_blocks_ipRules_createTitle" code="admin.blocks.ipRules.createTitle"/>
+<spring:message var="msg_admin_common_ip" code="admin.common.ip"/>
+<spring:message var="msg_admin_blocks_rangeStartIp" code="admin.blocks.rangeStartIp"/>
+<spring:message var="msg_admin_blocks_rangeEndIp" code="admin.blocks.rangeEndIp"/>
+<spring:message var="msg_admin_blocks_countryCode" code="admin.blocks.countryCode"/>
+<spring:message var="msg_admin_common_cancel" code="admin.common.cancel"/>
+<spring:message var="msg_admin_blocks_batches_createTitle" code="admin.blocks.batches.createTitle"/>
+<spring:message var="msg_admin_blocks_batchCode" code="admin.blocks.batchCode"/>
+<spring:message var="msg_admin_blocks_batchName" code="admin.blocks.batchName"/>
+<spring:message var="msg_admin_blocks_source" code="admin.blocks.source"/>
+<spring:message var="msg_admin_blocks_sourceType_manual" code="admin.blocks.sourceType.manual"/>
+<spring:message var="msg_admin_blocks_sourceType_vpnFeed" code="admin.blocks.sourceType.vpnFeed"/>
+<spring:message var="msg_admin_blocks_sourceType_spamFeed" code="admin.blocks.sourceType.spamFeed"/>
+<spring:message var="msg_admin_blocks_sourceType_geoPolicy" code="admin.blocks.sourceType.geoPolicy"/>
+<spring:message var="msg_admin_blocks_sourceType_autoDetection" code="admin.blocks.sourceType.autoDetection"/>
+<spring:message var="msg_admin_common_value" code="admin.common.value"/>
+<spring:message var="msg_admin_blocks_baseAction" code="admin.blocks.baseAction"/>
+<spring:message var="msg_admin_blocks_defaultPriority" code="admin.blocks.defaultPriority"/>
+<spring:message var="msg_admin_blocks_baseStrategy" code="admin.blocks.baseStrategy"/>
+<spring:message var="msg_admin_common_create" code="admin.common.create"/>
+<spring:message var="msg_admin_blocks_batches_editTitle" code="admin.blocks.batches.editTitle"/>
+<spring:message var="msg_admin_context_updatedAt" code="admin.context.updatedAt"/>
+<spring:message var="msg_admin_blocks_batches_toggleTitle" code="admin.blocks.batches.toggleTitle"/>
+<spring:message var="msg_admin_blocks_option" code="admin.blocks.option"/>
 <c:set var="activeMenu" value="blocks"/>
-<spring:message var="adminBlocksKpiTooltipNumUserBlocksMsg" code="admin.blocks.kpi.tooltip.numUserBlocks" javaScriptEscape="true"/>
-<spring:message var="adminBlocksKpiTooltipDenTotalUsersMsg" code="admin.blocks.kpi.tooltip.denTotalUsers" javaScriptEscape="true"/>
-<spring:message var="adminBlocksKpiTooltipNumActivePoliciesMsg" code="admin.blocks.kpi.tooltip.numActivePolicies" javaScriptEscape="true"/>
-<spring:message var="adminBlocksKpiTooltipDenTotalIpRulesMsg" code="admin.blocks.kpi.tooltip.denTotalIpRules" javaScriptEscape="true"/>
-<spring:message var="adminBlocksKpiTooltipNumTodayBlocksMsg" code="admin.blocks.kpi.tooltip.numTodayBlocks" javaScriptEscape="true"/>
-<spring:message var="adminBlocksKpiTooltipDenTotalHistoryMsg" code="admin.blocks.kpi.tooltip.denTotalHistory" javaScriptEscape="true"/>
-<spring:message var="adminBlocksKpiTooltipNumActiveBatchesMsg" code="admin.blocks.kpi.tooltip.numActiveBatches" javaScriptEscape="true"/>
-<spring:message var="adminBlocksKpiTooltipDenTotalBatchesMsg" code="admin.blocks.kpi.tooltip.denTotalBatches" javaScriptEscape="true"/>
-<spring:message var="adminBlocksSearchPlaceholderMsg" code="admin.blocks.searchPlaceholder"/>
-<spring:message var="adminBlocksUserBlocksSearchPlaceholderMsg" code="admin.blocks.userBlocks.searchPlaceholder"/>
-<spring:message var="adminBlocksModeLabelMsg" code="admin.blocks.mode.label"/>
-<spring:message var="adminBlocksModeTipClientMsg" code="admin.blocks.mode.tipClient"/>
-<spring:message var="adminBlocksModeTipServerMsg" code="admin.blocks.mode.tipServer"/>
-<spring:message var="adminBlocksIpRulesSearchPlaceholderMsg" code="admin.blocks.ipRules.searchPlaceholder"/>
-<spring:message var="adminBlocksBatchesSearchPlaceholderMsg" code="admin.blocks.batches.searchPlaceholder"/>
-<spring:message var="adminBlocksHistoriesSearchPlaceholderMsg" code="admin.blocks.histories.searchPlaceholder"/>
-<spring:message var="adminBlocksDetailTitleMsg" code="admin.blocks.detailTitle" htmlEscape="true"/>
-<spring:message var="adminCommonNoDataMsg" code="admin.common.noData" javaScriptEscape="true"/>
-<spring:message var="adminCommonNoMatchingDataMsg" code="admin.common.noMatchingData" javaScriptEscape="true"/>
-<spring:message var="adminCommonTotalCountFormatMsg" code="admin.common.totalCountFormat" javaScriptEscape="true"/>
-<spring:message var="adminCommonCurrentCountFormatMsg" code="admin.common.currentCountFormat" javaScriptEscape="true"/>
-<spring:message var="adminCommonLoadingMsg" code="admin.common.loading" javaScriptEscape="true"/>
-<spring:message var="adminCommonCloseMsg" code="admin.common.close" javaScriptEscape="true"/>
-<spring:message var="adminContextFetchErrorMsg" code="admin.context.fetchError" javaScriptEscape="true"/>
-<spring:message var="adminCommonSettingsMsg" code="admin.common.settings" javaScriptEscape="true"/>
-<spring:message var="adminCommonDetailMsg" code="admin.common.detail" javaScriptEscape="true"/>
-<spring:message var="adminCommonHistoryMsg" code="admin.common.history" javaScriptEscape="true"/>
-<spring:message var="adminContextMemberTitleMsg" code="admin.context.memberTitle" javaScriptEscape="true"/>
-<spring:message var="adminContextTabInfoMsg" code="admin.context.tab.info" javaScriptEscape="true"/>
-<spring:message var="adminContextTabLoginsMsg" code="admin.context.tab.logins" javaScriptEscape="true"/>
-<spring:message var="adminCommonSavedMsg" code="admin.common.saved" javaScriptEscape="true"/>
-<spring:message var="adminCommonSaveFailedMsg" code="admin.common.saveFailed" javaScriptEscape="true"/>
-<spring:message var="adminCommonCreatedMsg" code="admin.common.created" javaScriptEscape="true"/>
-<spring:message var="adminCommonCreateFailedMsg" code="admin.common.createFailed" javaScriptEscape="true"/>
-<spring:message var="adminCommonUpdatedMsg" code="admin.common.updated" javaScriptEscape="true"/>
-<spring:message var="adminCommonUpdateFailedMsg" code="admin.common.updateFailed" javaScriptEscape="true"/>
-<spring:message var="adminCommonReleasedMsg" code="admin.common.released" javaScriptEscape="true"/>
-<spring:message var="adminCommonReleaseFailedMsg" code="admin.common.releaseFailed" javaScriptEscape="true"/>
-<spring:message var="adminBlocksBatchSettingsNotFoundMsg" code="admin.blocks.batchSettingsNotFound" javaScriptEscape="true"/>
-<spring:message var="adminBlocksDetailTitleMsg2" code="admin.blocks.detailTitle" javaScriptEscape="true"/>
-<spring:message var="adminBlocksUserBlockHistoryMsg" code="admin.blocks.userBlockHistory" javaScriptEscape="true"/>
-<spring:message var="adminBlocksIpRuleHistoryMsg" code="admin.blocks.ipRuleHistory" javaScriptEscape="true"/>
-<spring:message var="adminBlocksConfirmRuleOnMsg" code="admin.blocks.confirmRuleOn" javaScriptEscape="true"/>
-<spring:message var="adminBlocksConfirmRuleOffMsg" code="admin.blocks.confirmRuleOff" javaScriptEscape="true"/>
-<spring:message var="adminBlocksConfirmReturnToBatchMsg" code="admin.blocks.confirmReturnToBatch" javaScriptEscape="true"/>
-<spring:message var="adminBlocksConfirmReleaseUserBlockMsg" code="admin.blocks.confirmReleaseUserBlock" javaScriptEscape="true"/>
-<spring:message var="adminBlocksHistoryCurrentMissingMsg" code="admin.blocks.historyCurrentMissing" javaScriptEscape="true"/>
-<spring:message var="adminBlocksBatchToggleEnableSummaryMsg" code="admin.blocks.batchToggleEnableSummary" javaScriptEscape="true"/>
-<spring:message var="adminBlocksBatchToggleDisableSummaryMsg" code="admin.blocks.batchToggleDisableSummary" javaScriptEscape="true"/>
-<spring:message var="adminBlocksKeepBlockedMsg" code="admin.blocks.keepBlocked" javaScriptEscape="true"/>
-<spring:message var="adminBlocksReleaseBlockMsg" code="admin.blocks.releaseBlock" javaScriptEscape="true"/>
-<spring:message var="adminBlocksEffectiveEffectiveMsg" code="admin.blocks.effective.effective" javaScriptEscape="true"/>
-<spring:message var="adminBlocksEffectiveRuleInactiveMsg" code="admin.blocks.effective.ruleInactive" javaScriptEscape="true"/>
-<spring:message var="adminBlocksEffectiveBatchInactiveMsg" code="admin.blocks.effective.batchInactive" javaScriptEscape="true"/>
-<spring:message var="adminBlocksEffectiveExpiredMsg" code="admin.blocks.effective.expired" javaScriptEscape="true"/>
-<spring:message var="adminBlocksIndividualRuleMsg" code="admin.blocks.individualRule" javaScriptEscape="true"/>
-<spring:message var="adminBlocksRuleOnMsg" code="admin.blocks.ruleOn" javaScriptEscape="true"/>
-<spring:message var="adminCommonPagePrefixMsg" code="admin.common.pagePrefix" javaScriptEscape="true"/>
-<spring:message var="adminCommonExportMsg" code="admin.common.export" javaScriptEscape="true"/>
-<spring:message var="adminCommonExportAllMsg" code="admin.common.exportAll" javaScriptEscape="true"/>
-<spring:message var="adminCommonExportFilteredMsg" code="admin.common.exportFiltered" javaScriptEscape="true"/>
-<spring:message var="adminCommonExportSelectedMsg" code="admin.common.exportSelected" javaScriptEscape="true"/>
-<spring:message var="adminCommonSelectedCountMsg" code="admin.common.selectedCount" javaScriptEscape="true"/>
-<spring:message var="adminCommonBulkReleaseMsg" code="admin.common.bulkRelease" javaScriptEscape="true"/>
-<spring:message var="adminCommonClearSelectionMsg" code="admin.common.clearSelection" javaScriptEscape="true"/>
-<spring:message var="adminCommonProcessErrorMsg" code="admin.common.processError" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsDashViewUserBlocksMsg" code="admin.blocks.js.dashViewUserBlocks" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsDashViewIpRulesMsg" code="admin.blocks.js.dashViewIpRules" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsDashViewBatchesMsg" code="admin.blocks.js.dashViewBatches" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsDashViewHistoriesMsg" code="admin.blocks.js.dashViewHistories" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsDashViewAllMsg" code="admin.blocks.js.dashViewAll" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsDashSortTipMsg" code="admin.blocks.js.dashSortTip" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsDashSortResetMsg" code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsServerFetchErrorMsg" code="admin.blocks.js.serverFetchError" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsBulkActivateMsg" code="admin.blocks.js.bulkActivate" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsBulkDeactivateMsg" code="admin.blocks.js.bulkDeactivate" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsNoSelectionMsg" code="admin.blocks.js.noSelection" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsConfirmBulkReleaseMsg" code="admin.blocks.js.confirmBulkRelease" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsConfirmBulkActivateMsg" code="admin.blocks.js.confirmBulkActivate" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsConfirmBulkDeactivateMsg" code="admin.blocks.js.confirmBulkDeactivate" javaScriptEscape="true"/>
-<spring:message var="adminBlocksJsDoneMsg" code="admin.blocks.js.done" javaScriptEscape="true"/>
-<spring:message var="adminCommonYesMsg" code="admin.common.yes" javaScriptEscape="true"/>
-<spring:message var="adminCommonNoMsg" code="admin.common.no" javaScriptEscape="true"/>
-<spring:message var="adminMembersNoLinkedProviderMsg" code="admin.members.noLinkedProvider" javaScriptEscape="true"/>
-<spring:message var="adminSocialKakaoMsg" code="admin.social.kakao" javaScriptEscape="true"/>
-<spring:message var="adminSocialNaverMsg" code="admin.social.naver" javaScriptEscape="true"/>
-<spring:message var="adminSocialGoogleMsg" code="admin.social.google" javaScriptEscape="true"/>
-<spring:message var="adminContextMemberNoMsg" code="admin.context.memberNo" javaScriptEscape="true"/>
-<spring:message var="adminContextUserIdMsg" code="admin.context.userId" javaScriptEscape="true"/>
-<spring:message var="adminContextNicknameMsg" code="admin.context.nickname" javaScriptEscape="true"/>
-<spring:message var="adminContextEmailMsg" code="admin.context.email" javaScriptEscape="true"/>
-<spring:message var="adminMembersAccountStatusMsg" code="admin.members.accountStatus" javaScriptEscape="true"/>
-<spring:message var="adminCommonRoleMsg" code="admin.common.role" javaScriptEscape="true"/>
-<spring:message var="adminContextNationalityMsg" code="admin.context.nationality" javaScriptEscape="true"/>
-<spring:message var="adminContextPreferredLanguageMsg" code="admin.context.preferredLanguage" javaScriptEscape="true"/>
-<spring:message var="adminMembersEmailVerifiedMsg" code="admin.members.emailVerified" javaScriptEscape="true"/>
-<spring:message var="adminMembersEmailLoginEnabledMsg" code="admin.members.emailLoginEnabled" javaScriptEscape="true"/>
-<spring:message var="adminMembersPasswordLoginEnabledMsg" code="admin.members.passwordLoginEnabled" javaScriptEscape="true"/>
-<spring:message var="adminContextCreatedAtMsg" code="admin.context.createdAt" javaScriptEscape="true"/>
-<spring:message var="adminMembersSocialLinkedMsg" code="admin.members.socialLinked" javaScriptEscape="true"/>
-<spring:message var="adminMembersLoginSuccessMsg" code="admin.members.loginSuccess" javaScriptEscape="true"/>
-<spring:message var="adminMembersLoginFailureMsg" code="admin.members.loginFailure" javaScriptEscape="true"/>
-<spring:message var="adminContextLastLoginMsg" code="admin.context.lastLogin" javaScriptEscape="true"/>
-<spring:message var="adminContextEmptyLoginsMsg" code="admin.context.empty.logins" javaScriptEscape="true"/>
-<spring:message var="adminLogsSuccessMsg" code="admin.logs.success" javaScriptEscape="true"/>
-<spring:message var="adminLogsFailureMsg" code="admin.logs.failure" javaScriptEscape="true"/>
-<spring:message var="adminCommonTimeMsg" code="admin.common.time" javaScriptEscape="true"/>
-<spring:message var="adminLogsProviderMsg" code="admin.logs.provider" javaScriptEscape="true"/>
-<spring:message var="adminBlocksResultMsg" code="admin.blocks.result" javaScriptEscape="true"/>
-<spring:message var="adminLogsFailReasonMsg" code="admin.logs.failReason" javaScriptEscape="true"/>
-<spring:message var="adminCommonIpMsg" code="admin.common.ip" javaScriptEscape="true"/>
-<spring:message var="adminBlocksBatchesEditTitleMsg" code="admin.blocks.batches.editTitle" javaScriptEscape="true"/>
-<spring:message var="adminBlocksControlBatchMsg" code="admin.blocks.control.batch" javaScriptEscape="true"/>
-<spring:message var="adminBlocksControlOverrideMsg" code="admin.blocks.control.override" javaScriptEscape="true"/>
-<spring:message var="adminBlocksControlManualMsg" code="admin.blocks.control.manual" javaScriptEscape="true"/>
-<spring:message var="adminBlocksUserBlocksEditTitleMsg" code="admin.blocks.userBlocks.editTitle" javaScriptEscape="true"/>
-<spring:message var="adminBlocksIpRulesEditTitleMsg" code="admin.blocks.ipRules.editTitle" javaScriptEscape="true"/>
-<spring:message var="adminBlocksBatchReactivateMsg" code="admin.blocks.batchReactivate" javaScriptEscape="true"/>
-<spring:message var="adminBlocksBatchDeactivateMsg" code="admin.blocks.batchDeactivate" javaScriptEscape="true"/>
-<spring:message var="adminBlocksPolicyFeedUploadingMsg" code="admin.blocks.policyFeed.uploading" javaScriptEscape="true"/>
-<spring:message var="adminBlocksPolicyFeedUploadSuccessMsg" code="admin.blocks.policyFeed.uploadSuccess" javaScriptEscape="true"/>
-<spring:message var="adminBlocksPolicyFeedUploadFailedMsg" code="admin.blocks.policyFeed.uploadFailed" javaScriptEscape="true"/>
-<spring:message code="admin.blocks.pageTitle" var="adminBlocksPageTitle"/>
-<spring:message code="admin.blocks.individualRule" var="adminBlocksIndividualRuleLabel"/>
-<spring:message code="admin.members.none" var="adminBlocksNoneLabel"/>
-<spring:message code="admin.common.settings" var="adminBlocksSettingsLabel"/>
-<spring:message code="admin.common.history" var="adminBlocksHistoryLabel"/>
-<spring:message code="admin.blocks.ruleOff" var="adminBlocksRuleOffLabel"/>
-<spring:message code="admin.blocks.ruleOn" var="adminBlocksRuleOnLabel"/>
-<spring:message code="admin.blocks.returnToBatch" var="adminBlocksReturnToBatchLabel"/>
-<c:set var="pageTitle" value="${adminBlocksPageTitle}"/>
+
+
+<c:set var="pageTitle" value="${msg_admin_blocks_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -145,58 +324,58 @@
                 <c:set var="kpiPct1" value="${totalUserCount > 0 ? activeUserBlockCount * 100 / totalUserCount : 0}"/>
                 <c:if test="${kpiPct1 > 100}"><c:set var="kpiPct1" value="100"/></c:if>
                 <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('user-blocks');renderSectionByMode('user-blocks');">
-                    <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activeUserBlocks"/></div>
+                    <div class="adm-kpi-label">${msg_admin_blocks_kpi_activeUserBlocks}</div>
                     <div class="adm-kpi-value-row">
-                        <span class="adm-kpi-num" title="${adminBlocksKpiTooltipNumUserBlocksMsg}">${activeUserBlockCount}</span>
+                        <span class="adm-kpi-num" title="${msg_admin_blocks_kpi_tooltip_numUserBlocks_js}">${activeUserBlockCount}</span>
                         <span class="adm-kpi-sep">/</span>
-                        <span class="adm-kpi-den" title="${adminBlocksKpiTooltipDenTotalUsersMsg}">${totalUserCount}</span>
+                        <span class="adm-kpi-den" title="${msg_admin_blocks_kpi_tooltip_denTotalUsers_js}">${totalUserCount}</span>
                     </div>
                     <div class="adm-kpi-bar-wrap" title="${kpiPct1}%">
                         <div class="adm-kpi-bar-fill" style="width:${kpiPct1}%;"></div>
                     </div>
-                    <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.userBlocks"/></div>
+                    <div class="adm-kpi-sub">${msg_admin_blocks_dashboard_stat_userBlocks}</div>
                 </button>
                 <c:set var="kpiPct2" value="${totalIpRuleCount > 0 ? activeIpBlockCount * 100 / totalIpRuleCount : 0}"/>
                 <c:if test="${kpiPct2 > 100}"><c:set var="kpiPct2" value="100"/></c:if>
                 <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('ip-rules');renderSectionByMode('ip-rules');">
-                    <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activePolicies"/></div>
+                    <div class="adm-kpi-label">${msg_admin_blocks_kpi_activePolicies}</div>
                     <div class="adm-kpi-value-row">
-                        <span class="adm-kpi-num" title="${adminBlocksKpiTooltipNumActivePoliciesMsg}">${activeIpBlockCount}</span>
+                        <span class="adm-kpi-num" title="${msg_admin_blocks_kpi_tooltip_numActivePolicies_js}">${activeIpBlockCount}</span>
                         <span class="adm-kpi-sep">/</span>
-                        <span class="adm-kpi-den" title="${adminBlocksKpiTooltipDenTotalIpRulesMsg}">${totalIpRuleCount}</span>
+                        <span class="adm-kpi-den" title="${msg_admin_blocks_kpi_tooltip_denTotalIpRules_js}">${totalIpRuleCount}</span>
                     </div>
                     <div class="adm-kpi-bar-wrap" title="${kpiPct2}%">
                         <div class="adm-kpi-bar-fill" style="width:${kpiPct2}%;"></div>
                     </div>
-                    <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.ipRules"/></div>
+                    <div class="adm-kpi-sub">${msg_admin_blocks_dashboard_stat_ipRules}</div>
                 </button>
                 <c:set var="kpiPct3" value="${blockHistoryCount > 0 ? todayBlockCount * 100 / blockHistoryCount : 0}"/>
                 <c:if test="${kpiPct3 > 100}"><c:set var="kpiPct3" value="100"/></c:if>
                 <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('histories');renderSectionByMode('histories');">
-                    <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.history"/></div>
+                    <div class="adm-kpi-label">${msg_admin_blocks_kpi_history}</div>
                     <div class="adm-kpi-value-row">
-                        <span class="adm-kpi-num" title="${adminBlocksKpiTooltipNumTodayBlocksMsg}">${todayBlockCount}</span>
+                        <span class="adm-kpi-num" title="${msg_admin_blocks_kpi_tooltip_numTodayBlocks_js}">${todayBlockCount}</span>
                         <span class="adm-kpi-sep">/</span>
-                        <span class="adm-kpi-den" title="${adminBlocksKpiTooltipDenTotalHistoryMsg}">${blockHistoryCount}</span>
+                        <span class="adm-kpi-den" title="${msg_admin_blocks_kpi_tooltip_denTotalHistory_js}">${blockHistoryCount}</span>
                     </div>
                     <div class="adm-kpi-bar-wrap" title="${kpiPct3}%">
                         <div class="adm-kpi-bar-fill" style="width:${kpiPct3}%;"></div>
                     </div>
-                    <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.history"/></div>
+                    <div class="adm-kpi-sub">${msg_admin_blocks_dashboard_stat_history}</div>
                 </button>
                 <c:set var="kpiPct4" value="${totalBatchCount > 0 ? activeBatchCount * 100 / totalBatchCount : 0}"/>
                 <c:if test="${kpiPct4 > 100}"><c:set var="kpiPct4" value="100"/></c:if>
                 <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('batches');renderSectionByMode('batches');">
-                    <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activeBatches"/></div>
+                    <div class="adm-kpi-label">${msg_admin_blocks_kpi_activeBatches}</div>
                     <div class="adm-kpi-value-row">
-                        <span class="adm-kpi-num" title="${adminBlocksKpiTooltipNumActiveBatchesMsg}">${activeBatchCount}</span>
+                        <span class="adm-kpi-num" title="${msg_admin_blocks_kpi_tooltip_numActiveBatches_js}">${activeBatchCount}</span>
                         <span class="adm-kpi-sep">/</span>
-                        <span class="adm-kpi-den" title="${adminBlocksKpiTooltipDenTotalBatchesMsg}">${totalBatchCount}</span>
+                        <span class="adm-kpi-den" title="${msg_admin_blocks_kpi_tooltip_denTotalBatches_js}">${totalBatchCount}</span>
                     </div>
                     <div class="adm-kpi-bar-wrap" title="${kpiPct4}%">
                         <div class="adm-kpi-bar-fill" style="width:${kpiPct4}%;"></div>
                     </div>
-                    <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.batches"/></div>
+                    <div class="adm-kpi-sub">${msg_admin_blocks_dashboard_stat_batches}</div>
                 </button>
             </div>
         </div>
@@ -205,10 +384,10 @@
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-body" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
             <div>
-                <div style="font-weight:800;color:#0f172a;"><spring:message code="admin.blocks.runtimeCache.title"/></div>
-                <div style="font-size:12px;color:#64748b;margin-top:4px;"><spring:message code="admin.blocks.runtimeCache.desc"/></div>
+                <div style="font-weight:800;color:#0f172a;">${msg_admin_blocks_runtimeCache_title}</div>
+                <div style="font-size:12px;color:#64748b;margin-top:4px;">${msg_admin_blocks_runtimeCache_desc}</div>
             </div>
-            <button type="button" class="adm-btn adm-btn-primary js-sync-block-cache"><spring:message code="admin.blocks.runtimeCache.sync"/></button>
+            <button type="button" class="adm-btn adm-btn-primary js-sync-block-cache">${msg_admin_blocks_runtimeCache_sync}</button>
         </div>
     </div>
 
@@ -216,26 +395,26 @@
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-body" style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;">
             <div style="min-width:260px;flex:1;">
-                <div style="font-weight:800;color:#0f172a;"><spring:message code="admin.blocks.policyFeed.title"/></div>
-                <div style="font-size:12px;color:#64748b;margin-top:4px;"><spring:message code="admin.blocks.policyFeed.desc"/></div>
+                <div style="font-weight:800;color:#0f172a;">${msg_admin_blocks_policyFeed_title}</div>
+                <div style="font-size:12px;color:#64748b;margin-top:4px;">${msg_admin_blocks_policyFeed_desc}</div>
             </div>
             <form id="policyFeedUploadForm" enctype="multipart/form-data" style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
                 <label style="font-size:12px;color:#475569;">
-                    <spring:message code="admin.blocks.policyFeed.sourceName"/>
+                    ${msg_admin_blocks_policyFeed_sourceName}
                     <input class="adm-input" type="text" name="sourceName" value="MANUAL_UPLOAD_FEED" style="min-width:180px;">
                 </label>
                 <label style="font-size:12px;color:#475569;">
-                    <spring:message code="admin.context.ruleAction"/>
+                    ${msg_admin_context_ruleAction}
                     <select class="adm-select" name="defaultRuleAction">
-                        <option value="BLOCK"><spring:message code="admin.context.ruleAction.block"/></option>
-                        <option value="ALLOW"><spring:message code="admin.context.ruleAction.allow"/></option>
+                        <option value="BLOCK">${msg_admin_context_ruleAction_block}</option>
+                        <option value="ALLOW">${msg_admin_context_ruleAction_allow}</option>
                     </select>
                 </label>
                 <label style="font-size:12px;color:#475569;">
-                    <spring:message code="admin.blocks.policyFeed.file"/>
+                    ${msg_admin_blocks_policyFeed_file}
                     <input class="adm-input" type="file" name="file" accept=".csv,.json" required>
                 </label>
-                <button type="submit" class="adm-btn adm-btn-primary"><spring:message code="admin.blocks.policyFeed.upload"/></button>
+                <button type="submit" class="adm-btn adm-btn-primary">${msg_admin_blocks_policyFeed_upload}</button>
             </form>
             <div id="policyFeedUploadResult" style="width:100%;font-size:12px;color:#475569;"></div>
         </div>
@@ -247,92 +426,92 @@
                 <input type="hidden" name="tab" id="blockActiveTabInput" value="${fn:escapeXml(param.tab)}">
                 <div class="adm-filter-bar">
                     <div style="flex:1;min-width:260px;">
-                        <div class="adm-filter-label"><spring:message code="admin.blocks.globalSearch"/></div>
+                        <div class="adm-filter-label">${msg_admin_blocks_globalSearch}</div>
                         <div class="adm-search-box">
                             <span class="adm-search-ico">🔍</span>
-                            <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${adminBlocksSearchPlaceholderMsg}">
+                            <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_blocks_searchPlaceholder}">
                         </div>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.blocks.ruleState"/></div>
+                        <div class="adm-filter-label">${msg_admin_blocks_ruleState}</div>
                         <select class="adm-select" name="status">
-                            <option value="ALL" ${search.status=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="ACTIVE" ${search.status=='ACTIVE'?'selected':''}><spring:message code="admin.blocks.ruleOn"/></option>
-                            <option value="INACTIVE" ${search.status=='INACTIVE'?'selected':''}><spring:message code="admin.blocks.ruleOff"/></option>
+                            <option value="ALL" ${search.status=='ALL'?'selected':''}>${msg_admin_common_all}</option>
+                            <option value="ACTIVE" ${search.status=='ACTIVE'?'selected':''}>${msg_admin_blocks_ruleOn}</option>
+                            <option value="INACTIVE" ${search.status=='INACTIVE'?'selected':''}>${msg_admin_blocks_ruleOff}</option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.blocks.scope"/></div>
+                        <div class="adm-filter-label">${msg_admin_blocks_scope}</div>
                         <select class="adm-select" name="scope">
-                            <option value="ALL" ${search.scope=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="USER_ACTION" ${search.scope=='USER_ACTION'?'selected':''}><spring:message code="admin.blocks.scope.userAction"/></option>
-                            <option value="GLOBAL" ${search.scope=='GLOBAL'?'selected':''}><spring:message code="admin.blocks.scope.global"/></option>
-                            <option value="AUTO_DETECTION" ${search.scope=='AUTO_DETECTION'?'selected':''}><spring:message code="admin.blocks.scope.autoDetection"/></option>
+                            <option value="ALL" ${search.scope=='ALL'?'selected':''}>${msg_admin_common_all}</option>
+                            <option value="USER_ACTION" ${search.scope=='USER_ACTION'?'selected':''}>${msg_admin_blocks_scope_userAction}</option>
+                            <option value="GLOBAL" ${search.scope=='GLOBAL'?'selected':''}>${msg_admin_blocks_scope_global}</option>
+                            <option value="AUTO_DETECTION" ${search.scope=='AUTO_DETECTION'?'selected':''}>${msg_admin_blocks_scope_autoDetection}</option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.context.ruleAction"/></div>
+                        <div class="adm-filter-label">${msg_admin_context_ruleAction}</div>
                         <select class="adm-select" name="ruleAction">
-                            <option value="ALL" ${search.ruleAction=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="BLOCK" ${search.ruleAction=='BLOCK'?'selected':''}><spring:message code="admin.context.ruleAction.block"/></option>
-                            <option value="ALLOW" ${search.ruleAction=='ALLOW'?'selected':''}><spring:message code="admin.context.ruleAction.allow"/></option>
+                            <option value="ALL" ${search.ruleAction=='ALL'?'selected':''}>${msg_admin_common_all}</option>
+                            <option value="BLOCK" ${search.ruleAction=='BLOCK'?'selected':''}>${msg_admin_context_ruleAction_block}</option>
+                            <option value="ALLOW" ${search.ruleAction=='ALLOW'?'selected':''}>${msg_admin_context_ruleAction_allow}</option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.blocks.controlMode"/></div>
+                        <div class="adm-filter-label">${msg_admin_blocks_controlMode}</div>
                         <select class="adm-select" name="controlMode">
-                            <option value="ALL" ${search.controlMode=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="MANUAL" ${search.controlMode=='MANUAL'?'selected':''}><spring:message code="admin.blocks.control.manual"/></option>
-                            <option value="BATCH" ${search.controlMode=='BATCH'?'selected':''}><spring:message code="admin.blocks.control.batch"/></option>
-                            <option value="MANUAL_OVERRIDE" ${search.controlMode=='MANUAL_OVERRIDE'?'selected':''}><spring:message code="admin.blocks.control.override"/></option>
+                            <option value="ALL" ${search.controlMode=='ALL'?'selected':''}>${msg_admin_common_all}</option>
+                            <option value="MANUAL" ${search.controlMode=='MANUAL'?'selected':''}>${msg_admin_blocks_control_manual}</option>
+                            <option value="BATCH" ${search.controlMode=='BATCH'?'selected':''}>${msg_admin_blocks_control_batch}</option>
+                            <option value="MANUAL_OVERRIDE" ${search.controlMode=='MANUAL_OVERRIDE'?'selected':''}>${msg_admin_blocks_control_override}</option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.blocks.matchType"/></div>
+                        <div class="adm-filter-label">${msg_admin_blocks_matchType}</div>
                         <select class="adm-select" name="matchType">
-                            <option value="ALL" ${search.matchType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="SINGLE_IP" ${search.matchType=='SINGLE_IP'?'selected':''}><spring:message code="admin.blocks.match.singleIp"/></option>
-                            <option value="CIDR" ${search.matchType=='CIDR'?'selected':''}><spring:message code="admin.blocks.match.cidr"/></option>
-                            <option value="RANGE" ${search.matchType=='RANGE'?'selected':''}><spring:message code="admin.blocks.match.range"/></option>
-                            <option value="COUNTRY" ${search.matchType=='COUNTRY'?'selected':''}><spring:message code="admin.blocks.match.country"/></option>
-                            <option value="ASN" ${search.matchType=='ASN'?'selected':''}><spring:message code="admin.blocks.match.asn"/></option>
+                            <option value="ALL" ${search.matchType=='ALL'?'selected':''}>${msg_admin_common_all}</option>
+                            <option value="SINGLE_IP" ${search.matchType=='SINGLE_IP'?'selected':''}>${msg_admin_blocks_match_singleIp}</option>
+                            <option value="CIDR" ${search.matchType=='CIDR'?'selected':''}>${msg_admin_blocks_match_cidr}</option>
+                            <option value="RANGE" ${search.matchType=='RANGE'?'selected':''}>${msg_admin_blocks_match_range}</option>
+                            <option value="COUNTRY" ${search.matchType=='COUNTRY'?'selected':''}>${msg_admin_blocks_match_country}</option>
+                            <option value="ASN" ${search.matchType=='ASN'?'selected':''}>${msg_admin_blocks_match_asn}</option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.context.category"/></div>
+                        <div class="adm-filter-label">${msg_admin_context_category}</div>
                         <select class="adm-select" name="category">
-                            <option value="ALL" ${search.category=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="MANUAL" ${search.category=='MANUAL'?'selected':''}><spring:message code="admin.blocks.category.manual"/></option>
-                            <option value="SPAM" ${search.category=='SPAM'?'selected':''}><spring:message code="admin.blocks.category.spam"/></option>
-                            <option value="ABUSE" ${search.category=='ABUSE'?'selected':''}><spring:message code="admin.blocks.category.abuse"/></option>
-                            <option value="BRUTE_FORCE" ${search.category=='BRUTE_FORCE'?'selected':''}><spring:message code="admin.blocks.category.bruteForce"/></option>
-                            <option value="GEO" ${search.category=='GEO'?'selected':''}><spring:message code="admin.blocks.category.geo"/></option>
-                            <option value="VPN" ${search.category=='VPN'?'selected':''}><spring:message code="admin.blocks.category.vpn"/></option>
-                            <option value="SECURITY" ${search.category=='SECURITY'?'selected':''}><spring:message code="admin.blocks.category.security"/></option>
+                            <option value="ALL" ${search.category=='ALL'?'selected':''}>${msg_admin_common_all}</option>
+                            <option value="MANUAL" ${search.category=='MANUAL'?'selected':''}>${msg_admin_blocks_category_manual}</option>
+                            <option value="SPAM" ${search.category=='SPAM'?'selected':''}>${msg_admin_blocks_category_spam}</option>
+                            <option value="ABUSE" ${search.category=='ABUSE'?'selected':''}>${msg_admin_blocks_category_abuse}</option>
+                            <option value="BRUTE_FORCE" ${search.category=='BRUTE_FORCE'?'selected':''}>${msg_admin_blocks_category_bruteForce}</option>
+                            <option value="GEO" ${search.category=='GEO'?'selected':''}>${msg_admin_blocks_category_geo}</option>
+                            <option value="VPN" ${search.category=='VPN'?'selected':''}>${msg_admin_blocks_category_vpn}</option>
+                            <option value="SECURITY" ${search.category=='SECURITY'?'selected':''}>${msg_admin_blocks_category_security}</option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.blocks.effectiveState"/></div>
+                        <div class="adm-filter-label">${msg_admin_blocks_effectiveState}</div>
                         <select class="adm-select" name="effectiveStatus">
-                            <option value="ALL" ${search.effectiveStatus=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="EFFECTIVE" ${search.effectiveStatus=='EFFECTIVE'?'selected':''}><spring:message code="admin.blocks.effective.effective"/></option>
-                            <option value="RULE_INACTIVE" ${search.effectiveStatus=='RULE_INACTIVE'?'selected':''}><spring:message code="admin.blocks.effective.ruleInactive"/></option>
-                            <option value="BATCH_INACTIVE" ${search.effectiveStatus=='BATCH_INACTIVE'?'selected':''}><spring:message code="admin.blocks.effective.batchInactive"/></option>
-                            <option value="EXPIRED" ${search.effectiveStatus=='EXPIRED'?'selected':''}><spring:message code="admin.blocks.effective.expired"/></option>
+                            <option value="ALL" ${search.effectiveStatus=='ALL'?'selected':''}>${msg_admin_common_all}</option>
+                            <option value="EFFECTIVE" ${search.effectiveStatus=='EFFECTIVE'?'selected':''}>${msg_admin_blocks_effective_effective}</option>
+                            <option value="RULE_INACTIVE" ${search.effectiveStatus=='RULE_INACTIVE'?'selected':''}>${msg_admin_blocks_effective_ruleInactive}</option>
+                            <option value="BATCH_INACTIVE" ${search.effectiveStatus=='BATCH_INACTIVE'?'selected':''}>${msg_admin_blocks_effective_batchInactive}</option>
+                            <option value="EXPIRED" ${search.effectiveStatus=='EXPIRED'?'selected':''}>${msg_admin_blocks_effective_expired}</option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.context.batch"/></div>
+                        <div class="adm-filter-label">${msg_admin_context_batch}</div>
                         <select class="adm-select" name="batchId">
-                            <option value=""><spring:message code="admin.common.all"/></option>
+                            <option value="">${msg_admin_common_all}</option>
                             <c:forEach var="bt" items="${batchFilterOptions}">
                                 <option value="${bt.ipBlockBatchIdx}" ${search.batchId == bt.ipBlockBatchIdx ? 'selected' : ''}>${bt.batchName} (${bt.batchCode})</option>
                             </c:forEach>
                         </select>
                     </div>
                     <div style="display:flex;align-items:flex-end;gap:8px;">
-                        <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.apply"/></button>
-                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/blocks" onclick="return resetBlockFilters();"><spring:message code="admin.common.reset"/></a>
+                        <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_apply}</button>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/blocks" onclick="return resetBlockFilters();">${msg_admin_common_reset}</a>
                     </div>
                 </div>
             </form>
@@ -340,44 +519,44 @@
     </div>
 
     <div class="adm-tab-row adm-block-tab-row" id="blockTabBar" style="margin-bottom:20px;">
-        <button type="button" class="adm-tab js-block-tab" data-tab="dashboard"><spring:message code="admin.layout.menu.dashboard"/></button>
-        <button type="button" class="adm-tab js-block-tab" data-tab="all"><spring:message code="admin.common.all"/></button>
-        <button type="button" class="adm-tab js-block-tab" data-tab="user-blocks"><spring:message code="admin.blocks.section.userBlocks"/></button>
-        <button type="button" class="adm-tab js-block-tab" data-tab="ip-rules"><spring:message code="admin.blocks.section.ipRules"/></button>
-        <button type="button" class="adm-tab js-block-tab" data-tab="batches"><spring:message code="admin.blocks.section.batches"/></button>
-        <button type="button" class="adm-tab js-block-tab" data-tab="histories"><spring:message code="admin.blocks.section.histories"/></button>
+        <button type="button" class="adm-tab js-block-tab" data-tab="dashboard">${msg_admin_layout_menu_dashboard}</button>
+        <button type="button" class="adm-tab js-block-tab" data-tab="all">${msg_admin_common_all}</button>
+        <button type="button" class="adm-tab js-block-tab" data-tab="user-blocks">${msg_admin_blocks_section_userBlocks}</button>
+        <button type="button" class="adm-tab js-block-tab" data-tab="ip-rules">${msg_admin_blocks_section_ipRules}</button>
+        <button type="button" class="adm-tab js-block-tab" data-tab="batches">${msg_admin_blocks_section_batches}</button>
+        <button type="button" class="adm-tab js-block-tab" data-tab="histories">${msg_admin_blocks_section_histories}</button>
     </div>
 
     <div class="adm-card js-dashboard-panel" style="margin-bottom:20px;display:none;">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.blocks.dashboard.title"/></div>
-            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.sub"/></div>
+            <div class="adm-card-title">${msg_admin_blocks_dashboard_title}</div>
+            <div class="adm-card-sub">${msg_admin_blocks_dashboard_sub}</div>
         </div>
         <div class="adm-card-body">
             <div class="adm-block-dashboard-grid">
                 <div class="adm-block-dashboard-insight">
-                    <div class="adm-block-insight-title"><spring:message code="admin.blocks.dashboard.insight.priorityTitle"/></div>
+                    <div class="adm-block-insight-title">${msg_admin_blocks_dashboard_insight_priorityTitle}</div>
                     <div class="adm-block-insight-body">
-                        <span><spring:message code="admin.blocks.dashboard.insight.priority1"/></span>
-                        <span><spring:message code="admin.blocks.dashboard.insight.priority2"/></span>
-                        <span><spring:message code="admin.blocks.dashboard.insight.priority3"/></span>
+                        <span>${msg_admin_blocks_dashboard_insight_priority1}</span>
+                        <span>${msg_admin_blocks_dashboard_insight_priority2}</span>
+                        <span>${msg_admin_blocks_dashboard_insight_priority3}</span>
                     </div>
                 </div>
                 <div class="adm-block-dashboard-insight">
-                    <div class="adm-block-insight-title"><spring:message code="admin.blocks.dashboard.insight.quickNavTitle"/></div>
+                    <div class="adm-block-insight-title">${msg_admin_blocks_dashboard_insight_quickNavTitle}</div>
                     <div class="adm-block-insight-actions">
-                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('user-blocks');renderSectionByMode('user-blocks');"><spring:message code="admin.blocks.dashboard.insight.userBlocksChip"/></button>
-                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('ip-rules');renderSectionByMode('ip-rules');"><spring:message code="admin.blocks.dashboard.insight.ipRulesChip"/></button>
-                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('histories');renderSectionByMode('histories');"><spring:message code="admin.blocks.dashboard.insight.historyChip"/></button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('user-blocks');renderSectionByMode('user-blocks');">${msg_admin_blocks_dashboard_insight_userBlocksChip}</button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('ip-rules');renderSectionByMode('ip-rules');">${msg_admin_blocks_dashboard_insight_ipRulesChip}</button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('histories');renderSectionByMode('histories');">${msg_admin_blocks_dashboard_insight_historyChip}</button>
                     </div>
                 </div>
             </div>
             <div class="adm-kpi-grid" style="display:grid;grid-template-columns:1fr;row-gap:28px;">
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
-                        <div class="adm-card-title" style="font-size:15px;"><spring:message code="admin.blocks.dashboard.recentUserBlocks"/></div>
+                        <div class="adm-card-title" style="font-size:15px;">${msg_admin_blocks_dashboard_recentUserBlocks}</div>
                         <div style="display:flex;align-items:center;gap:8px;">
-                            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.topFive"/></div>
+                            <div class="adm-card-sub">${msg_admin_blocks_dashboard_topFive}</div>
                             <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-user-blocks" style="display:none;"></button>
                         </div>
                     </div>
@@ -385,10 +564,10 @@
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-user-blocks">
                                 <thead><tr>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/></th>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/></th>
-                                    <th><spring:message code="admin.common.action"/></th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_member}</th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_target}</th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_status}</th>
+                                    <th>${msg_admin_common_action}</th>
                                 </tr></thead>
                                 <tbody>
                                 <c:forEach var="b" items="${dashboardUserBlocks}">
@@ -402,7 +581,7 @@
                                                             class="adm-inline-chip js-open-ip-context"
                                                             data-ip-address="${b.blockedIp}"
                                                             data-default-tab="blocks">
-                                                        <spring:message code="admin.common.viewDetail"/>
+                                                        ${msg_admin_common_viewDetail}
                                                     </button>
                                                 </c:if>
                                                 <button type="button"
@@ -410,7 +589,7 @@
                                                         data-section="user-blocks"
                                                         data-field="target"
                                                         data-keyword="${fn:escapeXml(empty b.blockedIp ? b.blockTargetKey : b.blockedIp)}">
-                                                    <spring:message code="admin.common.sameTarget"/>
+                                                    ${msg_admin_common_sameTarget}
                                                 </button>
                                             </div>
                                         </td>
@@ -441,12 +620,12 @@
                                                     data-expires-at="${b.expiresAtInputValue}"
                                                     data-blocked-at="-"
                                                     data-last-history-at="-"
-                                                    data-sync-at="-"><spring:message code="admin.common.settings"/></button>
+                                                    data-sync-at="-">${msg_admin_common_settings}</button>
                                         </td>
                                     </tr>
                                 </c:forEach>
                                 <c:if test="${empty dashboardUserBlocks}">
-                                    <tr><td colspan="4" style="text-align:center;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+                                    <tr><td colspan="4" style="text-align:center;color:#64748b;">${msg_admin_common_noData}</td></tr>
                                 </c:if>
                                 </tbody>
                             </table>
@@ -455,9 +634,9 @@
                 </div>
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
-                        <div class="adm-card-title" style="font-size:15px;"><spring:message code="admin.blocks.dashboard.recentIpRules"/></div>
+                        <div class="adm-card-title" style="font-size:15px;">${msg_admin_blocks_dashboard_recentIpRules}</div>
                         <div style="display:flex;align-items:center;gap:8px;">
-                            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.ipRulesSub"/></div>
+                            <div class="adm-card-sub">${msg_admin_blocks_dashboard_ipRulesSub}</div>
                             <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-ip-rules" style="display:none;"></button>
                         </div>
                     </div>
@@ -465,10 +644,10 @@
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-ip-rules">
                                 <thead><tr>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.effectiveState"/></th>
-                                    <th><spring:message code="admin.common.action"/></th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_target}</th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_actionLabel}</th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_blocks_effectiveState}</th>
+                                    <th>${msg_admin_common_action}</th>
                                 </tr></thead>
                                 <tbody>
                                 <c:forEach var="r" items="${dashboardIpBlocks}">
@@ -481,7 +660,7 @@
                                                             class="adm-inline-chip js-open-ip-context"
                                                             data-ip-address="${r.ipAddress}"
                                                             data-default-tab="blocks">
-                                                        <spring:message code="admin.common.viewDetail"/>
+                                                        ${msg_admin_common_viewDetail}
                                                     </button>
                                                 </c:if>
                                                 <button type="button"
@@ -489,7 +668,7 @@
                                                         data-section="ip-rules"
                                                         data-field="target"
                                                         data-keyword="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}">
-                                                    <spring:message code="admin.common.sameTarget"/>
+                                                    ${msg_admin_common_sameTarget}
                                                 </button>
                                                 <c:if test="${not empty r.ipBlockBatchIdx}">
                                                     <button type="button"
@@ -497,7 +676,7 @@
                                                             data-section="ip-rules"
                                                             data-field="batch"
                                                             data-keyword="${fn:escapeXml(empty r.batchCode ? r.batchName : r.batchCode)}">
-                                                        <spring:message code="admin.common.sameBatch"/>
+                                                        ${msg_admin_common_sameBatch}
                                                     </button>
                                                 </c:if>
                                             </div>
@@ -522,17 +701,17 @@
                                                     data-final-state-label="${fn:escapeXml(r.finalStateLabel)}"
                                                     data-rule-state-label="${fn:escapeXml(r.ruleStateLabel)}"
                                                     data-batch-status-label="${fn:escapeXml(r.batchStatusLabel)}"
-                                                    data-batch-name="${fn:escapeXml(empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName)}"
+                                                    data-batch-name="${fn:escapeXml(empty r.batchName ? msg_admin_blocks_individualRule : r.batchName)}"
                                                     data-batch-code="${fn:escapeXml(empty r.batchCode ? '' : r.batchCode)}"
                                                     data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
                                                     data-blocked-at="-"
                                                     data-expires-display="-"
-                                                    data-active="${r.active ? 'true' : 'false'}"><spring:message code="admin.common.settings"/></button>
+                                                    data-active="${r.active ? 'true' : 'false'}">${msg_admin_common_settings}</button>
                                         </td>
                                     </tr>
                                 </c:forEach>
                                 <c:if test="${empty dashboardIpBlocks}">
-                                    <tr><td colspan="4" style="text-align:center;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+                                    <tr><td colspan="4" style="text-align:center;color:#64748b;">${msg_admin_common_noData}</td></tr>
                                 </c:if>
                                 </tbody>
                             </table>
@@ -541,9 +720,9 @@
                 </div>
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
-                        <div class="adm-card-title" style="font-size:15px;"><spring:message code="admin.blocks.dashboard.recentBatchOps"/></div>
+                        <div class="adm-card-title" style="font-size:15px;">${msg_admin_blocks_dashboard_recentBatchOps}</div>
                         <div style="display:flex;align-items:center;gap:8px;">
-                            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.batchOpsSub"/></div>
+                            <div class="adm-card-sub">${msg_admin_blocks_dashboard_batchOpsSub}</div>
                             <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-batches" style="display:none;"></button>
                         </div>
                     </div>
@@ -551,10 +730,10 @@
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-batches">
                                 <thead><tr>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/></th>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.impact"/></th>
-                                    <th><spring:message code="admin.common.action"/></th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_context_batch}</th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_actionLabel}</th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_blocks_impact}</th>
+                                    <th>${msg_admin_common_action}</th>
                                 </tr></thead>
                                 <tbody>
                                 <c:forEach var="op" items="${batchOperations}" begin="0" end="4">
@@ -568,13 +747,13 @@
                                                         class="adm-row-btn detail js-open-batch-editor"
                                                         data-batch-id="${op.ipBlockBatchIdx}"
                                                         data-batch-code="${fn:escapeXml(empty op.batchCode ? '' : op.batchCode)}"
-                                                        data-batch-name="${fn:escapeXml(empty op.batchName ? '' : op.batchName)}"><spring:message code="admin.common.settings"/></button>
+                                                        data-batch-name="${fn:escapeXml(empty op.batchName ? '' : op.batchName)}">${msg_admin_common_settings}</button>
                                             </c:if>
                                         </td>
                                     </tr>
                                 </c:forEach>
                                 <c:if test="${empty batchOperations}">
-                                    <tr><td colspan="4" style="text-align:center;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+                                    <tr><td colspan="4" style="text-align:center;color:#64748b;">${msg_admin_common_noData}</td></tr>
                                 </c:if>
                                 </tbody>
                             </table>
@@ -583,9 +762,9 @@
                 </div>
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
-                        <div class="adm-card-title" style="font-size:15px;"><spring:message code="admin.blocks.dashboard.recentHistory"/></div>
+                        <div class="adm-card-title" style="font-size:15px;">${msg_admin_blocks_dashboard_recentHistory}</div>
                         <div style="display:flex;align-items:center;gap:8px;">
-                            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.historySub"/></div>
+                            <div class="adm-card-sub">${msg_admin_blocks_dashboard_historySub}</div>
                             <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-histories" style="display:none;"></button>
                         </div>
                     </div>
@@ -593,11 +772,11 @@
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-histories">
                                 <thead><tr>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/></th>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/></th>
-                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.result"/></th>
-                                    <th><spring:message code="admin.common.action"/></th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_time}</th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_target}</th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_blocks_changeKind}</th>
+                                    <th style="cursor:pointer;user-select:none;">${msg_admin_blocks_result}</th>
+                                    <th>${msg_admin_common_action}</th>
                                 </tr></thead>
                                 <tbody>
                                 <c:forEach var="h" items="${dashboardHistories}">
@@ -630,7 +809,7 @@
                                                             class="adm-inline-chip js-open-ip-context"
                                                             data-ip-address="${h.blockedIp}"
                                                             data-default-tab="blocks">
-                                                        <spring:message code="admin.common.viewDetail"/>
+                                                        ${msg_admin_common_viewDetail}
                                                     </button>
                                                 </c:if>
                                                 <button type="button"
@@ -638,7 +817,7 @@
                                                         data-section="histories"
                                                         data-field="target"
                                                         data-keyword="${fn:escapeXml(h.blockTargetKey)}">
-                                                    <spring:message code="admin.common.sameTarget"/>
+                                                    ${msg_admin_common_sameTarget}
                                                 </button>
                                                 <c:if test="${not empty h.ipBlockBatchIdx}">
                                                     <button type="button"
@@ -646,7 +825,7 @@
                                                             data-section="histories"
                                                             data-field="batch"
                                                             data-keyword="${fn:escapeXml(empty h.batchCode ? h.batchName : h.batchCode)}">
-                                                        <spring:message code="admin.common.sameBatch"/>
+                                                        ${msg_admin_common_sameBatch}
                                                     </button>
                                                 </c:if>
                                             </div>
@@ -661,12 +840,12 @@
                                                     data-target-key="${fn:escapeXml(h.blockTargetKey)}"
                                                     data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
                                                     data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
-                                                    data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.blocks.currentSetting"/></button>
+                                                    data-template-id="detail-history-${h.blockIdx}">${msg_admin_blocks_currentSetting}</button>
                                         </td>
                                     </tr>
                                 </c:forEach>
                                 <c:if test="${empty dashboardHistories}">
-                                    <tr><td colspan="5" style="text-align:center;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+                                    <tr><td colspan="5" style="text-align:center;color:#64748b;">${msg_admin_common_noData}</td></tr>
                                 </c:if>
                                 </tbody>
                             </table>
@@ -680,8 +859,8 @@
     <div class="adm-card js-section-card" data-section="user-blocks" data-enhanced="true" style="margin-bottom:20px;">
         <div class="adm-card-head">
             <div>
-                <div class="adm-card-title"><spring:message code="admin.blocks.userBlocks.title"/></div>
-                <div class="adm-card-sub"><spring:message code="admin.blocks.userBlocks.sub"/></div>
+                <div class="adm-card-title">${msg_admin_blocks_userBlocks_title}</div>
+                <div class="adm-card-sub">${msg_admin_blocks_userBlocks_sub}</div>
             </div>
             <div style="position:relative;display:flex;align-items:center;gap:8px;">
                 <select id="ub-exportFormat" class="adm-select js-block-export-format" data-section="user-blocks" style="width:90px;">
@@ -690,12 +869,12 @@
                 </select>
                 <button type="button" class="adm-btn adm-btn-ghost"
                         onclick="document.getElementById('ub-exportDropdown').style.display=(document.getElementById('ub-exportDropdown').style.display==='none'?'block':'none')">
-                    <spring:message code="admin.common.export"/> ▾
+                    ${msg_admin_common_export} ▾
                 </button>
                 <div id="ub-exportDropdown" class="adm-export-dropdown" style="display:none;">
-                    <button type="button" class="adm-export-item" onclick="exportBlockData('user-blocks','all')"><spring:message code="admin.common.exportAll"/></button>
-                    <button type="button" class="adm-export-item" onclick="exportBlockData('user-blocks','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
-                    <button type="button" class="adm-export-item js-block-export-selected" data-section="user-blocks" id="ub-exportSelectedBtn" disabled onclick="exportBlockData('user-blocks','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="ub-selectedCount">0</span>)</button>
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('user-blocks','all')">${msg_admin_common_exportAll}</button>
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('user-blocks','filtered')">${msg_admin_common_exportFiltered}</button>
+                    <button type="button" class="adm-export-item js-block-export-selected" data-section="user-blocks" id="ub-exportSelectedBtn" disabled onclick="exportBlockData('user-blocks','selected')">${msg_admin_common_exportSelected} (<span id="ub-selectedCount">0</span>)</button>
                 </div>
             </div>
         </div>
@@ -703,50 +882,50 @@
             <div class="adm-local-toolbar">
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-field" data-section="user-blocks">
-                        <option value="all"><spring:message code="admin.blocks.filter.allFields"/></option>
-                        <option value="nickname"><spring:message code="admin.blocks.filter.memberNickname"/></option>
-                        <option value="userId"><spring:message code="admin.blocks.filter.memberUserId"/></option>
-                        <option value="target"><spring:message code="admin.blocks.filter.blockTarget"/></option>
-                        <option value="reason"><spring:message code="admin.common.reason"/></option>
-                        <option value="blockType"><spring:message code="admin.blocks.filter.blockType"/></option>
-                        <option value="blockedAt"><spring:message code="admin.blocks.filter.blockedDate"/></option>
-                        <option value="expiresAt"><spring:message code="admin.blocks.filter.expireDate"/></option>
+                        <option value="all">${msg_admin_blocks_filter_allFields}</option>
+                        <option value="nickname">${msg_admin_blocks_filter_memberNickname}</option>
+                        <option value="userId">${msg_admin_blocks_filter_memberUserId}</option>
+                        <option value="target">${msg_admin_blocks_filter_blockTarget}</option>
+                        <option value="reason">${msg_admin_common_reason}</option>
+                        <option value="blockType">${msg_admin_blocks_filter_blockType}</option>
+                        <option value="blockedAt">${msg_admin_blocks_filter_blockedDate}</option>
+                        <option value="expiresAt">${msg_admin_blocks_filter_expireDate}</option>
                     </select>
-                    <input type="text" class="adm-input js-local-keyword" data-section="user-blocks" placeholder="${adminBlocksUserBlocksSearchPlaceholderMsg}">
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="user-blocks"><spring:message code="admin.common.reset"/></button>
+                    <input type="text" class="adm-input js-local-keyword" data-section="user-blocks" placeholder="${msg_admin_blocks_userBlocks_searchPlaceholder}">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="user-blocks">${msg_admin_common_reset}</button>
                 </div>
                 <div class="adm-local-toolbar-group">
                     <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="user-blocks" style="display:none;" onclick="sectionSortReset('user-blocks')"></button>
-                    <select class="adm-select js-section-mode" data-section="user-blocks" title="${adminBlocksModeLabelMsg}">
-                        <option value="client" title="${adminBlocksModeTipClientMsg}"><spring:message code="admin.blocks.mode.client"/></option>
-                        <option value="server" title="${adminBlocksModeTipServerMsg}"><spring:message code="admin.blocks.mode.server"/></option>
+                    <select class="adm-select js-section-mode" data-section="user-blocks" title="${msg_admin_blocks_mode_label}">
+                        <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
+                        <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
                     </select>
                     <select class="adm-select js-local-page-size" data-section="user-blocks">
-                        <option value="10"><spring:message code="admin.common.pageSize"/></option>
-                        <option value="20" selected><spring:message code="admin.common.pageSize"/></option>
-                        <option value="50"><spring:message code="admin.common.pageSize"/></option>
+                        <option value="10">${msg_admin_common_pageSize}</option>
+                        <option value="20" selected>${msg_admin_common_pageSize}</option>
+                        <option value="50">${msg_admin_common_pageSize}</option>
                     </select>
                 </div>
             </div>
             <div id="ub-bulkBar" class="js-block-bulkbar" data-section="user-blocks" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
-                <span style="color:#93c5fd;font-size:13px;"><strong id="ub-bulkCount" class="js-block-bulk-count">0</strong><spring:message code="admin.common.selectedCount"/></span>
+                <span style="color:#93c5fd;font-size:13px;"><strong id="ub-bulkCount" class="js-block-bulk-count">0</strong>${msg_admin_common_selectedCount}</span>
                 <c:if test="${hasUserBlockAdmin}">
-                    <button type="button" class="adm-btn adm-btn-danger" onclick="bulkReleaseUserBlocks()"><spring:message code="admin.common.bulkRelease"/></button>
+                    <button type="button" class="adm-btn adm-btn-danger" onclick="bulkReleaseUserBlocks()">${msg_admin_common_bulkRelease}</button>
                 </c:if>
-                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('user-blocks')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
+                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('user-blocks')" style="margin-left:auto;">${msg_admin_common_clearSelection}</button>
             </div>
             <div class="adm-table-wrap">
                 <table class="adm-table adm-section-table-fixed">
                     <thead>
                     <tr>
                         <th style="width:36px;"><input type="checkbox" id="ub-checkAll" class="js-block-check-all" data-section="user-blocks" onchange="blockToggleAll('user-blocks')"></th>
-                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('user-blocks',1)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.common.member"/></th>
-                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('user-blocks',2)" style="cursor:pointer;user-select:none;width:12%;"><spring:message code="admin.blocks.filter.blockType"/></th>
-                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('user-blocks',3)" style="cursor:pointer;user-select:none;width:17%;"><spring:message code="admin.common.target"/></th>
-                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('user-blocks',4)" style="cursor:pointer;user-select:none;width:9%;"><spring:message code="admin.common.status"/></th>
-                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('user-blocks',5)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.common.reason"/></th>
-                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('user-blocks',6)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.blockAndExpire"/></th>
-                        <th style="width:14%;"><spring:message code="admin.common.action"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('user-blocks',1)" style="cursor:pointer;user-select:none;width:16%;">${msg_admin_common_member}</th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('user-blocks',2)" style="cursor:pointer;user-select:none;width:12%;">${msg_admin_blocks_filter_blockType}</th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('user-blocks',3)" style="cursor:pointer;user-select:none;width:17%;">${msg_admin_common_target}</th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('user-blocks',4)" style="cursor:pointer;user-select:none;width:9%;">${msg_admin_common_status}</th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('user-blocks',5)" style="cursor:pointer;user-select:none;width:16%;">${msg_admin_common_reason}</th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('user-blocks',6)" style="cursor:pointer;user-select:none;width:16%;">${msg_admin_blocks_blockAndExpire}</th>
+                        <th style="width:14%;">${msg_admin_common_action}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -757,9 +936,9 @@
             <div class="adm-local-pagination" data-section="user-blocks">
                 <div class="adm-local-page-info js-local-page-info" data-section="user-blocks">0</div>
                 <div class="adm-local-page-actions">
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="user-blocks"><spring:message code="admin.common.prev"/></button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="user-blocks">${msg_admin_common_prev}</button>
                     <span class="js-local-page-state" data-section="user-blocks">1 / 1</span>
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="user-blocks"><spring:message code="admin.common.next"/></button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="user-blocks">${msg_admin_common_next}</button>
                 </div>
             </div>
         </div>
@@ -772,15 +951,15 @@
     <div class="adm-card js-section-card" data-section="ip-rules" data-enhanced="true" style="margin-bottom:20px;">
         <div class="adm-card-head">
             <div>
-                <div class="adm-card-title"><spring:message code="admin.blocks.ipRules.title"/></div>
-                <div class="adm-card-sub"><spring:message code="admin.blocks.ipRules.sub"/></div>
+                <div class="adm-card-title">${msg_admin_blocks_ipRules_title}</div>
+                <div class="adm-card-sub">${msg_admin_blocks_ipRules_sub}</div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                 <c:if test="${hasBlockPolicyAdmin}">
-                    <button class="adm-btn adm-btn-ghost" type="button" onclick="openBatchModal()"><spring:message code="admin.blocks.createBatch"/></button>
+                    <button class="adm-btn adm-btn-ghost" type="button" onclick="openBatchModal()">${msg_admin_blocks_createBatch}</button>
                 </c:if>
                 <c:if test="${hasIpBlockAdmin or hasBlockPolicyAdmin}">
-                    <button class="adm-btn adm-btn-primary" type="button" onclick="openIpRuleModal()"><spring:message code="admin.blocks.addRule"/></button>
+                    <button class="adm-btn adm-btn-primary" type="button" onclick="openIpRuleModal()">${msg_admin_blocks_addRule}</button>
                 </c:if>
                 <div style="position:relative;display:flex;align-items:center;gap:6px;">
                     <select id="ipr-exportFormat" class="adm-select js-block-export-format" data-section="ip-rules" style="width:90px;">
@@ -789,12 +968,12 @@
                     </select>
                     <button type="button" class="adm-btn adm-btn-ghost"
                             onclick="document.getElementById('ipr-exportDropdown').style.display=(document.getElementById('ipr-exportDropdown').style.display==='none'?'block':'none')">
-                        <spring:message code="admin.common.export"/> ▾
+                        ${msg_admin_common_export} ▾
                     </button>
                     <div id="ipr-exportDropdown" class="adm-export-dropdown" style="display:none;">
-                        <button type="button" class="adm-export-item" onclick="exportBlockData('ip-rules','all')"><spring:message code="admin.common.exportAll"/></button>
-                        <button type="button" class="adm-export-item" onclick="exportBlockData('ip-rules','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
-                        <button type="button" class="adm-export-item js-block-export-selected" data-section="ip-rules" id="ipr-exportSelectedBtn" disabled onclick="exportBlockData('ip-rules','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="ipr-selectedCount">0</span>)</button>
+                        <button type="button" class="adm-export-item" onclick="exportBlockData('ip-rules','all')">${msg_admin_common_exportAll}</button>
+                        <button type="button" class="adm-export-item" onclick="exportBlockData('ip-rules','filtered')">${msg_admin_common_exportFiltered}</button>
+                        <button type="button" class="adm-export-item js-block-export-selected" data-section="ip-rules" id="ipr-exportSelectedBtn" disabled onclick="exportBlockData('ip-rules','selected')">${msg_admin_common_exportSelected} (<span id="ipr-selectedCount">0</span>)</button>
                     </div>
                 </div>
             </div>
@@ -803,51 +982,51 @@
             <div class="adm-local-toolbar">
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-field" data-section="ip-rules">
-                        <option value="all"><spring:message code="admin.blocks.filter.allFields"/></option>
-                        <option value="target"><spring:message code="admin.blocks.filter.ipOrTarget"/></option>
-                        <option value="batch"><spring:message code="admin.context.batch"/></option>
-                        <option value="reason"><spring:message code="admin.blocks.filter.reasonMemo"/></option>
-                        <option value="priority"><spring:message code="admin.context.priority"/></option>
-                        <option value="policy"><spring:message code="admin.blocks.filter.policyControlCategory"/></option>
-                        <option value="blockedAt"><spring:message code="admin.blocks.filter.blockedDate"/></option>
-                        <option value="expiresAt"><spring:message code="admin.blocks.filter.expireDate"/></option>
+                        <option value="all">${msg_admin_blocks_filter_allFields}</option>
+                        <option value="target">${msg_admin_blocks_filter_ipOrTarget}</option>
+                        <option value="batch">${msg_admin_context_batch}</option>
+                        <option value="reason">${msg_admin_blocks_filter_reasonMemo}</option>
+                        <option value="priority">${msg_admin_context_priority}</option>
+                        <option value="policy">${msg_admin_blocks_filter_policyControlCategory}</option>
+                        <option value="blockedAt">${msg_admin_blocks_filter_blockedDate}</option>
+                        <option value="expiresAt">${msg_admin_blocks_filter_expireDate}</option>
                     </select>
-                    <input type="text" class="adm-input js-local-keyword" data-section="ip-rules" placeholder="${adminBlocksIpRulesSearchPlaceholderMsg}">
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="ip-rules"><spring:message code="admin.common.reset"/></button>
+                    <input type="text" class="adm-input js-local-keyword" data-section="ip-rules" placeholder="${msg_admin_blocks_ipRules_searchPlaceholder}">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="ip-rules">${msg_admin_common_reset}</button>
                 </div>
                 <div class="adm-local-toolbar-group">
                     <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="ip-rules" style="display:none;" onclick="sectionSortReset('ip-rules')"></button>
-                    <select class="adm-select js-section-mode" data-section="ip-rules" title="${adminBlocksModeLabelMsg}">
-                        <option value="client" title="${adminBlocksModeTipClientMsg}"><spring:message code="admin.blocks.mode.client"/></option>
-                        <option value="server" title="${adminBlocksModeTipServerMsg}"><spring:message code="admin.blocks.mode.server"/></option>
+                    <select class="adm-select js-section-mode" data-section="ip-rules" title="${msg_admin_blocks_mode_label}">
+                        <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
+                        <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
                     </select>
                     <select class="adm-select js-local-page-size" data-section="ip-rules">
-                        <option value="10"><spring:message code="admin.common.pageSize"/></option>
-                        <option value="20" selected><spring:message code="admin.common.pageSize"/></option>
-                        <option value="50"><spring:message code="admin.common.pageSize"/></option>
+                        <option value="10">${msg_admin_common_pageSize}</option>
+                        <option value="20" selected>${msg_admin_common_pageSize}</option>
+                        <option value="50">${msg_admin_common_pageSize}</option>
                     </select>
                 </div>
             </div>
             <div id="ipr-bulkBar" class="js-block-bulkbar" data-section="ip-rules" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
-                <span style="color:#93c5fd;font-size:13px;"><strong id="ipr-bulkCount" class="js-block-bulk-count">0</strong><spring:message code="admin.common.selectedCount"/></span>
+                <span style="color:#93c5fd;font-size:13px;"><strong id="ipr-bulkCount" class="js-block-bulk-count">0</strong>${msg_admin_common_selectedCount}</span>
                 <c:if test="${hasIpBlockAdmin or hasBlockPolicyAdmin}">
-                    <button type="button" class="adm-btn adm-btn-primary" onclick="bulkToggleIpRules(true)"><spring:message code="admin.blocks.ruleOn"/></button>
-                    <button type="button" class="adm-btn adm-btn-danger" onclick="bulkToggleIpRules(false)"><spring:message code="admin.blocks.ruleOff"/></button>
+                    <button type="button" class="adm-btn adm-btn-primary" onclick="bulkToggleIpRules(true)">${msg_admin_blocks_ruleOn}</button>
+                    <button type="button" class="adm-btn adm-btn-danger" onclick="bulkToggleIpRules(false)">${msg_admin_blocks_ruleOff}</button>
                 </c:if>
-                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('ip-rules')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
+                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('ip-rules')" style="margin-left:auto;">${msg_admin_common_clearSelection}</button>
             </div>
             <div class="adm-table-wrap">
                 <table class="adm-table adm-section-table-fixed">
                     <thead>
                     <tr>
                         <th style="width:36px;"><input type="checkbox" id="ipr-checkAll" class="js-block-check-all" data-section="ip-rules" onchange="blockToggleAll('ip-rules')"></th>
-                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('ip-rules',1)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.common.target"/></th>
-                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('ip-rules',2)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.actionControl"/></th>
-                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('ip-rules',3)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.context.batch"/></th>
-                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('ip-rules',4)" style="cursor:pointer;user-select:none;width:11%;"><spring:message code="admin.common.status"/></th>
-                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('ip-rules',5)" style="cursor:pointer;user-select:none;width:9%;"><spring:message code="admin.context.priority"/></th>
-                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('ip-rules',6)" style="cursor:pointer;user-select:none;width:20%;"><spring:message code="admin.common.reason"/></th>
-                        <th style="width:14%;"><spring:message code="admin.common.action"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('ip-rules',1)" style="cursor:pointer;user-select:none;width:16%;">${msg_admin_common_target}</th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('ip-rules',2)" style="cursor:pointer;user-select:none;width:14%;">${msg_admin_blocks_actionControl}</th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('ip-rules',3)" style="cursor:pointer;user-select:none;width:16%;">${msg_admin_context_batch}</th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('ip-rules',4)" style="cursor:pointer;user-select:none;width:11%;">${msg_admin_common_status}</th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('ip-rules',5)" style="cursor:pointer;user-select:none;width:9%;">${msg_admin_context_priority}</th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('ip-rules',6)" style="cursor:pointer;user-select:none;width:20%;">${msg_admin_common_reason}</th>
+                        <th style="width:14%;">${msg_admin_common_action}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -858,9 +1037,9 @@
             <div class="adm-local-pagination" data-section="ip-rules">
                 <div class="adm-local-page-info js-local-page-info" data-section="ip-rules">0</div>
                 <div class="adm-local-page-actions">
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="ip-rules"><spring:message code="admin.common.prev"/></button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="ip-rules">${msg_admin_common_prev}</button>
                     <span class="js-local-page-state" data-section="ip-rules">1 / 1</span>
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="ip-rules"><spring:message code="admin.common.next"/></button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="ip-rules">${msg_admin_common_next}</button>
                 </div>
             </div>
         </div>
@@ -873,8 +1052,8 @@
     <div class="adm-card js-section-card" data-section="batches" data-enhanced="true" style="margin-bottom:20px;">
         <div class="adm-card-head">
             <div>
-                <div class="adm-card-title"><spring:message code="admin.blocks.section.batches"/></div>
-                <div class="adm-card-sub"><spring:message code="admin.blocks.batches.sub"/></div>
+                <div class="adm-card-title">${msg_admin_blocks_section_batches}</div>
+                <div class="adm-card-sub">${msg_admin_blocks_batches_sub}</div>
             </div>
             <div style="position:relative;display:flex;align-items:center;gap:8px;">
                 <select id="bat-exportFormat" class="adm-select js-block-export-format" data-section="batches" style="width:90px;">
@@ -883,45 +1062,45 @@
                 </select>
                 <button type="button" class="adm-btn adm-btn-ghost"
                         onclick="document.getElementById('bat-exportDropdown').style.display=(document.getElementById('bat-exportDropdown').style.display==='none'?'block':'none')">
-                    <spring:message code="admin.common.export"/> ▾
+                    ${msg_admin_common_export} ▾
                 </button>
                 <div id="bat-exportDropdown" class="adm-export-dropdown" style="display:none;">
-                    <button type="button" class="adm-export-item" onclick="exportBlockData('batches','all')"><spring:message code="admin.common.exportAll"/></button>
-                    <button type="button" class="adm-export-item" onclick="exportBlockData('batches','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
-                    <button type="button" class="adm-export-item js-block-export-selected" data-section="batches" id="bat-exportSelectedBtn" disabled onclick="exportBlockData('batches','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="bat-selectedCount">0</span>)</button>
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('batches','all')">${msg_admin_common_exportAll}</button>
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('batches','filtered')">${msg_admin_common_exportFiltered}</button>
+                    <button type="button" class="adm-export-item js-block-export-selected" data-section="batches" id="bat-exportSelectedBtn" disabled onclick="exportBlockData('batches','selected')">${msg_admin_common_exportSelected} (<span id="bat-selectedCount">0</span>)</button>
                 </div>
             </div>
         </div>
         <div class="adm-card-body" style="padding:0;">
             <div id="bat-bulkBar" class="js-block-bulkbar" data-section="batches" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
-                <span style="color:#93c5fd;font-size:13px;"><strong id="bat-bulkCount" class="js-block-bulk-count">0</strong><spring:message code="admin.common.selectedCount"/></span>
-                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('batches')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
+                <span style="color:#93c5fd;font-size:13px;"><strong id="bat-bulkCount" class="js-block-bulk-count">0</strong>${msg_admin_common_selectedCount}</span>
+                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('batches')" style="margin-left:auto;">${msg_admin_common_clearSelection}</button>
             </div>
             <div class="adm-local-toolbar">
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-field" data-section="batches">
-                        <option value="all"><spring:message code="admin.blocks.filter.allFields"/></option>
-                        <option value="batch"><spring:message code="admin.blocks.filter.batchNameCode"/></option>
-                        <option value="source"><spring:message code="admin.blocks.filter.source"/></option>
-                        <option value="description"><spring:message code="admin.blocks.description"/></option>
-                        <option value="policy"><spring:message code="admin.blocks.filter.basePolicy"/></option>
-                        <option value="priority"><spring:message code="admin.context.priority"/></option>
-                        <option value="status"><spring:message code="admin.common.status"/></option>
-                        <option value="updatedAt"><spring:message code="admin.blocks.filter.recentUpdated"/></option>
+                        <option value="all">${msg_admin_blocks_filter_allFields}</option>
+                        <option value="batch">${msg_admin_blocks_filter_batchNameCode}</option>
+                        <option value="source">${msg_admin_blocks_filter_source}</option>
+                        <option value="description">${msg_admin_blocks_description}</option>
+                        <option value="policy">${msg_admin_blocks_filter_basePolicy}</option>
+                        <option value="priority">${msg_admin_context_priority}</option>
+                        <option value="status">${msg_admin_common_status}</option>
+                        <option value="updatedAt">${msg_admin_blocks_filter_recentUpdated}</option>
                     </select>
-                    <input type="text" class="adm-input js-local-keyword" data-section="batches" placeholder="${adminBlocksBatchesSearchPlaceholderMsg}">
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="batches"><spring:message code="admin.common.reset"/></button>
+                    <input type="text" class="adm-input js-local-keyword" data-section="batches" placeholder="${msg_admin_blocks_batches_searchPlaceholder}">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="batches">${msg_admin_common_reset}</button>
                 </div>
                 <div class="adm-local-toolbar-group">
                     <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="batches" style="display:none;" onclick="sectionSortReset('batches')"></button>
-                    <select class="adm-select js-section-mode" data-section="batches" title="${adminBlocksModeLabelMsg}">
-                        <option value="client" title="${adminBlocksModeTipClientMsg}"><spring:message code="admin.blocks.mode.client"/></option>
-                        <option value="server" title="${adminBlocksModeTipServerMsg}"><spring:message code="admin.blocks.mode.server"/></option>
+                    <select class="adm-select js-section-mode" data-section="batches" title="${msg_admin_blocks_mode_label}">
+                        <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
+                        <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
                     </select>
                     <select class="adm-select js-local-page-size" data-section="batches">
-                        <option value="10"><spring:message code="admin.common.pageSize"/></option>
-                        <option value="20" selected><spring:message code="admin.common.pageSize"/></option>
-                        <option value="50"><spring:message code="admin.common.pageSize"/></option>
+                        <option value="10">${msg_admin_common_pageSize}</option>
+                        <option value="20" selected>${msg_admin_common_pageSize}</option>
+                        <option value="50">${msg_admin_common_pageSize}</option>
                     </select>
                 </div>
             </div>
@@ -929,13 +1108,13 @@
                 <table class="adm-table adm-section-table-fixed">
                     <thead><tr>
                         <th style="width:36px;"><input type="checkbox" id="bat-checkAll" class="js-block-check-all" data-section="batches" onchange="blockToggleAll('batches')"></th>
-                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('batches',1)" style="cursor:pointer;user-select:none;width:20%;"><spring:message code="admin.blocks.batch"/></th>
-                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('batches',2)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.basePolicy"/></th>
-                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('batches',3)" style="cursor:pointer;user-select:none;width:9%;"><spring:message code="admin.context.priority"/></th>
-                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('batches',4)" style="cursor:pointer;user-select:none;width:13%;"><spring:message code="admin.blocks.currentState"/></th>
-                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('batches',5)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.ruleStats"/></th>
-                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('batches',6)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.description"/></th>
-                        <th style="width:14%;"><spring:message code="admin.common.action"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('batches',1)" style="cursor:pointer;user-select:none;width:20%;">${msg_admin_blocks_batch}</th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('batches',2)" style="cursor:pointer;user-select:none;width:14%;">${msg_admin_blocks_basePolicy}</th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('batches',3)" style="cursor:pointer;user-select:none;width:9%;">${msg_admin_context_priority}</th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('batches',4)" style="cursor:pointer;user-select:none;width:13%;">${msg_admin_blocks_currentState}</th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('batches',5)" style="cursor:pointer;user-select:none;width:16%;">${msg_admin_blocks_ruleStats}</th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('batches',6)" style="cursor:pointer;user-select:none;width:14%;">${msg_admin_blocks_description}</th>
+                        <th style="width:14%;">${msg_admin_common_action}</th>
                     </tr></thead>
                     <tbody>
                     <%@ include file="_batchRowsOnly.jspf" %>
@@ -945,9 +1124,9 @@
             <div class="adm-local-pagination" data-section="batches">
                 <div class="adm-local-page-info js-local-page-info" data-section="batches">0</div>
                 <div class="adm-local-page-actions">
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="batches"><spring:message code="admin.common.prev"/></button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="batches">${msg_admin_common_prev}</button>
                     <span class="js-local-page-state" data-section="batches">1 / 1</span>
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="batches"><spring:message code="admin.common.next"/></button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="batches">${msg_admin_common_next}</button>
                 </div>
             </div>
         </div>
@@ -960,8 +1139,8 @@
     <div class="adm-card js-section-card" data-section="histories" data-enhanced="true">
         <div class="adm-card-head">
             <div>
-                <div class="adm-card-title"><spring:message code="admin.blocks.section.histories"/></div>
-                <div class="adm-card-sub"><spring:message code="admin.blocks.histories.sub"/></div>
+                <div class="adm-card-title">${msg_admin_blocks_section_histories}</div>
+                <div class="adm-card-sub">${msg_admin_blocks_histories_sub}</div>
             </div>
             <div style="position:relative;display:flex;align-items:center;gap:8px;">
                 <select id="hist-exportFormat" class="adm-select js-block-export-format" data-section="histories" style="width:90px;">
@@ -970,45 +1149,45 @@
                 </select>
                 <button type="button" class="adm-btn adm-btn-ghost"
                         onclick="document.getElementById('hist-exportDropdown').style.display=(document.getElementById('hist-exportDropdown').style.display==='none'?'block':'none')">
-                    <spring:message code="admin.common.export"/> ▾
+                    ${msg_admin_common_export} ▾
                 </button>
                 <div id="hist-exportDropdown" class="adm-export-dropdown" style="display:none;">
-                    <button type="button" class="adm-export-item" onclick="exportBlockData('histories','all')"><spring:message code="admin.common.exportAll"/></button>
-                    <button type="button" class="adm-export-item" onclick="exportBlockData('histories','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
-                    <button type="button" class="adm-export-item js-block-export-selected" data-section="histories" id="hist-exportSelectedBtn" disabled onclick="exportBlockData('histories','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="hist-selectedCount">0</span>)</button>
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('histories','all')">${msg_admin_common_exportAll}</button>
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('histories','filtered')">${msg_admin_common_exportFiltered}</button>
+                    <button type="button" class="adm-export-item js-block-export-selected" data-section="histories" id="hist-exportSelectedBtn" disabled onclick="exportBlockData('histories','selected')">${msg_admin_common_exportSelected} (<span id="hist-selectedCount">0</span>)</button>
                 </div>
             </div>
         </div>
         <div class="adm-card-body" style="padding:0;">
             <div id="hist-bulkBar" class="js-block-bulkbar" data-section="histories" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
-                <span style="color:#93c5fd;font-size:13px;"><strong id="hist-bulkCount" class="js-block-bulk-count">0</strong><spring:message code="admin.common.selectedCount"/></span>
-                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('histories')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
+                <span style="color:#93c5fd;font-size:13px;"><strong id="hist-bulkCount" class="js-block-bulk-count">0</strong>${msg_admin_common_selectedCount}</span>
+                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('histories')" style="margin-left:auto;">${msg_admin_common_clearSelection}</button>
             </div>
             <div class="adm-local-toolbar">
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-field" data-section="histories">
-                        <option value="all"><spring:message code="admin.blocks.filter.allFields"/></option>
-                        <option value="target"><spring:message code="admin.common.target"/></option>
-                        <option value="member"><spring:message code="admin.common.member"/></option>
-                        <option value="change"><spring:message code="admin.blocks.changeKind"/></option>
-                        <option value="reason"><spring:message code="admin.blocks.filter.reasonDescription"/></option>
-                        <option value="batch"><spring:message code="admin.context.batch"/></option>
-                        <option value="blockedAt"><spring:message code="admin.blocks.filter.blockedDate"/></option>
-                        <option value="expiresAt"><spring:message code="admin.blocks.filter.expireDate"/></option>
+                        <option value="all">${msg_admin_blocks_filter_allFields}</option>
+                        <option value="target">${msg_admin_common_target}</option>
+                        <option value="member">${msg_admin_common_member}</option>
+                        <option value="change">${msg_admin_blocks_changeKind}</option>
+                        <option value="reason">${msg_admin_blocks_filter_reasonDescription}</option>
+                        <option value="batch">${msg_admin_context_batch}</option>
+                        <option value="blockedAt">${msg_admin_blocks_filter_blockedDate}</option>
+                        <option value="expiresAt">${msg_admin_blocks_filter_expireDate}</option>
                     </select>
-                    <input type="text" class="adm-input js-local-keyword" data-section="histories" placeholder="${adminBlocksHistoriesSearchPlaceholderMsg}">
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="histories"><spring:message code="admin.common.reset"/></button>
+                    <input type="text" class="adm-input js-local-keyword" data-section="histories" placeholder="${msg_admin_blocks_histories_searchPlaceholder}">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="histories">${msg_admin_common_reset}</button>
                 </div>
                 <div class="adm-local-toolbar-group">
                     <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="histories" style="display:none;" onclick="sectionSortReset('histories')"></button>
-                    <select class="adm-select js-section-mode" data-section="histories" title="${adminBlocksModeLabelMsg}">
-                        <option value="client" title="${adminBlocksModeTipClientMsg}"><spring:message code="admin.blocks.mode.client"/></option>
-                        <option value="server" title="${adminBlocksModeTipServerMsg}"><spring:message code="admin.blocks.mode.server"/></option>
+                    <select class="adm-select js-section-mode" data-section="histories" title="${msg_admin_blocks_mode_label}">
+                        <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
+                        <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
                     </select>
                     <select class="adm-select js-local-page-size" data-section="histories">
-                        <option value="10"><spring:message code="admin.common.pageSize"/></option>
-                        <option value="20" selected><spring:message code="admin.common.pageSize"/></option>
-                        <option value="50"><spring:message code="admin.common.pageSize"/></option>
+                        <option value="10">${msg_admin_common_pageSize}</option>
+                        <option value="20" selected>${msg_admin_common_pageSize}</option>
+                        <option value="50">${msg_admin_common_pageSize}</option>
                     </select>
                 </div>
             </div>
@@ -1016,13 +1195,13 @@
                 <table class="adm-table adm-section-table-fixed">
                     <thead><tr>
                         <th style="width:36px;"><input type="checkbox" id="hist-checkAll" class="js-block-check-all" data-section="histories" onchange="blockToggleAll('histories')"></th>
-                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('histories',1)" style="cursor:pointer;user-select:none;width:12%;"><spring:message code="admin.common.time"/></th>
-                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('histories',2)" style="cursor:pointer;user-select:none;width:18%;"><spring:message code="admin.common.target"/></th>
-                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('histories',3)" style="cursor:pointer;user-select:none;width:12%;"><spring:message code="admin.common.actionLabel"/></th>
-                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('histories',4)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.changeKind"/></th>
-                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('histories',5)" style="cursor:pointer;user-select:none;width:13%;"><spring:message code="admin.blocks.result"/></th>
-                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('histories',6)" style="cursor:pointer;user-select:none;width:17%;"><spring:message code="admin.common.reason"/></th>
-                        <th style="width:14%;"><spring:message code="admin.common.action"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('histories',1)" style="cursor:pointer;user-select:none;width:12%;">${msg_admin_common_time}</th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('histories',2)" style="cursor:pointer;user-select:none;width:18%;">${msg_admin_common_target}</th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('histories',3)" style="cursor:pointer;user-select:none;width:12%;">${msg_admin_common_actionLabel}</th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('histories',4)" style="cursor:pointer;user-select:none;width:14%;">${msg_admin_blocks_changeKind}</th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('histories',5)" style="cursor:pointer;user-select:none;width:13%;">${msg_admin_blocks_result}</th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('histories',6)" style="cursor:pointer;user-select:none;width:17%;">${msg_admin_common_reason}</th>
+                        <th style="width:14%;">${msg_admin_common_action}</th>
                     </tr></thead>
                     <tbody>
                     <%@ include file="_historyRowsOnly.jspf" %>
@@ -1032,9 +1211,9 @@
             <div class="adm-local-pagination" data-section="histories">
                 <div class="adm-local-page-info js-local-page-info" data-section="histories">0</div>
                 <div class="adm-local-page-actions">
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="histories"><spring:message code="admin.common.prev"/></button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="histories">${msg_admin_common_prev}</button>
                     <span class="js-local-page-state" data-section="histories">1 / 1</span>
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="histories"><spring:message code="admin.common.next"/></button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="histories">${msg_admin_common_next}</button>
                 </div>
             </div>
         </div>
@@ -1048,7 +1227,7 @@
 <div class="adm-modal-overlay" id="blockDetailModal">
     <div class="adm-modal" style="max-width:860px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="blockDetailTitle" data-default-title='${adminBlocksDetailTitleMsg}'><spring:message code="admin.blocks.detailTitle"/></div>
+            <div class="adm-modal-title" id="blockDetailTitle" data-default-title='${msg_admin_blocks_detailTitle}'>${msg_admin_blocks_detailTitle_v2}</div>
             <button class="adm-modal-close" onclick="return (window.TripAdminBlockDetailFallback ? window.TripAdminBlockDetailFallback.close() : closeModal('blockDetailModal'))">✕</button>
         </div>
         <div class="adm-modal-body" id="blockDetailBody"></div>
@@ -1058,14 +1237,14 @@
 <div class="adm-modal-overlay" id="memberDetailModal">
     <div class="adm-modal" style="max-width:860px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="memberDetailTitle"><spring:message code="admin.context.memberTitle"/></div>
+            <div class="adm-modal-title" id="memberDetailTitle">${msg_admin_context_memberTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('memberDetailModal')">✕</button>
         </div>
         <div class="adm-modal-body" id="memberDetailBody">
-            <div style="text-align:center;padding:40px;color:#64748b;"><spring:message code="admin.common.loading"/></div>
+            <div style="text-align:center;padding:40px;color:#64748b;">${msg_admin_common_loading}</div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeModal('memberDetailModal')"><spring:message code="admin.common.close"/></button>
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeModal('memberDetailModal')">${msg_admin_common_close}</button>
         </div>
     </div>
 </div>
@@ -1073,48 +1252,48 @@
 <div class="adm-modal-overlay" id="userBlockEditModal">
     <div class="adm-modal" style="max-width:720px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="userBlockEditTitle"><spring:message code="admin.blocks.userBlocks.editTitle"/></div>
+            <div class="adm-modal-title" id="userBlockEditTitle">${msg_admin_blocks_userBlocks_editTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('userBlockEditModal')">✕</button>
         </div>
         <div class="adm-modal-body">
             <input type="hidden" id="userBlockEditId">
             <input type="hidden" id="userBlockEditTemplateId">
             <div class="detail-grid">
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.member"/></div><div class="detail-value" id="userBlockEditMember">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.targetKey"/></div><div class="detail-value" id="userBlockEditTarget">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.filter.blockType"/></div><div class="detail-value" id="userBlockEditType">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.status"/></div><div class="detail-value" id="userBlockEditStatus">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.blockedAt"/></div><div class="detail-value" id="userBlockEditBlockedAt">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.syncedAt"/></div><div class="detail-value" id="userBlockEditSyncAt">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_common_member}</div><div class="detail-value" id="userBlockEditMember">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_blocks_targetKey}</div><div class="detail-value" id="userBlockEditTarget">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_blocks_filter_blockType}</div><div class="detail-value" id="userBlockEditType">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_common_status}</div><div class="detail-value" id="userBlockEditStatus">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_blocks_blockedAt}</div><div class="detail-value" id="userBlockEditBlockedAt">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_blocks_syncedAt}</div><div class="detail-value" id="userBlockEditSyncAt">-</div></div>
             </div>
             <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;margin-top:18px;">
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="admin.common.status"/></label>
+                    <label class="sa-form-label">${msg_admin_common_status}</label>
                     <select id="userBlockEditActive" class="adm-select">
-                        <option value="true"><spring:message code="admin.blocks.keepBlocked"/></option>
-                        <option value="false"><spring:message code="admin.blocks.releaseBlock"/></option>
+                        <option value="true">${msg_admin_blocks_keepBlocked}</option>
+                        <option value="false">${msg_admin_blocks_releaseBlock}</option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="admin.context.expiresAt"/></label>
+                    <label class="sa-form-label">${msg_admin_context_expiresAt}</label>
                     <input id="userBlockEditExpiresAt" class="adm-input" type="datetime-local">
                     <div class="adm-quick-row">
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="userBlockEditExpiresAt" data-days="1"><spring:message code="admin.common.plusDays"/></button>
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="userBlockEditExpiresAt" data-days="7"><spring:message code="admin.common.plusDays"/></button>
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="userBlockEditExpiresAt" data-days="30"><spring:message code="admin.common.plusDays"/></button>
-                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="userBlockEditExpiresAt"><spring:message code="admin.common.indefinite"/></button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="userBlockEditExpiresAt" data-days="1">${msg_admin_common_plusDays}</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="userBlockEditExpiresAt" data-days="7">${msg_admin_common_plusDays}</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="userBlockEditExpiresAt" data-days="30">${msg_admin_common_plusDays}</button>
+                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="userBlockEditExpiresAt">${msg_admin_common_indefinite}</button>
                     </div>
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label"><spring:message code="admin.common.reason"/></label>
+                    <label class="sa-form-label">${msg_admin_common_reason}</label>
                     <textarea id="userBlockEditReason" class="adm-input" style="min-height:120px;"></textarea>
                 </div>
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeModal('userBlockEditModal')"><spring:message code="admin.common.close"/></button>
-            <button class="adm-btn adm-btn-ghost" type="button" id="userBlockEditHistoryBtn"><spring:message code="admin.common.relatedHistory"/></button>
-            <button class="adm-btn adm-btn-primary" type="button" onclick="submitUserBlockEdit()"><spring:message code="admin.common.save"/></button>
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeModal('userBlockEditModal')">${msg_admin_common_close}</button>
+            <button class="adm-btn adm-btn-ghost" type="button" id="userBlockEditHistoryBtn">${msg_admin_common_relatedHistory}</button>
+            <button class="adm-btn adm-btn-primary" type="button" onclick="submitUserBlockEdit()">${msg_admin_common_save}</button>
         </div>
     </div>
 </div>
@@ -1122,7 +1301,7 @@
 <div class="adm-modal-overlay" id="ipRuleEditModal">
     <div class="adm-modal" style="max-width:760px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="ipRuleEditTitle"><spring:message code="admin.blocks.ipRules.editTitle"/></div>
+            <div class="adm-modal-title" id="ipRuleEditTitle">${msg_admin_blocks_ipRules_editTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('ipRuleEditModal')">✕</button>
         </div>
         <div class="adm-modal-body">
@@ -1130,65 +1309,65 @@
             <input type="hidden" id="ipRuleEditTemplateId">
             <input type="hidden" id="ipRuleEditHasBatch">
             <div class="detail-grid">
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.target"/></div><div class="detail-value" id="ipRuleEditTarget">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.batch"/></div><div class="detail-value" id="ipRuleEditBatch">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.ruleState"/></div><div class="detail-value" id="ipRuleEditRuleState">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.effectiveState"/></div><div class="detail-value" id="ipRuleEditFinalState">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.createdAt"/></div><div class="detail-value" id="ipRuleEditBlockedAt">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.expiresAt"/></div><div class="detail-value" id="ipRuleEditExpiresDisplay">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_common_target}</div><div class="detail-value" id="ipRuleEditTarget">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_context_batch}</div><div class="detail-value" id="ipRuleEditBatch">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_blocks_ruleState}</div><div class="detail-value" id="ipRuleEditRuleState">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_blocks_effectiveState}</div><div class="detail-value" id="ipRuleEditFinalState">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_context_createdAt}</div><div class="detail-value" id="ipRuleEditBlockedAt">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_context_expiresAt}</div><div class="detail-value" id="ipRuleEditExpiresDisplay">-</div></div>
             </div>
             <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;margin-top:18px;">
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="admin.context.ruleAction"/></label>
+                    <label class="sa-form-label">${msg_admin_context_ruleAction}</label>
                     <select id="ipRuleEditAction" class="adm-select">
-                        <option value="BLOCK"><spring:message code="admin.context.ruleAction.block"/></option>
-                        <option value="ALLOW"><spring:message code="admin.context.ruleAction.allow"/></option>
+                        <option value="BLOCK">${msg_admin_context_ruleAction_block}</option>
+                        <option value="ALLOW">${msg_admin_context_ruleAction_allow}</option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="admin.blocks.controlMode"/></label>
+                    <label class="sa-form-label">${msg_admin_blocks_controlMode}</label>
                     <select id="ipRuleEditControlMode" class="adm-select"></select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="admin.context.category"/></label>
+                    <label class="sa-form-label">${msg_admin_context_category}</label>
                     <select id="ipRuleEditCategory" class="adm-select">
-                        <option value="MANUAL"><spring:message code="admin.blocks.category.manual"/></option>
-                        <option value="SPAM"><spring:message code="admin.blocks.category.spam"/></option>
-                        <option value="ABUSE"><spring:message code="admin.blocks.category.abuse"/></option>
-                        <option value="BRUTE_FORCE"><spring:message code="admin.blocks.category.bruteForce"/></option>
-                        <option value="GEO"><spring:message code="admin.blocks.category.geo"/></option>
-                        <option value="VPN"><spring:message code="admin.blocks.category.vpn"/></option>
-                        <option value="SECURITY"><spring:message code="admin.blocks.category.security"/></option>
+                        <option value="MANUAL">${msg_admin_blocks_category_manual}</option>
+                        <option value="SPAM">${msg_admin_blocks_category_spam}</option>
+                        <option value="ABUSE">${msg_admin_blocks_category_abuse}</option>
+                        <option value="BRUTE_FORCE">${msg_admin_blocks_category_bruteForce}</option>
+                        <option value="GEO">${msg_admin_blocks_category_geo}</option>
+                        <option value="VPN">${msg_admin_blocks_category_vpn}</option>
+                        <option value="SECURITY">${msg_admin_blocks_category_security}</option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="admin.context.priority"/></label>
+                    <label class="sa-form-label">${msg_admin_context_priority}</label>
                     <input id="ipRuleEditPriority" class="adm-input" type="number" min="1">
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label"><spring:message code="admin.context.expiresAt"/></label>
+                    <label class="sa-form-label">${msg_admin_context_expiresAt}</label>
                     <input id="ipRuleEditExpiresAt" class="adm-input" type="datetime-local">
                     <div class="adm-quick-row">
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="1"><spring:message code="admin.common.plusDays"/></button>
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="7"><spring:message code="admin.common.plusDays"/></button>
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="30"><spring:message code="admin.common.plusDays"/></button>
-                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="ipRuleEditExpiresAt"><spring:message code="admin.common.indefinite"/></button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="1">${msg_admin_common_plusDays}</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="7">${msg_admin_common_plusDays}</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="30">${msg_admin_common_plusDays}</button>
+                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="ipRuleEditExpiresAt">${msg_admin_common_indefinite}</button>
                     </div>
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label"><spring:message code="admin.blocks.policyReason"/></label>
+                    <label class="sa-form-label">${msg_admin_blocks_policyReason}</label>
                     <textarea id="ipRuleEditReason" class="adm-input" style="min-height:100px;"></textarea>
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label"><spring:message code="admin.blocks.description"/></label>
+                    <label class="sa-form-label">${msg_admin_blocks_description}</label>
                     <textarea id="ipRuleEditDetailMessage" class="adm-input" style="min-height:100px;"></textarea>
                 </div>
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeModal('ipRuleEditModal')"><spring:message code="admin.common.close"/></button>
-            <button class="adm-btn adm-btn-ghost" type="button" id="ipRuleEditHistoryBtn"><spring:message code="admin.common.relatedHistory"/></button>
-            <button class="adm-btn adm-btn-primary" type="button" onclick="submitIpRuleEdit()"><spring:message code="admin.common.save"/></button>
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeModal('ipRuleEditModal')">${msg_admin_common_close}</button>
+            <button class="adm-btn adm-btn-ghost" type="button" id="ipRuleEditHistoryBtn">${msg_admin_common_relatedHistory}</button>
+            <button class="adm-btn adm-btn-primary" type="button" onclick="submitIpRuleEdit()">${msg_admin_common_save}</button>
         </div>
     </div>
 </div>
@@ -1196,108 +1375,108 @@
 <div class="adm-modal-overlay" id="ipRuleModal">
     <div class="adm-modal" style="max-width:720px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title"><spring:message code="admin.blocks.ipRules.createTitle"/></div>
+            <div class="adm-modal-title">${msg_admin_blocks_ipRules_createTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('ipRuleModal')">✕</button>
         </div>
         <div class="adm-modal-body">
             <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;">
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="admin.context.ruleAction"/></label>
+                    <label class="sa-form-label">${msg_admin_context_ruleAction}</label>
                     <select id="ipRuleAction" class="adm-select">
-                        <option value="BLOCK"><spring:message code="admin.context.ruleAction.block"/></option>
-                        <option value="ALLOW"><spring:message code="admin.context.ruleAction.allow"/></option>
+                        <option value="BLOCK">${msg_admin_context_ruleAction_block}</option>
+                        <option value="ALLOW">${msg_admin_context_ruleAction_allow}</option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="admin.blocks.controlMode"/></label>
+                    <label class="sa-form-label">${msg_admin_blocks_controlMode}</label>
                     <select id="ipControlMode" class="adm-select">
-                        <option value="MANUAL"><spring:message code="admin.blocks.control.manual"/></option>
-                        <option value="BATCH"><spring:message code="admin.blocks.control.batch"/></option>
-                        <option value="MANUAL_OVERRIDE"><spring:message code="admin.blocks.control.override"/></option>
+                        <option value="MANUAL">${msg_admin_blocks_control_manual}</option>
+                        <option value="BATCH">${msg_admin_blocks_control_batch}</option>
+                        <option value="MANUAL_OVERRIDE">${msg_admin_blocks_control_override}</option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="admin.blocks.matchType"/></label>
+                    <label class="sa-form-label">${msg_admin_blocks_matchType}</label>
                     <select id="ipMatchType" class="adm-select" onchange="handleIpRuleTypeChange()">
-                        <option value="SINGLE_IP"><spring:message code="admin.blocks.match.singleIp"/></option>
-                        <option value="CIDR"><spring:message code="admin.blocks.match.cidr"/></option>
-                        <option value="RANGE"><spring:message code="admin.blocks.match.range"/></option>
-                        <option value="COUNTRY"><spring:message code="admin.blocks.match.country"/></option>
-                        <option value="ASN"><spring:message code="admin.blocks.match.asn"/></option>
+                        <option value="SINGLE_IP">${msg_admin_blocks_match_singleIp}</option>
+                        <option value="CIDR">${msg_admin_blocks_match_cidr}</option>
+                        <option value="RANGE">${msg_admin_blocks_match_range}</option>
+                        <option value="COUNTRY">${msg_admin_blocks_match_country}</option>
+                        <option value="ASN">${msg_admin_blocks_match_asn}</option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="admin.context.category"/></label>
+                    <label class="sa-form-label">${msg_admin_context_category}</label>
                     <select id="ipBlockCategory" class="adm-select">
-                        <option value="MANUAL"><spring:message code="admin.blocks.category.manual"/></option>
-                        <option value="SPAM"><spring:message code="admin.blocks.category.spam"/></option>
-                        <option value="ABUSE"><spring:message code="admin.blocks.category.abuse"/></option>
-                        <option value="BRUTE_FORCE"><spring:message code="admin.blocks.category.bruteForce"/></option>
-                        <option value="GEO"><spring:message code="admin.blocks.category.geo"/></option>
-                        <option value="VPN"><spring:message code="admin.blocks.category.vpn"/></option>
-                        <option value="SECURITY"><spring:message code="admin.blocks.category.security"/></option>
+                        <option value="MANUAL">${msg_admin_blocks_category_manual}</option>
+                        <option value="SPAM">${msg_admin_blocks_category_spam}</option>
+                        <option value="ABUSE">${msg_admin_blocks_category_abuse}</option>
+                        <option value="BRUTE_FORCE">${msg_admin_blocks_category_bruteForce}</option>
+                        <option value="GEO">${msg_admin_blocks_category_geo}</option>
+                        <option value="VPN">${msg_admin_blocks_category_vpn}</option>
+                        <option value="SECURITY">${msg_admin_blocks_category_security}</option>
                     </select>
                 </div>
                 <div class="sa-form-group" id="fieldSingleIp">
-                    <label class="sa-form-label"><spring:message code="admin.common.ip"/></label>
+                    <label class="sa-form-label">${msg_admin_common_ip}</label>
                     <input id="ipAddressInput" class="adm-input" type="text" placeholder="203.0.113.10">
                 </div>
                 <div class="sa-form-group" id="fieldCidr" style="display:none;">
-                    <label class="sa-form-label"><spring:message code="admin.blocks.match.cidr"/></label>
+                    <label class="sa-form-label">${msg_admin_blocks_match_cidr}</label>
                     <input id="cidrNotationInput" class="adm-input" type="text" placeholder="203.0.113.0/24">
                 </div>
                 <div class="sa-form-group" id="fieldRangeStart" style="display:none;">
-                    <label class="sa-form-label"><spring:message code="admin.blocks.rangeStartIp"/></label>
+                    <label class="sa-form-label">${msg_admin_blocks_rangeStartIp}</label>
                     <input id="rangeStartInput" class="adm-input" type="text" placeholder="203.0.113.1">
                 </div>
                 <div class="sa-form-group" id="fieldRangeEnd" style="display:none;">
-                    <label class="sa-form-label"><spring:message code="admin.blocks.rangeEndIp"/></label>
+                    <label class="sa-form-label">${msg_admin_blocks_rangeEndIp}</label>
                     <input id="rangeEndInput" class="adm-input" type="text" placeholder="203.0.113.255">
                 </div>
                 <div class="sa-form-group" id="fieldCountry" style="display:none;">
-                    <label class="sa-form-label"><spring:message code="admin.blocks.countryCode"/></label>
+                    <label class="sa-form-label">${msg_admin_blocks_countryCode}</label>
                     <input id="countryCodeInput" class="adm-input" type="text" placeholder="CN">
                 </div>
                 <div class="sa-form-group" id="fieldAsn" style="display:none;">
-                    <label class="sa-form-label"><spring:message code="admin.blocks.match.asn"/></label>
+                    <label class="sa-form-label">${msg_admin_blocks_match_asn}</label>
                     <input id="asnInput" class="adm-input" type="text" placeholder="AS12345">
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="admin.context.batch"/></label>
+                    <label class="sa-form-label">${msg_admin_context_batch}</label>
                     <select id="ipBatchIdx" class="adm-select" onchange="handleIpBatchChange()">
-                        <option value="">${adminBlocksNoneLabel}</option>
+                        <option value="">${msg_admin_members_none}</option>
                         <c:forEach var="b" items="${batchFilterOptions}">
                             <option value="${b.ipBlockBatchIdx}">${b.batchName} (${b.batchCode})</option>
                         </c:forEach>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label"><spring:message code="admin.context.priority"/></label>
+                    <label class="sa-form-label">${msg_admin_context_priority}</label>
                     <input id="ipPriority" class="adm-input" type="number" min="1" value="1">
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label"><spring:message code="admin.context.expiresAt"/></label>
+                    <label class="sa-form-label">${msg_admin_context_expiresAt}</label>
                     <input id="ipExpiresAt" class="adm-input" type="datetime-local">
                     <div class="adm-quick-row">
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="1"><spring:message code="admin.common.plusDays"/></button>
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="7"><spring:message code="admin.common.plusDays"/></button>
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="30"><spring:message code="admin.common.plusDays"/></button>
-                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="ipExpiresAt"><spring:message code="admin.common.indefinite"/></button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="1">${msg_admin_common_plusDays}</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="7">${msg_admin_common_plusDays}</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="30">${msg_admin_common_plusDays}</button>
+                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="ipExpiresAt">${msg_admin_common_indefinite}</button>
                     </div>
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label"><spring:message code="admin.blocks.policyReason"/></label>
+                    <label class="sa-form-label">${msg_admin_blocks_policyReason}</label>
                     <textarea id="ipReason" class="adm-input" style="min-height:90px;"></textarea>
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label"><spring:message code="admin.blocks.description"/></label>
+                    <label class="sa-form-label">${msg_admin_blocks_description}</label>
                     <textarea id="ipDetailMessage" class="adm-input" style="min-height:90px;"></textarea>
                 </div>
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" onclick="closeModal('ipRuleModal')"><spring:message code="admin.common.cancel"/></button>
-            <button class="adm-btn adm-btn-primary" onclick="submitIpRule()"><spring:message code="admin.common.save"/></button>
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('ipRuleModal')">${msg_admin_common_cancel}</button>
+            <button class="adm-btn adm-btn-primary" onclick="submitIpRule()">${msg_admin_common_save}</button>
         </div>
     </div>
 </div>
@@ -1305,25 +1484,25 @@
 <div class="adm-modal-overlay" id="batchModal">
     <div class="adm-modal" style="max-width:620px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title"><spring:message code="admin.blocks.batches.createTitle"/></div>
+            <div class="adm-modal-title">${msg_admin_blocks_batches_createTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('batchModal')">✕</button>
         </div>
         <div class="adm-modal-body">
             <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;">
-                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.batchCode"/></label><input id="batchCode" class="adm-input" type="text" placeholder="VPN_FEED_202604"></div>
-                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.batchName"/></label><input id="batchName" class="adm-input" type="text" placeholder="VPN Public Ranges 2026.04"></div>
-<div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/></label><select id="batchSourceType" class="adm-select"><option value="MANUAL"><spring:message code="admin.blocks.sourceType.manual"/></option><option value="VPN_FEED"><spring:message code="admin.blocks.sourceType.vpnFeed"/></option><option value="SPAM_FEED"><spring:message code="admin.blocks.sourceType.spamFeed"/></option><option value="GEO_POLICY"><spring:message code="admin.blocks.sourceType.geoPolicy"/></option><option value="AUTO_DETECTION"><spring:message code="admin.blocks.sourceType.autoDetection"/></option></select></div>
-                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/> <spring:message code="admin.common.value"/></label><input id="batchSourceName" class="adm-input" type="text" placeholder="Manual registration"></div>
-                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.baseAction"/></label><select id="batchRuleAction" class="adm-select"><option value="BLOCK"><spring:message code="admin.context.ruleAction.block"/></option><option value="ALLOW"><spring:message code="admin.context.ruleAction.allow"/></option></select></div>
-                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.defaultPriority"/></label><input id="batchDefaultPriority" class="adm-input" type="number" min="1" value="1"></div>
-                <div class="sa-form-group"><label class="sa-form-label">OFF <spring:message code="admin.blocks.baseStrategy"/></label><select id="batchDisableStrategy" class="adm-select"><option value="BATCH_ONLY">BATCH_ONLY</option><option value="CASCADE_ACTIVE_RULES">CASCADE_ACTIVE_RULES</option></select></div>
-                <div class="sa-form-group"><label class="sa-form-label">ON <spring:message code="admin.blocks.baseStrategy"/></label><select id="batchEnableStrategy" class="adm-select"><option value="BATCH_ONLY">BATCH_ONLY</option><option value="RESTORE_BATCH_CONTROL">RESTORE_BATCH_CONTROL</option><option value="FORCE_ENABLE_ALL">FORCE_ENABLE_ALL</option></select></div>
-                <div class="sa-form-group" style="grid-column:1 / span 2;"><label class="sa-form-label"><spring:message code="admin.blocks.description"/></label><textarea id="batchDescription" class="adm-input" style="min-height:90px;"></textarea></div>
+                <div class="sa-form-group"><label class="sa-form-label">${msg_admin_blocks_batchCode}</label><input id="batchCode" class="adm-input" type="text" placeholder="VPN_FEED_202604"></div>
+                <div class="sa-form-group"><label class="sa-form-label">${msg_admin_blocks_batchName}</label><input id="batchName" class="adm-input" type="text" placeholder="VPN Public Ranges 2026.04"></div>
+<div class="sa-form-group"><label class="sa-form-label">${msg_admin_blocks_source}</label><select id="batchSourceType" class="adm-select"><option value="MANUAL">${msg_admin_blocks_sourceType_manual}</option><option value="VPN_FEED">${msg_admin_blocks_sourceType_vpnFeed}</option><option value="SPAM_FEED">${msg_admin_blocks_sourceType_spamFeed}</option><option value="GEO_POLICY">${msg_admin_blocks_sourceType_geoPolicy}</option><option value="AUTO_DETECTION">${msg_admin_blocks_sourceType_autoDetection}</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label">${msg_admin_blocks_source} ${msg_admin_common_value}</label><input id="batchSourceName" class="adm-input" type="text" placeholder="Manual registration"></div>
+                <div class="sa-form-group"><label class="sa-form-label">${msg_admin_blocks_baseAction}</label><select id="batchRuleAction" class="adm-select"><option value="BLOCK">${msg_admin_context_ruleAction_block}</option><option value="ALLOW">${msg_admin_context_ruleAction_allow}</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label">${msg_admin_blocks_defaultPriority}</label><input id="batchDefaultPriority" class="adm-input" type="number" min="1" value="1"></div>
+                <div class="sa-form-group"><label class="sa-form-label">OFF ${msg_admin_blocks_baseStrategy}</label><select id="batchDisableStrategy" class="adm-select"><option value="BATCH_ONLY">BATCH_ONLY</option><option value="CASCADE_ACTIVE_RULES">CASCADE_ACTIVE_RULES</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label">ON ${msg_admin_blocks_baseStrategy}</label><select id="batchEnableStrategy" class="adm-select"><option value="BATCH_ONLY">BATCH_ONLY</option><option value="RESTORE_BATCH_CONTROL">RESTORE_BATCH_CONTROL</option><option value="FORCE_ENABLE_ALL">FORCE_ENABLE_ALL</option></select></div>
+                <div class="sa-form-group" style="grid-column:1 / span 2;"><label class="sa-form-label">${msg_admin_blocks_description}</label><textarea id="batchDescription" class="adm-input" style="min-height:90px;"></textarea></div>
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" onclick="closeModal('batchModal')"><spring:message code="admin.common.cancel"/></button>
-            <button class="adm-btn adm-btn-primary" onclick="submitBatch()"><spring:message code="admin.common.create"/></button>
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('batchModal')">${msg_admin_common_cancel}</button>
+            <button class="adm-btn adm-btn-primary" onclick="submitBatch()">${msg_admin_common_create}</button>
         </div>
     </div>
 </div>
@@ -1331,32 +1510,32 @@
 <div class="adm-modal-overlay" id="batchEditModal">
     <div class="adm-modal" style="max-width:720px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="batchEditTitle"><spring:message code="admin.blocks.batches.editTitle"/></div>
+            <div class="adm-modal-title" id="batchEditTitle">${msg_admin_blocks_batches_editTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('batchEditModal')">✕</button>
         </div>
         <div class="adm-modal-body">
             <input type="hidden" id="batchEditId">
             <div class="detail-grid">
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.currentState"/></div><div class="detail-value" id="batchEditStatus">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.updatedAt"/></div><div class="detail-value" id="batchEditUpdatedAt">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.createdAt"/></div><div class="detail-value" id="batchEditCreatedAt">-</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.ruleStats"/></div><div class="detail-value" id="batchEditStats">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_blocks_currentState}</div><div class="detail-value" id="batchEditStatus">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_context_updatedAt}</div><div class="detail-value" id="batchEditUpdatedAt">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_context_createdAt}</div><div class="detail-value" id="batchEditCreatedAt">-</div></div>
+                <div class="detail-item"><div class="detail-label">${msg_admin_blocks_ruleStats}</div><div class="detail-value" id="batchEditStats">-</div></div>
             </div>
             <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;margin-top:18px;">
-                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.batchCode"/></label><input id="batchEditCode" class="adm-input" type="text"></div>
-                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.batchName"/></label><input id="batchEditName" class="adm-input" type="text"></div>
-<div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/></label><select id="batchEditSourceType" class="adm-select"><option value="MANUAL"><spring:message code="admin.blocks.sourceType.manual"/></option><option value="VPN_FEED"><spring:message code="admin.blocks.sourceType.vpnFeed"/></option><option value="SPAM_FEED"><spring:message code="admin.blocks.sourceType.spamFeed"/></option><option value="GEO_POLICY"><spring:message code="admin.blocks.sourceType.geoPolicy"/></option><option value="AUTO_DETECTION"><spring:message code="admin.blocks.sourceType.autoDetection"/></option></select></div>
-                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/> <spring:message code="admin.common.value"/></label><input id="batchEditSourceName" class="adm-input" type="text"></div>
-                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.baseAction"/></label><select id="batchEditRuleAction" class="adm-select"><option value="BLOCK"><spring:message code="admin.context.ruleAction.block"/></option><option value="ALLOW"><spring:message code="admin.context.ruleAction.allow"/></option></select></div>
-                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.defaultPriority"/></label><input id="batchEditPriority" class="adm-input" type="number" min="1"></div>
-                <div class="sa-form-group"><label class="sa-form-label">OFF <spring:message code="admin.blocks.baseStrategy"/></label><select id="batchEditDisableStrategy" class="adm-select"><option value="BATCH_ONLY">BATCH_ONLY</option><option value="CASCADE_ACTIVE_RULES">CASCADE_ACTIVE_RULES</option></select></div>
-                <div class="sa-form-group"><label class="sa-form-label">ON <spring:message code="admin.blocks.baseStrategy"/></label><select id="batchEditEnableStrategy" class="adm-select"><option value="BATCH_ONLY">BATCH_ONLY</option><option value="RESTORE_BATCH_CONTROL">RESTORE_BATCH_CONTROL</option><option value="FORCE_ENABLE_ALL">FORCE_ENABLE_ALL</option></select></div>
-                <div class="sa-form-group" style="grid-column:1 / span 2;"><label class="sa-form-label"><spring:message code="admin.blocks.description"/></label><textarea id="batchEditDescription" class="adm-input" style="min-height:100px;"></textarea></div>
+                <div class="sa-form-group"><label class="sa-form-label">${msg_admin_blocks_batchCode}</label><input id="batchEditCode" class="adm-input" type="text"></div>
+                <div class="sa-form-group"><label class="sa-form-label">${msg_admin_blocks_batchName}</label><input id="batchEditName" class="adm-input" type="text"></div>
+<div class="sa-form-group"><label class="sa-form-label">${msg_admin_blocks_source}</label><select id="batchEditSourceType" class="adm-select"><option value="MANUAL">${msg_admin_blocks_sourceType_manual}</option><option value="VPN_FEED">${msg_admin_blocks_sourceType_vpnFeed}</option><option value="SPAM_FEED">${msg_admin_blocks_sourceType_spamFeed}</option><option value="GEO_POLICY">${msg_admin_blocks_sourceType_geoPolicy}</option><option value="AUTO_DETECTION">${msg_admin_blocks_sourceType_autoDetection}</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label">${msg_admin_blocks_source} ${msg_admin_common_value}</label><input id="batchEditSourceName" class="adm-input" type="text"></div>
+                <div class="sa-form-group"><label class="sa-form-label">${msg_admin_blocks_baseAction}</label><select id="batchEditRuleAction" class="adm-select"><option value="BLOCK">${msg_admin_context_ruleAction_block}</option><option value="ALLOW">${msg_admin_context_ruleAction_allow}</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label">${msg_admin_blocks_defaultPriority}</label><input id="batchEditPriority" class="adm-input" type="number" min="1"></div>
+                <div class="sa-form-group"><label class="sa-form-label">OFF ${msg_admin_blocks_baseStrategy}</label><select id="batchEditDisableStrategy" class="adm-select"><option value="BATCH_ONLY">BATCH_ONLY</option><option value="CASCADE_ACTIVE_RULES">CASCADE_ACTIVE_RULES</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label">ON ${msg_admin_blocks_baseStrategy}</label><select id="batchEditEnableStrategy" class="adm-select"><option value="BATCH_ONLY">BATCH_ONLY</option><option value="RESTORE_BATCH_CONTROL">RESTORE_BATCH_CONTROL</option><option value="FORCE_ENABLE_ALL">FORCE_ENABLE_ALL</option></select></div>
+                <div class="sa-form-group" style="grid-column:1 / span 2;"><label class="sa-form-label">${msg_admin_blocks_description}</label><textarea id="batchEditDescription" class="adm-input" style="min-height:100px;"></textarea></div>
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeModal('batchEditModal')"><spring:message code="admin.common.close"/></button>
-            <button class="adm-btn adm-btn-primary" type="button" onclick="submitBatchEdit()"><spring:message code="admin.common.save"/></button>
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeModal('batchEditModal')">${msg_admin_common_close}</button>
+            <button class="adm-btn adm-btn-primary" type="button" onclick="submitBatchEdit()">${msg_admin_common_save}</button>
         </div>
     </div>
 </div>
@@ -1364,28 +1543,28 @@
 <div class="adm-modal-overlay" id="batchToggleModal">
     <div class="adm-modal" style="max-width:620px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="batchToggleTitle"><spring:message code="admin.blocks.batches.toggleTitle"/></div>
+            <div class="adm-modal-title" id="batchToggleTitle">${msg_admin_blocks_batches_toggleTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('batchToggleModal')">✕</button>
         </div>
         <div class="adm-modal-body">
             <input type="hidden" id="batchToggleId">
             <input type="hidden" id="batchToggleActive">
             <div class="detail-item" style="margin-bottom:14px;">
-                <div class="detail-label"><spring:message code="admin.blocks.impact"/></div>
+                <div class="detail-label">${msg_admin_blocks_impact}</div>
                 <div class="detail-value" id="batchToggleSummary">-</div>
             </div>
             <div class="sa-form-group">
-                <label class="sa-form-label"><spring:message code="admin.blocks.option"/></label>
+                <label class="sa-form-label">${msg_admin_blocks_option}</label>
                 <select id="batchToggleOption" class="adm-select"></select>
             </div>
             <div class="sa-form-group" style="margin-top:14px;">
-                <label class="sa-form-label"><spring:message code="admin.blocks.description"/></label>
+                <label class="sa-form-label">${msg_admin_blocks_description}</label>
                 <textarea id="batchToggleDescription" class="adm-input" style="min-height:90px;"></textarea>
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" onclick="closeModal('batchToggleModal')"><spring:message code="admin.common.cancel"/></button>
-            <button class="adm-btn adm-btn-primary" onclick="submitBatchToggle()"><spring:message code="admin.common.apply"/></button>
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('batchToggleModal')">${msg_admin_common_cancel}</button>
+            <button class="adm-btn adm-btn-primary" onclick="submitBatchToggle()">${msg_admin_common_apply}</button>
         </div>
     </div>
 </div>
@@ -1636,70 +1815,70 @@ window.TripAdminBlockDetailFallback = window.TripAdminBlockDetailFallback || (fu
 const CTX = '${pageContext.request.contextPath}';
 const ADMIN_BLOCK_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
 const ADMIN_BLOCK_MSG = {
-    noData: '${adminCommonNoDataMsg}',
-    noMatchingData: '${adminCommonNoMatchingDataMsg}',
-    totalCountFormat: '${adminCommonTotalCountFormatMsg}',
-    currentCountFormat: '${adminCommonCurrentCountFormatMsg}',
-    loading: '${adminCommonLoadingMsg}',
-    close: '${adminCommonCloseMsg}',
-    fetchError: '${adminContextFetchErrorMsg}',
-    settings: '${adminCommonSettingsMsg}',
-    detail: '${adminCommonDetailMsg}',
-    history: '${adminCommonHistoryMsg}',
-    memberTitle: '${adminContextMemberTitleMsg}',
-    tabInfo: '${adminContextTabInfoMsg}',
-    tabLogins: '${adminContextTabLoginsMsg}',
-    saved: '${adminCommonSavedMsg}',
-    saveFailed: '${adminCommonSaveFailedMsg}',
-    created: '${adminCommonCreatedMsg}',
-    createFailed: '${adminCommonCreateFailedMsg}',
-    updated: '${adminCommonUpdatedMsg}',
-    updateFailed: '${adminCommonUpdateFailedMsg}',
-    released: '${adminCommonReleasedMsg}',
-    releaseFailed: '${adminCommonReleaseFailedMsg}',
-    batchSettingsNotFound: '${adminBlocksBatchSettingsNotFoundMsg}',
-    blockDetailTitle: '${adminBlocksDetailTitleMsg2}',
-    userBlockHistory: '${adminBlocksUserBlockHistoryMsg}',
-    ipRuleHistory: '${adminBlocksIpRuleHistoryMsg}',
-    confirmRuleOn: '${adminBlocksConfirmRuleOnMsg}',
-    confirmRuleOff: '${adminBlocksConfirmRuleOffMsg}',
-    confirmReturnToBatch: '${adminBlocksConfirmReturnToBatchMsg}',
-    confirmReleaseUserBlock: '${adminBlocksConfirmReleaseUserBlockMsg}',
-    historyCurrentMissing: '${adminBlocksHistoryCurrentMissingMsg}',
-    batchToggleEnableSummary: '${adminBlocksBatchToggleEnableSummaryMsg}',
-    batchToggleDisableSummary: '${adminBlocksBatchToggleDisableSummaryMsg}',
-    keepBlocked: '${adminBlocksKeepBlockedMsg}',
-    releaseBlock: '${adminBlocksReleaseBlockMsg}',
-    effectiveOn: '${adminBlocksEffectiveEffectiveMsg}',
-    ruleOff: '${adminBlocksEffectiveRuleInactiveMsg}',
-    batchOff: '${adminBlocksEffectiveBatchInactiveMsg}',
-    expired: '${adminBlocksEffectiveExpiredMsg}',
-    individualRule: '${adminBlocksIndividualRuleMsg}',
-    ruleOn: '${adminBlocksRuleOnMsg}',
-    pagePrefix: '${adminCommonPagePrefixMsg}',
-    export: '${adminCommonExportMsg}',
-    exportAll: '${adminCommonExportAllMsg}',
-    exportFiltered: '${adminCommonExportFilteredMsg}',
-    exportSelected: '${adminCommonExportSelectedMsg}',
-    selectedCount: '${adminCommonSelectedCountMsg}',
-    bulkRelease: '${adminCommonBulkReleaseMsg}',
-    clearSelection: '${adminCommonClearSelectionMsg}',
-    processError: '${adminCommonProcessErrorMsg}',
-    dashViewUserBlocks: '${adminBlocksJsDashViewUserBlocksMsg}',
-    dashViewIpRules: '${adminBlocksJsDashViewIpRulesMsg}',
-    dashViewBatches: '${adminBlocksJsDashViewBatchesMsg}',
-    dashViewHistories: '${adminBlocksJsDashViewHistoriesMsg}',
-    dashViewAll: '${adminBlocksJsDashViewAllMsg}',
-    dashSortTip: '${adminBlocksJsDashSortTipMsg}',
-    dashSortReset: '${adminBlocksJsDashSortResetMsg}',
-    serverFetchError: '${adminBlocksJsServerFetchErrorMsg}',
-    bulkActivate: '${adminBlocksJsBulkActivateMsg}',
-    bulkDeactivate: '${adminBlocksJsBulkDeactivateMsg}',
-    noSelection: '${adminBlocksJsNoSelectionMsg}',
-    confirmBulkRelease: '${adminBlocksJsConfirmBulkReleaseMsg}',
-    confirmBulkActivate: '${adminBlocksJsConfirmBulkActivateMsg}',
-    confirmBulkDeactivate: '${adminBlocksJsConfirmBulkDeactivateMsg}',
-    done: '${adminBlocksJsDoneMsg}'
+    noData: '${msg_admin_common_noData_js}',
+    noMatchingData: '${msg_admin_common_noMatchingData_js}',
+    totalCountFormat: '${msg_admin_common_totalCountFormat_js}',
+    currentCountFormat: '${msg_admin_common_currentCountFormat_js}',
+    loading: '${msg_admin_common_loading_js}',
+    close: '${msg_admin_common_close_js}',
+    fetchError: '${msg_admin_context_fetchError_js}',
+    settings: '${msg_admin_common_settings_js}',
+    detail: '${msg_admin_common_detail_js}',
+    history: '${msg_admin_common_history_js}',
+    memberTitle: '${msg_admin_context_memberTitle_js}',
+    tabInfo: '${msg_admin_context_tab_info_js}',
+    tabLogins: '${msg_admin_context_tab_logins_js}',
+    saved: '${msg_admin_common_saved_js}',
+    saveFailed: '${msg_admin_common_saveFailed_js}',
+    created: '${msg_admin_common_created_js}',
+    createFailed: '${msg_admin_common_createFailed_js}',
+    updated: '${msg_admin_common_updated_js}',
+    updateFailed: '${msg_admin_common_updateFailed_js}',
+    released: '${msg_admin_common_released_js}',
+    releaseFailed: '${msg_admin_common_releaseFailed_js}',
+    batchSettingsNotFound: '${msg_admin_blocks_batchSettingsNotFound_js}',
+    blockDetailTitle: '${msg_admin_blocks_detailTitle_js}',
+    userBlockHistory: '${msg_admin_blocks_userBlockHistory_js}',
+    ipRuleHistory: '${msg_admin_blocks_ipRuleHistory_js}',
+    confirmRuleOn: '${msg_admin_blocks_confirmRuleOn_js}',
+    confirmRuleOff: '${msg_admin_blocks_confirmRuleOff_js}',
+    confirmReturnToBatch: '${msg_admin_blocks_confirmReturnToBatch_js}',
+    confirmReleaseUserBlock: '${msg_admin_blocks_confirmReleaseUserBlock_js}',
+    historyCurrentMissing: '${msg_admin_blocks_historyCurrentMissing_js}',
+    batchToggleEnableSummary: '${msg_admin_blocks_batchToggleEnableSummary_js}',
+    batchToggleDisableSummary: '${msg_admin_blocks_batchToggleDisableSummary_js}',
+    keepBlocked: '${msg_admin_blocks_keepBlocked_js}',
+    releaseBlock: '${msg_admin_blocks_releaseBlock_js}',
+    effectiveOn: '${msg_admin_blocks_effective_effective_js}',
+    ruleOff: '${msg_admin_blocks_effective_ruleInactive_js}',
+    batchOff: '${msg_admin_blocks_effective_batchInactive_js}',
+    expired: '${msg_admin_blocks_effective_expired_js}',
+    individualRule: '${msg_admin_blocks_individualRule_js}',
+    ruleOn: '${msg_admin_blocks_ruleOn_js}',
+    pagePrefix: '${msg_admin_common_pagePrefix_js}',
+    export: '${msg_admin_common_export_js}',
+    exportAll: '${msg_admin_common_exportAll_js}',
+    exportFiltered: '${msg_admin_common_exportFiltered_js}',
+    exportSelected: '${msg_admin_common_exportSelected_js}',
+    selectedCount: '${msg_admin_common_selectedCount_js}',
+    bulkRelease: '${msg_admin_common_bulkRelease_js}',
+    clearSelection: '${msg_admin_common_clearSelection_js}',
+    processError: '${msg_admin_common_processError_js}',
+    dashViewUserBlocks: '${msg_admin_blocks_js_dashViewUserBlocks_js}',
+    dashViewIpRules: '${msg_admin_blocks_js_dashViewIpRules_js}',
+    dashViewBatches: '${msg_admin_blocks_js_dashViewBatches_js}',
+    dashViewHistories: '${msg_admin_blocks_js_dashViewHistories_js}',
+    dashViewAll: '${msg_admin_blocks_js_dashViewAll_js}',
+    dashSortTip: '${msg_admin_blocks_js_dashSortTip_js}',
+    dashSortReset: '${msg_admin_blocks_js_dashSortReset_js}',
+    serverFetchError: '${msg_admin_blocks_js_serverFetchError_js}',
+    bulkActivate: '${msg_admin_blocks_js_bulkActivate_js}',
+    bulkDeactivate: '${msg_admin_blocks_js_bulkDeactivate_js}',
+    noSelection: '${msg_admin_blocks_js_noSelection_js}',
+    confirmBulkRelease: '${msg_admin_blocks_js_confirmBulkRelease_js}',
+    confirmBulkActivate: '${msg_admin_blocks_js_confirmBulkActivate_js}',
+    confirmBulkDeactivate: '${msg_admin_blocks_js_confirmBulkDeactivate_js}',
+    done: '${msg_admin_blocks_js_done_js}'
 };
 const BLOCK_SECTION_CONFIG = {
     'user-blocks': {
@@ -2728,8 +2907,8 @@ function formatHistoryDateTime(value) {
 
 function formatBooleanBadge(value) {
     return value
-        ? '<span style="color:#4ade80">✓ ${adminCommonYesMsg}</span>'
-        : '<span style="color:#475569">✗ ${adminCommonNoMsg}</span>';
+        ? '<span style="color:#4ade80">✓ ${msg_admin_common_yes_js}</span>'
+        : '<span style="color:#475569">✗ ${msg_admin_common_no_js}</span>';
 }
 
 function buildStatusBadge(status) {
@@ -2744,22 +2923,22 @@ function buildRoleBadge(role) {
 
 function buildSocialHtml(linkedProviders) {
     if (!linkedProviders) {
-        return '<span class="adm-social-empty">${adminMembersNoLinkedProviderMsg}</span>';
+        return '<span class="adm-social-empty">${msg_admin_members_noLinkedProvider_js}</span>';
     }
 
     const providerMap = {
         KAKAO: {
-            label: '${adminSocialKakaoMsg}',
+            label: '${msg_admin_social_kakao_js}',
             className: 'kakao',
             icon: '<span class="adm-social-icon kakao-mark">k</span>'
         },
         NAVER: {
-            label: '${adminSocialNaverMsg}',
+            label: '${msg_admin_social_naver_js}',
             className: 'naver',
             icon: '<span class="adm-social-icon naver-mark">N</span>'
         },
         GOOGLE: {
-            label: '${adminSocialGoogleMsg}',
+            label: '${msg_admin_social_google_js}',
             className: 'google',
             icon: '<span class="adm-social-icon google-mark"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>'
         }
@@ -2778,7 +2957,7 @@ function buildSocialHtml(linkedProviders) {
         });
 
     if (!items.length) {
-        return '<span class="adm-social-empty">${adminMembersNoLinkedProviderMsg}</span>';
+        return '<span class="adm-social-empty">${msg_admin_members_noLinkedProvider_js}</span>';
     }
 
     return '<div class="adm-social-list">' + items.join('') + '</div>';
@@ -2792,34 +2971,34 @@ function buildMemberInfoTab(member) {
 
     return ''
         + '<div class="detail-grid">'
-        + '<div class="detail-item"><div class="detail-label">${adminContextMemberNoMsg}</div><div class="detail-value">#' + escapeHtml(member.userIdx) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">${adminContextUserIdMsg}</div><div class="detail-value">' + formatNullable(member.userId) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">${adminContextNicknameMsg}</div><div class="detail-value">' + formatNullable(member.nickname) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">${adminContextEmailMsg}</div><div class="detail-value" style="font-size:12px;">' + formatNullable(member.userEmail) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">${adminMembersAccountStatusMsg}</div><div class="detail-value">' + statusBadge + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">${adminCommonRoleMsg}</div><div class="detail-value">' + roleBadge + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">${adminContextNationalityMsg}</div><div class="detail-value">' + formatNullable(member.nationality) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">${adminContextPreferredLanguageMsg}</div><div class="detail-value">' + formatNullable(member.preferredLang) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">${adminMembersEmailVerifiedMsg}</div><div class="detail-value">' + formatBooleanBadge(member.emailVerified) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">${adminMembersEmailLoginEnabledMsg}</div><div class="detail-value">' + formatBooleanBadge(member.emailLoginEnabled) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">${adminMembersPasswordLoginEnabledMsg}</div><div class="detail-value">' + formatBooleanBadge(member.passwordEnabled) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">${adminContextCreatedAtMsg}</div><div class="detail-value" style="font-size:12px;">' + formatDateTime(member.createdAt) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">${msg_admin_context_memberNo_js}</div><div class="detail-value">#' + escapeHtml(member.userIdx) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">${msg_admin_context_userId_js}</div><div class="detail-value">' + formatNullable(member.userId) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">${msg_admin_context_nickname_js}</div><div class="detail-value">' + formatNullable(member.nickname) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">${msg_admin_context_email_js}</div><div class="detail-value" style="font-size:12px;">' + formatNullable(member.userEmail) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">${msg_admin_members_accountStatus_js}</div><div class="detail-value">' + statusBadge + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">${msg_admin_common_role_js}</div><div class="detail-value">' + roleBadge + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">${msg_admin_context_nationality_js}</div><div class="detail-value">' + formatNullable(member.nationality) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">${msg_admin_context_preferredLanguage_js}</div><div class="detail-value">' + formatNullable(member.preferredLang) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">${msg_admin_members_emailVerified_js}</div><div class="detail-value">' + formatBooleanBadge(member.emailVerified) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">${msg_admin_members_emailLoginEnabled_js}</div><div class="detail-value">' + formatBooleanBadge(member.emailLoginEnabled) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">${msg_admin_members_passwordLoginEnabled_js}</div><div class="detail-value">' + formatBooleanBadge(member.passwordEnabled) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">${msg_admin_context_createdAt_js}</div><div class="detail-value" style="font-size:12px;">' + formatDateTime(member.createdAt) + '</div></div>'
         + '</div>'
         + '<div class="detail-item" style="margin-top:12px;">'
-        + '<div class="detail-label">${adminMembersSocialLinkedMsg}</div>'
+        + '<div class="detail-label">${msg_admin_members_socialLinked_js}</div>'
         + '<div class="detail-value" style="margin-top:4px;">' + socialHtml + '</div>'
         + '</div>'
         + '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">'
         + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
-        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">${adminMembersLoginSuccessMsg}</div>'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">${msg_admin_members_loginSuccess_js}</div>'
         + '<div style="font-size:20px;font-weight:700;color:#4ade80;margin-top:4px;">' + escapeHtml(member.loginSuccessCount ?? 0) + '</div>'
         + '</div>'
         + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
-        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">${adminMembersLoginFailureMsg}</div>'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">${msg_admin_members_loginFailure_js}</div>'
         + '<div style="font-size:20px;font-weight:700;color:#f87171;margin-top:4px;">' + escapeHtml(member.loginFailCount ?? 0) + '</div>'
         + '</div>'
         + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;">'
-        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">${adminContextLastLoginMsg}</div>'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">${msg_admin_context_lastLogin_js}</div>'
         + '<div style="font-size:12px;font-weight:600;color:#94a3b8;margin-top:4px;">' + escapeHtml(lastLoginText) + '</div>'
         + '</div>'
         + '</div>';
@@ -2827,15 +3006,15 @@ function buildMemberInfoTab(member) {
 
 function buildMemberHistTab(history) {
     if (!history.length) {
-        return '<div style="text-align:center;padding:32px;color:#475569;">${adminContextEmptyLoginsMsg}</div>';
+        return '<div style="text-align:center;padding:32px;color:#475569;">${msg_admin_context_empty_logins_js}</div>';
     }
 
     const methodMap = {
-        ID: '${adminContextUserIdMsg}',
-        EMAIL: '${adminContextEmailMsg}',
-        KAKAO: '${adminSocialKakaoMsg}',
-        NAVER: '${adminSocialNaverMsg}',
-        GOOGLE: '${adminSocialGoogleMsg}'
+        ID: '${msg_admin_context_userId_js}',
+        EMAIL: '${msg_admin_context_email_js}',
+        KAKAO: '${msg_admin_social_kakao_js}',
+        NAVER: '${msg_admin_social_naver_js}',
+        GOOGLE: '${msg_admin_social_google_js}'
     };
 
     let rows = '';
@@ -2845,7 +3024,7 @@ function buildMemberHistTab(history) {
             + '<tr>'
             + '<td>' + escapeHtml(formatHistoryDateTime(item.loginAt)) + '</td>'
             + '<td>' + escapeHtml(methodMap[item.loginMethod] || item.loginMethod || '—') + '</td>'
-            + '<td class="' + (ok ? 'h-success' : 'h-fail') + '">' + (ok ? '✅ ${adminLogsSuccessMsg}' : '❌ ${adminLogsFailureMsg}') + '</td>'
+            + '<td class="' + (ok ? 'h-success' : 'h-fail') + '">' + (ok ? '✅ ${msg_admin_logs_success_js}' : '❌ ${msg_admin_logs_failure_js}') + '</td>'
             + '<td>' + escapeHtml(item.failReason || '—') + '</td>'
             + '<td style="font-size:11px;color:#475569;">' + escapeHtml(item.ipAddress || '—') + '</td>'
             + '</tr>';
@@ -2854,7 +3033,7 @@ function buildMemberHistTab(history) {
     return ''
         + '<div style="overflow-x:auto;max-height:340px;overflow-y:auto;">'
         + '<table class="history-table">'
-        + '<thead><tr><th>${adminCommonTimeMsg}</th><th>${adminLogsProviderMsg}</th><th>${adminBlocksResultMsg}</th><th>${adminLogsFailReasonMsg}</th><th>${adminCommonIpMsg}</th></tr></thead>'
+        + '<thead><tr><th>${msg_admin_common_time_js}</th><th>${msg_admin_logs_provider_js}</th><th>${msg_admin_blocks_result_js}</th><th>${msg_admin_logs_failReason_js}</th><th>${msg_admin_common_ip_js}</th></tr></thead>'
         + '<tbody>' + rows + '</tbody>'
         + '</table>'
         + '</div>';
@@ -2922,7 +3101,7 @@ function openBatchEditor(button) {
     }
 
     document.getElementById('batchEditId').value = resolvedButton.dataset.batchId || '';
-    document.getElementById('batchEditTitle').textContent = resolvedButton.dataset.batchName || '${adminBlocksBatchesEditTitleMsg}';
+    document.getElementById('batchEditTitle').textContent = resolvedButton.dataset.batchName || '${msg_admin_blocks_batches_editTitle_js}';
     document.getElementById('batchEditStatus').textContent = resolvedButton.dataset.statusLabel || '-';
     document.getElementById('batchEditUpdatedAt').textContent = resolvedButton.dataset.updatedAt || '-';
     document.getElementById('batchEditCreatedAt').textContent = resolvedButton.dataset.createdAt || '-';
@@ -3082,11 +3261,11 @@ function fillIpRuleEditControlModes(hasBatch, currentMode) {
 
     if (hasBatch) {
         select.innerHTML = ''
-            + '<option value="BATCH">${adminBlocksControlBatchMsg}</option>'
-            + '<option value="MANUAL_OVERRIDE">${adminBlocksControlOverrideMsg}</option>';
+            + '<option value="BATCH">${msg_admin_blocks_control_batch_js}</option>'
+            + '<option value="MANUAL_OVERRIDE">${msg_admin_blocks_control_override_js}</option>';
         select.value = currentMode === 'MANUAL_OVERRIDE' ? 'MANUAL_OVERRIDE' : 'BATCH';
     } else {
-        select.innerHTML = '<option value="MANUAL">${adminBlocksControlManualMsg}</option>';
+        select.innerHTML = '<option value="MANUAL">${msg_admin_blocks_control_manual_js}</option>';
         select.value = 'MANUAL';
     }
 }
@@ -3105,7 +3284,7 @@ function openUserBlockEditor(button) {
 
     document.getElementById('userBlockEditId').value = resolvedButton.dataset.blockIdx;
     document.getElementById('userBlockEditTemplateId').value = resolvedButton.dataset.templateId || '';
-    document.getElementById('userBlockEditTitle').textContent = '${adminBlocksUserBlocksEditTitleMsg}';
+    document.getElementById('userBlockEditTitle').textContent = '${msg_admin_blocks_userBlocks_editTitle_js}';
 
     let memberHtml = escapeHtml(displayName);
     if (userIdx) {
@@ -3150,13 +3329,13 @@ function openIpRuleEditor(button) {
     document.getElementById('ipRuleEditId').value = resolvedButton.dataset.id;
     document.getElementById('ipRuleEditTemplateId').value = resolvedButton.dataset.templateId || '';
     document.getElementById('ipRuleEditHasBatch').value = hasBatch ? 'true' : 'false';
-    document.getElementById('ipRuleEditTitle').textContent = '${adminBlocksIpRulesEditTitleMsg}';
+    document.getElementById('ipRuleEditTitle').textContent = '${msg_admin_blocks_ipRules_editTitle_js}';
     document.getElementById('ipRuleEditTarget').textContent = (resolvedButton.dataset.targetDisplay || '-') + ' / ' + (resolvedButton.dataset.targetKey || '-');
     document.getElementById('ipRuleEditBatch').textContent = batchLabel + ' / ' + (resolvedButton.dataset.batchStatusLabel || ADMIN_BLOCK_MSG.individualRule);
     document.getElementById('ipRuleEditRuleState').textContent = resolvedButton.dataset.ruleStateLabel || '-';
     document.getElementById('ipRuleEditFinalState').textContent = (resolvedButton.dataset.finalStateLabel || '-') + ' / ' + (resolvedButton.dataset.effectiveStatusLabel || '-');
     document.getElementById('ipRuleEditBlockedAt').textContent = resolvedButton.dataset.blockedAt || '-';
-    document.getElementById('ipRuleEditExpiresDisplay').textContent = resolvedButton.dataset.expiresDisplay || '${fn:escapeXml(adminBlocksNoneLabel)}';
+    document.getElementById('ipRuleEditExpiresDisplay').textContent = resolvedButton.dataset.expiresDisplay || '${fn:escapeXml(msg_admin_members_none)}';
     document.getElementById('ipRuleEditAction').value = resolvedButton.dataset.ruleAction || 'BLOCK';
     document.getElementById('ipRuleEditCategory').value = resolvedButton.dataset.blockCategory || 'MANUAL';
     document.getElementById('ipRuleEditPriority').value = resolvedButton.dataset.priority || '1';
@@ -3362,7 +3541,7 @@ function openBatchToggleModal(button) {
 
     document.getElementById('batchToggleId').value = button.dataset.id;
     document.getElementById('batchToggleActive').value = nextActive ? 'true' : 'false';
-    document.getElementById('batchToggleTitle').textContent = nextActive ? '${adminBlocksBatchReactivateMsg}' : '${adminBlocksBatchDeactivateMsg}';
+    document.getElementById('batchToggleTitle').textContent = nextActive ? '${msg_admin_blocks_batchReactivate_js}' : '${msg_admin_blocks_batchDeactivate_js}';
 
     if (nextActive) {
         document.getElementById('batchToggleSummary').textContent = ADMIN_BLOCK_MSG.batchToggleEnableSummary.replace('{0}', batchName);
@@ -3661,7 +3840,7 @@ activateBlockTab(new URLSearchParams(window.location.search).get('tab') || 'dash
     form.addEventListener('submit', function (event) {
         event.preventDefault();
         const formData = new FormData(form);
-        resultBox.textContent = '${adminBlocksPolicyFeedUploadingMsg}';
+        resultBox.textContent = '${msg_admin_blocks_policyFeed_uploading_js}';
         fetch('${pageContext.request.contextPath}/admin/blocks/policy-feed/upload', {
             method: 'POST',
             body: formData
@@ -3670,18 +3849,18 @@ activateBlockTab(new URLSearchParams(window.location.search).get('tab') || 'dash
             .then(data => {
                 if (data.success) {
                     resultBox.textContent =
-                        '${adminBlocksPolicyFeedUploadSuccessMsg}'
+                        '${msg_admin_blocks_policyFeed_uploadSuccess_js}'
                         + ' batch=' + data.batchCode
                         + ', success=' + data.successCount
                         + ', failed=' + data.failedCount;
                     renderSectionByMode('ip-rules');
                     renderSectionByMode('batches');
                 } else {
-                    resultBox.textContent = data.message || '${adminBlocksPolicyFeedUploadFailedMsg}';
+                    resultBox.textContent = data.message || '${msg_admin_blocks_policyFeed_uploadFailed_js}';
                 }
             })
             .catch(error => {
-                resultBox.textContent = error.message || '${adminBlocksPolicyFeedUploadFailedMsg}';
+                resultBox.textContent = error.message || '${msg_admin_blocks_policyFeed_uploadFailed_js}';
             });
     });
 })();

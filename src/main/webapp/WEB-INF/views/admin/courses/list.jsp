@@ -4,16 +4,69 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_courses_list_filter_keywordPlaceholder" code="admin.courses.list.filter.keywordPlaceholder"/>
+<spring:message var="msg_admin_courses_list_js_bulkSelected_js" code="admin.courses.list.js.bulkSelected" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_delete_js" code="admin.common.delete" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_restore_js" code="admin.common.restore" javaScriptEscape="true"/>
+<spring:message var="msg_admin_courses_list_js_confirmSingle_js" code="admin.courses.list.js.confirmSingle" javaScriptEscape="true"/>
+<spring:message var="msg_admin_courses_list_js_confirmBulk_js" code="admin.courses.list.js.confirmBulk" javaScriptEscape="true"/>
+<spring:message var="msg_admin_courses_list_js_noSelection_js" code="admin.courses.list.js.noSelection" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_processError_js" code="admin.common.processError" javaScriptEscape="true"/>
+<spring:message var="msg_admin_courses_list_pageTitle" code="admin.courses.list.pageTitle"/>
+<spring:message var="msg_admin_courses_list_summary_active" code="admin.courses.list.summary.active"/>
+<spring:message var="msg_admin_courses_list_summary_total" code="admin.courses.list.summary.total"/>
+<spring:message var="msg_admin_common_countSuffix" code="admin.common.countSuffix"/>
+<spring:message var="msg_admin_courses_list_summary_deleted" code="admin.courses.list.summary.deleted"/>
+<spring:message var="msg_admin_courses_list_summary_today" code="admin.courses.list.summary.today"/>
+<spring:message var="msg_admin_courses_list_summary_ai" code="admin.courses.list.summary.ai"/>
+<spring:message var="msg_admin_courses_list_summary_manual" code="admin.courses.list.summary.manual"/>
+<spring:message var="msg_admin_courses_list_summary_public" code="admin.courses.list.summary.public"/>
+<spring:message var="msg_admin_courses_list_summary_private" code="admin.courses.list.summary.private"/>
+<spring:message var="msg_admin_courses_list_filter_status" code="admin.courses.list.filter.status"/>
+<spring:message var="msg_admin_common_all" code="admin.common.all"/>
+<spring:message var="msg_admin_common_active" code="admin.common.active"/>
+<spring:message var="msg_admin_courses_status_deleted" code="admin.courses.status.deleted"/>
+<spring:message var="msg_admin_courses_list_filter_source" code="admin.courses.list.filter.source"/>
+<spring:message var="msg_admin_courses_source_manual" code="admin.courses.source.manual"/>
+<spring:message var="msg_admin_courses_source_ai" code="admin.courses.source.ai"/>
+<spring:message var="msg_admin_courses_list_filter_visibility" code="admin.courses.list.filter.visibility"/>
+<spring:message var="msg_admin_courses_visibility_public" code="admin.courses.visibility.public"/>
+<spring:message var="msg_admin_courses_visibility_private" code="admin.courses.visibility.private"/>
+<spring:message var="msg_admin_courses_list_filter_sort" code="admin.courses.list.filter.sort"/>
+<spring:message var="msg_admin_courses_list_sort_createdAt" code="admin.courses.list.sort.createdAt"/>
+<spring:message var="msg_admin_courses_list_sort_updatedAt" code="admin.courses.list.sort.updatedAt"/>
+<spring:message var="msg_admin_courses_list_sort_startDate" code="admin.courses.list.sort.startDate"/>
+<spring:message var="msg_admin_common_search" code="admin.common.search"/>
+<spring:message var="msg_admin_courses_list_search_title" code="admin.courses.list.search.title"/>
+<spring:message var="msg_admin_courses_list_search_destination" code="admin.courses.list.search.destination"/>
+<spring:message var="msg_admin_common_nickname" code="admin.common.nickname"/>
+<spring:message var="msg_admin_common_userId" code="admin.common.userId"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
+<spring:message var="msg_admin_courses_list_title" code="admin.courses.list.title"/>
+<spring:message var="msg_admin_courses_list_total" code="admin.courses.list.total"/>
+<spring:message var="msg_admin_courses_list_action_bulkDelete" code="admin.courses.list.action.bulkDelete"/>
+<spring:message var="msg_admin_courses_list_action_bulkRestore" code="admin.courses.list.action.bulkRestore"/>
+<spring:message var="msg_admin_courses_list_table_author" code="admin.courses.list.table.author"/>
+<spring:message var="msg_admin_courses_list_table_title" code="admin.courses.list.table.title"/>
+<spring:message var="msg_admin_courses_list_table_destination" code="admin.courses.list.table.destination"/>
+<spring:message var="msg_admin_courses_list_table_period" code="admin.courses.list.table.period"/>
+<spring:message var="msg_admin_courses_list_table_spots" code="admin.courses.list.table.spots"/>
+<spring:message var="msg_admin_courses_list_table_source" code="admin.courses.list.table.source"/>
+<spring:message var="msg_admin_courses_list_table_visibility" code="admin.courses.list.table.visibility"/>
+<spring:message var="msg_admin_common_accountStatus" code="admin.common.accountStatus"/>
+<spring:message var="msg_admin_courses_list_table_createdAt" code="admin.courses.list.table.createdAt"/>
+<spring:message var="msg_admin_common_action" code="admin.common.action"/>
+<spring:message var="msg_admin_courses_list_accountBlocked" code="admin.courses.list.accountBlocked"/>
+<spring:message var="msg_admin_common_dash" code="admin.common.dash"/>
+<spring:message var="msg_admin_common_delete" code="admin.common.delete"/>
+<spring:message var="msg_admin_common_restore" code="admin.common.restore"/>
+<spring:message var="msg_admin_courses_list_empty" code="admin.courses.list.empty"/>
+<c:set var="pageTitle" value="${msg_admin_courses_list_pageTitle}"/>
 <c:set var="activeMenu" value="courses"/>
-<spring:message var="adminCoursesListFilterKeywordPlaceholderMsg" code="admin.courses.list.filter.keywordPlaceholder"/>
-<spring:message var="adminCoursesListJsBulkSelectedMsg" code="admin.courses.list.js.bulkSelected" javaScriptEscape="true"/>
-<spring:message var="adminCommonDeleteMsg" code="admin.common.delete" javaScriptEscape="true"/>
-<spring:message var="adminCommonRestoreMsg" code="admin.common.restore" javaScriptEscape="true"/>
-<spring:message var="adminCoursesListJsConfirmSingleMsg" code="admin.courses.list.js.confirmSingle" javaScriptEscape="true"/>
-<spring:message var="adminCoursesListJsConfirmBulkMsg" code="admin.courses.list.js.confirmBulk" javaScriptEscape="true"/>
-<spring:message var="adminCoursesListJsNoSelectionMsg" code="admin.courses.list.js.noSelection" javaScriptEscape="true"/>
-<spring:message var="adminCommonProcessErrorMsg" code="admin.common.processError" javaScriptEscape="true"/>
-<spring:message code="admin.courses.list.pageTitle" var="pageTitle"/>
+
+
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -21,24 +74,24 @@
     <%-- ── 통계 카드 ── --%>
     <div class="adm-summary-grid">
         <div class="adm-card adm-summary-card">
-            <div class="adm-summary-label"><spring:message code="admin.courses.list.summary.active"/></div>
+            <div class="adm-summary-label">${msg_admin_courses_list_summary_active}</div>
             <div class="adm-summary-value is-primary">${stats.activePlans}</div>
-            <div class="adm-summary-sub"><spring:message code="admin.courses.list.summary.total"/> ${stats.totalPlans}<spring:message code="admin.common.countSuffix"/></div>
+            <div class="adm-summary-sub">${msg_admin_courses_list_summary_total} ${stats.totalPlans}${msg_admin_common_countSuffix}</div>
         </div>
         <div class="adm-card adm-summary-card">
-            <div class="adm-summary-label"><spring:message code="admin.courses.list.summary.deleted"/></div>
+            <div class="adm-summary-label">${msg_admin_courses_list_summary_deleted}</div>
             <div class="adm-summary-value is-danger">${stats.deletedPlans}</div>
-            <div class="adm-summary-sub"><spring:message code="admin.courses.list.summary.today"/> ${stats.todayPlans}<spring:message code="admin.common.countSuffix"/></div>
+            <div class="adm-summary-sub">${msg_admin_courses_list_summary_today} ${stats.todayPlans}${msg_admin_common_countSuffix}</div>
         </div>
         <div class="adm-card adm-summary-card">
-            <div class="adm-summary-label"><spring:message code="admin.courses.list.summary.ai"/></div>
+            <div class="adm-summary-label">${msg_admin_courses_list_summary_ai}</div>
             <div class="adm-summary-value is-success">${stats.aiPlans}</div>
-            <div class="adm-summary-sub"><spring:message code="admin.courses.list.summary.manual"/> ${stats.manualPlans}<spring:message code="admin.common.countSuffix"/></div>
+            <div class="adm-summary-sub">${msg_admin_courses_list_summary_manual} ${stats.manualPlans}${msg_admin_common_countSuffix}</div>
         </div>
         <div class="adm-card adm-summary-card">
-            <div class="adm-summary-label"><spring:message code="admin.courses.list.summary.public"/></div>
+            <div class="adm-summary-label">${msg_admin_courses_list_summary_public}</div>
             <div class="adm-summary-value is-warning">${stats.publicPlans}</div>
-            <div class="adm-summary-sub"><spring:message code="admin.courses.list.summary.private"/> ${stats.privatePlans}<spring:message code="admin.common.countSuffix"/></div>
+            <div class="adm-summary-sub">${msg_admin_courses_list_summary_private} ${stats.privatePlans}${msg_admin_common_countSuffix}</div>
         </div>
     </div>
 
@@ -48,54 +101,54 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/courses" id="searchForm">
                 <div class="adm-filter-bar" style="flex-wrap:wrap;gap:12px;">
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.courses.list.filter.status"/></div>
+                        <div class="adm-filter-label">${msg_admin_courses_list_filter_status}</div>
                         <select class="adm-select" name="status">
-                            <option value="ALL"     ${search.status=='ALL'     ?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="ACTIVE"  ${search.status=='ACTIVE'  ?'selected':''}><spring:message code="admin.common.active"/></option>
-                            <option value="DELETED" ${search.status=='DELETED' ?'selected':''}><spring:message code="admin.courses.status.deleted"/></option>
+                            <option value="ALL"     ${search.status=='ALL'     ?'selected':''}>${msg_admin_common_all}</option>
+                            <option value="ACTIVE"  ${search.status=='ACTIVE'  ?'selected':''}>${msg_admin_common_active}</option>
+                            <option value="DELETED" ${search.status=='DELETED' ?'selected':''}>${msg_admin_courses_status_deleted}</option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.courses.list.filter.source"/></div>
+                        <div class="adm-filter-label">${msg_admin_courses_list_filter_source}</div>
                         <select class="adm-select" name="planSource">
-                            <option value="ALL"    ${search.planSource=='ALL'    ?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="MANUAL" ${search.planSource=='MANUAL' ?'selected':''}><spring:message code="admin.courses.source.manual"/></option>
-                            <option value="AI"     ${search.planSource=='AI'     ?'selected':''}><spring:message code="admin.courses.source.ai"/></option>
+                            <option value="ALL"    ${search.planSource=='ALL'    ?'selected':''}>${msg_admin_common_all}</option>
+                            <option value="MANUAL" ${search.planSource=='MANUAL' ?'selected':''}>${msg_admin_courses_source_manual}</option>
+                            <option value="AI"     ${search.planSource=='AI'     ?'selected':''}>${msg_admin_courses_source_ai}</option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.courses.list.filter.visibility"/></div>
+                        <div class="adm-filter-label">${msg_admin_courses_list_filter_visibility}</div>
                         <select class="adm-select" name="isPublic">
-                            <option value="ALL"     ${search.isPublic=='ALL'     ?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="PUBLIC"  ${search.isPublic=='PUBLIC'  ?'selected':''}><spring:message code="admin.courses.visibility.public"/></option>
-                            <option value="PRIVATE" ${search.isPublic=='PRIVATE' ?'selected':''}><spring:message code="admin.courses.visibility.private"/></option>
+                            <option value="ALL"     ${search.isPublic=='ALL'     ?'selected':''}>${msg_admin_common_all}</option>
+                            <option value="PUBLIC"  ${search.isPublic=='PUBLIC'  ?'selected':''}>${msg_admin_courses_visibility_public}</option>
+                            <option value="PRIVATE" ${search.isPublic=='PRIVATE' ?'selected':''}>${msg_admin_courses_visibility_private}</option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.courses.list.filter.sort"/></div>
+                        <div class="adm-filter-label">${msg_admin_courses_list_filter_sort}</div>
                         <select class="adm-select" name="sortBy">
-                            <option value="createdAt" ${search.sortBy=='createdAt' ?'selected':''}><spring:message code="admin.courses.list.sort.createdAt"/></option>
-                            <option value="updatedAt" ${search.sortBy=='updatedAt' ?'selected':''}><spring:message code="admin.courses.list.sort.updatedAt"/></option>
-                            <option value="startDate" ${search.sortBy=='startDate' ?'selected':''}><spring:message code="admin.courses.list.sort.startDate"/></option>
+                            <option value="createdAt" ${search.sortBy=='createdAt' ?'selected':''}>${msg_admin_courses_list_sort_createdAt}</option>
+                            <option value="updatedAt" ${search.sortBy=='updatedAt' ?'selected':''}>${msg_admin_courses_list_sort_updatedAt}</option>
+                            <option value="startDate" ${search.sortBy=='startDate' ?'selected':''}>${msg_admin_courses_list_sort_startDate}</option>
                         </select>
                     </div>
                     <div style="flex:1;min-width:220px;">
-                        <div class="adm-filter-label"><spring:message code="admin.common.search"/></div>
+                        <div class="adm-filter-label">${msg_admin_common_search}</div>
                         <div style="display:flex;gap:6px;">
                             <select class="adm-select" name="searchType" style="width:120px;">
-                                <option value="all"         ${search.searchType=='all'         ?'selected':''}><spring:message code="admin.common.all"/></option>
-                                <option value="title"       ${search.searchType=='title'       ?'selected':''}><spring:message code="admin.courses.list.search.title"/></option>
-                                <option value="destination" ${search.searchType=='destination' ?'selected':''}><spring:message code="admin.courses.list.search.destination"/></option>
-                                <option value="nickname"    ${search.searchType=='nickname'    ?'selected':''}><spring:message code="admin.common.nickname"/></option>
-                                <option value="userId"      ${search.searchType=='userId'      ?'selected':''}><spring:message code="admin.common.userId"/></option>
+                                <option value="all"         ${search.searchType=='all'         ?'selected':''}>${msg_admin_common_all}</option>
+                                <option value="title"       ${search.searchType=='title'       ?'selected':''}>${msg_admin_courses_list_search_title}</option>
+                                <option value="destination" ${search.searchType=='destination' ?'selected':''}>${msg_admin_courses_list_search_destination}</option>
+                                <option value="nickname"    ${search.searchType=='nickname'    ?'selected':''}>${msg_admin_common_nickname}</option>
+                                <option value="userId"      ${search.searchType=='userId'      ?'selected':''}>${msg_admin_common_userId}</option>
                             </select>
                             <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}"
-                                   placeholder="${adminCoursesListFilterKeywordPlaceholderMsg}" style="flex:1;">
+                                   placeholder="${msg_admin_courses_list_filter_keywordPlaceholder}" style="flex:1;">
                         </div>
                     </div>
                     <div style="display:flex;align-items:flex-end;gap:6px;">
-                        <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.search"/></button>
-                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/courses"><spring:message code="admin.common.reset"/></a>
+                        <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_search}</button>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/courses">${msg_admin_common_reset}</a>
                     </div>
                 </div>
             </form>
@@ -106,16 +159,16 @@
     <div class="adm-card">
         <div class="adm-card-head">
             <div style="display:flex;align-items:center;gap:12px;">
-                <div class="adm-card-title"><spring:message code="admin.courses.list.title"/></div>
-                <div class="adm-muted-note"><spring:message code="admin.courses.list.total"/> ${total}<spring:message code="admin.common.countSuffix"/></div>
+                <div class="adm-card-title">${msg_admin_courses_list_title}</div>
+                <div class="adm-muted-note">${msg_admin_courses_list_total} ${total}${msg_admin_common_countSuffix}</div>
             </div>
             <%-- 일괄 처리 버튼 --%>
             <div id="bulkBar" style="display:none;gap:8px;align-items:center;">
                 <span id="bulkCount" style="font-size:12px;color:#94a3b8;"></span>
                 <button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;"
-                        onclick="bulkAction('delete')"><spring:message code="admin.courses.list.action.bulkDelete"/></button>
+                        onclick="bulkAction('delete')">${msg_admin_courses_list_action_bulkDelete}</button>
                 <button class="adm-btn adm-btn-ghost" style="color:#34d399;border-color:#34d399;"
-                        onclick="bulkAction('restore')"><spring:message code="admin.courses.list.action.bulkRestore"/></button>
+                        onclick="bulkAction('restore')">${msg_admin_courses_list_action_bulkRestore}</button>
             </div>
         </div>
         <div class="adm-table-wrap">
@@ -124,16 +177,16 @@
                 <tr>
                     <th style="width:36px;"><input type="checkbox" id="checkAll"></th>
                     <th style="width:60px;">ID</th>
-                    <th><spring:message code="admin.courses.list.table.author"/></th>
-                    <th><spring:message code="admin.courses.list.table.title"/></th>
-                    <th><spring:message code="admin.courses.list.table.destination"/></th>
-                    <th style="width:145px;"><spring:message code="admin.courses.list.table.period"/></th>
-                    <th style="width:50px;"><spring:message code="admin.courses.list.table.spots"/></th>
-                    <th style="width:60px;"><spring:message code="admin.courses.list.table.source"/></th>
-                    <th style="width:60px;"><spring:message code="admin.courses.list.table.visibility"/></th>
-                    <th style="width:70px;"><spring:message code="admin.common.accountStatus"/></th>
-                    <th style="width:130px;"><spring:message code="admin.courses.list.table.createdAt"/></th>
-                    <th style="width:120px;"><spring:message code="admin.common.action"/></th>
+                    <th>${msg_admin_courses_list_table_author}</th>
+                    <th>${msg_admin_courses_list_table_title}</th>
+                    <th>${msg_admin_courses_list_table_destination}</th>
+                    <th style="width:145px;">${msg_admin_courses_list_table_period}</th>
+                    <th style="width:50px;">${msg_admin_courses_list_table_spots}</th>
+                    <th style="width:60px;">${msg_admin_courses_list_table_source}</th>
+                    <th style="width:60px;">${msg_admin_courses_list_table_visibility}</th>
+                    <th style="width:70px;">${msg_admin_common_accountStatus}</th>
+                    <th style="width:130px;">${msg_admin_courses_list_table_createdAt}</th>
+                    <th style="width:120px;">${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -158,7 +211,7 @@
                                         style="font-size:11px;color:#64748b;">${p.userId}</button>
                             </div>
                             <c:if test="${p.accountStatus == 'BLOCKED'}">
-                                <span class="adm-inline-danger"><spring:message code="admin.courses.list.accountBlocked"/></span>
+                                <span class="adm-inline-danger">${msg_admin_courses_list_accountBlocked}</span>
                             </c:if>
                         </td>
 
@@ -179,7 +232,7 @@
                                href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${not empty p.destination}">${p.destination}</c:when>
-                                <c:otherwise><span style="color:#475569;"><spring:message code="admin.common.dash"/></span></c:otherwise>
+                                <c:otherwise><span style="color:#475569;">${msg_admin_common_dash}</span></c:otherwise>
                             </c:choose>
                             </a>
                         </td>
@@ -192,7 +245,7 @@
                                 <c:when test="${not empty p.startDate}">
                                     <fmt:formatDate value="${p.startDate}" pattern="yyyy.MM.dd"/> ~ <fmt:formatDate value="${p.endDate}" pattern="MM.dd"/>
                                 </c:when>
-                                <c:otherwise><span style="color:#475569;"><spring:message code="admin.common.dash"/></span></c:otherwise>
+                                <c:otherwise><span style="color:#475569;">${msg_admin_common_dash}</span></c:otherwise>
                             </c:choose>
                             </a>
                         </td>
@@ -216,10 +269,10 @@
                                href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${p.planSource == 'AI'}">
-                                    <span style="color:#a78bfa;font-weight:600;"><spring:message code="admin.courses.source.ai"/></span>
+                                    <span style="color:#a78bfa;font-weight:600;">${msg_admin_courses_source_ai}</span>
                                 </c:when>
                                 <c:when test="${p.planSource == 'MANUAL'}">
-                                    <span style="color:#94a3b8;"><spring:message code="admin.courses.source.manual"/></span>
+                                    <span style="color:#94a3b8;">${msg_admin_courses_source_manual}</span>
                                 </c:when>
                                 <c:otherwise><span style="color:#64748b;">${p.planSource}</span></c:otherwise>
                             </c:choose>
@@ -232,10 +285,10 @@
                                href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${p.isPublic == 1}">
-                                    <span style="color:#34d399;"><spring:message code="admin.courses.visibility.public"/></span>
+                                    <span style="color:#34d399;">${msg_admin_courses_visibility_public}</span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span style="color:#64748b;"><spring:message code="admin.courses.visibility.private"/></span>
+                                    <span style="color:#64748b;">${msg_admin_courses_visibility_private}</span>
                                 </c:otherwise>
                             </c:choose>
                             </a>
@@ -246,11 +299,11 @@
                             <c:choose>
                                 <c:when test="${p.isDeleted == 0}">
                                     <a href="${pageContext.request.contextPath}/admin/courses/${p.planId}"
-                                       class="adm-cell-link adm-cell-link--inline status-badge ACTIVE"><spring:message code="admin.common.active"/></a>
+                                       class="adm-cell-link adm-cell-link--inline status-badge ACTIVE">${msg_admin_common_active}</a>
                                 </c:when>
                                 <c:otherwise>
                                     <a href="${pageContext.request.contextPath}/admin/courses/${p.planId}"
-                                       class="adm-cell-link adm-cell-link--inline status-badge DELETED"><spring:message code="admin.courses.status.deleted"/></a>
+                                       class="adm-cell-link adm-cell-link--inline status-badge DELETED">${msg_admin_courses_status_deleted}</a>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -271,13 +324,13 @@
                                         <button class="adm-row-btn danger"
                                                 type="button"
                                                 data-id="${p.planId}"
-                                                onclick="actionPlan(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.common.delete"/></button>
+                                                onclick="actionPlan(this.getAttribute('data-id'), 'delete')">${msg_admin_common_delete}</button>
                                     </c:when>
                                     <c:otherwise>
                                         <button class="adm-row-btn success"
                                                 type="button"
                                                 data-id="${p.planId}"
-                                                onclick="actionPlan(this.getAttribute('data-id'), 'restore')"><spring:message code="admin.common.restore"/></button>
+                                                onclick="actionPlan(this.getAttribute('data-id'), 'restore')">${msg_admin_common_restore}</button>
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -285,7 +338,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="12" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.courses.list.empty"/></td></tr>
+                    <tr><td colspan="12" style="text-align:center;padding:40px;color:#475569;">${msg_admin_courses_list_empty}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -312,13 +365,13 @@
 <script>
 var ctx = '${pageContext.request.contextPath}';
 var COURSE_LIST_MESSAGES = {
-    bulkSelected: '${adminCoursesListJsBulkSelectedMsg}',
-    actionDelete: '${adminCommonDeleteMsg}',
-    actionRestore: '${adminCommonRestoreMsg}',
-    confirmSingle: '${adminCoursesListJsConfirmSingleMsg}',
-    confirmBulk: '${adminCoursesListJsConfirmBulkMsg}',
-    noSelection: '${adminCoursesListJsNoSelectionMsg}',
-    error: '${adminCommonProcessErrorMsg}'
+    bulkSelected: '${msg_admin_courses_list_js_bulkSelected_js}',
+    actionDelete: '${msg_admin_common_delete_js}',
+    actionRestore: '${msg_admin_common_restore_js}',
+    confirmSingle: '${msg_admin_courses_list_js_confirmSingle_js}',
+    confirmBulk: '${msg_admin_courses_list_js_confirmBulk_js}',
+    noSelection: '${msg_admin_courses_list_js_noSelection_js}',
+    error: '${msg_admin_common_processError_js}'
 };
 
 function formatCourseListMessage(template) {

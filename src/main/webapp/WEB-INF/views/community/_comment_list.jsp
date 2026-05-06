@@ -4,7 +4,29 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="communityDetailReplyPlaceholderMsg" code="community.detail.reply.placeholder"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_community_detail_reply_placeholder" code="community.detail.reply.placeholder"/>
+<spring:message var="msg_community_detail_comments_empty" code="community.detail.comments.empty"/>
+<spring:message var="msg_community_detail_user_unblock" code="community.detail.user.unblock"/>
+<spring:message var="msg_community_detail_user_block" code="community.detail.user.block"/>
+<spring:message var="msg_community_detail_comment_unblock" code="community.detail.comment.unblock"/>
+<spring:message var="msg_community_detail_comment_block" code="community.detail.comment.block"/>
+<spring:message var="msg_community_detail_comment_accepted" code="community.detail.comment.accepted"/>
+<spring:message var="msg_community_detail_comment_accept" code="community.detail.comment.accept"/>
+<spring:message var="msg_community_detail_userReport" code="community.detail.userReport"/>
+<spring:message var="msg_community_detail_report" code="community.detail.report"/>
+<spring:message var="msg_community_detail_comment_delete" code="community.detail.comment.delete"/>
+<spring:message var="msg_community_badge_ai" code="community.badge.ai"/>
+<spring:message var="msg_community_badge_report" code="community.badge.report"/>
+<spring:message var="msg_community_detail_badge_comment_blocked" code="community.detail.badge.comment.blocked"/>
+<spring:message var="msg_community_badge_user" code="community.badge.user"/>
+<spring:message var="msg_community_detail_reply" code="community.detail.reply"/>
+<spring:message var="msg_community_detail_cancel" code="community.detail.cancel"/>
+<spring:message var="msg_community_detail_submit" code="community.detail.submit"/>
+<spring:message var="msg_community_blocked_ai" code="community.blocked.ai"/>
+<spring:message var="msg_community_blocked_report" code="community.blocked.report"/>
+<spring:message var="msg_community_admin_clearBlur" code="community.admin.clearBlur"/>
 <%--
   댓글 목록 AJAX 프래그먼트
   model 필요: post, commentList, acceptedCommentId, isOwner, isAdminMode (interceptor 자동 주입)
@@ -14,7 +36,7 @@
 <div class="comment-list">
   <c:choose>
     <c:when test="${empty commentList}">
-      <div class="comment-empty"><spring:message code="community.detail.comments.empty"/></div>
+      <div class="comment-empty">${msg_community_detail_comments_empty}</div>
     </c:when>
     <c:otherwise>
       <c:forEach var="comment" items="${commentList}">
@@ -54,52 +76,52 @@
                         <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne comment.userIdx}">
                           <c:choose>
                             <c:when test="${comment.accountStatus eq 'BLOCKED'}">
-                              <button class="block-btn unblock" onclick="unblockUser(${comment.userIdx})"><spring:message code="community.detail.user.unblock"/></button>
+                              <button class="block-btn unblock" onclick="unblockUser(${comment.userIdx})">${msg_community_detail_user_unblock}</button>
                             </c:when>
                             <c:otherwise>
-                              <button class="block-btn" onclick="blockUser(${comment.userIdx})"><spring:message code="community.detail.user.block"/></button>
+                              <button class="block-btn" onclick="blockUser(${comment.userIdx})">${msg_community_detail_user_block}</button>
                             </c:otherwise>
                           </c:choose>
                           <c:choose>
                             <c:when test="${comment.commentStatus eq 'BLOCKED'}">
-                              <button class="block-btn unblock" onclick="unblockComment(${comment.commentId})"><spring:message code="community.detail.comment.unblock"/></button>
+                              <button class="block-btn unblock" onclick="unblockComment(${comment.commentId})">${msg_community_detail_comment_unblock}</button>
                             </c:when>
                             <c:otherwise>
-                              <button class="block-btn" onclick="blockComment(${comment.commentId})"><spring:message code="community.detail.comment.block"/></button>
+                              <button class="block-btn" onclick="blockComment(${comment.commentId})">${msg_community_detail_comment_block}</button>
                             </c:otherwise>
                           </c:choose>
                         </c:if>
                         <c:if test="${comment.commentId eq acceptedCommentId}">
-                          <span class="accepted-badge"><spring:message code="community.detail.comment.accepted"/></span>
+                          <span class="accepted-badge">${msg_community_detail_comment_accepted}</span>
                         </c:if>
                         <span class="comment-date">
                           <fmt:formatDate value="${comment.createdAtDate}" pattern="yyyy-MM-dd"/>
                         </span>
                         <c:if test="${isOwner and post.postType eq 'question' and not isSolved and comment.commentId ne acceptedCommentId}">
-                          <button class="accept-btn" onclick="acceptComment(${post.postId}, ${comment.commentId})"><spring:message code="community.detail.comment.accept"/></button>
+                          <button class="accept-btn" onclick="acceptComment(${post.postId}, ${comment.commentId})">${msg_community_detail_comment_accept}</button>
                         </c:if>
                         <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne comment.userIdx and not isAdminMode}">
-                          <span class="comment-author-link rpt-user-link" data-user-idx="${comment.userIdx}" data-source-type="comment" data-source-id="${comment.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
-                          <button class="report-btn" data-comment-id="${comment.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))"><spring:message code="community.detail.report"/></button>
+                          <span class="comment-author-link rpt-user-link" data-user-idx="${comment.userIdx}" data-source-type="comment" data-source-id="${comment.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;">${msg_community_detail_userReport}</span>
+                          <button class="report-btn" data-comment-id="${comment.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))">${msg_community_detail_report}</button>
                         </c:if>
                         <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userIdx eq comment.userIdx or isAdminMode)}">
-                          <button class="comment-delete-btn" onclick="deleteComment(${comment.commentId})"><spring:message code="community.detail.comment.delete"/></button>
+                          <button class="comment-delete-btn" onclick="deleteComment(${comment.commentId})">${msg_community_detail_comment_delete}</button>
                         </c:if>
                       </div>
                       <div class="comment-text"><c:out value="${comment.content}"/></div>
                       <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= reportThreshold or comment.aiFlagged)}">
                         <c:choose>
                           <c:when test="${comment.aiFlagged}">
-                            <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                            <span class="blocked-badge">${msg_community_badge_ai}</span>
                           </c:when>
                           <c:when test="${comment.commentStatus eq 'ACTIVE' and comment.reportCount >= reportThreshold}">
-                            <span class="blocked-badge"><spring:message code="community.badge.report"/></span>
+                            <span class="blocked-badge">${msg_community_badge_report}</span>
                           </c:when>
                           <c:when test="${comment.commentStatus eq 'BLOCKED'}">
-                            <span class="blocked-badge"><spring:message code="community.detail.badge.comment.blocked"/></span>
+                            <span class="blocked-badge">${msg_community_detail_badge_comment_blocked}</span>
                           </c:when>
                           <c:when test="${comment.accountStatus eq 'BLOCKED'}">
-                            <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
+                            <span class="blocked-badge">${msg_community_badge_user}</span>
                           </c:when>
                         </c:choose>
                       </c:if>
@@ -110,7 +132,7 @@
                                     onclick="toggleCommentLike(${comment.commentId}, this)">
                               &#10084; <span id="commentLikeCount_${comment.commentId}">${comment.likeCount}</span>
                             </button>
-                            <button class="reply-btn" onclick="toggleReplyInput(${comment.commentId})"><spring:message code="community.detail.reply"/></button>
+                            <button class="reply-btn" onclick="toggleReplyInput(${comment.commentId})">${msg_community_detail_reply}</button>
                           </c:when>
                           <c:otherwise>
                             <button class="comment-like-btn"
@@ -123,11 +145,11 @@
                       <c:if test="${not empty sessionScope.loginUser}">
                         <div class="reply-input-wrap hidden" id="replyInput_${comment.commentId}">
                           <textarea class="reply-textarea" id="replyText_${comment.commentId}"
-                                    placeholder="${communityDetailReplyPlaceholderMsg}" rows="2"
+                                    placeholder="${msg_community_detail_reply_placeholder}" rows="2"
                                     onkeydown="if(event.key==='Enter' && !event.shiftKey)\u007Bevent.preventDefault(); submitReply(${post.postId}, ${comment.commentId});\u007D"></textarea>
                           <div class="reply-input-actions">
-                            <button class="reply-cancel-btn" onclick="toggleReplyInput(${comment.commentId})"><spring:message code="community.detail.cancel"/></button>
-                            <button class="reply-submit-btn" onclick="submitReply(${post.postId}, ${comment.commentId})"><spring:message code="community.detail.submit"/></button>
+                            <button class="reply-cancel-btn" onclick="toggleReplyInput(${comment.commentId})">${msg_community_detail_cancel}</button>
+                            <button class="reply-submit-btn" onclick="submitReply(${post.postId}, ${comment.commentId})">${msg_community_detail_submit}</button>
                           </div>
                         </div>
                       </c:if>
@@ -135,8 +157,8 @@
                     <c:if test="${cmtBlurred}">
                       <div class="report-blurred-overlay" onclick="removeReportBlurComment(this)">
                         <c:choose>
-                          <c:when test="${comment.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
-                          <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                          <c:when test="${comment.aiFlagged}">${msg_community_blocked_ai}</c:when>
+                          <c:otherwise>${msg_community_blocked_report}</c:otherwise>
                         </c:choose>
                       </div>
                     </c:if>
@@ -145,7 +167,7 @@
                     </c:if>
                     <c:if test="${isAdminMode and (comment.aiFlagged or comment.reportCount >= reportThreshold)}">
                       <button class="post-admin-clear-blur-btn" onclick="adminClearCommentBlur(event, ${comment.commentId})">
-                        <spring:message code="community.admin.clearBlur"/>
+                        ${msg_community_admin_clearBlur}
                       </button>
                     </c:if>
                   </div><%-- /comment-body-wrap --%>
@@ -189,18 +211,18 @@
                                   <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne reply.userIdx}">
                                     <c:choose>
                                       <c:when test="${reply.accountStatus eq 'BLOCKED'}">
-                                        <button class="block-btn unblock" onclick="unblockUser(${reply.userIdx})"><spring:message code="community.detail.user.unblock"/></button>
+                                        <button class="block-btn unblock" onclick="unblockUser(${reply.userIdx})">${msg_community_detail_user_unblock}</button>
                                       </c:when>
                                       <c:otherwise>
-                                        <button class="block-btn" onclick="blockUser(${reply.userIdx})"><spring:message code="community.detail.user.block"/></button>
+                                        <button class="block-btn" onclick="blockUser(${reply.userIdx})">${msg_community_detail_user_block}</button>
                                       </c:otherwise>
                                     </c:choose>
                                     <c:choose>
                                       <c:when test="${reply.commentStatus eq 'BLOCKED'}">
-                                        <button class="block-btn unblock" onclick="unblockComment(${reply.commentId})"><spring:message code="community.detail.comment.unblock"/></button>
+                                        <button class="block-btn unblock" onclick="unblockComment(${reply.commentId})">${msg_community_detail_comment_unblock}</button>
                                       </c:when>
                                       <c:otherwise>
-                                        <button class="block-btn" onclick="blockComment(${reply.commentId})"><spring:message code="community.detail.comment.block"/></button>
+                                        <button class="block-btn" onclick="blockComment(${reply.commentId})">${msg_community_detail_comment_block}</button>
                                       </c:otherwise>
                                     </c:choose>
                                   </c:if>
@@ -208,27 +230,27 @@
                                     <fmt:formatDate value="${reply.createdAtDate}" pattern="yyyy-MM-dd"/>
                                   </span>
                                   <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne reply.userIdx and not isAdminMode}">
-                                    <span class="comment-author-link rpt-user-link" data-user-idx="${reply.userIdx}" data-source-type="comment" data-source-id="${reply.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
-                                    <button class="report-btn" data-comment-id="${reply.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))"><spring:message code="community.detail.report"/></button>
+                                    <span class="comment-author-link rpt-user-link" data-user-idx="${reply.userIdx}" data-source-type="comment" data-source-id="${reply.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;">${msg_community_detail_userReport}</span>
+                                    <button class="report-btn" data-comment-id="${reply.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))">${msg_community_detail_report}</button>
                                   </c:if>
                                   <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userIdx eq reply.userIdx or isAdminMode)}">
-                                    <button class="comment-delete-btn" onclick="deleteComment(${reply.commentId})"><spring:message code="community.detail.comment.delete"/></button>
+                                    <button class="comment-delete-btn" onclick="deleteComment(${reply.commentId})">${msg_community_detail_comment_delete}</button>
                                   </c:if>
                                 </div>
                                 <div class="comment-text"><c:out value="${reply.content}"/></div>
                                 <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= reportThreshold or reply.aiFlagged)}">
                                   <c:choose>
                                     <c:when test="${reply.aiFlagged}">
-                                      <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                                      <span class="blocked-badge">${msg_community_badge_ai}</span>
                                     </c:when>
                                     <c:when test="${reply.commentStatus eq 'ACTIVE' and reply.reportCount >= reportThreshold}">
-                                      <span class="blocked-badge"><spring:message code="community.badge.report"/></span>
+                                      <span class="blocked-badge">${msg_community_badge_report}</span>
                                     </c:when>
                                     <c:when test="${reply.commentStatus eq 'BLOCKED'}">
-                                      <span class="blocked-badge"><spring:message code="community.detail.badge.comment.blocked"/></span>
+                                      <span class="blocked-badge">${msg_community_detail_badge_comment_blocked}</span>
                                     </c:when>
                                     <c:when test="${reply.accountStatus eq 'BLOCKED'}">
-                                      <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
+                                      <span class="blocked-badge">${msg_community_badge_user}</span>
                                     </c:when>
                                   </c:choose>
                                 </c:if>
@@ -252,8 +274,8 @@
                               <c:if test="${rplBlurred}">
                                 <div class="report-blurred-overlay" onclick="removeReportBlurComment(this)">
                                   <c:choose>
-                                    <c:when test="${reply.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
-                                    <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                    <c:when test="${reply.aiFlagged}">${msg_community_blocked_ai}</c:when>
+                                    <c:otherwise>${msg_community_blocked_report}</c:otherwise>
                                   </c:choose>
                                 </div>
                               </c:if>
@@ -262,7 +284,7 @@
                               </c:if>
                               <c:if test="${isAdminMode and (reply.aiFlagged or reply.reportCount >= reportThreshold)}">
                                 <button class="post-admin-clear-blur-btn" onclick="adminClearCommentBlur(event, ${reply.commentId})">
-                                  <spring:message code="community.admin.clearBlur"/>
+                                  ${msg_community_admin_clearBlur}
                                 </button>
                               </c:if>
                             </div><%-- /comment-body-wrap --%>

@@ -3,14 +3,31 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<spring:message var="emailPlaceholder" code="security.appeal.form.email.placeholder"/>
-<spring:message var="defaultTitle" code="security.appeal.form.defaultTitle"/>
-<spring:message var="contentPlaceholder" code="security.appeal.form.content.placeholder"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_security_appeal_form_email_placeholder" code="security.appeal.form.email.placeholder"/>
+<spring:message var="msg_security_appeal_form_defaultTitle" code="security.appeal.form.defaultTitle"/>
+<spring:message var="msg_security_appeal_form_content_placeholder" code="security.appeal.form.content.placeholder"/>
+<spring:message var="msg_security_appeal_form_pageTitle" code="security.appeal.form.pageTitle"/>
+<spring:message var="msg_security_appeal_form_title" code="security.appeal.form.title"/>
+<spring:message var="msg_security_appeal_form_lead" code="security.appeal.form.lead"/>
+<spring:message var="msg_security_appeal_form_targetType" code="security.appeal.form.targetType"/>
+<spring:message var="msg_security_appeal_form_targetKey" code="security.appeal.form.targetKey"/>
+<spring:message var="msg_security_appeal_form_requestId" code="security.appeal.form.requestId"/>
+<spring:message var="msg_security_appeal_form_blockType" code="security.appeal.form.blockType"/>
+<spring:message var="msg_security_appeal_form_email" code="security.appeal.form.email"/>
+<spring:message var="msg_security_appeal_form_emailVerifiedNotice" code="security.appeal.form.emailVerifiedNotice"/>
+<spring:message var="msg_security_appeal_form_subject" code="security.appeal.form.subject"/>
+<spring:message var="msg_security_appeal_form_content" code="security.appeal.form.content"/>
+<spring:message var="msg_security_appeal_form_submit" code="security.appeal.form.submit"/>
+<spring:message var="msg_security_appeal_form_home" code="security.appeal.form.home"/>
+<spring:message var="msg_security_appeal_form_notice" code="security.appeal.form.notice"/>
+<spring:message var="msg_security_appeal_form_duplicateNotice" code="security.appeal.form.duplicateNotice"/>
 <!DOCTYPE html>
 <html lang="${pageLang}">
 <head>
     <meta charset="UTF-8">
-    <title><spring:message code="security.appeal.form.pageTitle"/></title>
+    <title>${msg_security_appeal_form_pageTitle}</title>
     <style>
         body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#f8fafc; font-family:Arial,'Noto Sans KR',sans-serif; color:#0f172a; }
         .card { width:min(720px, calc(100vw - 32px)); background:#fff; border:1px solid #e2e8f0; border-radius:22px; padding:34px; box-shadow:0 24px 70px rgba(15,23,42,.12); }
@@ -31,8 +48,8 @@
 </head>
 <body>
 <main class="card">
-    <h1><spring:message code="security.appeal.form.title"/></h1>
-    <p class="lead"><spring:message code="security.appeal.form.lead"/></p>
+    <h1>${msg_security_appeal_form_title}</h1>
+    <p class="lead">${msg_security_appeal_form_lead}</p>
 
     <c:if test="${not form.valid}">
         <div class="error"><c:out value="${form.errorMessage}"/></div>
@@ -40,10 +57,10 @@
 
     <c:if test="${form.valid}">
         <div class="info">
-            <div><strong><spring:message code="security.appeal.form.targetType"/></strong>: <c:out value="${form.targetType}" default="-"/></div>
-            <div><strong><spring:message code="security.appeal.form.targetKey"/></strong>: <c:out value="${form.targetKey}" default="-"/></div>
-            <div><strong><spring:message code="security.appeal.form.requestId"/></strong>: <c:out value="${form.requestId}" default="-"/></div>
-            <div><strong><spring:message code="security.appeal.form.blockType"/></strong>: <c:out value="${form.blockKind}" default="-"/> / <c:out value="${form.blockMatchType}" default="-"/></div>
+            <div><strong>${msg_security_appeal_form_targetType}</strong>: <c:out value="${form.targetType}" default="-"/></div>
+            <div><strong>${msg_security_appeal_form_targetKey}</strong>: <c:out value="${form.targetKey}" default="-"/></div>
+            <div><strong>${msg_security_appeal_form_requestId}</strong>: <c:out value="${form.requestId}" default="-"/></div>
+            <div><strong>${msg_security_appeal_form_blockType}</strong>: <c:out value="${form.blockKind}" default="-"/> / <c:out value="${form.blockMatchType}" default="-"/></div>
         </div>
 
         <form method="post" action="${pageContext.request.contextPath}/security/appeal">
@@ -51,28 +68,28 @@
             <input type="hidden" name="requestId" value="${fn:escapeXml(requestId)}">
             <input type="hidden" name="lang" value="${fn:escapeXml(pageLang)}">
 
-            <label><spring:message code="security.appeal.form.email"/>
+            <label>${msg_security_appeal_form_email}
                 <input type="email" name="submitterEmail" value="${fn:escapeXml(form.submitterEmail)}" readonly>
             </label>
-            <p class="note"><spring:message code="security.appeal.form.emailVerifiedNotice"/></p>
+            <p class="note">${msg_security_appeal_form_emailVerifiedNotice}</p>
 
-            <label><spring:message code="security.appeal.form.subject"/>
-                <input type="text" name="appealTitle" required maxlength="200" value="${defaultTitle}">
+            <label>${msg_security_appeal_form_subject}
+                <input type="text" name="appealTitle" required maxlength="200" value="${msg_security_appeal_form_defaultTitle}">
             </label>
 
-            <label><spring:message code="security.appeal.form.content"/>
-                <textarea name="appealContent" required maxlength="2000" placeholder="${contentPlaceholder}"></textarea>
+            <label>${msg_security_appeal_form_content}
+                <textarea name="appealContent" required maxlength="2000" placeholder="${msg_security_appeal_form_content_placeholder}"></textarea>
             </label>
 
             <div class="actions">
-                <button type="submit"><spring:message code="security.appeal.form.submit"/></button>
-                <a class="btn" href="${pageContext.request.contextPath}/"><spring:message code="security.appeal.form.home"/></a>
+                <button type="submit">${msg_security_appeal_form_submit}</button>
+                <a class="btn" href="${pageContext.request.contextPath}/">${msg_security_appeal_form_home}</a>
             </div>
         </form>
     </c:if>
 
-    <p class="note"><spring:message code="security.appeal.form.notice"/></p>
-    <p class="note"><spring:message code="security.appeal.form.duplicateNotice"/></p>
+    <p class="note">${msg_security_appeal_form_notice}</p>
+    <p class="note">${msg_security_appeal_form_duplicateNotice}</p>
 </main>
 </body>
 </html>

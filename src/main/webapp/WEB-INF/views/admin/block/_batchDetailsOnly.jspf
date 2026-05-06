@@ -1,27 +1,60 @@
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_blocks_batchName" code="admin.blocks.batchName"/>
+<spring:message var="msg_admin_blocks_batchCode" code="admin.blocks.batchCode"/>
+<spring:message var="msg_admin_common_status" code="admin.common.status"/>
+<spring:message var="msg_admin_blocks_source" code="admin.blocks.source"/>
+<spring:message var="msg_admin_blocks_baseAction" code="admin.blocks.baseAction"/>
+<spring:message var="msg_admin_blocks_defaultPriority" code="admin.blocks.defaultPriority"/>
+<spring:message var="msg_admin_blocks_baseStrategy" code="admin.blocks.baseStrategy"/>
+<spring:message var="msg_admin_blocks_ruleCount" code="admin.blocks.ruleCount"/>
+<spring:message var="msg_admin_blocks_ruleOn" code="admin.blocks.ruleOn"/>
+<spring:message var="msg_admin_blocks_controlComposition" code="admin.blocks.controlComposition"/>
+<spring:message var="msg_admin_blocks_control_batch" code="admin.blocks.control.batch"/>
+<spring:message var="msg_admin_blocks_control_override" code="admin.blocks.control.override"/>
+<spring:message var="msg_admin_blocks_effectiveState" code="admin.blocks.effectiveState"/>
+<spring:message var="msg_admin_common_countSuffix" code="admin.common.countSuffix"/>
+<spring:message var="msg_admin_blocks_effective_effective" code="admin.blocks.effective.effective"/>
+<spring:message var="msg_admin_blocks_effective_expired" code="admin.blocks.effective.expired"/>
+<spring:message var="msg_admin_blocks_actionComposition" code="admin.blocks.actionComposition"/>
+<spring:message var="msg_admin_context_ruleAction_block" code="admin.context.ruleAction.block"/>
+<spring:message var="msg_admin_context_ruleAction_allow" code="admin.context.ruleAction.allow"/>
+<spring:message var="msg_admin_context_createdAt" code="admin.context.createdAt"/>
+<spring:message var="msg_admin_context_updatedAt" code="admin.context.updatedAt"/>
+<spring:message var="msg_admin_blocks_detailDescription" code="admin.blocks.detailDescription"/>
+<spring:message var="msg_admin_blocks_connectedRule" code="admin.blocks.connectedRule"/>
+<spring:message var="msg_admin_common_actionLabel" code="admin.common.actionLabel"/>
+<spring:message var="msg_admin_blocks_controlMode" code="admin.blocks.controlMode"/>
+<spring:message var="msg_admin_blocks_batchOperation" code="admin.blocks.batchOperation"/>
+<spring:message var="msg_admin_common_description" code="admin.common.description"/>
+<spring:message var="msg_admin_common_time" code="admin.common.time"/>
 <c:forEach var="b" items="${batches}">
     <template id="detail-batch-${b.ipBlockBatchIdx}">
         <div class="detail-grid">
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.batchName"/></div><div class="detail-value">${b.batchName}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.batchCode"/></div><div class="detail-value">${b.batchCode}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.status"/></div><div class="detail-value">${b.activeLabel}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.source"/></div><div class="detail-value">${b.sourceType} / ${empty b.sourceName ? '-' : b.sourceName}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.baseAction"/></div><div class="detail-value">${b.batchRuleActionLabel} / <spring:message code="admin.blocks.defaultPriority"/> ${b.defaultRulePriority}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.baseStrategy"/></div><div class="detail-value">OFF: ${b.defaultDisableStrategyLabel} / ON: ${b.defaultEnableStrategyLabel}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.ruleCount"/></div><div class="detail-value"><spring:message code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/> / <spring:message code="admin.blocks.ruleOn"/> ${b.activeRuleCount}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.controlComposition"/></div><div class="detail-value"><spring:message code="admin.blocks.control.batch"/> ${b.batchManagedRuleCount}, <spring:message code="admin.blocks.control.override"/> ${b.manualOverrideRuleCount}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.effectiveState"/></div><div class="detail-value">${b.effectiveRuleCount}<spring:message code="admin.common.countSuffix"/> <spring:message code="admin.blocks.effective.effective"/> / ${b.expiredRuleCount}<spring:message code="admin.common.countSuffix"/> <spring:message code="admin.blocks.effective.expired"/></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.actionComposition"/></div><div class="detail-value"><spring:message code="admin.context.ruleAction.block"/> ${b.blockRuleCount} / <spring:message code="admin.context.ruleAction.allow"/> ${b.allowRuleCount}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.createdAt"/></div><div class="detail-value">${empty b.createdByNickname ? '-' : b.createdByNickname} / <fmt:formatDate value="${b.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.updatedAt"/></div><div class="detail-value">${empty b.updatedByNickname ? '-' : b.updatedByNickname} / <fmt:formatDate value="${b.updatedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_batchName}</div><div class="detail-value">${b.batchName}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_batchCode}</div><div class="detail-value">${b.batchCode}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_common_status}</div><div class="detail-value">${b.activeLabel}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_source}</div><div class="detail-value">${b.sourceType} / ${empty b.sourceName ? '-' : b.sourceName}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_baseAction}</div><div class="detail-value">${b.batchRuleActionLabel} / ${msg_admin_blocks_defaultPriority} ${b.defaultRulePriority}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_baseStrategy}</div><div class="detail-value">OFF: ${b.defaultDisableStrategyLabel} / ON: ${b.defaultEnableStrategyLabel}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_ruleCount}</div><div class="detail-value"><spring:message var="msg_admin_common_totalCountFormat_args_b_totalRuleCount" code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/>${msg_admin_common_totalCountFormat_args_b_totalRuleCount} / ${msg_admin_blocks_ruleOn} ${b.activeRuleCount}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_controlComposition}</div><div class="detail-value">${msg_admin_blocks_control_batch} ${b.batchManagedRuleCount}, ${msg_admin_blocks_control_override} ${b.manualOverrideRuleCount}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_effectiveState}</div><div class="detail-value">${b.effectiveRuleCount}${msg_admin_common_countSuffix} ${msg_admin_blocks_effective_effective} / ${b.expiredRuleCount}${msg_admin_common_countSuffix} ${msg_admin_blocks_effective_expired}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_actionComposition}</div><div class="detail-value">${msg_admin_context_ruleAction_block} ${b.blockRuleCount} / ${msg_admin_context_ruleAction_allow} ${b.allowRuleCount}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_context_createdAt}</div><div class="detail-value">${empty b.createdByNickname ? '-' : b.createdByNickname} / <fmt:formatDate value="${b.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_context_updatedAt}</div><div class="detail-value">${empty b.updatedByNickname ? '-' : b.updatedByNickname} / <fmt:formatDate value="${b.updatedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
         </div>
-        <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.detailDescription"/></div><div class="detail-value">${empty b.description ? '-' : fn:escapeXml(b.description)}</div></div>
+        <div class="detail-item" style="margin-top:14px;"><div class="detail-label">${msg_admin_blocks_detailDescription}</div><div class="detail-value">${empty b.description ? '-' : fn:escapeXml(b.description)}</div></div>
         <c:if test="${not empty batchDetailRules}">
             <table class="history-table" style="margin-top:14px;">
                 <thead><tr>
-                    <th><spring:message code="admin.blocks.connectedRule"/></th>
-                    <th><spring:message code="admin.common.actionLabel"/></th>
-                    <th><spring:message code="admin.blocks.controlMode"/></th>
-                    <th><spring:message code="admin.common.status"/></th>
+                    <th>${msg_admin_blocks_connectedRule}</th>
+                    <th>${msg_admin_common_actionLabel}</th>
+                    <th>${msg_admin_blocks_controlMode}</th>
+                    <th>${msg_admin_common_status}</th>
                 </tr></thead>
                 <tbody>
                 <c:forEach var="rule" items="${batchDetailRules}">
@@ -38,10 +71,10 @@
         <c:if test="${not empty batchDetailOperations}">
             <table class="history-table" style="margin-top:14px;">
                 <thead><tr>
-                    <th><spring:message code="admin.blocks.batchOperation"/></th>
-                    <th><spring:message code="admin.common.actionLabel"/></th>
-                    <th><spring:message code="admin.common.description"/></th>
-                    <th><spring:message code="admin.common.time"/></th>
+                    <th>${msg_admin_blocks_batchOperation}</th>
+                    <th>${msg_admin_common_actionLabel}</th>
+                    <th>${msg_admin_common_description}</th>
+                    <th>${msg_admin_common_time}</th>
                 </tr></thead>
                 <tbody>
                 <c:forEach var="op" items="${batchDetailOperations}">

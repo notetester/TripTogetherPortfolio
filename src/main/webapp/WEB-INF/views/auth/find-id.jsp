@@ -2,9 +2,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_auth_findId_invalid_js" code="auth.findId.invalid" javaScriptEscape="true"/>
+<spring:message var="msg_auth_findId_title" code="auth.findId.title"/>
+<spring:message var="msg_auth_findId_subtitle" code="auth.findId.subtitle"/>
+<spring:message var="msg_auth_findId_email" code="auth.findId.email"/>
+<spring:message var="msg_auth_findId_submit" code="auth.findId.submit"/>
+<spring:message var="msg_auth_common_backToLogin" code="auth.common.backToLogin"/>
+<spring:message var="msg_auth_login_findPw" code="auth.login.findPw"/>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
-<spring:message var="authFindIdInvalidMsg" code="auth.findId.invalid" javaScriptEscape="true"/>
+
 <html lang="ko">
 <body>
 <div class="auth-wrap">
@@ -14,25 +23,25 @@
       <div class="auth-logo-icon">🌐</div><span class="auth-logo-text">TripTogether</span>
     </div>
 
-    <h1 class="auth-title"><spring:message code="auth.findId.title"/></h1>
-    <p class="auth-sub"><spring:message code="auth.findId.subtitle"/></p>
+    <h1 class="auth-title">${msg_auth_findId_title}</h1>
+    <p class="auth-sub">${msg_auth_findId_subtitle}</p>
 
     <div id="successBanner" class="auth-error-banner"
          style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d;display:none;"></div>
     <div id="errorBanner" class="auth-error-banner"></div>
 
     <div class="form-group">
-      <label class="form-label" for="email"><spring:message code="auth.findId.email"/></label>
+      <label class="form-label" for="email">${msg_auth_findId_email}</label>
       <input class="form-input" type="email" id="email" placeholder="example@email.com">
       <div class="field-msg" id="emailMsg"></div>
     </div>
 
-    <button type="button" class="btn-submit" id="sendBtn"><spring:message code="auth.findId.submit"/></button>
+    <button type="button" class="btn-submit" id="sendBtn">${msg_auth_findId_submit}</button>
 
     <div class="auth-footer" style="margin-top:16px;">
-      <a href="${pageContext.request.contextPath}/auth/login"><spring:message code="auth.common.backToLogin"/></a>
+      <a href="${pageContext.request.contextPath}/auth/login">${msg_auth_common_backToLogin}</a>
       &nbsp;·&nbsp;
-      <a href="${pageContext.request.contextPath}/auth/find-pw"><spring:message code="auth.login.findPw"/></a>
+      <a href="${pageContext.request.contextPath}/auth/find-pw">${msg_auth_login_findPw}</a>
     </div>
   </div>
 </div>
@@ -41,7 +50,7 @@ document.getElementById('sendBtn').addEventListener('click', async function () {
   const email = document.getElementById('email').value.trim();
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     document.getElementById('emailMsg').className = 'field-msg error';
-    document.getElementById('emailMsg').textContent = '${authFindIdInvalidMsg}';
+    document.getElementById('emailMsg').textContent = '${msg_auth_findId_invalid_js}';
     return;
   }
   document.getElementById('emailMsg').className = 'field-msg';

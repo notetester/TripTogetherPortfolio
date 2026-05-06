@@ -4,6 +4,19 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_package_list_eyebrow" code="package.list.eyebrow"/>
+<spring:message var="msg_package_list_title" code="package.list.title"/>
+<spring:message var="msg_package_list_approvedEyebrow" code="package.list.approvedEyebrow"/>
+<spring:message var="msg_package_list_empty" code="package.list.empty"/>
+<spring:message var="msg_package_list_emptyDesc" code="package.list.emptyDesc"/>
+<spring:message var="msg_package_list_noSummary" code="package.list.noSummary"/>
+<spring:message var="msg_package_common_priceLabel" code="package.common.priceLabel"/>
+<spring:message var="msg_package_common_spotLabel" code="package.common.spotLabel"/>
+<spring:message var="msg_package_common_scheduleLabel" code="package.common.scheduleLabel"/>
+<spring:message var="msg_package_common_always" code="package.common.always"/>
+<spring:message var="msg_package_list_viewAtSpot" code="package.list.viewAtSpot"/>
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
 <c:set var="pageCSS" value="packages/packages.css"/>
@@ -48,15 +61,15 @@
 <main class="pkg-wrap">
     <section class="pkg-hero">
         <div>
-            <p class="pkg-eyebrow"><spring:message code="package.list.eyebrow"/></p>
-            <h1><spring:message code="package.list.title"/></h1>
+            <p class="pkg-eyebrow">${msg_package_list_eyebrow}</p>
+            <h1>${msg_package_list_title}</h1>
         </div>
     </section>
 
     <section class="pkg-panel">
         <div class="pkg-section-title">
             <div>
-                <span><spring:message code="package.list.approvedEyebrow"/></span>
+                <span>${msg_package_list_approvedEyebrow}</span>
                 <h2>
                     <c:choose>
                         <c:when test="${localeLanguage eq 'en'}">Travel Packages</c:when>
@@ -87,8 +100,8 @@
         <c:choose>
             <c:when test="${empty packageList}">
                 <div class="pkg-empty">
-                    <strong><spring:message code="package.list.empty"/></strong>
-                    <p><spring:message code="package.list.emptyDesc"/></p>
+                    <strong>${msg_package_list_empty}</strong>
+                    <p>${msg_package_list_emptyDesc}</p>
                 </div>
             </c:when>
             <c:otherwise>
@@ -111,26 +124,26 @@
                                 <p class="pkg-summary">
                                     <c:choose>
                                         <c:when test="${not empty pkg.packageSummary}">${fn:escapeXml(pkg.packageSummary)}</c:when>
-                                        <c:otherwise><spring:message code="package.list.noSummary"/></c:otherwise>
+                                        <c:otherwise>${msg_package_list_noSummary}</c:otherwise>
                                     </c:choose>
                                 </p>
                                 <dl class="pkg-meta">
                                     <div>
-                                        <dt><spring:message code="package.common.priceLabel"/></dt>
+                                        <dt>${msg_package_common_priceLabel}</dt>
                                         <dd><fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0"/> ${fn:escapeXml(pkg.currencyCode)}</dd>
                                     </div>
                                     <div>
-                                        <dt><spring:message code="package.common.spotLabel"/></dt>
+                                        <dt>${msg_package_common_spotLabel}</dt>
                                         <dd>${fn:escapeXml(pkg.spotName)}</dd>
                                     </div>
                                     <div>
-                                        <dt><spring:message code="package.common.scheduleLabel"/></dt>
+                                        <dt>${msg_package_common_scheduleLabel}</dt>
                                         <dd>
                                             <c:choose>
                                                 <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
                                                     ${pkg.startDate} ~ ${pkg.endDate}
                                                 </c:when>
-                                                <c:otherwise><spring:message code="package.common.always"/></c:otherwise>
+                                                <c:otherwise>${msg_package_common_always}</c:otherwise>
                                             </c:choose>
                                         </dd>
                                     </div>
@@ -138,7 +151,7 @@
                             </div>
                             <div class="pkg-card__actions">
                                 <a href="${pageContext.request.contextPath}/detail/${pkg.spotIdx}">
-                                    <spring:message code="package.list.viewAtSpot"/>
+                                    ${msg_package_list_viewAtSpot}
                                 </a>
                             </div>
                         </article>

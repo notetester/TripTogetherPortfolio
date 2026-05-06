@@ -1,19 +1,46 @@
-<spring:message var="adminUserBlockReasonLabel" code="admin.translation.label.userBlockReason"/>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_translation_label_userBlockReason" code="admin.translation.label.userBlockReason"/>
+<spring:message var="msg_admin_common_member" code="admin.common.member"/>
+<spring:message var="msg_admin_context_email" code="admin.context.email"/>
+<spring:message var="msg_admin_blocks_filter_blockType" code="admin.blocks.filter.blockType"/>
+<spring:message var="msg_admin_blocks_targetKey" code="admin.blocks.targetKey"/>
+<spring:message var="msg_admin_context_blockedIp" code="admin.context.blockedIp"/>
+<spring:message var="msg_admin_common_status" code="admin.common.status"/>
+<spring:message var="msg_admin_blocks_operator" code="admin.blocks.operator"/>
+<spring:message var="msg_admin_blocks_releasedBy" code="admin.blocks.releasedBy"/>
+<spring:message var="msg_admin_blocks_blockedAt" code="admin.blocks.blockedAt"/>
+<spring:message var="msg_admin_context_expiresAt" code="admin.context.expiresAt"/>
+<spring:message var="msg_admin_members_none" code="admin.members.none"/>
+<spring:message var="msg_admin_blocks_releasedAt" code="admin.blocks.releasedAt"/>
+<spring:message var="msg_admin_blocks_syncedAt" code="admin.blocks.syncedAt"/>
+<spring:message var="msg_admin_blocks_detailReason" code="admin.blocks.detailReason"/>
+<spring:message var="msg_admin_common_item" code="admin.common.item"/>
+<spring:message var="msg_admin_common_value" code="admin.common.value"/>
+<spring:message var="msg_admin_context_requestId" code="admin.context.requestId"/>
+<spring:message var="msg_admin_blocks_scope" code="admin.blocks.scope"/>
+<spring:message var="msg_admin_blocks_ipMatch" code="admin.blocks.ipMatch"/>
+<spring:message var="msg_admin_blocks_lastHistory" code="admin.blocks.lastHistory"/>
 <c:forEach var="b" items="${userBlocks}">
     <template id="detail-user-${b.blockIdx}">
         <div class="detail-grid">
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.member"/></div><div class="detail-value">${empty b.nickname ? '-' : b.nickname} / ${empty b.userId ? '-' : b.userId}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.email"/></div><div class="detail-value">${empty b.userEmail ? '-' : b.userEmail}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.filter.blockType"/></div><div class="detail-value">${b.blockType}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.targetKey"/></div><div class="detail-value">${b.blockTargetKey}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.blockedIp"/></div><div class="detail-value">${empty b.blockedIp ? '-' : b.blockedIp}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.status"/></div><div class="detail-value">${b.active ? 'ACTIVE' : 'INACTIVE'} / ${b.snapshotStatus}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.operator"/></div><div class="detail-value">${empty b.blockedByNickname ? '-' : b.blockedByNickname}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.releasedBy"/></div><div class="detail-value">${empty b.releasedByNickname ? '-' : b.releasedByNickname}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.blockedAt"/></div><div class="detail-value"><fmt:formatDate value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.expiresAt"/></div><div class="detail-value"><c:choose><c:when test="${b.expiresAtDate != null}"><fmt:formatDate value="${b.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise><spring:message code="admin.members.none"/></c:otherwise></c:choose></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.releasedAt"/></div><div class="detail-value"><c:choose><c:when test="${b.releasedAtDate != null}"><fmt:formatDate value="${b.releasedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.syncedAt"/></div><div class="detail-value"><c:choose><c:when test="${b.syncedAtDate != null}"><fmt:formatDate value="${b.syncedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_common_member}</div><div class="detail-value">${empty b.nickname ? '-' : b.nickname} / ${empty b.userId ? '-' : b.userId}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_context_email}</div><div class="detail-value">${empty b.userEmail ? '-' : b.userEmail}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_filter_blockType}</div><div class="detail-value">${b.blockType}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_targetKey}</div><div class="detail-value">${b.blockTargetKey}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_context_blockedIp}</div><div class="detail-value">${empty b.blockedIp ? '-' : b.blockedIp}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_common_status}</div><div class="detail-value">${b.active ? 'ACTIVE' : 'INACTIVE'} / ${b.snapshotStatus}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_operator}</div><div class="detail-value">${empty b.blockedByNickname ? '-' : b.blockedByNickname}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_releasedBy}</div><div class="detail-value">${empty b.releasedByNickname ? '-' : b.releasedByNickname}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_blockedAt}</div><div class="detail-value"><fmt:formatDate value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_context_expiresAt}</div><div class="detail-value"><c:choose><c:when test="${b.expiresAtDate != null}"><fmt:formatDate value="${b.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>${msg_admin_members_none}</c:otherwise></c:choose></div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_releasedAt}</div><div class="detail-value"><c:choose><c:when test="${b.releasedAtDate != null}"><fmt:formatDate value="${b.releasedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_syncedAt}</div><div class="detail-value"><c:choose><c:when test="${b.syncedAtDate != null}"><fmt:formatDate value="${b.syncedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
             <div class="detail-item"><div class="detail-label">차단 분류</div><div class="detail-value">${empty b.blockCategory ? '-' : b.blockCategory}</div></div>
             <div class="detail-item"><div class="detail-label">판단 출처</div><div class="detail-value">${empty b.ruleOriginType ? '-' : b.ruleOriginType}</div></div>
             <div class="detail-item"><div class="detail-label">위험 점수</div><div class="detail-value">${empty b.riskScore ? '-' : b.riskScore}</div></div>
@@ -21,11 +48,11 @@
             <div class="detail-item"><div class="detail-label">실효 상태</div><div class="detail-value">${empty b.effectiveStatus ? '-' : b.effectiveStatus} / ${b.effectiveActive ? 'ACTIVE' : 'INACTIVE'}</div></div>
             <div class="detail-item"><div class="detail-label">마지막 제어</div><div class="detail-value">${empty b.lastControlAction ? '-' : b.lastControlAction} / ${empty b.lastControlByNickname ? '-' : b.lastControlByNickname}</div></div>
         </div>
-        <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.detailReason"/></div><div class="detail-value">${empty b.reason ? '-' : fn:escapeXml(b.reason)}</div></div>
+        <div class="detail-item" style="margin-top:14px;"><div class="detail-label">${msg_admin_blocks_detailReason}</div><div class="detail-value">${empty b.reason ? '-' : fn:escapeXml(b.reason)}</div></div>
         <div class="detail-item" style="margin-top:14px;"><div class="detail-label">상세 판단 근거</div><div class="detail-value">${empty b.detailMessage ? '-' : fn:escapeXml(b.detailMessage)}</div></div>
         <c:if test="${not empty b.reason}">
             <div class="adm-tr-inline js-admin-translation-widget"
-                 data-label="${adminUserBlockReasonLabel}"
+                 data-label="${msg_admin_translation_label_userBlockReason}"
                  data-source-type="USER_BLOCK"
                  data-source-idx="${b.blockIdx}"
                  data-field-name="reason"
@@ -33,15 +60,15 @@
                  data-source-text="${fn:escapeXml(b.reason)}"></div>
         </c:if>
         <table class="history-table" style="margin-top:14px;">
-            <thead><tr><th><spring:message code="admin.common.item"/></th><th><spring:message code="admin.common.value"/></th></tr></thead>
+            <thead><tr><th>${msg_admin_common_item}</th><th>${msg_admin_common_value}</th></tr></thead>
             <tbody>
-            <tr><td><spring:message code="admin.context.requestId"/></td><td>${empty b.blockRequestId ? '-' : b.blockRequestId}</td></tr>
-            <tr><td><spring:message code="admin.blocks.scope"/></td><td>${empty b.blockScope ? '-' : b.blockScope}</td></tr>
-            <tr><td><spring:message code="admin.blocks.ipMatch"/></td><td>${empty b.ipMatchType ? '-' : b.ipMatchType}</td></tr>
+            <tr><td>${msg_admin_context_requestId}</td><td>${empty b.blockRequestId ? '-' : b.blockRequestId}</td></tr>
+            <tr><td>${msg_admin_blocks_scope}</td><td>${empty b.blockScope ? '-' : b.blockScope}</td></tr>
+            <tr><td>${msg_admin_blocks_ipMatch}</td><td>${empty b.ipMatchType ? '-' : b.ipMatchType}</td></tr>
             <tr><td>판단 근거 ID</td><td>${empty b.sourceAssessmentIdx ? '-' : b.sourceAssessmentIdx}</td></tr>
             <tr><td>조치 그룹 ID</td><td>${empty b.sourceActionGroupId ? '-' : b.sourceActionGroupId}</td></tr>
             <tr><td>출처 범위</td><td>${empty b.sourceScope ? '-' : b.sourceScope}</td></tr>
-            <tr><td><spring:message code="admin.blocks.lastHistory"/></td><td><c:choose><c:when test="${b.lastHistoryAtDate != null}"><fmt:formatDate value="${b.lastHistoryAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></td></tr>
+            <tr><td>${msg_admin_blocks_lastHistory}</td><td><c:choose><c:when test="${b.lastHistoryAtDate != null}"><fmt:formatDate value="${b.lastHistoryAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></td></tr>
             </tbody>
         </table>
     </template>

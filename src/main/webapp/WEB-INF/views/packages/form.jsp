@@ -4,37 +4,65 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_package_form_spotPlaceholder" code="package.form.spotPlaceholder"/>
+<spring:message var="msg_package_form_titlePlaceholder" code="package.form.titlePlaceholder"/>
+<spring:message var="msg_package_form_summaryPlaceholder" code="package.form.summaryPlaceholder"/>
+<spring:message var="msg_package_form_contentPlaceholder" code="package.form.contentPlaceholder"/>
+<spring:message var="msg_package_form_currentImage" code="package.form.currentImage"/>
+<spring:message var="msg_package_form_eyebrow" code="package.form.eyebrow"/>
+<spring:message var="msg_package_form_revisionTitle" code="package.form.revisionTitle"/>
+<spring:message var="msg_package_form_editTitle" code="package.form.editTitle"/>
+<spring:message var="msg_package_form_createTitle" code="package.form.createTitle"/>
+<spring:message var="msg_package_form_revisionDesc" code="package.form.revisionDesc"/>
+<spring:message var="msg_package_form_defaultDesc" code="package.form.defaultDesc"/>
+<spring:message var="msg_package_form_backToList" code="package.form.backToList"/>
+<spring:message var="msg_package_form_spot" code="package.form.spot"/>
+<spring:message var="msg_package_form_spotHelp" code="package.form.spotHelp"/>
+<spring:message var="msg_package_form_title" code="package.form.title"/>
+<spring:message var="msg_package_form_summary" code="package.form.summary"/>
+<spring:message var="msg_package_form_price" code="package.form.price"/>
+<spring:message var="msg_package_form_currency" code="package.form.currency"/>
+<spring:message var="msg_package_form_startDate" code="package.form.startDate"/>
+<spring:message var="msg_package_form_endDate" code="package.form.endDate"/>
+<spring:message var="msg_package_form_minPeople" code="package.form.minPeople"/>
+<spring:message var="msg_package_form_maxPeople" code="package.form.maxPeople"/>
+<spring:message var="msg_package_form_mainImage" code="package.form.mainImage"/>
+<spring:message var="msg_package_form_keepImageHelp" code="package.form.keepImageHelp"/>
+<spring:message var="msg_package_form_imageHelp" code="package.form.imageHelp"/>
+<spring:message var="msg_package_form_content" code="package.form.content"/>
+<spring:message var="msg_package_revision_request" code="package.revision.request"/>
+<spring:message var="msg_package_form_saveDraft" code="package.form.saveDraft"/>
+<spring:message var="msg_package_form_submitApproval" code="package.form.submitApproval"/>
 <!DOCTYPE html>
 <html lang="ko">
 <c:set var="pageCSS" value="packages/packages.css"/>
-<spring:message code="package.form.spotPlaceholder" var="packageSpotPlaceholder"/>
-<spring:message code="package.form.titlePlaceholder" var="packageTitlePlaceholder"/>
-<spring:message code="package.form.summaryPlaceholder" var="packageSummaryPlaceholder"/>
-<spring:message code="package.form.contentPlaceholder" var="packageContentPlaceholder"/>
-<spring:message code="package.form.currentImage" var="packageCurrentImageLabel"/>
+
+
 <%@ include file="../common/header.jsp" %>
 <body>
 
 <main class="pkg-wrap">
     <section class="pkg-hero pkg-hero--form">
         <div>
-            <p class="pkg-eyebrow"><spring:message code="package.form.eyebrow"/></p>
+            <p class="pkg-eyebrow">${msg_package_form_eyebrow}</p>
             <h1>
                 <c:choose>
-                    <c:when test="${formMode eq 'REVISION'}"><spring:message code="package.form.revisionTitle"/></c:when>
-                    <c:when test="${formMode eq 'EDIT'}"><spring:message code="package.form.editTitle"/></c:when>
-                    <c:otherwise><spring:message code="package.form.createTitle"/></c:otherwise>
+                    <c:when test="${formMode eq 'REVISION'}">${msg_package_form_revisionTitle}</c:when>
+                    <c:when test="${formMode eq 'EDIT'}">${msg_package_form_editTitle}</c:when>
+                    <c:otherwise>${msg_package_form_createTitle}</c:otherwise>
                 </c:choose>
             </h1>
             <p>
                 <c:choose>
-                    <c:when test="${formMode eq 'REVISION'}"><spring:message code="package.form.revisionDesc"/></c:when>
-                    <c:otherwise><spring:message code="package.form.defaultDesc"/></c:otherwise>
+                    <c:when test="${formMode eq 'REVISION'}">${msg_package_form_revisionDesc}</c:when>
+                    <c:otherwise>${msg_package_form_defaultDesc}</c:otherwise>
                 </c:choose>
             </p>
         </div>
         <a class="pkg-ghost-link" href="${pageContext.request.contextPath}/packages/manage">
-            <spring:message code="package.form.backToList"/>
+            ${msg_package_form_backToList}
         </a>
     </section>
 
@@ -55,87 +83,87 @@
         <form class="pkg-form" method="post" action="${formAction}" enctype="multipart/form-data">
             <div class="pkg-form-grid">
                 <label class="pkg-field pkg-field--wide">
-                    <span><spring:message code="package.form.spot"/> <em>*</em></span>
+                    <span>${msg_package_form_spot} <em>*</em></span>
                     <select name="spotIdx" required>
-                        <option value="">${packageSpotPlaceholder}</option>
+                        <option value="">${msg_package_form_spotPlaceholder}</option>
                         <c:forEach var="spot" items="${spotOptions}">
                             <option value="${spot.spotIdx}" ${packageForm.spotIdx eq spot.spotIdx ? 'selected' : ''}>
                                 [${spot.region}] ${spot.name}
                             </option>
                         </c:forEach>
                     </select>
-                    <small><spring:message code="package.form.spotHelp"/></small>
+                    <small>${msg_package_form_spotHelp}</small>
                 </label>
 
                 <label class="pkg-field pkg-field--wide">
-                    <span><spring:message code="package.form.title"/> <em>*</em></span>
+                    <span>${msg_package_form_title} <em>*</em></span>
                     <input type="text" name="packageTitle" maxlength="150" required
-                           value="${packageForm.packageTitle}" placeholder="${packageTitlePlaceholder}">
+                           value="${packageForm.packageTitle}" placeholder="${msg_package_form_titlePlaceholder}">
                 </label>
 
                 <label class="pkg-field pkg-field--wide">
-                    <span><spring:message code="package.form.summary"/></span>
+                    <span>${msg_package_form_summary}</span>
                     <input type="text" name="packageSummary" maxlength="300"
-                           value="${packageForm.packageSummary}" placeholder="${packageSummaryPlaceholder}">
+                           value="${packageForm.packageSummary}" placeholder="${msg_package_form_summaryPlaceholder}">
                 </label>
 
                 <label class="pkg-field">
-                    <span><spring:message code="package.form.price"/> <em>*</em></span>
+                    <span>${msg_package_form_price} <em>*</em></span>
                     <input type="number" name="packagePrice" min="0" required
                            value="${empty packageForm.packagePrice ? 0 : packageForm.packagePrice}">
                 </label>
 
                 <label class="pkg-field">
-                    <span><spring:message code="package.form.currency"/></span>
+                    <span>${msg_package_form_currency}</span>
                     <input type="text" name="currencyCode" maxlength="10"
                            value="${empty packageForm.currencyCode ? 'KRW' : packageForm.currencyCode}">
                 </label>
 
                 <label class="pkg-field">
-                    <span><spring:message code="package.form.startDate"/></span>
+                    <span>${msg_package_form_startDate}</span>
                     <input type="date" name="startDate" value="${packageForm.startDate}">
                 </label>
 
                 <label class="pkg-field">
-                    <span><spring:message code="package.form.endDate"/></span>
+                    <span>${msg_package_form_endDate}</span>
                     <input type="date" name="endDate" value="${packageForm.endDate}">
                 </label>
 
                 <label class="pkg-field">
-                    <span><spring:message code="package.form.minPeople"/> <em>*</em></span>
+                    <span>${msg_package_form_minPeople} <em>*</em></span>
                     <input type="number" name="minPeople" min="1" required
                            value="${empty packageForm.minPeople ? 1 : packageForm.minPeople}">
                 </label>
 
                 <label class="pkg-field">
-                    <span><spring:message code="package.form.maxPeople"/></span>
+                    <span>${msg_package_form_maxPeople}</span>
                     <input type="number" name="maxPeople" min="1" value="${packageForm.maxPeople}">
                 </label>
 
                 <label class="pkg-field pkg-field--wide">
-                    <span><spring:message code="package.form.mainImage"/></span>
+                    <span>${msg_package_form_mainImage}</span>
                     <c:if test="${not empty packageForm.mainImagePath}">
                         <c:set var="mainImagePreviewPath" value="${pageContext.request.contextPath}${packageForm.mainImagePath}"/>
                         <c:if test="${fn:startsWith(packageForm.mainImagePath, 'http://') or fn:startsWith(packageForm.mainImagePath, 'https://')}">
                             <c:set var="mainImagePreviewPath" value="${packageForm.mainImagePath}"/>
                         </c:if>
                         <div class="pkg-current-image">
-                            <img src="${mainImagePreviewPath}" alt="${packageCurrentImageLabel}">
+                            <img src="${mainImagePreviewPath}" alt="${msg_package_form_currentImage}">
                             <div>
-                                <strong><spring:message code="package.form.currentImage"/></strong>
-                                <small><spring:message code="package.form.keepImageHelp"/></small>
+                                <strong>${msg_package_form_currentImage}</strong>
+                                <small>${msg_package_form_keepImageHelp}</small>
                             </div>
                         </div>
                     </c:if>
                     <input type="hidden" name="mainImagePath" value="${packageForm.mainImagePath}">
                     <input type="file" name="mainImageFile" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp">
-                    <small><spring:message code="package.form.imageHelp"/></small>
+                    <small>${msg_package_form_imageHelp}</small>
                 </label>
 
                 <label class="pkg-field pkg-field--wide">
-                    <span><spring:message code="package.form.content"/> <em>*</em></span>
+                    <span>${msg_package_form_content} <em>*</em></span>
                     <textarea name="packageContent" rows="12" required
-                              placeholder="${packageContentPlaceholder}">${packageForm.packageContent}</textarea>
+                              placeholder="${msg_package_form_contentPlaceholder}">${packageForm.packageContent}</textarea>
                 </label>
             </div>
 
@@ -143,15 +171,15 @@
                 <c:choose>
                     <c:when test="${formMode eq 'REVISION'}">
                         <button type="submit" name="action" value="PENDING" class="pkg-primary-btn">
-                            <spring:message code="package.revision.request"/>
+                            ${msg_package_revision_request}
                         </button>
                     </c:when>
                     <c:otherwise>
                         <button type="submit" name="action" value="DRAFT" class="pkg-secondary-btn">
-                            <spring:message code="package.form.saveDraft"/>
+                            ${msg_package_form_saveDraft}
                         </button>
                         <button type="submit" name="action" value="PENDING" class="pkg-primary-btn">
-                            <spring:message code="package.form.submitApproval"/>
+                            ${msg_package_form_submitApproval}
                         </button>
                     </c:otherwise>
                 </c:choose>

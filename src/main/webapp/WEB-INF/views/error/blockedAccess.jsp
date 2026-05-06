@@ -2,13 +2,29 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="errorBlockedLanguageMsg" code="error.blocked.language"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_error_blocked_language" code="error.blocked.language"/>
+<spring:message var="msg_error_blocked_pageTitle" code="error.blocked.pageTitle"/>
+<spring:message var="msg_error_blocked_badge" code="error.blocked.badge"/>
+<spring:message var="msg_error_blocked_title" code="error.blocked.title"/>
+<spring:message var="msg_error_blocked_lead" code="error.blocked.lead"/>
+<spring:message var="msg_error_blocked_description" code="error.blocked.description"/>
+<spring:message var="msg_error_blocked_contact" code="error.blocked.contact"/>
+<spring:message var="msg_error_blocked_supportInfo" code="error.blocked.supportInfo"/>
+<spring:message var="msg_error_blocked_requestId" code="error.blocked.requestId"/>
+<spring:message var="msg_error_blocked_restrictionType" code="error.blocked.restrictionType"/>
+<spring:message var="msg_error_blocked_ip" code="error.blocked.ip"/>
+<spring:message var="msg_error_blocked_appeal" code="error.blocked.appeal"/>
+<spring:message var="msg_error_blocked_home" code="error.blocked.home"/>
+<spring:message var="msg_error_blocked_support" code="error.blocked.support"/>
+<spring:message var="msg_error_blocked_notice" code="error.blocked.notice"/>
 <!DOCTYPE html>
 <html lang="${pageLang}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><spring:message code="error.blocked.pageTitle"/></title>
+    <title>${msg_error_blocked_pageTitle}</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -199,8 +215,8 @@
 
 <main class="blocked-card">
     <div class="topbar">
-        <span class="badge"><spring:message code="error.blocked.badge"/></span>
-        <nav class="language-switch" aria-label="${errorBlockedLanguageMsg}">
+        <span class="badge">${msg_error_blocked_badge}</span>
+        <nav class="language-switch" aria-label="${msg_error_blocked_language}">
             <a href="${langKoUrl}" class="${pageLang eq 'ko' ? 'active' : ''}">KO</a>
             <a href="${langEnUrl}" class="${pageLang eq 'en' ? 'active' : ''}">EN</a>
             <a href="${langJaUrl}" class="${pageLang eq 'ja' ? 'active' : ''}">JA</a>
@@ -208,32 +224,32 @@
         </nav>
     </div>
 
-    <h1><spring:message code="error.blocked.title"/></h1>
-    <p class="lead"><spring:message code="error.blocked.lead"/></p>
-    <p class="lead"><spring:message code="error.blocked.description"/></p>
-    <p class="lead"><spring:message code="error.blocked.contact"/></p>
+    <h1>${msg_error_blocked_title}</h1>
+    <p class="lead">${msg_error_blocked_lead}</p>
+    <p class="lead">${msg_error_blocked_description}</p>
+    <p class="lead">${msg_error_blocked_contact}</p>
 
     <section class="support-box" aria-labelledby="supportInfoTitle">
-        <p id="supportInfoTitle" class="support-title"><spring:message code="error.blocked.supportInfo"/></p>
+        <p id="supportInfoTitle" class="support-title">${msg_error_blocked_supportInfo}</p>
         <dl class="info-grid">
-            <dt><spring:message code="error.blocked.requestId"/></dt>
+            <dt>${msg_error_blocked_requestId}</dt>
             <dd><c:out value="${requestId}" default="-"/></dd>
 
-            <dt><spring:message code="error.blocked.restrictionType"/></dt>
-            <dd><spring:message code="${restrictionTypeCode}"/></dd>
+            <dt>${msg_error_blocked_restrictionType}</dt>
+            <dd><spring:message var="msg_restrictionTypeCode" code="${restrictionTypeCode}"/>${msg_restrictionTypeCode}</dd>
 
-            <dt><spring:message code="error.blocked.ip"/></dt>
+            <dt>${msg_error_blocked_ip}</dt>
             <dd><c:out value="${clientIp}" default="-"/></dd>
         </dl>
     </section>
 
     <div class="actions">
-        <a class="btn btn-primary" href="${appealUrl}"><spring:message code="error.blocked.appeal"/></a>
-        <a class="btn" href="${pageContext.request.contextPath}/"><spring:message code="error.blocked.home"/></a>
-        <a class="btn" href="${pageContext.request.contextPath}/inquiry/list"><spring:message code="error.blocked.support"/></a>
+        <a class="btn btn-primary" href="${appealUrl}">${msg_error_blocked_appeal}</a>
+        <a class="btn" href="${pageContext.request.contextPath}/">${msg_error_blocked_home}</a>
+        <a class="btn" href="${pageContext.request.contextPath}/inquiry/list">${msg_error_blocked_support}</a>
     </div>
 
-    <p class="note"><spring:message code="error.blocked.notice"/></p>
+    <p class="note">${msg_error_blocked_notice}</p>
 </main>
 </body>
 </html>

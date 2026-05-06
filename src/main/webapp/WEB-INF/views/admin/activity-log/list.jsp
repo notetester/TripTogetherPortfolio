@@ -4,50 +4,104 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_activity_searchPlaceholder" code="admin.activity.searchPlaceholder"/>
+<spring:message var="msg_admin_activity_historyTitle" code="admin.activity.historyTitle"/>
+<spring:message var="msg_admin_translation_label_activityLogDetailSummary" code="admin.translation.label.activityLogDetailSummary"/>
+<spring:message var="msg_admin_activity_pageTitle" code="admin.activity.pageTitle"/>
+<spring:message var="msg_admin_common_success" code="admin.common.success"/>
+<spring:message var="msg_admin_common_fail" code="admin.common.fail"/>
+<spring:message var="msg_admin_common_search" code="admin.common.search"/>
+<spring:message var="msg_admin_activity_domain" code="admin.activity.domain"/>
+<spring:message var="msg_admin_common_all" code="admin.common.all"/>
+<spring:message var="msg_admin_activity_domain_general" code="admin.activity.domain.general"/>
+<spring:message var="msg_admin_activity_domain_auth" code="admin.activity.domain.auth"/>
+<spring:message var="msg_admin_activity_domain_admin" code="admin.activity.domain.admin"/>
+<spring:message var="msg_admin_activity_domain_community" code="admin.activity.domain.community"/>
+<spring:message var="msg_admin_activity_domain_mypage" code="admin.activity.domain.mypage"/>
+<spring:message var="msg_admin_activity_domain_inquiry" code="admin.activity.domain.inquiry"/>
+<spring:message var="msg_admin_activity_type" code="admin.activity.type"/>
+<spring:message var="msg_admin_activity_type_pageView" code="admin.activity.type.pageView"/>
+<spring:message var="msg_admin_activity_type_action" code="admin.activity.type.action"/>
+<spring:message var="msg_admin_activity_type_ajax" code="admin.activity.type.ajax"/>
+<spring:message var="msg_admin_activity_type_api" code="admin.activity.type.api"/>
+<spring:message var="msg_admin_logs_provider" code="admin.logs.provider"/>
+<spring:message var="msg_admin_logs_provider_local" code="admin.logs.provider.local"/>
+<spring:message var="msg_admin_logs_provider_kakao" code="admin.logs.provider.kakao"/>
+<spring:message var="msg_admin_logs_provider_naver" code="admin.logs.provider.naver"/>
+<spring:message var="msg_admin_logs_provider_google" code="admin.logs.provider.google"/>
+<spring:message var="msg_admin_activity_authEvent" code="admin.activity.authEvent"/>
+<spring:message var="msg_admin_activity_authEvent_login" code="admin.activity.authEvent.login"/>
+<spring:message var="msg_admin_activity_authEvent_logout" code="admin.activity.authEvent.logout"/>
+<spring:message var="msg_admin_activity_authEvent_link" code="admin.activity.authEvent.link"/>
+<spring:message var="msg_admin_activity_authEvent_unlink" code="admin.activity.authEvent.unlink"/>
+<spring:message var="msg_admin_activity_method" code="admin.activity.method"/>
+<spring:message var="msg_admin_activity_method_get" code="admin.activity.method.get"/>
+<spring:message var="msg_admin_activity_method_post" code="admin.activity.method.post"/>
+<spring:message var="msg_admin_activity_method_put" code="admin.activity.method.put"/>
+<spring:message var="msg_admin_activity_method_delete" code="admin.activity.method.delete"/>
+<spring:message var="msg_admin_logs_success" code="admin.logs.success"/>
+<spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
+<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
+<spring:message var="msg_admin_common_time" code="admin.common.time"/>
+<spring:message var="msg_admin_common_member" code="admin.common.member"/>
+<spring:message var="msg_admin_activity_code" code="admin.activity.code"/>
+<spring:message var="msg_admin_common_uri" code="admin.common.uri"/>
+<spring:message var="msg_admin_common_status" code="admin.common.status"/>
+<spring:message var="msg_admin_common_ip" code="admin.common.ip"/>
+<spring:message var="msg_admin_activity_flow" code="admin.activity.flow"/>
+<spring:message var="msg_admin_common_sameDate" code="admin.common.sameDate"/>
+<spring:message var="msg_admin_activity_guest" code="admin.activity.guest"/>
+<spring:message var="msg_admin_common_sameValue" code="admin.common.sameValue"/>
+<spring:message var="msg_admin_common_viewTarget" code="admin.common.viewTarget"/>
+<spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
+<spring:message var="msg_admin_common_sameTarget" code="admin.common.sameTarget"/>
+<spring:message var="msg_admin_common_sameIp" code="admin.common.sameIp"/>
+<spring:message var="msg_admin_common_trace" code="admin.common.trace"/>
+<spring:message var="msg_admin_common_noResults" code="admin.common.noResults"/>
+<spring:message var="msg_admin_common_pageStatus" code="admin.common.pageStatus"/>
 <c:set var="activeMenu" value="activityLogs"/>
-<spring:message var="adminActivitySearchPlaceholderMsg" code="admin.activity.searchPlaceholder"/>
-<spring:message var="adminActivityHistoryTitleMsg" code="admin.activity.historyTitle"/>
-<spring:message var="adminTranslationLabelActivityLogDetailSummaryMsg" code="admin.translation.label.activityLogDetailSummary"/>
-<spring:message code="admin.activity.pageTitle" var="adminActivityPageTitle"/>
-<spring:message code="admin.common.success" var="adminActivitySuccessLabel"/>
-<spring:message code="admin.common.fail" var="adminActivityFailLabel"/>
-<c:set var="pageTitle" value="${adminActivityPageTitle}"/>
+
+
+<c:set var="pageTitle" value="${msg_admin_activity_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 <div class="adm-content">
   <div class="adm-card" style="margin-bottom:20px;">
     <div class="adm-card-body">
       <form method="get" action="${pageContext.request.contextPath}/admin/activity-logs">
         <div class="adm-filter-bar">
-          <div class="adm-search-box" style="flex:1;min-width:220px;"><div class="adm-filter-label"><spring:message code="admin.common.search"/></div><span class="adm-search-ico">🔍</span><input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${adminActivitySearchPlaceholderMsg}"></div>
-          <div><div class="adm-filter-label"><spring:message code="admin.activity.domain"/></div><select class="adm-select" name="activityDomain"><option value="ALL" ${search.activityDomain=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="GENERAL" ${search.activityDomain=='GENERAL'?'selected':''}><spring:message code="admin.activity.domain.general"/></option><option value="AUTH" ${search.activityDomain=='AUTH'?'selected':''}><spring:message code="admin.activity.domain.auth"/></option><option value="ADMIN" ${search.activityDomain=='ADMIN'?'selected':''}><spring:message code="admin.activity.domain.admin"/></option><option value="COMMUNITY" ${search.activityDomain=='COMMUNITY'?'selected':''}><spring:message code="admin.activity.domain.community"/></option><option value="MYPAGE" ${search.activityDomain=='MYPAGE'?'selected':''}><spring:message code="admin.activity.domain.mypage"/></option><option value="INQUIRY" ${search.activityDomain=='INQUIRY'?'selected':''}><spring:message code="admin.activity.domain.inquiry"/></option></select></div>
-          <div><div class="adm-filter-label"><spring:message code="admin.activity.type"/></div><select class="adm-select" name="activityType"><option value="ALL" ${search.activityType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="PAGE_VIEW" ${search.activityType=='PAGE_VIEW'?'selected':''}><spring:message code="admin.activity.type.pageView"/></option><option value="ACTION" ${search.activityType=='ACTION'?'selected':''}><spring:message code="admin.activity.type.action"/></option><option value="AJAX" ${search.activityType=='AJAX'?'selected':''}><spring:message code="admin.activity.type.ajax"/></option><option value="API" ${search.activityType=='API'?'selected':''}><spring:message code="admin.activity.type.api"/></option></select></div>
-          <div><div class="adm-filter-label"><spring:message code="admin.logs.provider"/></div><select class="adm-select" name="activityProvider"><option value="ALL" ${search.activityProvider=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="LOCAL" ${search.activityProvider=='LOCAL'?'selected':''}><spring:message code="admin.logs.provider.local"/></option><option value="KAKAO" ${search.activityProvider=='KAKAO'?'selected':''}><spring:message code="admin.logs.provider.kakao"/></option><option value="NAVER" ${search.activityProvider=='NAVER'?'selected':''}><spring:message code="admin.logs.provider.naver"/></option><option value="GOOGLE" ${search.activityProvider=='GOOGLE'?'selected':''}><spring:message code="admin.logs.provider.google"/></option></select></div>
-          <div><div class="adm-filter-label"><spring:message code="admin.activity.authEvent"/></div><select class="adm-select" name="authEventType"><option value="ALL" ${search.authEventType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="LOGIN" ${search.authEventType=='LOGIN'?'selected':''}><spring:message code="admin.activity.authEvent.login"/></option><option value="LOGOUT" ${search.authEventType=='LOGOUT'?'selected':''}><spring:message code="admin.activity.authEvent.logout"/></option><option value="LINK" ${search.authEventType=='LINK'?'selected':''}><spring:message code="admin.activity.authEvent.link"/></option><option value="UNLINK" ${search.authEventType=='UNLINK'?'selected':''}><spring:message code="admin.activity.authEvent.unlink"/></option></select></div>
-          <div><div class="adm-filter-label"><spring:message code="admin.activity.method"/></div><select class="adm-select" name="httpMethod"><option value="ALL" ${search.httpMethod=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="GET" ${search.httpMethod=='GET'?'selected':''}><spring:message code="admin.activity.method.get"/></option><option value="POST" ${search.httpMethod=='POST'?'selected':''}><spring:message code="admin.activity.method.post"/></option><option value="PUT" ${search.httpMethod=='PUT'?'selected':''}><spring:message code="admin.activity.method.put"/></option><option value="DELETE" ${search.httpMethod=='DELETE'?'selected':''}><spring:message code="admin.activity.method.delete"/></option></select></div>
-          <div><div class="adm-filter-label"><spring:message code="admin.logs.success"/></div><select class="adm-select" name="success"><option value="ALL" ${search.success=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="SUCCESS" ${search.success=='SUCCESS'?'selected':''}><spring:message code="admin.common.success"/></option><option value="FAIL" ${search.success=='FAIL'?'selected':''}><spring:message code="admin.common.fail"/></option></select></div>
+          <div class="adm-search-box" style="flex:1;min-width:220px;"><div class="adm-filter-label">${msg_admin_common_search}</div><span class="adm-search-ico">🔍</span><input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_activity_searchPlaceholder}"></div>
+          <div><div class="adm-filter-label">${msg_admin_activity_domain}</div><select class="adm-select" name="activityDomain"><option value="ALL" ${search.activityDomain=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="GENERAL" ${search.activityDomain=='GENERAL'?'selected':''}>${msg_admin_activity_domain_general}</option><option value="AUTH" ${search.activityDomain=='AUTH'?'selected':''}>${msg_admin_activity_domain_auth}</option><option value="ADMIN" ${search.activityDomain=='ADMIN'?'selected':''}>${msg_admin_activity_domain_admin}</option><option value="COMMUNITY" ${search.activityDomain=='COMMUNITY'?'selected':''}>${msg_admin_activity_domain_community}</option><option value="MYPAGE" ${search.activityDomain=='MYPAGE'?'selected':''}>${msg_admin_activity_domain_mypage}</option><option value="INQUIRY" ${search.activityDomain=='INQUIRY'?'selected':''}>${msg_admin_activity_domain_inquiry}</option></select></div>
+          <div><div class="adm-filter-label">${msg_admin_activity_type}</div><select class="adm-select" name="activityType"><option value="ALL" ${search.activityType=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="PAGE_VIEW" ${search.activityType=='PAGE_VIEW'?'selected':''}>${msg_admin_activity_type_pageView}</option><option value="ACTION" ${search.activityType=='ACTION'?'selected':''}>${msg_admin_activity_type_action}</option><option value="AJAX" ${search.activityType=='AJAX'?'selected':''}>${msg_admin_activity_type_ajax}</option><option value="API" ${search.activityType=='API'?'selected':''}>${msg_admin_activity_type_api}</option></select></div>
+          <div><div class="adm-filter-label">${msg_admin_logs_provider}</div><select class="adm-select" name="activityProvider"><option value="ALL" ${search.activityProvider=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="LOCAL" ${search.activityProvider=='LOCAL'?'selected':''}>${msg_admin_logs_provider_local}</option><option value="KAKAO" ${search.activityProvider=='KAKAO'?'selected':''}>${msg_admin_logs_provider_kakao}</option><option value="NAVER" ${search.activityProvider=='NAVER'?'selected':''}>${msg_admin_logs_provider_naver}</option><option value="GOOGLE" ${search.activityProvider=='GOOGLE'?'selected':''}>${msg_admin_logs_provider_google}</option></select></div>
+          <div><div class="adm-filter-label">${msg_admin_activity_authEvent}</div><select class="adm-select" name="authEventType"><option value="ALL" ${search.authEventType=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="LOGIN" ${search.authEventType=='LOGIN'?'selected':''}>${msg_admin_activity_authEvent_login}</option><option value="LOGOUT" ${search.authEventType=='LOGOUT'?'selected':''}>${msg_admin_activity_authEvent_logout}</option><option value="LINK" ${search.authEventType=='LINK'?'selected':''}>${msg_admin_activity_authEvent_link}</option><option value="UNLINK" ${search.authEventType=='UNLINK'?'selected':''}>${msg_admin_activity_authEvent_unlink}</option></select></div>
+          <div><div class="adm-filter-label">${msg_admin_activity_method}</div><select class="adm-select" name="httpMethod"><option value="ALL" ${search.httpMethod=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="GET" ${search.httpMethod=='GET'?'selected':''}>${msg_admin_activity_method_get}</option><option value="POST" ${search.httpMethod=='POST'?'selected':''}>${msg_admin_activity_method_post}</option><option value="PUT" ${search.httpMethod=='PUT'?'selected':''}>${msg_admin_activity_method_put}</option><option value="DELETE" ${search.httpMethod=='DELETE'?'selected':''}>${msg_admin_activity_method_delete}</option></select></div>
+          <div><div class="adm-filter-label">${msg_admin_logs_success}</div><select class="adm-select" name="success"><option value="ALL" ${search.success=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="SUCCESS" ${search.success=='SUCCESS'?'selected':''}>${msg_admin_common_success}</option><option value="FAIL" ${search.success=='FAIL'?'selected':''}>${msg_admin_common_fail}</option></select></div>
           <div style="display:flex;align-items:flex-end;gap:8px;">
-            <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
-            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/activity-logs"><spring:message code="admin.common.reset"/></a>
+            <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/activity-logs">${msg_admin_common_reset}</a>
           </div>
         </div>
       </form>
     </div>
   </div>
   <div class="adm-card">
-    <div class="adm-card-head"><div class="adm-card-title">${adminActivityHistoryTitleMsg}</div><div style="font-size:12px;color:#64748b;"><spring:message code="admin.common.totalCount"/></div></div>
+    <div class="adm-card-head"><div class="adm-card-title">${msg_admin_activity_historyTitle}</div><div style="font-size:12px;color:#64748b;">${msg_admin_common_totalCount}</div></div>
     <div class="adm-table-wrap">
       <table class="adm-table">
         <thead><tr>
-          <th data-sort="time" onclick="sortBy('time')"><spring:message code="admin.common.time"/><span class="sort-ico">▼</span></th>
-          <th data-sort="member" onclick="sortBy('member')"><spring:message code="admin.common.member"/><span class="sort-ico">▼</span></th>
-          <th data-sort="domain" onclick="sortBy('domain')"><spring:message code="admin.activity.domain"/><span class="sort-ico">▼</span></th>
-          <th data-sort="type" onclick="sortBy('type')"><spring:message code="admin.activity.type"/><span class="sort-ico">▼</span></th>
-          <th data-sort="activityCode" onclick="sortBy('activityCode')"><spring:message code="admin.activity.code"/><span class="sort-ico">▼</span></th>
-          <th data-sort="uri" onclick="sortBy('uri')"><spring:message code="admin.common.uri"/><span class="sort-ico">▼</span></th>
-          <th data-sort="method" onclick="sortBy('method')"><spring:message code="admin.activity.method"/><span class="sort-ico">▼</span></th>
-          <th data-sort="status" onclick="sortBy('status')"><spring:message code="admin.common.status"/><span class="sort-ico">▼</span></th>
-          <th data-sort="ip" onclick="sortBy('ip')"><spring:message code="admin.common.ip"/><span class="sort-ico">▼</span></th>
-          <th data-sort="flow" onclick="sortBy('flow')"><spring:message code="admin.activity.flow"/><span class="sort-ico">▼</span></th>
+          <th data-sort="time" onclick="sortBy('time')">${msg_admin_common_time}<span class="sort-ico">▼</span></th>
+          <th data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}<span class="sort-ico">▼</span></th>
+          <th data-sort="domain" onclick="sortBy('domain')">${msg_admin_activity_domain}<span class="sort-ico">▼</span></th>
+          <th data-sort="type" onclick="sortBy('type')">${msg_admin_activity_type}<span class="sort-ico">▼</span></th>
+          <th data-sort="activityCode" onclick="sortBy('activityCode')">${msg_admin_activity_code}<span class="sort-ico">▼</span></th>
+          <th data-sort="uri" onclick="sortBy('uri')">${msg_admin_common_uri}<span class="sort-ico">▼</span></th>
+          <th data-sort="method" onclick="sortBy('method')">${msg_admin_activity_method}<span class="sort-ico">▼</span></th>
+          <th data-sort="status" onclick="sortBy('status')">${msg_admin_common_status}<span class="sort-ico">▼</span></th>
+          <th data-sort="ip" onclick="sortBy('ip')">${msg_admin_common_ip}<span class="sort-ico">▼</span></th>
+          <th data-sort="flow" onclick="sortBy('flow')">${msg_admin_activity_flow}<span class="sort-ico">▼</span></th>
           <th></th>
         </tr></thead>
         <tbody>
@@ -60,7 +114,7 @@
                       data-date="${itemDateFilter}"
                       onclick="filterByDate(this.dataset.date)">
                 <span>${itemTimeDisplay}</span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                <span class="adm-cell-link-note">${msg_admin_common_sameDate}</span>
               </button>
             </td>
             <td>
@@ -70,7 +124,7 @@
                   <div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="${item.userIdx}" data-default-tab="activity" style="color:#94a3b8;">@${item.userId}</button></div>
                 </c:when>
                 <c:otherwise>
-                  <div class="mem-name"><spring:message code="admin.activity.guest"/></div>
+                  <div class="mem-name">${msg_admin_activity_guest}</div>
                   <div class="mem-uid">-</div>
                 </c:otherwise>
               </c:choose>
@@ -78,27 +132,27 @@
             <td>
               <button type="button" class="adm-cell-link" data-param-name="activityDomain" data-param-value="${item.activityDomain}" onclick="applySelectFilter(this)">
                 <span><c:choose>
-                  <c:when test="${item.activityDomain eq 'GENERAL'}"><spring:message code="admin.activity.domain.general"/></c:when>
-                  <c:when test="${item.activityDomain eq 'AUTH'}"><spring:message code="admin.activity.domain.auth"/></c:when>
-                  <c:when test="${item.activityDomain eq 'ADMIN'}"><spring:message code="admin.activity.domain.admin"/></c:when>
-                  <c:when test="${item.activityDomain eq 'COMMUNITY'}"><spring:message code="admin.activity.domain.community"/></c:when>
-                  <c:when test="${item.activityDomain eq 'MYPAGE'}"><spring:message code="admin.activity.domain.mypage"/></c:when>
-                  <c:when test="${item.activityDomain eq 'INQUIRY'}"><spring:message code="admin.activity.domain.inquiry"/></c:when>
+                  <c:when test="${item.activityDomain eq 'GENERAL'}">${msg_admin_activity_domain_general}</c:when>
+                  <c:when test="${item.activityDomain eq 'AUTH'}">${msg_admin_activity_domain_auth}</c:when>
+                  <c:when test="${item.activityDomain eq 'ADMIN'}">${msg_admin_activity_domain_admin}</c:when>
+                  <c:when test="${item.activityDomain eq 'COMMUNITY'}">${msg_admin_activity_domain_community}</c:when>
+                  <c:when test="${item.activityDomain eq 'MYPAGE'}">${msg_admin_activity_domain_mypage}</c:when>
+                  <c:when test="${item.activityDomain eq 'INQUIRY'}">${msg_admin_activity_domain_inquiry}</c:when>
                   <c:otherwise><c:out value="${empty item.activityDomain ? '-' : item.activityDomain}"/></c:otherwise>
                 </c:choose></span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                <span class="adm-cell-link-note">${msg_admin_common_sameValue}</span>
               </button>
             </td>
             <td>
               <button type="button" class="adm-cell-link" data-param-name="activityType" data-param-value="${item.activityType}" onclick="applySelectFilter(this)">
                 <span><c:choose>
-                  <c:when test="${item.activityType eq 'PAGE_VIEW'}"><spring:message code="admin.activity.type.pageView"/></c:when>
-                  <c:when test="${item.activityType eq 'ACTION'}"><spring:message code="admin.activity.type.action"/></c:when>
-                  <c:when test="${item.activityType eq 'AJAX'}"><spring:message code="admin.activity.type.ajax"/></c:when>
-                  <c:when test="${item.activityType eq 'API'}"><spring:message code="admin.activity.type.api"/></c:when>
+                  <c:when test="${item.activityType eq 'PAGE_VIEW'}">${msg_admin_activity_type_pageView}</c:when>
+                  <c:when test="${item.activityType eq 'ACTION'}">${msg_admin_activity_type_action}</c:when>
+                  <c:when test="${item.activityType eq 'AJAX'}">${msg_admin_activity_type_ajax}</c:when>
+                  <c:when test="${item.activityType eq 'API'}">${msg_admin_activity_type_api}</c:when>
                   <c:otherwise><c:out value="${item.activityType}"/></c:otherwise>
                 </c:choose></span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                <span class="adm-cell-link-note">${msg_admin_common_sameValue}</span>
               </button>
             </td>
             <td>
@@ -106,7 +160,7 @@
                 <c:when test="${not empty item.activityCode}">
                   <button type="button" class="adm-cell-link" data-keyword="${item.activityCode}" onclick="applyKeywordFilter(this)">
                     <span><c:out value="${item.activityCode}"/></span>
-                    <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                    <span class="adm-cell-link-note">${msg_admin_common_sameValue}</span>
                   </button>
                 </c:when>
                 <c:otherwise><div>-</div></c:otherwise>
@@ -114,19 +168,19 @@
               <c:if test="${not empty item.activityProvider or not empty item.authEventType}">
                 <div style="margin-top:4px;font-size:11px;color:#64748b;">
                   <c:choose>
-                    <c:when test="${item.activityProvider eq 'LOCAL'}"><spring:message code="admin.logs.provider.local"/></c:when>
-                    <c:when test="${item.activityProvider eq 'KAKAO'}"><spring:message code="admin.logs.provider.kakao"/></c:when>
-                    <c:when test="${item.activityProvider eq 'NAVER'}"><spring:message code="admin.logs.provider.naver"/></c:when>
-                    <c:when test="${item.activityProvider eq 'GOOGLE'}"><spring:message code="admin.logs.provider.google"/></c:when>
+                    <c:when test="${item.activityProvider eq 'LOCAL'}">${msg_admin_logs_provider_local}</c:when>
+                    <c:when test="${item.activityProvider eq 'KAKAO'}">${msg_admin_logs_provider_kakao}</c:when>
+                    <c:when test="${item.activityProvider eq 'NAVER'}">${msg_admin_logs_provider_naver}</c:when>
+                    <c:when test="${item.activityProvider eq 'GOOGLE'}">${msg_admin_logs_provider_google}</c:when>
                     <c:otherwise><c:out value="${empty item.activityProvider ? '-' : item.activityProvider}"/></c:otherwise>
                   </c:choose>
                   <c:if test="${not empty item.authEventType}">
                     /
                     <c:choose>
-                      <c:when test="${item.authEventType eq 'LOGIN'}"><spring:message code="admin.activity.authEvent.login"/></c:when>
-                      <c:when test="${item.authEventType eq 'LOGOUT'}"><spring:message code="admin.activity.authEvent.logout"/></c:when>
-                      <c:when test="${item.authEventType eq 'LINK'}"><spring:message code="admin.activity.authEvent.link"/></c:when>
-                      <c:when test="${item.authEventType eq 'UNLINK'}"><spring:message code="admin.activity.authEvent.unlink"/></c:when>
+                      <c:when test="${item.authEventType eq 'LOGIN'}">${msg_admin_activity_authEvent_login}</c:when>
+                      <c:when test="${item.authEventType eq 'LOGOUT'}">${msg_admin_activity_authEvent_logout}</c:when>
+                      <c:when test="${item.authEventType eq 'LINK'}">${msg_admin_activity_authEvent_link}</c:when>
+                      <c:when test="${item.authEventType eq 'UNLINK'}">${msg_admin_activity_authEvent_unlink}</c:when>
                       <c:otherwise><c:out value="${item.authEventType}"/></c:otherwise>
                     </c:choose>
                   </c:if>
@@ -134,16 +188,16 @@
               </c:if>
               <div class="adm-inline-actions">
                 <c:if test="${(item.targetType eq 'USER' or item.targetType eq 'user') and not empty item.targetId}">
-                  <button type="button" class="adm-inline-chip js-open-member-context" data-user-idx="${item.targetId}"><spring:message code="admin.common.viewTarget"/></button>
+                  <button type="button" class="adm-inline-chip js-open-member-context" data-user-idx="${item.targetId}">${msg_admin_common_viewTarget}</button>
                 </c:if>
                 <c:if test="${(item.targetType eq 'REPORT' or item.targetType eq 'report') and not empty item.targetId}">
-                  <a href="${pageContext.request.contextPath}/admin/reports/${item.targetId}" class="adm-inline-chip"><spring:message code="admin.common.viewDetail"/></a>
+                  <a href="${pageContext.request.contextPath}/admin/reports/${item.targetId}" class="adm-inline-chip">${msg_admin_common_viewDetail}</a>
                 </c:if>
                 <c:if test="${(item.targetType eq 'INQUIRY' or item.targetType eq 'inquiry') and not empty item.targetId}">
-                  <a href="${pageContext.request.contextPath}/admin/inquiries/${item.targetId}" class="adm-inline-chip"><spring:message code="admin.common.viewDetail"/></a>
+                  <a href="${pageContext.request.contextPath}/admin/inquiries/${item.targetId}" class="adm-inline-chip">${msg_admin_common_viewDetail}</a>
                 </c:if>
                 <c:if test="${not empty item.targetId}">
-                  <button type="button" class="adm-inline-chip" data-keyword="${item.targetId}" onclick="applyKeywordFilter(this)"><spring:message code="admin.common.sameTarget"/></button>
+                  <button type="button" class="adm-inline-chip" data-keyword="${item.targetId}" onclick="applyKeywordFilter(this)">${msg_admin_common_sameTarget}</button>
                 </c:if>
               </div>
             </td>
@@ -156,7 +210,7 @@
               </button>
               <c:if test="${not empty item.detailSummary}">
                 <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="${adminTranslationLabelActivityLogDetailSummaryMsg}"
+                     data-label="${msg_admin_translation_label_activityLogDetailSummary}"
                      data-source-type="ACTIVITY_LOG"
                      data-source-idx="${item.activityIdx}"
                      data-field-name="detail_summary"
@@ -167,19 +221,19 @@
             <td>
               <button type="button" class="adm-cell-link" data-param-name="httpMethod" data-param-value="${item.httpMethod}" onclick="applySelectFilter(this)">
                 <span><c:choose>
-                  <c:when test="${item.httpMethod eq 'GET'}"><spring:message code="admin.activity.method.get"/></c:when>
-                  <c:when test="${item.httpMethod eq 'POST'}"><spring:message code="admin.activity.method.post"/></c:when>
-                  <c:when test="${item.httpMethod eq 'PUT'}"><spring:message code="admin.activity.method.put"/></c:when>
-                  <c:when test="${item.httpMethod eq 'DELETE'}"><spring:message code="admin.activity.method.delete"/></c:when>
+                  <c:when test="${item.httpMethod eq 'GET'}">${msg_admin_activity_method_get}</c:when>
+                  <c:when test="${item.httpMethod eq 'POST'}">${msg_admin_activity_method_post}</c:when>
+                  <c:when test="${item.httpMethod eq 'PUT'}">${msg_admin_activity_method_put}</c:when>
+                  <c:when test="${item.httpMethod eq 'DELETE'}">${msg_admin_activity_method_delete}</c:when>
                   <c:otherwise><c:out value="${item.httpMethod}"/></c:otherwise>
                 </c:choose></span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                <span class="adm-cell-link-note">${msg_admin_common_sameValue}</span>
               </button>
             </td>
             <td>
               <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="${item.success ? 'SUCCESS' : 'FAIL'}" onclick="applySelectFilter(this)">
                 <span><c:out value="${item.responseStatus}"/></span>
-                <span class="adm-cell-link-note"><c:out value="${item.success ? adminActivitySuccessLabel : adminActivityFailLabel}"/></span>
+                <span class="adm-cell-link-note"><c:out value="${item.success ? msg_admin_common_success : msg_admin_common_fail}"/></span>
               </button>
             </td>
             <td>
@@ -187,7 +241,7 @@
                 <c:when test="${not empty item.ipAddress}">
                   <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="${item.ipAddress}" data-default-tab="activity">
                     <span style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></span>
-                    <span class="adm-cell-link-note"><spring:message code="admin.common.sameIp"/></span>
+                    <span class="adm-cell-link-note">${msg_admin_common_sameIp}</span>
                   </button>
                 </c:when>
                 <c:otherwise>-</c:otherwise>
@@ -197,7 +251,7 @@
               <button type="button" class="adm-cell-link" data-keyword="${not empty item.requestId ? item.requestId : item.flowTraceId}" onclick="applyKeywordFilter(this)">
                 <span style="font-size:12px;color:#64748b;"><c:out value="${empty item.requestId ? '-' : item.requestId}"/></span>
                 <c:if test="${not empty item.flowTraceId}">
-                  <span class="adm-cell-link-note"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
+                  <span class="adm-cell-link-note">${msg_admin_common_trace}: <c:out value="${item.flowTraceId}"/></span>
                 </c:if>
               </button>
             </td>
@@ -224,15 +278,15 @@
                       data-referer="${fn:escapeXml(item.referer)}"
                       data-user-agent="${fn:escapeXml(item.userAgent)}"
                       onclick="openActivityDetail(this)">
-                <spring:message code="admin.common.viewDetail"/>
+                ${msg_admin_common_viewDetail}
               </button>
             </td>
           </tr>
         </c:forEach>
-        <c:if test="${empty list}"><tr><td colspan="11" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr></c:if>
+        <c:if test="${empty list}"><tr><td colspan="11" style="text-align:center;padding:40px;color:#475569;">${msg_admin_common_noResults}</td></tr></c:if>
       </tbody></table>
     </div>
-    <c:if test="${paging.totalPage > 1}"><div class="adm-paging"><c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if><c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p"><button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button></c:forEach><c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if><span class="adm-page-info"><spring:message code="admin.common.pageStatus"/></span></div></c:if>
+    <c:if test="${paging.totalPage > 1}"><div class="adm-paging"><c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if><c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p"><button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button></c:forEach><c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if><span class="adm-page-info">${msg_admin_common_pageStatus}</span></div></c:if>
   </div>
 </div>
 
@@ -294,7 +348,7 @@ function goPage(page) {
 }
 function openActivityDetail(btn) {
   var d = btn.dataset;
-  showRowDetail('${adminActivityHistoryTitleMsg}', [
+  showRowDetail('${msg_admin_activity_historyTitle}', [
     ['시각', d.time],
     ['회원', d.user],
     ['도메인', d.domain],

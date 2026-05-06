@@ -1,11 +1,18 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_security_appeal_verify_sent_pageTitle" code="security.appeal.verify.sent.pageTitle"/>
+<spring:message var="msg_security_appeal_verify_sent_title" code="security.appeal.verify.sent.title"/>
+<spring:message var="msg_security_appeal_verify_sent_lead" code="security.appeal.verify.sent.lead"/>
+<spring:message var="msg_security_appeal_verify_sent_notice" code="security.appeal.verify.sent.notice"/>
+<spring:message var="msg_security_appeal_done_home" code="security.appeal.done.home"/>
 <!DOCTYPE html>
 <html lang="${pageLang}">
 <head>
     <meta charset="UTF-8">
-    <title><spring:message code="security.appeal.verify.sent.pageTitle"/></title>
+    <title>${msg_security_appeal_verify_sent_pageTitle}</title>
     <style>
         body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#f8fafc; font-family:Arial,'Noto Sans KR',sans-serif; color:#0f172a; }
         .card { width:min(680px, calc(100vw - 32px)); background:#fff; border:1px solid #e2e8f0; border-radius:22px; padding:34px; box-shadow:0 24px 70px rgba(15,23,42,.12); }
@@ -25,10 +32,10 @@
 </head>
 <body>
 <main class="card">
-    <h1><spring:message code="security.appeal.verify.sent.title"/></h1>
-    <p><spring:message code="security.appeal.verify.sent.lead"/></p>
-    <p class="note"><spring:message code="security.appeal.verify.sent.notice"/></p>
-    <a class="btn" href="${pageContext.request.contextPath}/"><spring:message code="security.appeal.done.home"/></a>
+    <h1>${msg_security_appeal_verify_sent_title}</h1>
+    <p>${msg_security_appeal_verify_sent_lead}</p>
+    <p class="note">${msg_security_appeal_verify_sent_notice}</p>
+    <a class="btn" href="${pageContext.request.contextPath}/">${msg_security_appeal_done_home}</a>
 </main>
 </body>
 </html>

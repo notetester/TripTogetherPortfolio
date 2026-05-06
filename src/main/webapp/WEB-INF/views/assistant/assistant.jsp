@@ -2,6 +2,55 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_assistant_error_parse_js" code="assistant.error.parse" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_error_server_js" code="assistant.error.server" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_error_request_js" code="assistant.error.request" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_error_network_js" code="assistant.error.network" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_error_noResponse_js" code="assistant.error.noResponse" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_loading_js" code="assistant.loading" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_reset_confirm_js" code="assistant.reset.confirm" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_reset_done_js" code="assistant.reset.done" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_quick_tokyo_js" code="assistant.quick.tokyo" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_quick_budget_js" code="assistant.quick.budget" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_quick_backpacking_js" code="assistant.quick.backpacking" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_quick_jeju_js" code="assistant.quick.jeju" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_quick_solo_js" code="assistant.quick.solo" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_quick_checklist_js" code="assistant.quick.checklist" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_input_placeholder_js" code="assistant.input.placeholder" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_history_noIdx_js" code="assistant.history.noIdx" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_history_loadFailed_js" code="assistant.history.loadFailed" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_history_loadError_js" code="assistant.history.loadError" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_history_deleteConfirm_js" code="assistant.history.deleteConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_history_deleteFailed_js" code="assistant.history.deleteFailed" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_history_deleteError_js" code="assistant.history.deleteError" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_history_editTitleFailed_js" code="assistant.history.editTitleFailed" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_history_editTitleError_js" code="assistant.history.editTitleError" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_history_newChatGreeting_js" code="assistant.history.newChatGreeting" javaScriptEscape="true"/>
+<spring:message var="msg_assistant_side_name" code="assistant.side.name"/>
+<spring:message var="msg_assistant_side_status" code="assistant.side.status"/>
+<spring:message var="msg_assistant_side_desc" code="assistant.side.desc"/>
+<spring:message var="msg_assistant_quick_title" code="assistant.quick.title"/>
+<spring:message var="msg_assistant_quick_tokyo_label" code="assistant.quick.tokyo.label"/>
+<spring:message var="msg_assistant_quick_budget_label" code="assistant.quick.budget.label"/>
+<spring:message var="msg_assistant_quick_backpacking_label" code="assistant.quick.backpacking.label"/>
+<spring:message var="msg_assistant_quick_jeju_label" code="assistant.quick.jeju.label"/>
+<spring:message var="msg_assistant_quick_solo_label" code="assistant.quick.solo.label"/>
+<spring:message var="msg_assistant_quick_checklist_label" code="assistant.quick.checklist.label"/>
+<spring:message var="msg_assistant_history_title" code="assistant.history.title"/>
+<spring:message var="msg_assistant_history_edit" code="assistant.history.edit"/>
+<spring:message var="msg_assistant_history_delete" code="assistant.history.delete"/>
+<spring:message var="msg_assistant_history_empty" code="assistant.history.empty"/>
+<spring:message var="msg_assistant_history_loginGuide" code="assistant.history.loginGuide"/>
+<spring:message var="msg_assistant_history_newChat" code="assistant.history.newChat"/>
+<spring:message var="msg_assistant_header_title" code="assistant.header.title"/>
+<spring:message var="msg_assistant_header_subtitle" code="assistant.header.subtitle"/>
+<spring:message var="msg_assistant_greeting_line1" code="assistant.greeting.line1"/>
+<spring:message var="msg_assistant_greeting_line2" code="assistant.greeting.line2"/>
+<spring:message var="msg_assistant_greeting_line3" code="assistant.greeting.line3"/>
+<spring:message var="msg_assistant_greeting_line4" code="assistant.greeting.line4"/>
+<spring:message var="msg_assistant_hint" code="assistant.hint"/>
 <c:set var="pageCSS" value="assistant/assistant.css" />
 <%@ include file="../common/header.jsp" %>
 
@@ -108,30 +157,7 @@
 <%-- ============================================================
      JS용 메시지 변수 — 서버 사이드에서 미리 꺼내 둠
      ============================================================ --%>
-<spring:message code="assistant.error.parse"          var="msgErrorParse"               javaScriptEscape="true"/>
-<spring:message code="assistant.error.server"         var="msgErrorServer"              javaScriptEscape="true"/>
-<spring:message code="assistant.error.request"        var="msgErrorRequest"             javaScriptEscape="true"/>
-<spring:message code="assistant.error.network"        var="msgErrorNetwork"             javaScriptEscape="true"/>
-<spring:message code="assistant.error.noResponse"     var="msgErrorNoResponse"          javaScriptEscape="true"/>
-<spring:message code="assistant.loading"              var="msgLoading"                  javaScriptEscape="true"/>
-<spring:message code="assistant.reset.confirm"        var="msgResetConfirm"             javaScriptEscape="true"/>
-<spring:message code="assistant.reset.done"           var="msgResetDone"                javaScriptEscape="true"/>
-<spring:message code="assistant.quick.tokyo"          var="msgQuickTokyo"               javaScriptEscape="true"/>
-<spring:message code="assistant.quick.budget"         var="msgQuickBudget"              javaScriptEscape="true"/>
-<spring:message code="assistant.quick.backpacking"    var="msgQuickBackpacking"         javaScriptEscape="true"/>
-<spring:message code="assistant.quick.jeju"           var="msgQuickJeju"                javaScriptEscape="true"/>
-<spring:message code="assistant.quick.solo"           var="msgQuickSolo"                javaScriptEscape="true"/>
-<spring:message code="assistant.quick.checklist"      var="msgQuickChecklist"           javaScriptEscape="true"/>
-<spring:message code="assistant.input.placeholder"    var="msgInputPlaceholder"         javaScriptEscape="true"/>
-<spring:message code="assistant.history.noIdx"        var="msgHistoryNoIdx"             javaScriptEscape="true"/>
-<spring:message code="assistant.history.loadFailed"   var="msgHistoryLoadFailed"        javaScriptEscape="true"/>
-<spring:message code="assistant.history.loadError"    var="msgHistoryLoadError"         javaScriptEscape="true"/>
-<spring:message code="assistant.history.deleteConfirm" var="msgHistoryDeleteConfirm"    javaScriptEscape="true"/>
-<spring:message code="assistant.history.deleteFailed" var="msgHistoryDeleteFailed"      javaScriptEscape="true"/>
-<spring:message code="assistant.history.deleteError"  var="msgHistoryDeleteError"       javaScriptEscape="true"/>
-<spring:message code="assistant.history.editTitleFailed" var="msgHistoryEditTitleFailed" javaScriptEscape="true"/>
-<spring:message code="assistant.history.editTitleError"  var="msgHistoryEditTitleError"  javaScriptEscape="true"/>
-<spring:message code="assistant.history.newChatGreeting" var="msgHistoryNewChatGreeting" javaScriptEscape="true"/>
+
 
 <body>
 <div class="chat-wrap">
@@ -141,43 +167,43 @@
         <div class="side-header">
             <div class="ai-avatar">✈️</div>
             <div class="ai-info">
-                <div class="ai-name"><spring:message code="assistant.side.name"/></div>
+                <div class="ai-name">${msg_assistant_side_name}</div>
                 <div class="ai-status">
                     <span class="dot"></span>
-                    <spring:message code="assistant.side.status" />
+                    ${msg_assistant_side_status}
                 </div>
             </div>
         </div>
 
         <div class="side-desc">
-            <p><spring:message code="assistant.side.desc"/></p>
+            <p>${msg_assistant_side_desc}</p>
         </div>
 
-        <div class="quick-title"><spring:message code="assistant.quick.title"/></div>
+        <div class="quick-title">${msg_assistant_quick_title}</div>
         <div class="quick-btns">
-            <button class="qb" onclick="sendQuick('${msgQuickTokyo}')">
-                <spring:message code="assistant.quick.tokyo.label" />
+            <button class="qb" onclick="sendQuick('${msg_assistant_quick_tokyo_js}')">
+                ${msg_assistant_quick_tokyo_label}
             </button>
-            <button class="qb" onclick="sendQuick('${msgQuickBudget}')">
-                <spring:message code="assistant.quick.budget.label" />
+            <button class="qb" onclick="sendQuick('${msg_assistant_quick_budget_js}')">
+                ${msg_assistant_quick_budget_label}
             </button>
-            <button class="qb" onclick="sendQuick('${msgQuickBackpacking}')">
-                <spring:message code="assistant.quick.backpacking.label" />
+            <button class="qb" onclick="sendQuick('${msg_assistant_quick_backpacking_js}')">
+                ${msg_assistant_quick_backpacking_label}
             </button>
-            <button class="qb" onclick="sendQuick('${msgQuickJeju}')">
-                <spring:message code="assistant.quick.jeju.label" />
+            <button class="qb" onclick="sendQuick('${msg_assistant_quick_jeju_js}')">
+                ${msg_assistant_quick_jeju_label}
             </button>
-            <button class="qb" onclick="sendQuick('${msgQuickSolo}')">
-                <spring:message code="assistant.quick.solo.label" />
+            <button class="qb" onclick="sendQuick('${msg_assistant_quick_solo_js}')">
+                ${msg_assistant_quick_solo_label}
             </button>
-            <button class="qb" onclick="sendQuick('${msgQuickChecklist}')">
-                <spring:message code="assistant.quick.checklist.label" />
+            <button class="qb" onclick="sendQuick('${msg_assistant_quick_checklist_js}')">
+                ${msg_assistant_quick_checklist_label}
             </button>
         </div>
 
         <div class="history-section">
             <div class="history-header">
-                <span class="history-title"><spring:message code="assistant.history.title"/></span>
+                <span class="history-title">${msg_assistant_history_title}</span>
             </div>
 
             <c:choose>
@@ -197,49 +223,49 @@
                                                 class="history-edit-btn"
                                                 data-idx="${chatPost.chat_post_idx}"
                                                 onclick="editHistoryTitle(this.dataset.idx, this)">
-                                            <spring:message code="assistant.history.edit" />
+                                            ${msg_assistant_history_edit}
                                         </button>
                                         <button type="button"
                                                 class="history-delete-btn"
                                                 data-idx="${chatPost.chat_post_idx}"
                                                 onclick="deleteHistory(this.dataset.idx)">
-                                            <spring:message code="assistant.history.delete" />
+                                            ${msg_assistant_history_delete}
                                         </button>
                                     </div>
                                 </c:forEach>
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <p class="history-empty"><spring:message code="assistant.history.empty"/></p>
+                            <p class="history-empty">${msg_assistant_history_empty}</p>
                         </c:otherwise>
                     </c:choose>
                 </c:when>
                 <c:otherwise>
-                    <p class="history-login-guide"><spring:message code="assistant.history.loginGuide"/></p>
+                    <p class="history-login-guide">${msg_assistant_history_loginGuide}</p>
                 </c:otherwise>
             </c:choose>
         </div>
 
         <button class="reset-btn" onclick="startNewChat()">
-            <spring:message code="assistant.history.newChat" />
+            ${msg_assistant_history_newChat}
         </button>
     </aside>
 
     <%-- ===================== 메인 채팅 영역 ===================== --%>
     <main class="chat-main">
         <div class="chat-header">
-            <h2><spring:message code="assistant.header.title"/></h2>
-            <span class="chat-sub"><spring:message code="assistant.header.subtitle"/></span>
+            <h2>${msg_assistant_header_title}</h2>
+            <span class="chat-sub">${msg_assistant_header_subtitle}</span>
         </div>
 
         <div class="chat-body" id="chatBody">
             <div class="msg-row ai">
                 <div class="msg-avatar">✈️</div>
                 <div class="msg-bubble">
-                    <spring:message code="assistant.greeting.line1"/><br><br>
-                    <spring:message code="assistant.greeting.line2"/><br>
-                    <spring:message code="assistant.greeting.line3"/><br><br>
-                    <spring:message code="assistant.greeting.line4" />
+                    ${msg_assistant_greeting_line1}<br><br>
+                    ${msg_assistant_greeting_line2}<br>
+                    ${msg_assistant_greeting_line3}<br><br>
+                    ${msg_assistant_greeting_line4}
                 </div>
             </div>
         </div>
@@ -249,7 +275,7 @@
                 <textarea
                     id="chatInput"
                     class="chat-input"
-                    placeholder="${msgInputPlaceholder}"
+                    placeholder="${msg_assistant_input_placeholder_js}"
                     rows="1"
                     onkeydown="handleKey(event)"
                     oninput="autoResize(this)"
@@ -258,7 +284,7 @@
                     <span id="sendIcon">➤</span>
                 </button>
             </div>
-            <div class="chat-hint"><spring:message code="assistant.hint"/></div>
+            <div class="chat-hint">${msg_assistant_hint}</div>
         </div>
     </main>
 </div>
@@ -266,23 +292,23 @@
 <script>
     const CTX = '${pageContext.request.contextPath}';
 
-    const MSG_ERROR_PARSE       = '${msgErrorParse}';
-    const MSG_ERROR_SERVER      = '${msgErrorServer}';
-    const MSG_ERROR_REQUEST     = '${msgErrorRequest}';
-    const MSG_ERROR_NETWORK     = '${msgErrorNetwork}';
-    const MSG_ERROR_NO_RESPONSE = '${msgErrorNoResponse}';
-    const MSG_LOADING           = '${msgLoading}';
-    const MSG_RESET_CONFIRM     = '${msgResetConfirm}';
-    const MSG_RESET_DONE        = '${msgResetDone}';
-    const MSG_HISTORY_NO_IDX         = '${msgHistoryNoIdx}';
-    const MSG_HISTORY_LOAD_FAILED    = '${msgHistoryLoadFailed}';
-    const MSG_HISTORY_LOAD_ERROR     = '${msgHistoryLoadError}';
-    const MSG_HISTORY_DELETE_CONFIRM = '${msgHistoryDeleteConfirm}';
-    const MSG_HISTORY_DELETE_FAILED  = '${msgHistoryDeleteFailed}';
-    const MSG_HISTORY_DELETE_ERROR   = '${msgHistoryDeleteError}';
-    const MSG_HISTORY_EDIT_FAILED    = '${msgHistoryEditTitleFailed}';
-    const MSG_HISTORY_EDIT_ERROR     = '${msgHistoryEditTitleError}';
-    const MSG_NEW_CHAT_GREETING      = '${msgHistoryNewChatGreeting}';
+    const MSG_ERROR_PARSE       = '${msg_assistant_error_parse_js}';
+    const MSG_ERROR_SERVER      = '${msg_assistant_error_server_js}';
+    const MSG_ERROR_REQUEST     = '${msg_assistant_error_request_js}';
+    const MSG_ERROR_NETWORK     = '${msg_assistant_error_network_js}';
+    const MSG_ERROR_NO_RESPONSE = '${msg_assistant_error_noResponse_js}';
+    const MSG_LOADING           = '${msg_assistant_loading_js}';
+    const MSG_RESET_CONFIRM     = '${msg_assistant_reset_confirm_js}';
+    const MSG_RESET_DONE        = '${msg_assistant_reset_done_js}';
+    const MSG_HISTORY_NO_IDX         = '${msg_assistant_history_noIdx_js}';
+    const MSG_HISTORY_LOAD_FAILED    = '${msg_assistant_history_loadFailed_js}';
+    const MSG_HISTORY_LOAD_ERROR     = '${msg_assistant_history_loadError_js}';
+    const MSG_HISTORY_DELETE_CONFIRM = '${msg_assistant_history_deleteConfirm_js}';
+    const MSG_HISTORY_DELETE_FAILED  = '${msg_assistant_history_deleteFailed_js}';
+    const MSG_HISTORY_DELETE_ERROR   = '${msg_assistant_history_deleteError_js}';
+    const MSG_HISTORY_EDIT_FAILED    = '${msg_assistant_history_editTitleFailed_js}';
+    const MSG_HISTORY_EDIT_ERROR     = '${msg_assistant_history_editTitleError_js}';
+    const MSG_NEW_CHAT_GREETING      = '${msg_assistant_history_newChatGreeting_js}';
 
     let isLoading = false;
     let currentChatPostIdx = null;

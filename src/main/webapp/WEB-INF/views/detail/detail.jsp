@@ -1,72 +1,175 @@
-<spring:message var="detailDeleteConfirmMsg" code="detail.delete.confirm" javaScriptEscape="true"/>
-<spring:message var="detailPackageImageAltMsg" code="detail.package.imageAlt" javaScriptEscape="true"/>
-<spring:message var="detailReviewPlaceholderMsg" code="detail.review.placeholder"/>
-<spring:message var="detailAiTitleMsg" code="detail.ai.title"/>
-<spring:message var="communityDetailReportDescriptionPlaceholderMsg" code="community.detail.report.description.placeholder"/>
-<spring:message var="communityDetailUserReportPlaceholderMsg" code="community.detail.userReport.placeholder"/>
-<spring:message var="detailCommonErrorMsg" code="detail.common.error" javaScriptEscape="true"/>
-<spring:message var="detailCommonLoginRequiredMsg" code="detail.common.loginRequired" javaScriptEscape="true"/>
-<spring:message var="detailEditTagsMaxMsg" code="detail.edit.tags.max" javaScriptEscape="true"/>
-<spring:message var="detailFavAddedMsg" code="detail.fav.added" javaScriptEscape="true"/>
-<spring:message var="detailFavRemovedMsg" code="detail.fav.removed" javaScriptEscape="true"/>
-<spring:message var="detailLikeAddedMsg" code="detail.like.added" javaScriptEscape="true"/>
-<spring:message var="detailLikeRemovedMsg" code="detail.like.removed" javaScriptEscape="true"/>
-<spring:message var="detailReviewSubmitLoadingMsg" code="detail.review.submit.loading" javaScriptEscape="true"/>
-<spring:message var="detailReviewSubmitFailMsg" code="detail.review.submit.fail" javaScriptEscape="true"/>
-<spring:message var="detailReviewSubmitSuccessMsg" code="detail.review.submit.success" javaScriptEscape="true"/>
-<spring:message var="detailReviewDeleteConfirmMsg" code="detail.review.delete.confirm" javaScriptEscape="true"/>
-<spring:message var="detailReviewDeleteFailMsg" code="detail.review.delete.fail" javaScriptEscape="true"/>
-<spring:message var="detailReviewDeleteSuccessMsg" code="detail.review.delete.success" javaScriptEscape="true"/>
-<spring:message var="detailReviewEmptyVisibleMsg" code="detail.review.empty.visible" javaScriptEscape="true"/>
-<spring:message var="detailReviewBlockConfirmMsg" code="detail.review.block.confirm" javaScriptEscape="true"/>
-<spring:message var="detailReviewBlockFailMsg" code="detail.review.block.fail" javaScriptEscape="true"/>
-<spring:message var="detailReviewBlockSuccessMsg" code="detail.review.block.success" javaScriptEscape="true"/>
-<spring:message var="detailReviewBlockNoneMsg" code="detail.review.block.none" javaScriptEscape="true"/>
-<spring:message var="detailReviewBlockBulkConfirmAllMsg" code="detail.review.block.bulkConfirmAll" javaScriptEscape="true"/>
-<spring:message var="detailReviewBlockBulkConfirmSelectedMsg" code="detail.review.block.bulkConfirmSelected" javaScriptEscape="true"/>
-<spring:message var="detailReviewBlockBulkSuccessMsg" code="detail.review.block.bulkSuccess" javaScriptEscape="true"/>
-<spring:message var="detailReviewAdminBlockSelectedMsg" code="detail.review.admin.blockSelected" javaScriptEscape="true"/>
-<spring:message var="detailReviewLikeSuccessMsg" code="detail.review.like.success" javaScriptEscape="true"/>
-<spring:message var="detailReviewWriteMsg" code="detail.review.write" javaScriptEscape="true"/>
-<spring:message var="detailReviewSubmitMsg" code="detail.review.submit" javaScriptEscape="true"/>
-<spring:message var="detailReviewEmptyMsg" code="detail.review.empty" javaScriptEscape="true"/>
-<spring:message var="detailPackageBookingLoginActionMsg" code="detail.package.booking.loginAction" javaScriptEscape="true"/>
-<spring:message var="detailPackageBookingActionMsg" code="detail.package.booking.action" javaScriptEscape="true"/>
-<spring:message var="detailPackageBookingLoginRequiredMsg" code="detail.package.booking.loginRequired" javaScriptEscape="true"/>
-<spring:message var="detailPackageBookingInsufficientCashMsg" code="detail.package.booking.insufficientCash" javaScriptEscape="true"/>
-<spring:message var="detailPackageBookingProcessingMsg" code="detail.package.booking.processing" javaScriptEscape="true"/>
-<spring:message var="detailPackageBookingErrorMsg" code="detail.package.booking.error" javaScriptEscape="true"/>
-<spring:message var="detailPackageBookingSuccessMsg" code="detail.package.booking.success" javaScriptEscape="true"/>
-<spring:message var="detailFlightDateRequiredMsg" code="detail.flight.dateRequired" javaScriptEscape="true"/>
-<spring:message var="detailFlightReturnDateInvalidMsg" code="detail.flight.returnDateInvalid" javaScriptEscape="true"/>
-<spring:message var="detailFlightNoDiscountMsg" code="detail.flight.noDiscount" javaScriptEscape="true"/>
-<spring:message var="detailFlightLoadingMsg" code="detail.flight.loading" javaScriptEscape="true"/>
-<spring:message var="detailFlightEmptyMsg" code="detail.flight.empty" javaScriptEscape="true"/>
-<spring:message var="detailFlightLoadFailMsg" code="detail.flight.loadFail" javaScriptEscape="true"/>
-<spring:message var="detailFlightOutboundLabelMsg" code="detail.flight.outboundLabel" javaScriptEscape="true"/>
-<spring:message var="detailFlightReturnLabelMsg" code="detail.flight.returnLabel" javaScriptEscape="true"/>
-<spring:message var="detailFlightDepartLabelMsg" code="detail.flight.departLabel" javaScriptEscape="true"/>
-<spring:message var="detailFlightArriveLabelMsg" code="detail.flight.arriveLabel" javaScriptEscape="true"/>
-<spring:message var="detailFlightMileageLimitMsg" code="detail.flight.mileageLimit" javaScriptEscape="true"/>
-<spring:message var="detailFlightLoginRequiredMsg" code="detail.flight.loginRequired" javaScriptEscape="true"/>
-<spring:message var="detailFlightSelectOfferMsg" code="detail.flight.selectOffer" javaScriptEscape="true"/>
-<spring:message var="detailFlightPurchaseFailMsg" code="detail.flight.purchaseFail" javaScriptEscape="true"/>
-<spring:message var="detailFlightPurchaseErrorMsg" code="detail.flight.purchaseError" javaScriptEscape="true"/>
-<spring:message var="detailFlightPurchaseSuccessMsg" code="detail.flight.purchaseSuccess" javaScriptEscape="true"/>
-<spring:message var="detailLocationNoCoordinatesMsg" code="detail.location.noCoordinates" javaScriptEscape="true"/>
-<spring:message var="detailAiLoadFailMsg" code="detail.ai.loadFail" javaScriptEscape="true"/>
-<spring:message var="communityDetailReportReasonRequiredMsg" code="community.detail.report.reasonRequired" javaScriptEscape="true"/>
-<spring:message var="communityDetailReportSubmittedMsg" code="community.detail.report.submitted" javaScriptEscape="true"/>
-<spring:message var="communityDetailRequestFailMsg" code="community.detail.request.fail" javaScriptEscape="true"/>
-<spring:message var="communityDetailUserReportMinLengthMsg" code="community.detail.userReport.minLength" javaScriptEscape="true"/>
-<spring:message var="detailFavDoneMsg" code="detail.fav.done" javaScriptEscape="true"/>
-<spring:message var="detailFavDoMsg" code="detail.fav.do" javaScriptEscape="true"/>
-<spring:message var="detailLikeDoneMsg" code="detail.like.done" javaScriptEscape="true"/>
-<spring:message var="detailLikeDoMsg" code="detail.like.do" javaScriptEscape="true"/>
-<spring:message var="detailReviewPlaceholderMsg2" code="detail.review.placeholder" javaScriptEscape="true"/>
-<spring:message var="detailAiDescMsg" code="detail.ai.desc"/>
-<spring:message var="detailAiTrendingTitleMsg" code="detail.ai.trending.title"/>
-<spring:message var="detailAiTrendingDescMsg" code="detail.ai.trending.desc"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_detail_delete_confirm_js" code="detail.delete.confirm" javaScriptEscape="true"/>
+<spring:message var="msg_detail_package_imageAlt_js" code="detail.package.imageAlt" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_placeholder" code="detail.review.placeholder"/>
+<spring:message var="msg_detail_ai_title" code="detail.ai.title"/>
+<spring:message var="msg_community_detail_report_description_placeholder" code="community.detail.report.description.placeholder"/>
+<spring:message var="msg_community_detail_userReport_placeholder" code="community.detail.userReport.placeholder"/>
+<spring:message var="msg_detail_common_error_js" code="detail.common.error" javaScriptEscape="true"/>
+<spring:message var="msg_detail_common_loginRequired_js" code="detail.common.loginRequired" javaScriptEscape="true"/>
+<spring:message var="msg_detail_edit_tags_max_js" code="detail.edit.tags.max" javaScriptEscape="true"/>
+<spring:message var="msg_detail_fav_added_js" code="detail.fav.added" javaScriptEscape="true"/>
+<spring:message var="msg_detail_fav_removed_js" code="detail.fav.removed" javaScriptEscape="true"/>
+<spring:message var="msg_detail_like_added_js" code="detail.like.added" javaScriptEscape="true"/>
+<spring:message var="msg_detail_like_removed_js" code="detail.like.removed" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_submit_loading_js" code="detail.review.submit.loading" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_submit_fail_js" code="detail.review.submit.fail" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_submit_success_js" code="detail.review.submit.success" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_delete_confirm_js" code="detail.review.delete.confirm" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_delete_fail_js" code="detail.review.delete.fail" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_delete_success_js" code="detail.review.delete.success" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_empty_visible_js" code="detail.review.empty.visible" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_block_confirm_js" code="detail.review.block.confirm" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_block_fail_js" code="detail.review.block.fail" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_block_success_js" code="detail.review.block.success" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_block_none_js" code="detail.review.block.none" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_block_bulkConfirmAll_js" code="detail.review.block.bulkConfirmAll" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_block_bulkConfirmSelected_js" code="detail.review.block.bulkConfirmSelected" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_block_bulkSuccess_js" code="detail.review.block.bulkSuccess" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_admin_blockSelected_js" code="detail.review.admin.blockSelected" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_like_success_js" code="detail.review.like.success" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_write_js" code="detail.review.write" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_submit_js" code="detail.review.submit" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_empty_js" code="detail.review.empty" javaScriptEscape="true"/>
+<spring:message var="msg_detail_package_booking_loginAction_js" code="detail.package.booking.loginAction" javaScriptEscape="true"/>
+<spring:message var="msg_detail_package_booking_action_js" code="detail.package.booking.action" javaScriptEscape="true"/>
+<spring:message var="msg_detail_package_booking_loginRequired_js" code="detail.package.booking.loginRequired" javaScriptEscape="true"/>
+<spring:message var="msg_detail_package_booking_insufficientCash_js" code="detail.package.booking.insufficientCash" javaScriptEscape="true"/>
+<spring:message var="msg_detail_package_booking_processing_js" code="detail.package.booking.processing" javaScriptEscape="true"/>
+<spring:message var="msg_detail_package_booking_error_js" code="detail.package.booking.error" javaScriptEscape="true"/>
+<spring:message var="msg_detail_package_booking_success_js" code="detail.package.booking.success" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_dateRequired_js" code="detail.flight.dateRequired" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_returnDateInvalid_js" code="detail.flight.returnDateInvalid" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_noDiscount_js" code="detail.flight.noDiscount" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_loading_js" code="detail.flight.loading" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_empty_js" code="detail.flight.empty" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_loadFail_js" code="detail.flight.loadFail" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_outboundLabel_js" code="detail.flight.outboundLabel" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_returnLabel_js" code="detail.flight.returnLabel" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_departLabel_js" code="detail.flight.departLabel" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_arriveLabel_js" code="detail.flight.arriveLabel" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_mileageLimit_js" code="detail.flight.mileageLimit" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_loginRequired_js" code="detail.flight.loginRequired" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_selectOffer_js" code="detail.flight.selectOffer" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_purchaseFail_js" code="detail.flight.purchaseFail" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_purchaseError_js" code="detail.flight.purchaseError" javaScriptEscape="true"/>
+<spring:message var="msg_detail_flight_purchaseSuccess_js" code="detail.flight.purchaseSuccess" javaScriptEscape="true"/>
+<spring:message var="msg_detail_location_noCoordinates_js" code="detail.location.noCoordinates" javaScriptEscape="true"/>
+<spring:message var="msg_detail_ai_loadFail_js" code="detail.ai.loadFail" javaScriptEscape="true"/>
+<spring:message var="msg_community_detail_report_reasonRequired_js" code="community.detail.report.reasonRequired" javaScriptEscape="true"/>
+<spring:message var="msg_community_detail_report_submitted_js" code="community.detail.report.submitted" javaScriptEscape="true"/>
+<spring:message var="msg_community_detail_request_fail_js" code="community.detail.request.fail" javaScriptEscape="true"/>
+<spring:message var="msg_community_detail_userReport_minLength_js" code="community.detail.userReport.minLength" javaScriptEscape="true"/>
+<spring:message var="msg_detail_fav_done_js" code="detail.fav.done" javaScriptEscape="true"/>
+<spring:message var="msg_detail_fav_do_js" code="detail.fav.do" javaScriptEscape="true"/>
+<spring:message var="msg_detail_like_done_js" code="detail.like.done" javaScriptEscape="true"/>
+<spring:message var="msg_detail_like_do_js" code="detail.like.do" javaScriptEscape="true"/>
+<spring:message var="msg_detail_review_placeholder_js" code="detail.review.placeholder" javaScriptEscape="true"/>
+<spring:message var="msg_detail_ai_desc" code="detail.ai.desc"/>
+<spring:message var="msg_detail_ai_trending_title" code="detail.ai.trending.title"/>
+<spring:message var="msg_detail_ai_trending_desc" code="detail.ai.trending.desc"/>
+<spring:message var="msg_detail_common_close" code="detail.common.close"/>
+<spring:message var="msg_detail_package_title" code="detail.package.title"/>
+<spring:message var="msg_detail_package_carousel" code="detail.package.carousel"/>
+<spring:message var="msg_detail_package_prev" code="detail.package.prev"/>
+<spring:message var="msg_detail_package_next" code="detail.package.next"/>
+<spring:message var="msg_detail_package_period_always" code="detail.package.period.always"/>
+<spring:message var="msg_detail_package_defaultSummary" code="detail.package.defaultSummary"/>
+<spring:message var="msg_detail_package_price" code="detail.package.price"/>
+<spring:message var="msg_detail_package_period" code="detail.package.period"/>
+<spring:message var="msg_detail_package_people" code="detail.package.people"/>
+<spring:message var="msg_detail_package_seller" code="detail.package.seller"/>
+<spring:message var="msg_detail_package_booking_title" code="detail.package.booking.title"/>
+<spring:message var="msg_detail_package_booking_people" code="detail.package.booking.people"/>
+<spring:message var="msg_detail_package_booking_mileage" code="detail.package.booking.mileage"/>
+<spring:message var="msg_detail_package_booking_total" code="detail.package.booking.total"/>
+<spring:message var="msg_detail_package_booking_maxMileage" code="detail.package.booking.maxMileage"/>
+<spring:message var="msg_detail_package_booking_cash" code="detail.package.booking.cash"/>
+<spring:message var="msg_detail_package_booking_balance" code="detail.package.booking.balance"/>
+<spring:message var="msg_detail_package_booking_action" code="detail.package.booking.action"/>
+<spring:message var="msg_detail_flight_cheapestFromSeoul" code="detail.flight.cheapestFromSeoul"/>
+<spring:message var="msg_detail_flight_modal_title" code="detail.flight.modal.title"/>
+<spring:message var="msg_detail_flight_modal_subtitle" code="detail.flight.modal.subtitle"/>
+<spring:message var="msg_detail_flight_departureDate" code="detail.flight.departureDate"/>
+<spring:message var="msg_detail_flight_returnDate" code="detail.flight.returnDate"/>
+<spring:message var="msg_detail_flight_loading" code="detail.flight.loading"/>
+<spring:message var="msg_detail_flight_originalPrice" code="detail.flight.originalPrice"/>
+<spring:message var="msg_detail_flight_gradeDiscount" code="detail.flight.gradeDiscount"/>
+<spring:message var="msg_detail_flight_totalPrice" code="detail.flight.totalPrice"/>
+<spring:message var="msg_detail_flight_cashBalance" code="detail.flight.cashBalance"/>
+<spring:message var="msg_detail_flight_mileageBalance" code="detail.flight.mileageBalance"/>
+<spring:message var="msg_detail_flight_useMileage" code="detail.flight.useMileage"/>
+<spring:message var="msg_detail_flight_useCash" code="detail.flight.useCash"/>
+<spring:message var="msg_detail_flight_useMaxMileage" code="detail.flight.useMaxMileage"/>
+<spring:message var="msg_detail_flight_purchase" code="detail.flight.purchase"/>
+<spring:message var="msg_detail_review_countSuffix" code="detail.review.countSuffix"/>
+<spring:message var="msg_detail_like_count" code="detail.like.count"/>
+<spring:message var="msg_detail_back" code="detail.back"/>
+<spring:message var="msg_detail_fav_done" code="detail.fav.done"/>
+<spring:message var="msg_detail_fav_do" code="detail.fav.do"/>
+<spring:message var="msg_detail_like_done" code="detail.like.done"/>
+<spring:message var="msg_detail_like_do" code="detail.like.do"/>
+<spring:message var="msg_detail_ai_plan" code="detail.ai.plan"/>
+<spring:message var="msg_detail_edit_admin" code="detail.edit.admin"/>
+<spring:message var="msg_detail_edit_mine" code="detail.edit.mine"/>
+<spring:message var="msg_detail_edit_admin_desc" code="detail.edit.admin.desc"/>
+<spring:message var="msg_detail_edit_user_desc" code="detail.edit.user.desc"/>
+<spring:message var="msg_detail_edit_open" code="detail.edit.open"/>
+<spring:message var="msg_detail_delete" code="detail.delete"/>
+<spring:message var="msg_detail_edit_title" code="detail.edit.title"/>
+<spring:message var="msg_detail_edit_subtitle" code="detail.edit.subtitle"/>
+<spring:message var="msg_explore_form_name" code="explore.form.name"/>
+<spring:message var="msg_detail_info_region" code="detail.info.region"/>
+<spring:message var="msg_detail_info_address" code="detail.info.address"/>
+<spring:message var="msg_explore_form_lat" code="explore.form.lat"/>
+<spring:message var="msg_explore_form_lng" code="explore.form.lng"/>
+<spring:message var="msg_explore_form_description" code="explore.form.description"/>
+<spring:message var="msg_explore_form_image" code="explore.form.image"/>
+<spring:message var="msg_explore_form_tags" code="explore.form.tags"/>
+<spring:message var="msg_explore_cancel" code="explore.cancel"/>
+<spring:message var="msg_explore_save" code="explore.save"/>
+<spring:message var="msg_detail_info_title" code="detail.info.title"/>
+<spring:message var="msg_detail_info_rating" code="detail.info.rating"/>
+<spring:message var="msg_detail_review_title" code="detail.review.title"/>
+<spring:message var="msg_explore_count" code="explore.count"/>
+<spring:message var="msg_detail_info_noReview" code="detail.info.noReview"/>
+<spring:message var="msg_detail_info_like" code="detail.info.like"/>
+<spring:message var="msg_detail_intro_title" code="detail.intro.title"/>
+<spring:message var="msg_detail_tags_title" code="detail.tags.title"/>
+<spring:message var="msg_detail_location_title" code="detail.location.title"/>
+<spring:message var="msg_detail_review_total" code="detail.review.total"/>
+<spring:message var="msg_detail_review_write" code="detail.review.write"/>
+<spring:message var="msg_detail_review_submit" code="detail.review.submit"/>
+<spring:message var="msg_detail_review_written" code="detail.review.written"/>
+<spring:message var="msg_detail_review_login_need" code="detail.review.login.need"/>
+<spring:message var="msg_detail_review_login" code="detail.review.login"/>
+<spring:message var="msg_detail_review_admin_selectAll" code="detail.review.admin.selectAll"/>
+<spring:message var="msg_detail_review_admin_help" code="detail.review.admin.help"/>
+<spring:message var="msg_detail_review_admin_blockSelected" code="detail.review.admin.blockSelected"/>
+<spring:message var="msg_community_detail_userReport" code="community.detail.userReport"/>
+<spring:message var="msg_community_detail_report" code="community.detail.report"/>
+<spring:message var="msg_detail_review_delete" code="detail.review.delete"/>
+<spring:message var="msg_detail_review_block" code="detail.review.block"/>
+<spring:message var="msg_detail_review_empty" code="detail.review.empty"/>
+<spring:message var="msg_detail_ai_loading" code="detail.ai.loading"/>
+<spring:message var="msg_detail_ai_empty" code="detail.ai.empty"/>
+<spring:message var="msg_detail_explore_more" code="detail.explore.more"/>
+<spring:message var="msg_community_detail_report_title" code="community.detail.report.title"/>
+<spring:message var="msg_community_detail_report_reason" code="community.detail.report.reason"/>
+<spring:message var="msg_community_detail_report_reason_choose" code="community.detail.report.reason.choose"/>
+<spring:message var="msg_community_detail_report_reason_spam" code="community.detail.report.reason.spam"/>
+<spring:message var="msg_community_detail_report_reason_abuse" code="community.detail.report.reason.abuse"/>
+<spring:message var="msg_community_detail_report_reason_privacy" code="community.detail.report.reason.privacy"/>
+<spring:message var="msg_community_detail_report_reason_illegal" code="community.detail.report.reason.illegal"/>
+<spring:message var="msg_community_detail_report_reason_other" code="community.detail.report.reason.other"/>
+<spring:message var="msg_community_detail_report_description" code="community.detail.report.description"/>
+<spring:message var="msg_community_detail_cancel" code="community.detail.cancel"/>
+<spring:message var="msg_community_detail_report_submit" code="community.detail.report.submit"/>
+<spring:message var="msg_community_detail_userReport_title" code="community.detail.userReport.title"/>
+<spring:message var="msg_community_detail_userReport_description" code="community.detail.userReport.description"/>
+
+
 ﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -77,40 +180,8 @@
 <%@ include file="../common/header.jsp" %>
 
 <body>
-<spring:message code="detail.common.close" var="detailCloseLabel"/>
-<spring:message code="detail.package.title" var="detailPackageTitleLabel"/>
-<spring:message code="detail.package.carousel" var="detailPackageCarouselLabel"/>
-<spring:message code="detail.package.prev" var="detailPackagePrevLabel"/>
-<spring:message code="detail.package.next" var="detailPackageNextLabel"/>
-<spring:message code="detail.package.period.always" var="detailPackagePeriodAlwaysLabel"/>
-<spring:message code="detail.package.defaultSummary" var="detailPackageDefaultSummaryLabel"/>
-<spring:message code="detail.package.price" var="detailPackagePriceLabel"/>
-<spring:message code="detail.package.period" var="detailPackagePeriodLabel"/>
-<spring:message code="detail.package.people" var="detailPackagePeopleLabel"/>
-<spring:message code="detail.package.seller" var="detailPackageSellerLabel"/>
-<spring:message code="detail.package.booking.title" var="detailPackageBookingTitleLabel"/>
-<spring:message code="detail.package.booking.people" var="detailPackageBookingPeopleLabel"/>
-<spring:message code="detail.package.booking.mileage" var="detailPackageBookingMileageLabel"/>
-<spring:message code="detail.package.booking.total" var="detailPackageBookingTotalLabel"/>
-<spring:message code="detail.package.booking.maxMileage" var="detailPackageBookingMaxMileageLabel"/>
-<spring:message code="detail.package.booking.cash" var="detailPackageBookingCashLabel"/>
-<spring:message code="detail.package.booking.balance" var="detailPackageBookingBalanceLabel"/>
-<spring:message code="detail.package.booking.action" var="detailPackageBookingActionLabel"/>
-<spring:message code="detail.flight.cheapestFromSeoul" var="detailFlightCheapestLabel"/>
-<spring:message code="detail.flight.modal.title" var="detailFlightTitleLabel"/>
-<spring:message code="detail.flight.modal.subtitle" var="detailFlightSubtitleLabel"/>
-<spring:message code="detail.flight.departureDate" var="detailFlightDepartureDateLabel"/>
-<spring:message code="detail.flight.returnDate" var="detailFlightReturnDateLabel"/>
-<spring:message code="detail.flight.loading" var="detailFlightLoadingLabel"/>
-<spring:message code="detail.flight.originalPrice" var="detailFlightOriginalPriceLabel"/>
-<spring:message code="detail.flight.gradeDiscount" var="detailFlightGradeDiscountLabel"/>
-<spring:message code="detail.flight.totalPrice" var="detailFlightTotalPriceLabel"/>
-<spring:message code="detail.flight.cashBalance" var="detailFlightCashBalanceLabel"/>
-<spring:message code="detail.flight.mileageBalance" var="detailFlightMileageBalanceLabel"/>
-<spring:message code="detail.flight.useMileage" var="detailFlightUseMileageLabel"/>
-<spring:message code="detail.flight.useCash" var="detailFlightUseCashLabel"/>
-<spring:message code="detail.flight.useMaxMileage" var="detailFlightUseMaxMileageLabel"/>
-<spring:message code="detail.flight.purchase" var="detailFlightPurchaseLabel"/>
+
+
 <style>
 html { scrollbar-gutter: stable; }
 /* 히어로 영역 */
@@ -935,9 +1006,9 @@ html { scrollbar-gutter: stable; }
       <span class="det-hero-rat">
         <span class="star">&#11088;</span>
         <fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/>
-        <span style="font-size:13px;opacity:.8">(${spot.reviewCount}<spring:message code="detail.review.countSuffix"/>)</span>
+        <span style="font-size:13px;opacity:.8">(${spot.reviewCount}${msg_detail_review_countSuffix})</span>
       </span>
-      <span>&#10084; ${spot.likeCount} <spring:message code="detail.like.count"/></span>
+      <span>&#10084; ${spot.likeCount} ${msg_detail_like_count}</span>
     </div>
   </div>
 </div>
@@ -946,7 +1017,7 @@ html { scrollbar-gutter: stable; }
 <div class="det-body">
 
   <button class="det-back-btn" onclick="history.back()">
-    &#8592; <spring:message code="detail.back"/>
+    &#8592; ${msg_detail_back}
   </button>
 
   <!-- 액션 버튼 -->
@@ -956,8 +1027,8 @@ html { scrollbar-gutter: stable; }
       <span class="det-action-icon">${spot.favorited ? '⭐' : '☆'}</span>
       <span class="det-action-label">
         <c:choose>
-          <c:when test="${spot.favorited}"><spring:message code="detail.fav.done"/></c:when>
-          <c:otherwise><spring:message code="detail.fav.do"/></c:otherwise>
+          <c:when test="${spot.favorited}">${msg_detail_fav_done}</c:when>
+          <c:otherwise>${msg_detail_fav_do}</c:otherwise>
         </c:choose>
       </span>
     </button>
@@ -966,14 +1037,14 @@ html { scrollbar-gutter: stable; }
       <span class="det-action-icon">${spot.liked ? '❤️' : '🤍'}</span>
       <span class="det-action-label">
         <c:choose>
-          <c:when test="${spot.liked}"><spring:message code="detail.like.done"/></c:when>
-          <c:otherwise><spring:message code="detail.like.do"/></c:otherwise>
+          <c:when test="${spot.liked}">${msg_detail_like_done}</c:when>
+          <c:otherwise>${msg_detail_like_do}</c:otherwise>
         </c:choose>
       </span>
     </button>
     <button class="det-action-btn"
             onclick="location.href='${pageContext.request.contextPath}/assistant'">
-      &#10024; <spring:message code="detail.ai.plan"/>
+      &#10024; ${msg_detail_ai_plan}
     </button>
   </div>
 
@@ -983,21 +1054,21 @@ html { scrollbar-gutter: stable; }
         <strong>
           ${isAdminMode ? '🛡️ ' : '✏️ '}
           <c:choose>
-            <c:when test="${isAdminMode}"><spring:message code="detail.edit.admin"/></c:when>
-            <c:otherwise><spring:message code="detail.edit.mine"/></c:otherwise>
+            <c:when test="${isAdminMode}">${msg_detail_edit_admin}</c:when>
+            <c:otherwise>${msg_detail_edit_mine}</c:otherwise>
           </c:choose>
         </strong><br>
         <c:choose>
-          <c:when test="${isAdminMode}"><spring:message code="detail.edit.admin.desc"/></c:when>
-          <c:otherwise><spring:message code="detail.edit.user.desc"/></c:otherwise>
+          <c:when test="${isAdminMode}">${msg_detail_edit_admin_desc}</c:when>
+          <c:otherwise>${msg_detail_edit_user_desc}</c:otherwise>
         </c:choose>
       </div>
       <div class="det-admin-actions">
-        <button type="button" class="det-admin-btn" id="openAdminEditBtn"><spring:message code="detail.edit.open"/></button>
+        <button type="button" class="det-admin-btn" id="openAdminEditBtn">${msg_detail_edit_open}</button>
         <c:if test="${isAdminMode}">
           <form method="post" action="${pageContext.request.contextPath}/detail/${spot.spotIdx}/admin/delete"
-                onsubmit="return confirm('${detailDeleteConfirmMsg}');">
-            <button type="submit" class="det-admin-btn danger"><spring:message code="detail.delete"/></button>
+                onsubmit="return confirm('${msg_detail_delete_confirm_js}');">
+            <button type="submit" class="det-admin-btn danger">${msg_detail_delete}</button>
           </form>
         </c:if>
       </div>
@@ -1009,8 +1080,8 @@ html { scrollbar-gutter: stable; }
       <div class="det-admin-dialog">
         <div class="det-admin-head">
           <div>
-            <h3><spring:message code="detail.edit.title"/></h3>
-            <p><spring:message code="detail.edit.subtitle"/></p>
+            <h3>${msg_detail_edit_title}</h3>
+            <p>${msg_detail_edit_subtitle}</p>
           </div>
           <button type="button" class="det-admin-close" id="closeAdminEditBtn">&#215;</button>
         </div>
@@ -1025,40 +1096,40 @@ html { scrollbar-gutter: stable; }
               id="adminEditForm">
           <div class="det-admin-grid">
             <div class="det-admin-field">
-              <label for="adminSpotName"><spring:message code="explore.form.name"/></label>
+              <label for="adminSpotName">${msg_explore_form_name}</label>
               <input type="text" id="adminSpotName" name="name" maxlength="100"
                      value="${fn:escapeXml(adminEditForm.name)}" required>
             </div>
             <div class="det-admin-field">
-              <label for="adminSpotRegion"><spring:message code="detail.info.region"/></label>
+              <label for="adminSpotRegion">${msg_detail_info_region}</label>
               <input type="text" id="adminSpotRegion" name="region" maxlength="100"
                      value="${fn:escapeXml(adminEditForm.region)}" required>
             </div>
             <div class="det-admin-field full">
-              <label for="adminSpotAddress"><spring:message code="detail.info.address"/></label>
+              <label for="adminSpotAddress">${msg_detail_info_address}</label>
               <input type="text" id="adminSpotAddress" name="address" maxlength="255"
                      value="${fn:escapeXml(adminEditForm.address)}" required>
             </div>
             <div class="det-admin-field">
-              <label for="adminSpotLat"><spring:message code="explore.form.lat"/></label>
+              <label for="adminSpotLat">${msg_explore_form_lat}</label>
               <input type="number" id="adminSpotLat" name="latitude" step="0.000001"
                      value="${adminEditForm.latitude}" required>
             </div>
             <div class="det-admin-field">
-              <label for="adminSpotLng"><spring:message code="explore.form.lng"/></label>
+              <label for="adminSpotLng">${msg_explore_form_lng}</label>
               <input type="number" id="adminSpotLng" name="longitude" step="0.000001"
                      value="${adminEditForm.longitude}" required>
             </div>
             <div class="det-admin-field full">
-              <label for="adminSpotDesc"><spring:message code="explore.form.description"/></label>
+              <label for="adminSpotDesc">${msg_explore_form_description}</label>
               <textarea id="adminSpotDesc" name="description" maxlength="2000" required>${fn:escapeXml(adminEditForm.description)}</textarea>
             </div>
             <div class="det-admin-field full">
-              <label for="adminSpotImage"><spring:message code="explore.form.image"/></label>
+              <label for="adminSpotImage">${msg_explore_form_image}</label>
               <input type="file" id="adminSpotImage" name="image" accept=".jpg,.jpeg,.png,.gif,.webp">
             </div>
             <div class="det-admin-field full">
-              <label><spring:message code="explore.form.tags"/></label>
+              <label>${msg_explore_form_tags}</label>
               <div class="det-admin-tag-box">
                 <c:forEach var="tag" items="${writeTagList}">
                   <label class="det-admin-tag">
@@ -1073,8 +1144,8 @@ html { scrollbar-gutter: stable; }
             </div>
           </div>
           <div class="det-admin-foot">
-            <button type="button" class="det-action-btn" id="cancelAdminEditBtn"><spring:message code="explore.cancel"/></button>
-            <button type="submit" class="det-action-btn active"><spring:message code="explore.save"/></button>
+            <button type="button" class="det-action-btn" id="cancelAdminEditBtn">${msg_explore_cancel}</button>
+            <button type="submit" class="det-action-btn active">${msg_explore_save}</button>
           </div>
         </form>
       </div>
@@ -1083,36 +1154,36 @@ html { scrollbar-gutter: stable; }
 
   <!-- 기본 정보 -->
   <div class="det-section">
-    <h2>&#127760; <spring:message code="detail.info.title"/></h2>
+    <h2>&#127760; ${msg_detail_info_title}</h2>
     <div class="info-grid">
       <c:if test="${not empty spot.region}">
         <div class="info-row">
-          <span class="info-label"><spring:message code="detail.info.region"/></span>
+          <span class="info-label">${msg_detail_info_region}</span>
           <span class="info-value">${fn:escapeXml(spot.region)}</span>
         </div>
       </c:if>
       <c:if test="${not empty spot.address}">
         <div class="info-row">
-          <span class="info-label"><spring:message code="detail.info.address"/></span>
+          <span class="info-label">${msg_detail_info_address}</span>
           <span class="info-value">${fn:escapeXml(spot.address)}</span>
         </div>
       </c:if>
       <div class="info-row">
-        <span class="info-label"><spring:message code="detail.info.rating"/></span>
+        <span class="info-label">${msg_detail_info_rating}</span>
         <span class="info-value">
           &#11088;
           <c:choose>
             <c:when test="${spot.reviewCount > 0}">
               <fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/> / 5.0
-              &nbsp;(<spring:message code="detail.review.title"/> ${spot.reviewCount}<spring:message code="explore.count"/>)
+              &nbsp;(${msg_detail_review_title} ${spot.reviewCount}${msg_explore_count})
             </c:when>
-            <c:otherwise><spring:message code="detail.info.noReview"/></c:otherwise>
+            <c:otherwise>${msg_detail_info_noReview}</c:otherwise>
           </c:choose>
         </span>
       </div>
       <div class="info-row">
-        <span class="info-label"><spring:message code="detail.info.like"/></span>
-        <span class="info-value">&#10084; ${spot.likeCount}<spring:message code="explore.count"/></span>
+        <span class="info-label">${msg_detail_info_like}</span>
+        <span class="info-value">&#10084; ${spot.likeCount}${msg_explore_count}</span>
       </div>
     </div>
   </div>
@@ -1120,7 +1191,7 @@ html { scrollbar-gutter: stable; }
   <!-- 소개 -->
   <c:if test="${not empty spot.description}">
     <div class="det-section">
-      <h2>&#128214; <spring:message code="detail.intro.title"/></h2>
+      <h2>&#128214; ${msg_detail_intro_title}</h2>
       <p class="det-desc">${fn:escapeXml(spot.description)}</p>
     </div>
   </c:if>
@@ -1128,7 +1199,7 @@ html { scrollbar-gutter: stable; }
   <!-- 태그 -->
   <c:if test="${not empty spot.tags}">
     <div class="det-section">
-      <h2>&#127914; <spring:message code="detail.tags.title"/></h2>
+      <h2>&#127914; ${msg_detail_tags_title}</h2>
       <div class="det-tags">
         <c:forEach var="tag" items="${spot.tags}">
           <span class="spot-tag">${fn:escapeXml(tag)}</span>
@@ -1141,11 +1212,11 @@ html { scrollbar-gutter: stable; }
   <c:if test="${not empty approvedPackageList}">
     <div class="det-section">
       <div class="detail-package-head">
-        <h2>&#127873; ${detailPackageTitleLabel}</h2>
-        <div class="detail-package-controls" aria-label="${detailPackageCarouselLabel}">
-          <button type="button" class="detail-package-nav" id="packagePrevBtn" aria-label="${detailPackagePrevLabel}">&lt;</button>
+        <h2>&#127873; ${msg_detail_package_title}</h2>
+        <div class="detail-package-controls" aria-label="${msg_detail_package_carousel}">
+          <button type="button" class="detail-package-nav" id="packagePrevBtn" aria-label="${msg_detail_package_prev}">&lt;</button>
           <span class="detail-package-page" id="packagePageText">1 / 1</span>
-          <button type="button" class="detail-package-nav" id="packageNextBtn" aria-label="${detailPackageNextLabel}">&gt;</button>
+          <button type="button" class="detail-package-nav" id="packageNextBtn" aria-label="${msg_detail_package_next}">&gt;</button>
         </div>
       </div>
       <div class="detail-package-carousel">
@@ -1154,25 +1225,25 @@ html { scrollbar-gutter: stable; }
             <c:set var="pkgPeriod">
               <c:choose>
                 <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">${pkg.startDate} ~ ${pkg.endDate}</c:when>
-                <c:otherwise>${detailPackagePeriodAlwaysLabel}</c:otherwise>
+                <c:otherwise>${msg_detail_package_period_always}</c:otherwise>
               </c:choose>
             </c:set>
             <c:choose>
               <c:when test="${not empty pkg.maxPeople}">
-                <spring:message code="detail.package.people.range" arguments="${pkg.minPeople},${pkg.maxPeople}" var="pkgPeople"/>
+                <spring:message var="msg_detail_package_people_range_args_pkg_minPeople_pkg_maxPeople" code="detail.package.people.range" arguments="${pkg.minPeople},${pkg.maxPeople}"/>
               </c:when>
               <c:otherwise>
-                <spring:message code="detail.package.people.minOnly" arguments="${pkg.minPeople}" var="pkgPeople"/>
+                <spring:message var="msg_detail_package_people_minOnly_args_pkg_minPeople" code="detail.package.people.minOnly" arguments="${pkg.minPeople}"/>
               </c:otherwise>
             </c:choose>
-            <spring:message code="detail.package.viewDetail" arguments="${fn:escapeXml(pkg.packageTitle)}" var="pkgDetailLabel"/>
+            <spring:message var="msg_detail_package_viewDetail_args_fn_escapeXml_pkg_packageTitle" code="detail.package.viewDetail" arguments="${fn:escapeXml(pkg.packageTitle)}"/>
             <fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0" var="pkgPriceText"/>
             <article class="detail-package-card"
                      tabindex="0"
                      role="button"
-                     aria-label="${pkgDetailLabel}"
+                     aria-label="${msg_detail_package_viewDetail_args_fn_escapeXml_pkg_packageTitle}"
                      data-title="${fn:escapeXml(pkg.packageTitle)}"
-                     data-summary="${fn:escapeXml(empty pkg.packageSummary ? detailPackageDefaultSummaryLabel : pkg.packageSummary)}"
+                     data-summary="${fn:escapeXml(empty pkg.packageSummary ? msg_detail_package_defaultSummary : pkg.packageSummary)}"
                      data-content="${fn:escapeXml(pkg.packageContent)}"
                      data-image="${fn:escapeXml(pkg.mainImagePath)}"
                      data-package-idx="${pkg.packageIdx}"
@@ -1183,7 +1254,7 @@ html { scrollbar-gutter: stable; }
                      data-spot="${fn:escapeXml(pkg.spotName)}"
                      data-price="${fn:escapeXml(pkgPriceText)} ${fn:escapeXml(pkg.currencyCode)}"
                      data-period="${fn:escapeXml(pkgPeriod)}"
-                     data-people="${fn:escapeXml(pkgPeople)}"
+                     data-people="${fn:escapeXml(msg_detail_package_people_minOnly_args_pkg_minPeople)}"
                      data-seller="${fn:escapeXml(pkg.sellerNickname)}">
               <div class="detail-package-thumb">
                 <c:choose>
@@ -1201,28 +1272,28 @@ html { scrollbar-gutter: stable; }
                 <p class="detail-package-summary">
                   <c:choose>
                     <c:when test="${not empty pkg.packageSummary}">${fn:escapeXml(pkg.packageSummary)}</c:when>
-                    <c:otherwise>${detailPackageDefaultSummaryLabel}</c:otherwise>
+                    <c:otherwise>${msg_detail_package_defaultSummary}</c:otherwise>
                   </c:choose>
                 </p>
                 <dl class="detail-package-meta">
                   <div>
-                    <dt>${detailPackagePriceLabel}</dt>
+                    <dt>${msg_detail_package_price}</dt>
                     <dd><fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0"/> ${fn:escapeXml(pkg.currencyCode)}</dd>
                   </div>
                   <div>
-                    <dt>${detailPackagePeriodLabel}</dt>
+                    <dt>${msg_detail_package_period}</dt>
                     <dd>
                       <c:choose>
                         <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
                           ${pkg.startDate} ~ ${pkg.endDate}
                         </c:when>
-                        <c:otherwise>${detailPackagePeriodAlwaysLabel}</c:otherwise>
+                        <c:otherwise>${msg_detail_package_period_always}</c:otherwise>
                       </c:choose>
                     </dd>
                   </div>
                   <div>
-                    <dt>${detailPackagePeopleLabel}</dt>
-                    <dd>${pkgPeople}</dd>
+                    <dt>${msg_detail_package_people}</dt>
+                    <dd>${msg_detail_package_people_minOnly_args_pkg_minPeople}</dd>
                   </div>
                 </dl>
               </div>
@@ -1235,7 +1306,7 @@ html { scrollbar-gutter: stable; }
       <div class="detail-package-modal-card" role="dialog" aria-modal="true" aria-labelledby="packageModalTitle">
         <div class="detail-package-modal-hero" id="packageModalHero">
           <span id="packageModalHeroFallback">TripTogether</span>
-          <button type="button" class="detail-package-modal-close" id="packageModalCloseBtn" aria-label="${detailCloseLabel}">×</button>
+          <button type="button" class="detail-package-modal-close" id="packageModalCloseBtn" aria-label="${msg_detail_common_close}">×</button>
         </div>
         <div class="detail-package-modal-body">
           <p class="detail-package-modal-kicker" id="packageModalKicker"></p>
@@ -1243,43 +1314,43 @@ html { scrollbar-gutter: stable; }
           <p class="detail-package-modal-summary" id="packageModalSummary"></p>
           <dl class="detail-package-modal-meta">
             <div>
-              <dt>${detailPackagePriceLabel}</dt>
+              <dt>${msg_detail_package_price}</dt>
               <dd id="packageModalPrice"></dd>
             </div>
             <div>
-              <dt>${detailPackagePeriodLabel}</dt>
+              <dt>${msg_detail_package_period}</dt>
               <dd id="packageModalPeriod"></dd>
             </div>
             <div>
-              <dt>${detailPackagePeopleLabel}</dt>
+              <dt>${msg_detail_package_people}</dt>
               <dd id="packageModalPeople"></dd>
             </div>
             <div>
-              <dt>${detailPackageSellerLabel}</dt>
+              <dt>${msg_detail_package_seller}</dt>
               <dd id="packageModalSeller"></dd>
             </div>
           </dl>
           <div class="detail-package-booking">
-            <h4>${detailPackageBookingTitleLabel}</h4>
+            <h4>${msg_detail_package_booking_title}</h4>
             <div class="detail-package-booking-grid">
               <div class="detail-package-booking-field">
-                <label for="packagePeopleCount">${detailPackageBookingPeopleLabel}</label>
+                <label for="packagePeopleCount">${msg_detail_package_booking_people}</label>
                 <input type="number" id="packagePeopleCount" min="1" step="1" value="1">
               </div>
               <div class="detail-package-booking-field">
-                <label for="packageMileageAmount">${detailPackageBookingMileageLabel}</label>
+                <label for="packageMileageAmount">${msg_detail_package_booking_mileage}</label>
                 <input type="number" id="packageMileageAmount" min="0" step="1000" value="0">
               </div>
             </div>
             <div class="detail-package-pay-summary">
-              <div><span>${detailPackageBookingTotalLabel}</span><strong id="packageBookingTotal">0 C</strong></div>
-              <div><span>${detailPackageBookingMaxMileageLabel}</span><strong id="packageBookingMaxMileage">0 M</strong></div>
-              <div><span>${detailPackageBookingCashLabel}</span><strong id="packageBookingCash">0 C</strong></div>
-              <div><span>${detailPackageBookingBalanceLabel}</span><strong id="packageBookingBalance">0 C / 0 M</strong></div>
+              <div><span>${msg_detail_package_booking_total}</span><strong id="packageBookingTotal">0 C</strong></div>
+              <div><span>${msg_detail_package_booking_maxMileage}</span><strong id="packageBookingMaxMileage">0 M</strong></div>
+              <div><span>${msg_detail_package_booking_cash}</span><strong id="packageBookingCash">0 C</strong></div>
+              <div><span>${msg_detail_package_booking_balance}</span><strong id="packageBookingBalance">0 C / 0 M</strong></div>
             </div>
             <div class="detail-package-booking-actions">
               <span class="detail-package-booking-message" id="packageBookingMessage"></span>
-              <button type="button" class="detail-package-booking-btn" id="packageBookingBtn">${detailPackageBookingActionLabel}</button>
+              <button type="button" class="detail-package-booking-btn" id="packageBookingBtn">${msg_detail_package_booking_action}</button>
             </div>
           </div>
         </div>
@@ -1426,7 +1497,7 @@ html { scrollbar-gutter: stable; }
         if (imagePath) {
           var image = document.createElement('img');
           image.src = imagePath;
-          image.alt = data.title || '${detailPackageImageAltMsg}';
+          image.alt = data.title || '${msg_detail_package_imageAlt_js}';
           modalHero.prepend(image);
         }
 
@@ -1557,7 +1628,7 @@ html { scrollbar-gutter: stable; }
   <!-- 위치 -->
   <c:if test="${not empty spot.latitude and not empty spot.longitude and spot.latitude != 0 and spot.longitude != 0}">
     <div class="det-section">
-      <h2>&#128506; <spring:message code="detail.location.title"/></h2>
+      <h2>&#128506; ${msg_detail_location_title}</h2>
 
       <!-- 지도 컨테이너 -->
       <div class="flight-map-wrap">
@@ -1575,7 +1646,7 @@ html { scrollbar-gutter: stable; }
                   data-spot-idx="${spot.spotIdx}">
             <span class="flight-chip-icon">✈</span>
             <span>
-              <span class="flight-chip-label">${detailFlightCheapestLabel}</span>
+              <span class="flight-chip-label">${msg_detail_flight_cheapestFromSeoul}</span>
               <span class="flight-chip-price">
                   <fmt:formatNumber value="${lowestFlightOffer.finalPrice}" pattern="#,##0"/> C
               </span>
@@ -1592,65 +1663,65 @@ html { scrollbar-gutter: stable; }
       <div class="flight-modal-card" role="dialog" aria-modal="true" aria-labelledby="flightModalTitle">
         <div class="flight-modal-head">
           <div>
-            <h3 class="flight-modal-title" id="flightModalTitle">${detailFlightTitleLabel}</h3>
+            <h3 class="flight-modal-title" id="flightModalTitle">${msg_detail_flight_modal_title}</h3>
             <div class="flight-modal-sub">
-              ${detailFlightSubtitleLabel}
+              ${msg_detail_flight_modal_subtitle}
             </div>
           </div>
-          <button type="button" class="flight-modal-close" id="closeFlightModalBtn" aria-label="${detailCloseLabel}">×</button>
+          <button type="button" class="flight-modal-close" id="closeFlightModalBtn" aria-label="${msg_detail_common_close}">×</button>
         </div>
         <div class="flight-modal-body">
           <div class="flight-date-grid">
             <div class="flight-date-field">
-              <label for="flightDepartureDate">${detailFlightDepartureDateLabel}</label>
+              <label for="flightDepartureDate">${msg_detail_flight_departureDate}</label>
               <input type="date" id="flightDepartureDate">
             </div>
             <div class="flight-date-field">
-              <label for="flightReturnDate">${detailFlightReturnDateLabel}</label>
+              <label for="flightReturnDate">${msg_detail_flight_returnDate}</label>
               <input type="date" id="flightReturnDate">
             </div>
           </div>
 
           <div class="flight-offer-list" id="flightOfferList">
-            <div class="flight-pay-msg">${detailFlightLoadingLabel}</div>
+            <div class="flight-pay-msg">${msg_detail_flight_loading}</div>
           </div>
 
           <div class="flight-pay-box">
             <div class="flight-pay-row">
-              <span>${detailFlightOriginalPriceLabel}</span>
+              <span>${msg_detail_flight_originalPrice}</span>
               <strong id="flightOriginalPrice">-</strong>
             </div>
             <div class="flight-pay-row">
-              <span>${detailFlightGradeDiscountLabel}</span>
+              <span>${msg_detail_flight_gradeDiscount}</span>
               <strong id="flightGradeDiscount">-</strong>
             </div>
             <div class="flight-pay-row">
-              <span>${detailFlightTotalPriceLabel}</span>
+              <span>${msg_detail_flight_totalPrice}</span>
               <strong id="flightTotalPrice">-</strong>
             </div>
             <div class="flight-pay-row">
-              <span>${detailFlightCashBalanceLabel}</span>
+              <span>${msg_detail_flight_cashBalance}</span>
               <strong id="flightCashBalance">
                 <fmt:formatNumber value="${loginUser.cashBalance}" pattern="#,##0"/> C
               </strong>
             </div>
             <div class="flight-pay-row">
-              <span>${detailFlightMileageBalanceLabel}</span>
+              <span>${msg_detail_flight_mileageBalance}</span>
               <strong id="flightMileageBalance">
                 <fmt:formatNumber value="${loginUser.mileageBalance}" pattern="#,##0"/> M
               </strong>
             </div>
             <div class="flight-pay-row">
-              <span>${detailFlightUseMileageLabel} <small id="flightMileageLimitText"></small></span>
+              <span>${msg_detail_flight_useMileage} <small id="flightMileageLimitText"></small></span>
               <input type="number" id="flightMileageInput" class="flight-pay-input" min="0" step="1000" value="0">
             </div>
             <div class="flight-pay-row">
-              <span>${detailFlightUseCashLabel}</span>
+              <span>${msg_detail_flight_useCash}</span>
               <input type="number" id="flightCashInput" class="flight-pay-input" min="0" step="1000" value="0" readonly>
             </div>
             <div class="flight-pay-actions">
-              <button type="button" class="flight-pay-btn secondary" id="flightUseMaxMileageBtn">${detailFlightUseMaxMileageLabel}</button>
-              <button type="button" class="flight-pay-btn primary" id="flightPurchaseBtn">${detailFlightPurchaseLabel}</button>
+              <button type="button" class="flight-pay-btn secondary" id="flightUseMaxMileageBtn">${msg_detail_flight_useMaxMileage}</button>
+              <button type="button" class="flight-pay-btn primary" id="flightPurchaseBtn">${msg_detail_flight_purchase}</button>
             </div>
             <div class="flight-pay-msg" id="flightPayMessage"></div>
           </div>
@@ -1661,7 +1732,7 @@ html { scrollbar-gutter: stable; }
 
   <!-- 리뷰 섹션 -->
   <div class="det-section">
-    <h2>&#128172; <spring:message code="detail.review.title"/></h2>
+    <h2>&#128172; ${msg_detail_review_title}</h2>
 
     <!-- 리뷰 요약 -->
     <div class="review-summary-wrap">
@@ -1684,7 +1755,7 @@ html { scrollbar-gutter: stable; }
             <c:otherwise>☆☆☆☆☆</c:otherwise>
           </c:choose>
         </div>
-        <div class="review-sub"><spring:message code="detail.review.total"/></div>
+        <div class="review-sub">${msg_detail_review_total}</div>
       </div>
     </div>
 
@@ -1694,7 +1765,7 @@ html { scrollbar-gutter: stable; }
       <%-- 로그인했고 아직 리뷰를 작성하지 않은 경우 작성 폼 표시 --%>
       <c:when test="${canWrite}">
         <div class="review-form-box" id="reviewFormBox">
-          <h3>&#9997; <spring:message code="detail.review.write"/></h3>
+          <h3>&#9997; ${msg_detail_review_write}</h3>
           <div class="star-picker" id="starPicker">
             <span class="sp" data-v="1">&#9733;</span>
             <span class="sp" data-v="2">&#9733;</span>
@@ -1703,10 +1774,10 @@ html { scrollbar-gutter: stable; }
             <span class="sp" data-v="5">&#9733;</span>
           </div>
           <textarea class="review-textarea" id="reviewContent"
-                    maxlength="500" placeholder="${detailReviewPlaceholderMsg}"></textarea>
+                    maxlength="500" placeholder="${msg_detail_review_placeholder}"></textarea>
           <div class="review-form-foot">
             <span class="review-char"><span id="charCount">0</span> / 500</span>
-            <button class="review-submit-btn" id="reviewSubmitBtn" disabled><spring:message code="detail.review.submit"/></button>
+            <button class="review-submit-btn" id="reviewSubmitBtn" disabled>${msg_detail_review_submit}</button>
           </div>
         </div>
       </c:when>
@@ -1715,14 +1786,14 @@ html { scrollbar-gutter: stable; }
         <div id="alreadyReviewBox"
              style="background:var(--gray-50);border-radius:10px;padding:16px 20px;margin-bottom:28px;
                     font-size:14px;color:var(--gray-500);border:1px solid var(--gray-200);">
-          &#10003; <spring:message code="detail.review.written"/>
+          &#10003; ${msg_detail_review_written}
         </div>
       </c:when>
       <%-- 비로그인 시 로그인 유도 --%>
       <c:otherwise>
         <div class="review-login-box">
-          <p>&#128172; <spring:message code="detail.review.login.need"/></p>
-          <a href="${pageContext.request.contextPath}/auth/login" class="review-login-link"><spring:message code="detail.review.login"/></a>
+          <p>&#128172; ${msg_detail_review_login_need}</p>
+          <a href="${pageContext.request.contextPath}/auth/login" class="review-login-link">${msg_detail_review_login}</a>
         </div>
       </c:otherwise>
     </c:choose>
@@ -1734,12 +1805,12 @@ html { scrollbar-gutter: stable; }
         <div class="review-admin-left">
           <label class="review-admin-select-all">
             <input type="checkbox" id="reviewSelectAll">
-            <span><spring:message code="detail.review.admin.selectAll"/></span>
+            <span>${msg_detail_review_admin_selectAll}</span>
           </label>
-          <span class="review-sub"><spring:message code="detail.review.admin.help"/></span>
+          <span class="review-sub">${msg_detail_review_admin_help}</span>
         </div>
         <button type="button" class="review-admin-bulk-btn" id="blockSelectedReviewsBtn" disabled>
-          <spring:message code="detail.review.admin.blockSelected"/>
+          ${msg_detail_review_admin_blockSelected}
         </button>
       </div>
     </c:if>
@@ -1769,7 +1840,7 @@ html { scrollbar-gutter: stable; }
                         <span class="review-user-report-link rpt-user-link"
                               data-user-idx="${rv.userIdx}"
                               data-source-type="review"
-                              data-source-id="${rv.reviewIdx}"><spring:message code="community.detail.userReport"/></span>
+                              data-source-id="${rv.reviewIdx}">${msg_community_detail_userReport}</span>
                       </c:if>
                     </div>
                     <div class="review-date">
@@ -1799,18 +1870,18 @@ html { scrollbar-gutter: stable; }
                   <c:if test="${not empty sessionScope.loginUser and rv.userIdx ne loginUserIdx and not isAdminMode}">
                     <button type="button"
                             class="review-report-btn"
-                            data-review-report-idx="${rv.reviewIdx}"><spring:message code="community.detail.report"/></button>
+                            data-review-report-idx="${rv.reviewIdx}">${msg_community_detail_report}</button>
                   </c:if>
                   <c:if test="${rv.userIdx == loginUserIdx}">
                     <button class="review-delete-btn"
                             data-review-idx="${rv.reviewIdx}"
-                            data-spot-idx="${spot.spotIdx}"><spring:message code="detail.review.delete"/></button>
+                            data-spot-idx="${spot.spotIdx}">${msg_detail_review_delete}</button>
                   </c:if>
                   <c:if test="${isAdminMode}">
                     <button class="det-admin-review-btn"
                             type="button"
                             data-block-review-idx="${rv.reviewIdx}"
-                            data-block-spot-idx="${spot.spotIdx}"><spring:message code="detail.review.block"/></button>
+                            data-block-spot-idx="${spot.spotIdx}">${msg_detail_review_block}</button>
                   </c:if>
                 </div>
               </div>
@@ -1820,7 +1891,7 @@ html { scrollbar-gutter: stable; }
         </c:when>
         <c:otherwise>
           <div class="review-empty" id="reviewEmpty">
-            <spring:message code="detail.review.empty"/>
+            ${msg_detail_review_empty}
           </div>
         </c:otherwise>
       </c:choose>
@@ -1831,18 +1902,18 @@ html { scrollbar-gutter: stable; }
   <!-- AI 맞춤 여행지 추천 섹션 <로그인 사용자만> -->
   <c:if test="${isLoggedIn}">
   <div class="det-section" id="aiRecommendSection">
-    <h2 id="aiRecTitle">${detailAiTitleMsg}</h2>
+    <h2 id="aiRecTitle">${msg_detail_ai_title}</h2>
     <p id="aiRecDesc" style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">
-      <spring:message code="detail.ai.desc"/>
+      ${msg_detail_ai_desc}
     </p>
     <div class="ai-rec-content">
       <div id="recLoadingMsg" class="ai-rec-state">
         <span style="font-size:24px;display:block;margin-bottom:8px;">&#x1F916;</span>
-        <spring:message code="detail.ai.loading"/>
+        ${msg_detail_ai_loading}
       </div>
       <div class="spot-grid" id="recGrid" style="display:none;"></div>
       <div id="recEmptyMsg" class="ai-rec-state" style="display:none;">
-        <spring:message code="detail.ai.empty"/>
+        ${msg_detail_ai_empty}
       </div>
     </div>
   </div>
@@ -1853,7 +1924,7 @@ html { scrollbar-gutter: stable; }
     <button class="det-action-btn"
             onclick="location.href='${pageContext.request.contextPath}/explore'"
             style="margin:0 auto;">
-      &#128269; <spring:message code="detail.explore.more"/>
+      &#128269; ${msg_detail_explore_more}
     </button>
   </div>
 
@@ -1865,46 +1936,46 @@ html { scrollbar-gutter: stable; }
 
 <div id="rpt-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
-    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:20px;"><spring:message code="community.detail.report.title"/></div>
+    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:20px;">${msg_community_detail_report_title}</div>
     <input type="hidden" id="rptTargetType" value="">
     <input type="hidden" id="rptTargetId" value="">
     <div style="margin-bottom:16px;">
-      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;"><spring:message code="community.detail.report.reason"/> <span style="color:#ef4444;">*</span></label>
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">${msg_community_detail_report_reason} <span style="color:#ef4444;">*</span></label>
       <select id="rptReason" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;">
-        <option value=""><spring:message code="community.detail.report.reason.choose"/></option>
-        <option value="spam"><spring:message code="community.detail.report.reason.spam"/></option>
-        <option value="abuse"><spring:message code="community.detail.report.reason.abuse"/></option>
-        <option value="privacy"><spring:message code="community.detail.report.reason.privacy"/></option>
-        <option value="illegal"><spring:message code="community.detail.report.reason.illegal"/></option>
-        <option value="etc"><spring:message code="community.detail.report.reason.other"/></option>
+        <option value="">${msg_community_detail_report_reason_choose}</option>
+        <option value="spam">${msg_community_detail_report_reason_spam}</option>
+        <option value="abuse">${msg_community_detail_report_reason_abuse}</option>
+        <option value="privacy">${msg_community_detail_report_reason_privacy}</option>
+        <option value="illegal">${msg_community_detail_report_reason_illegal}</option>
+        <option value="etc">${msg_community_detail_report_reason_other}</option>
       </select>
       <div id="rptReasonMsg" style="font-size:12px;color:#ef4444;margin-top:6px;"></div>
     </div>
     <div style="margin-bottom:20px;">
-      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;"><spring:message code="community.detail.report.description"/></label>
-      <textarea id="rptDescription" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="${communityDetailReportDescriptionPlaceholderMsg}"></textarea>
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">${msg_community_detail_report_description}</label>
+      <textarea id="rptDescription" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="${msg_community_detail_report_description_placeholder}"></textarea>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button type="button" id="rptCancelBtn" class="det-action-btn"><spring:message code="community.detail.cancel"/></button>
-      <button type="button" id="rptSubmitBtn" class="det-action-btn active"><spring:message code="community.detail.report.submit"/></button>
+      <button type="button" id="rptCancelBtn" class="det-action-btn">${msg_community_detail_cancel}</button>
+      <button type="button" id="rptSubmitBtn" class="det-action-btn active">${msg_community_detail_report_submit}</button>
     </div>
   </div>
 </div>
 
 <div id="rpt-user-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
-    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:8px;"><spring:message code="community.detail.userReport.title"/></div>
-    <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;"><spring:message code="community.detail.userReport.description"/></div>
+    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:8px;">${msg_community_detail_userReport_title}</div>
+    <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">${msg_community_detail_userReport_description}</div>
     <input type="hidden" id="rptUserTargetIdx" value="">
     <input type="hidden" id="rptUserSourceType" value="">
     <input type="hidden" id="rptUserSourceId" value="">
     <div style="margin-bottom:20px;">
-      <textarea id="rptUserDescription" rows="6" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="${communityDetailUserReportPlaceholderMsg}"></textarea>
+      <textarea id="rptUserDescription" rows="6" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="${msg_community_detail_userReport_placeholder}"></textarea>
       <div id="rptUserDescMsg" style="font-size:12px;color:#ef4444;margin-top:6px;"></div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button type="button" id="rptUserCancelBtn" class="det-action-btn"><spring:message code="community.detail.cancel"/></button>
-      <button type="button" id="rptUserSubmitBtn" class="det-action-btn active"><spring:message code="community.detail.report.submit"/></button>
+      <button type="button" id="rptUserCancelBtn" class="det-action-btn">${msg_community_detail_cancel}</button>
+      <button type="button" id="rptUserSubmitBtn" class="det-action-btn active">${msg_community_detail_report_submit}</button>
     </div>
   </div>
 </div>
@@ -1919,61 +1990,61 @@ html { scrollbar-gutter: stable; }
   const spotIdx  = '${spot.spotIdx}';
   const loginUserIdx = '${loginUserIdx}';
   const detailMessages = window.detailMessages = {
-    genericError: '${detailCommonErrorMsg}',
-    loginRequired: '${detailCommonLoginRequiredMsg}',
-    tagLimit: '${detailEditTagsMaxMsg}',
-    favAdded: '${detailFavAddedMsg}',
-    favRemoved: '${detailFavRemovedMsg}',
-    likeAdded: '${detailLikeAddedMsg}',
-    likeRemoved: '${detailLikeRemovedMsg}',
-    reviewSubmitLoading: '${detailReviewSubmitLoadingMsg}',
-    reviewSubmitFail: '${detailReviewSubmitFailMsg}',
-    reviewSubmitSuccess: '${detailReviewSubmitSuccessMsg}',
-    reviewDeleteConfirm: '${detailReviewDeleteConfirmMsg}',
-    reviewDeleteFail: '${detailReviewDeleteFailMsg}',
-    reviewDeleteSuccess: '${detailReviewDeleteSuccessMsg}',
-    reviewEmptyVisible: '${detailReviewEmptyVisibleMsg}',
-    reviewBlockConfirm: '${detailReviewBlockConfirmMsg}',
-    reviewBlockFail: '${detailReviewBlockFailMsg}',
-    reviewBlockSuccess: '${detailReviewBlockSuccessMsg}',
-    reviewBlockNone: '${detailReviewBlockNoneMsg}',
-    reviewBlockBulkConfirmAll: '${detailReviewBlockBulkConfirmAllMsg}',
-    reviewBlockBulkConfirmSelected: '${detailReviewBlockBulkConfirmSelectedMsg}',
-    reviewBlockBulkSuccessTemplate: '${detailReviewBlockBulkSuccessMsg}',
-    reviewBlockSelectedLabel: '${detailReviewAdminBlockSelectedMsg}',
-    reviewLikeSuccess: '${detailReviewLikeSuccessMsg}',
-    reviewWriteTitle: '${detailReviewWriteMsg}',
-    reviewSubmitLabel: '${detailReviewSubmitMsg}',
-    reviewEmptyHtml: '${detailReviewEmptyMsg}',
-    packageLoginAction: '${detailPackageBookingLoginActionMsg}',
-    packageBookingAction: '${detailPackageBookingActionMsg}',
-    packageLoginRequired: '${detailPackageBookingLoginRequiredMsg}',
-    packageInsufficientCash: '${detailPackageBookingInsufficientCashMsg}',
-    packageProcessing: '${detailPackageBookingProcessingMsg}',
-    packageError: '${detailPackageBookingErrorMsg}',
-    packageSuccessTemplate: '${detailPackageBookingSuccessMsg}',
-    flightDateRequired: '${detailFlightDateRequiredMsg}',
-    flightReturnInvalid: '${detailFlightReturnDateInvalidMsg}',
-    flightNoDiscount: '${detailFlightNoDiscountMsg}',
-    flightLoading: '${detailFlightLoadingMsg}',
-    flightEmpty: '${detailFlightEmptyMsg}',
-    flightLoadFail: '${detailFlightLoadFailMsg}',
-    flightOutboundLabel: '${detailFlightOutboundLabelMsg}',
-    flightReturnLabel: '${detailFlightReturnLabelMsg}',
-    flightDepartLabel: '${detailFlightDepartLabelMsg}',
-    flightArriveLabel: '${detailFlightArriveLabelMsg}',
-    flightMileageLimitTemplate: '${detailFlightMileageLimitMsg}',
-    flightLoginRequired: '${detailFlightLoginRequiredMsg}',
-    flightSelectOffer: '${detailFlightSelectOfferMsg}',
-    flightPurchaseFail: '${detailFlightPurchaseFailMsg}',
-    flightPurchaseError: '${detailFlightPurchaseErrorMsg}',
-    flightPurchaseSuccessTemplate: '${detailFlightPurchaseSuccessMsg}',
-    locationNoCoordinates: '${detailLocationNoCoordinatesMsg}',
-    aiLoadFail: '${detailAiLoadFailMsg}',
-    reportReasonRequired: '${communityDetailReportReasonRequiredMsg}',
-    reportSubmitted: '${communityDetailReportSubmittedMsg}',
-    requestFail: '${communityDetailRequestFailMsg}',
-    userReportMinLength: '${communityDetailUserReportMinLengthMsg}'
+    genericError: '${msg_detail_common_error_js}',
+    loginRequired: '${msg_detail_common_loginRequired_js}',
+    tagLimit: '${msg_detail_edit_tags_max_js}',
+    favAdded: '${msg_detail_fav_added_js}',
+    favRemoved: '${msg_detail_fav_removed_js}',
+    likeAdded: '${msg_detail_like_added_js}',
+    likeRemoved: '${msg_detail_like_removed_js}',
+    reviewSubmitLoading: '${msg_detail_review_submit_loading_js}',
+    reviewSubmitFail: '${msg_detail_review_submit_fail_js}',
+    reviewSubmitSuccess: '${msg_detail_review_submit_success_js}',
+    reviewDeleteConfirm: '${msg_detail_review_delete_confirm_js}',
+    reviewDeleteFail: '${msg_detail_review_delete_fail_js}',
+    reviewDeleteSuccess: '${msg_detail_review_delete_success_js}',
+    reviewEmptyVisible: '${msg_detail_review_empty_visible_js}',
+    reviewBlockConfirm: '${msg_detail_review_block_confirm_js}',
+    reviewBlockFail: '${msg_detail_review_block_fail_js}',
+    reviewBlockSuccess: '${msg_detail_review_block_success_js}',
+    reviewBlockNone: '${msg_detail_review_block_none_js}',
+    reviewBlockBulkConfirmAll: '${msg_detail_review_block_bulkConfirmAll_js}',
+    reviewBlockBulkConfirmSelected: '${msg_detail_review_block_bulkConfirmSelected_js}',
+    reviewBlockBulkSuccessTemplate: '${msg_detail_review_block_bulkSuccess_js}',
+    reviewBlockSelectedLabel: '${msg_detail_review_admin_blockSelected_js}',
+    reviewLikeSuccess: '${msg_detail_review_like_success_js}',
+    reviewWriteTitle: '${msg_detail_review_write_js}',
+    reviewSubmitLabel: '${msg_detail_review_submit_js}',
+    reviewEmptyHtml: '${msg_detail_review_empty_js}',
+    packageLoginAction: '${msg_detail_package_booking_loginAction_js}',
+    packageBookingAction: '${msg_detail_package_booking_action_js}',
+    packageLoginRequired: '${msg_detail_package_booking_loginRequired_js}',
+    packageInsufficientCash: '${msg_detail_package_booking_insufficientCash_js}',
+    packageProcessing: '${msg_detail_package_booking_processing_js}',
+    packageError: '${msg_detail_package_booking_error_js}',
+    packageSuccessTemplate: '${msg_detail_package_booking_success_js}',
+    flightDateRequired: '${msg_detail_flight_dateRequired_js}',
+    flightReturnInvalid: '${msg_detail_flight_returnDateInvalid_js}',
+    flightNoDiscount: '${msg_detail_flight_noDiscount_js}',
+    flightLoading: '${msg_detail_flight_loading_js}',
+    flightEmpty: '${msg_detail_flight_empty_js}',
+    flightLoadFail: '${msg_detail_flight_loadFail_js}',
+    flightOutboundLabel: '${msg_detail_flight_outboundLabel_js}',
+    flightReturnLabel: '${msg_detail_flight_returnLabel_js}',
+    flightDepartLabel: '${msg_detail_flight_departLabel_js}',
+    flightArriveLabel: '${msg_detail_flight_arriveLabel_js}',
+    flightMileageLimitTemplate: '${msg_detail_flight_mileageLimit_js}',
+    flightLoginRequired: '${msg_detail_flight_loginRequired_js}',
+    flightSelectOffer: '${msg_detail_flight_selectOffer_js}',
+    flightPurchaseFail: '${msg_detail_flight_purchaseFail_js}',
+    flightPurchaseError: '${msg_detail_flight_purchaseError_js}',
+    flightPurchaseSuccessTemplate: '${msg_detail_flight_purchaseSuccess_js}',
+    locationNoCoordinates: '${msg_detail_location_noCoordinates_js}',
+    aiLoadFail: '${msg_detail_ai_loadFail_js}',
+    reportReasonRequired: '${msg_community_detail_report_reasonRequired_js}',
+    reportSubmitted: '${msg_community_detail_report_submitted_js}',
+    requestFail: '${msg_community_detail_request_fail_js}',
+    userReportMinLength: '${msg_community_detail_userReport_minLength_js}'
   };
   function formatMessage(template) {
     var args = Array.prototype.slice.call(arguments, 1);
@@ -2068,15 +2139,15 @@ html { scrollbar-gutter: stable; }
 
   favBtn && favBtn.addEventListener('click', function () {
     toggleAction('/explore/favorite/' + spotIdx, this,
-                 '${detailFavDoneMsg}',
-                 '${detailFavDoMsg}',
+                 '${msg_detail_fav_done_js}',
+                 '${msg_detail_fav_do_js}',
                  detailMessages.favAdded, detailMessages.favRemoved, 'favorited');
   });
 
   likeBtn && likeBtn.addEventListener('click', function () {
     toggleAction('/explore/like/' + spotIdx, this,
-                 '${detailLikeDoneMsg}',
-                 '${detailLikeDoMsg}',
+                 '${msg_detail_like_done_js}',
+                 '${msg_detail_like_do_js}',
                  detailMessages.likeAdded, detailMessages.likeRemoved, 'liked');
   });
 
@@ -2338,7 +2409,7 @@ html { scrollbar-gutter: stable; }
           <span class="sp" data-v="5">★</span>
         </div>
         <textarea class="review-textarea" id="reviewContent"
-                  maxlength="500" placeholder="${detailReviewPlaceholderMsg2}"></textarea>
+                  maxlength="500" placeholder="${msg_detail_review_placeholder_js}"></textarea>
         <div class="review-form-foot">
           <span class="review-char"><span id="charCount">0</span> / 500</span>
           <button class="review-submit-btn" id="reviewSubmitBtn" disabled>${detailMessages.reviewSubmitLabel}</button>
@@ -3047,10 +3118,10 @@ function initMap() {
 (function() {
   var CTX_REC      = '${pageContext.request.contextPath}';
   var SPOT_IDX_REC = '${spot.spotIdx}';
-  var AI_DEFAULT_TITLE = '${detailAiTitleMsg}';
-  var AI_DEFAULT_DESC = '${detailAiDescMsg}';
-  var AI_TRENDING_TITLE = '${detailAiTrendingTitleMsg}';
-  var AI_TRENDING_DESC = '${detailAiTrendingDescMsg}';
+  var AI_DEFAULT_TITLE = '${msg_detail_ai_title}';
+  var AI_DEFAULT_DESC = '${msg_detail_ai_desc}';
+  var AI_TRENDING_TITLE = '${msg_detail_ai_trending_title}';
+  var AI_TRENDING_DESC = '${msg_detail_ai_trending_desc}';
   var pageEnter    = Date.now();
   var logSent      = false;
 

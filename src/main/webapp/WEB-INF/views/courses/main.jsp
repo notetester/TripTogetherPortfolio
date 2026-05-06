@@ -3,11 +3,25 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_course_main_windowTitle" code="course.main.windowTitle"/>
+<spring:message var="msg_course_main_badge" code="course.main.badge"/>
+<spring:message var="msg_course_main_title" code="course.main.title"/>
+<spring:message var="msg_course_main_desc" code="course.main.desc"/>
+<spring:message var="msg_course_main_manualCreate" code="course.main.manualCreate"/>
+<spring:message var="msg_course_main_aiCreate" code="course.main.aiCreate"/>
+<spring:message var="msg_course_main_my_label" code="course.main.my.label"/>
+<spring:message var="msg_course_main_my_title" code="course.main.my.title"/>
+<spring:message var="msg_course_main_my_desc" code="course.main.my.desc"/>
+<spring:message var="msg_course_main_public_label" code="course.main.public.label"/>
+<spring:message var="msg_course_main_public_title" code="course.main.public.title"/>
+<spring:message var="msg_course_main_public_desc" code="course.main.public.desc"/>
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
 <head>
   <meta charset="UTF-8">
-  <title><spring:message code="course.main.windowTitle"/></title>
+  <title>${msg_course_main_windowTitle}</title>
   <style>
     * {
       box-sizing: border-box;
@@ -199,31 +213,31 @@
 
 <div class="courses-main-wrap">
   <section class="hero-section">
-    <div class="hero-badge"><spring:message code="course.main.badge"/></div>
-    <h1 class="hero-title"><spring:message code="course.main.title"/></h1>
-    <p class="hero-desc"><spring:message code="course.main.desc"/></p>
+    <div class="hero-badge">${msg_course_main_badge}</div>
+    <h1 class="hero-title">${msg_course_main_title}</h1>
+    <p class="hero-desc">${msg_course_main_desc}</p>
 
     <div class="hero-btn-group">
       <a href="${pageContext.request.contextPath}/courses/write" class="hero-btn primary">
-        <spring:message code="course.main.manualCreate"/>
+        ${msg_course_main_manualCreate}
       </a>
       <a href="${pageContext.request.contextPath}/courses/ai/form" class="hero-btn secondary">
-        <spring:message code="course.main.aiCreate"/>
+        ${msg_course_main_aiCreate}
       </a>
     </div>
   </section>
 
   <section class="menu-grid">
     <a href="${pageContext.request.contextPath}/courses/my" class="menu-card">
-      <div class="menu-label"><spring:message code="course.main.my.label"/></div>
-      <h2 class="menu-title"><spring:message code="course.main.my.title"/></h2>
-      <p class="menu-desc"><spring:message code="course.main.my.desc"/></p>
+      <div class="menu-label">${msg_course_main_my_label}</div>
+      <h2 class="menu-title">${msg_course_main_my_title}</h2>
+      <p class="menu-desc">${msg_course_main_my_desc}</p>
     </a>
 
     <a href="${pageContext.request.contextPath}/courses/public" class="menu-card">
-      <div class="menu-label"><spring:message code="course.main.public.label"/></div>
-      <h2 class="menu-title"><spring:message code="course.main.public.title"/></h2>
-      <p class="menu-desc"><spring:message code="course.main.public.desc"/></p>
+      <div class="menu-label">${msg_course_main_public_label}</div>
+      <h2 class="menu-title">${msg_course_main_public_title}</h2>
+      <p class="menu-desc">${msg_course_main_public_desc}</p>
     </a>
   </section>
 </div>

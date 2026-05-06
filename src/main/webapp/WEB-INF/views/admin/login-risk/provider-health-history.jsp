@@ -4,33 +4,52 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_security_admin_providerHealth_title" code="security.admin.providerHealth.title"/>
+<spring:message var="msg_security_admin_providerHealth_providerCodePlaceholder" code="security.admin.providerHealth.providerCodePlaceholder"/>
+<spring:message var="msg_security_admin_providerHealth_desc" code="security.admin.providerHealth.desc"/>
+<spring:message var="msg_security_admin_nav_providerConfigs" code="security.admin.nav.providerConfigs"/>
+<spring:message var="msg_admin_layout_menu_policyHistory" code="admin.layout.menu.policyHistory"/>
+<spring:message var="msg_security_admin_providerHealth_providerCode" code="security.admin.providerHealth.providerCode"/>
+<spring:message var="msg_security_admin_providerHealth_limit" code="security.admin.providerHealth.limit"/>
+<spring:message var="msg_security_admin_common_search" code="security.admin.common.search"/>
+<spring:message var="msg_security_admin_providerHealth_checkedAt" code="security.admin.providerHealth.checkedAt"/>
+<spring:message var="msg_security_admin_providerHealth_provider" code="security.admin.providerHealth.provider"/>
+<spring:message var="msg_security_admin_providerHealth_checkSource" code="security.admin.providerHealth.checkSource"/>
+<spring:message var="msg_security_admin_providerHealth_statusBefore" code="security.admin.providerHealth.statusBefore"/>
+<spring:message var="msg_security_admin_providerHealth_statusAfter" code="security.admin.providerHealth.statusAfter"/>
+<spring:message var="msg_security_admin_providerHealth_actor" code="security.admin.providerHealth.actor"/>
+<spring:message var="msg_security_admin_providerHealth_detail" code="security.admin.providerHealth.detail"/>
+<spring:message var="msg_security_admin_providerHealth_empty" code="security.admin.providerHealth.empty"/>
+<c:set var="pageTitle" value="${msg_security_admin_providerHealth_title}"/>
 <c:set var="activeMenu" value="providerHealthHistory"/>
-<spring:message var="pageTitle" code="security.admin.providerHealth.title"/>
-<spring:message var="providerCodePlaceholder" code="security.admin.providerHealth.providerCodePlaceholder"/>
+
+
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1><spring:message code="security.admin.providerHealth.title"/></h1>
-            <p class="adm-page-desc"><spring:message code="security.admin.providerHealth.desc"/></p>
+            <h1>${msg_security_admin_providerHealth_title}</h1>
+            <p class="adm-page-desc">${msg_security_admin_providerHealth_desc}</p>
         </div>
         <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs"><spring:message code="security.admin.nav.providerConfigs"/></a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/policy-history?sourceType=PROVIDER_CONFIG"><spring:message code="admin.layout.menu.policyHistory"/></a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">${msg_security_admin_nav_providerConfigs}</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/policy-history?sourceType=PROVIDER_CONFIG">${msg_admin_layout_menu_policyHistory}</a>
         </div>
     </div>
 
     <form method="get" class="adm-card" style="margin-bottom:16px;">
         <div class="adm-form-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
-            <label><spring:message code="security.admin.providerHealth.providerCode"/>
-                <input class="adm-input" type="text" name="providerCode" value="${fn:escapeXml(providerCode)}" placeholder="${providerCodePlaceholder}">
+            <label>${msg_security_admin_providerHealth_providerCode}
+                <input class="adm-input" type="text" name="providerCode" value="${fn:escapeXml(providerCode)}" placeholder="${msg_security_admin_providerHealth_providerCodePlaceholder}">
             </label>
-            <label><spring:message code="security.admin.providerHealth.limit"/>
+            <label>${msg_security_admin_providerHealth_limit}
                 <input class="adm-input" type="number" min="1" max="200" name="limit" value="${limit}">
             </label>
             <div style="align-self:end;">
-                <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.search"/></button>
+                <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
             </div>
         </div>
     </form>
@@ -39,13 +58,13 @@
         <table class="adm-table">
             <thead>
             <tr>
-                <th><spring:message code="security.admin.providerHealth.checkedAt"/></th>
-                <th><spring:message code="security.admin.providerHealth.provider"/></th>
-                <th><spring:message code="security.admin.providerHealth.checkSource"/></th>
-                <th><spring:message code="security.admin.providerHealth.statusBefore"/></th>
-                <th><spring:message code="security.admin.providerHealth.statusAfter"/></th>
-                <th><spring:message code="security.admin.providerHealth.actor"/></th>
-                <th><spring:message code="security.admin.providerHealth.detail"/></th>
+                <th>${msg_security_admin_providerHealth_checkedAt}</th>
+                <th>${msg_security_admin_providerHealth_provider}</th>
+                <th>${msg_security_admin_providerHealth_checkSource}</th>
+                <th>${msg_security_admin_providerHealth_statusBefore}</th>
+                <th>${msg_security_admin_providerHealth_statusAfter}</th>
+                <th>${msg_security_admin_providerHealth_actor}</th>
+                <th>${msg_security_admin_providerHealth_detail}</th>
             </tr>
             </thead>
             <tbody>
@@ -61,7 +80,7 @@
                 </tr>
             </c:forEach>
             <c:if test="${empty histories}">
-                <tr><td colspan="7" class="adm-empty"><spring:message code="security.admin.providerHealth.empty"/></td></tr>
+                <tr><td colspan="7" class="adm-empty">${msg_security_admin_providerHealth_empty}</td></tr>
             </c:if>
             </tbody>
         </table>

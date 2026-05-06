@@ -4,10 +4,37 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_security_admin_wafSync_title" code="security.admin.wafSync.title"/>
+<spring:message var="msg_security_admin_placeholder_wafSync" code="security.admin.placeholder.wafSync"/>
+<spring:message var="msg_security_admin_placeholder_wafTargetType" code="security.admin.placeholder.wafTargetType"/>
+<spring:message var="msg_security_admin_wafSync_desc" code="security.admin.wafSync.desc"/>
+<spring:message var="msg_security_admin_nav_providerConfigs" code="security.admin.nav.providerConfigs"/>
+<spring:message var="msg_security_admin_nav_securityAssessments" code="security.admin.nav.securityAssessments"/>
+<spring:message var="msg_admin_layout_menu_policyHistory" code="admin.layout.menu.policyHistory"/>
+<spring:message var="msg_security_admin_common_status" code="security.admin.common.status"/>
+<spring:message var="msg_security_admin_common_all" code="security.admin.common.all"/>
+<spring:message var="msg_security_admin_common_targetType" code="security.admin.common.targetType"/>
+<spring:message var="msg_security_admin_common_search" code="security.admin.common.search"/>
+<spring:message var="msg_security_admin_wafSync_source" code="security.admin.wafSync.source"/>
+<spring:message var="msg_security_admin_wafSync_action" code="security.admin.wafSync.action"/>
+<spring:message var="msg_security_admin_common_target" code="security.admin.common.target"/>
+<spring:message var="msg_security_admin_common_description" code="security.admin.common.description"/>
+<spring:message var="msg_security_admin_common_createdAt" code="security.admin.common.createdAt"/>
+<spring:message var="msg_security_admin_wafSync_lastResultAt" code="security.admin.wafSync.lastResultAt"/>
+<spring:message var="msg_security_admin_common_action" code="security.admin.common.action"/>
+<spring:message var="msg_security_admin_wafSync_updatedAt" code="security.admin.wafSync.updatedAt"/>
+<spring:message var="msg_security_admin_wafSync_syncedAt" code="security.admin.wafSync.syncedAt"/>
+<spring:message var="msg_security_admin_common_detail" code="security.admin.common.detail"/>
+<spring:message var="msg_security_admin_wafSync_retry" code="security.admin.wafSync.retry"/>
+<spring:message var="msg_security_admin_wafSync_detailTitle" code="security.admin.wafSync.detailTitle"/>
+<spring:message var="msg_security_admin_common_close" code="security.admin.common.close"/>
+<spring:message var="msg_security_admin_empty_wafSync" code="security.admin.empty.wafSync"/>
+<c:set var="pageTitle" value="${msg_security_admin_wafSync_title}"/>
 <c:set var="activeMenu" value="securityWafSync"/>
-<spring:message var="pageTitle" code="security.admin.wafSync.title"/>
-<spring:message var="keywordPlaceholder" code="security.admin.placeholder.wafSync"/>
-<spring:message var="targetTypePlaceholder" code="security.admin.placeholder.wafTargetType"/>
+
+
 <%@ include file="../layout.jsp" %>
 <style>
     .sync-detail { white-space: pre-wrap; max-width: 520px; line-height: 1.55; }
@@ -28,13 +55,13 @@
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1><spring:message code="security.admin.wafSync.title"/></h1>
-            <p class="adm-page-desc"><spring:message code="security.admin.wafSync.desc"/></p>
+            <h1>${msg_security_admin_wafSync_title}</h1>
+            <p class="adm-page-desc">${msg_security_admin_wafSync_desc}</p>
         </div>
         <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs"><spring:message code="security.admin.nav.providerConfigs"/></a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments"><spring:message code="security.admin.nav.securityAssessments"/></a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/policy-history?sourceType=PROVIDER_CONFIG"><spring:message code="admin.layout.menu.policyHistory"/></a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">${msg_security_admin_nav_providerConfigs}</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/policy-history?sourceType=PROVIDER_CONFIG">${msg_admin_layout_menu_policyHistory}</a>
         </div>
     </div>
 
@@ -44,23 +71,23 @@
 
     <form method="get" class="adm-card" style="margin-bottom:16px;">
         <div class="adm-form-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
-            <label><spring:message code="security.admin.common.status"/>
+            <label>${msg_security_admin_common_status}
                 <select class="adm-input" name="status">
-                    <option value=""><spring:message code="security.admin.common.all"/></option>
+                    <option value="">${msg_security_admin_common_all}</option>
                     <option value="PENDING" ${status == 'PENDING' ? 'selected' : ''}>PENDING</option>
                     <option value="EXTERNAL_PROVIDER_PENDING" ${status == 'EXTERNAL_PROVIDER_PENDING' ? 'selected' : ''}>EXTERNAL_PROVIDER_PENDING</option>
                     <option value="SYNCED" ${status == 'SYNCED' ? 'selected' : ''}>SYNCED</option>
                     <option value="FAILED" ${status == 'FAILED' ? 'selected' : ''}>FAILED</option>
                 </select>
             </label>
-            <label><spring:message code="security.admin.common.targetType"/>
-                <input class="adm-input" type="text" name="targetType" value="${fn:escapeXml(targetType)}" placeholder="${targetTypePlaceholder}">
+            <label>${msg_security_admin_common_targetType}
+                <input class="adm-input" type="text" name="targetType" value="${fn:escapeXml(targetType)}" placeholder="${msg_security_admin_placeholder_wafTargetType}">
             </label>
-            <label><spring:message code="security.admin.common.search"/>
-                <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${keywordPlaceholder}">
+            <label>${msg_security_admin_common_search}
+                <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${msg_security_admin_placeholder_wafSync}">
             </label>
             <div style="align-self:end;">
-                <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.search"/></button>
+                <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
             </div>
         </div>
     </form>
@@ -69,14 +96,14 @@
         <table class="adm-table">
             <thead>
             <tr>
-                <th><spring:message code="security.admin.common.status"/></th>
-                <th><spring:message code="security.admin.wafSync.source"/></th>
-                <th><spring:message code="security.admin.wafSync.action"/></th>
-                <th><spring:message code="security.admin.common.target"/></th>
-                <th><spring:message code="security.admin.common.description"/></th>
-                <th><spring:message code="security.admin.common.createdAt"/></th>
-                <th><spring:message code="security.admin.wafSync.lastResultAt"/></th>
-                <th><spring:message code="security.admin.common.action"/></th>
+                <th>${msg_security_admin_common_status}</th>
+                <th>${msg_security_admin_wafSync_source}</th>
+                <th>${msg_security_admin_wafSync_action}</th>
+                <th>${msg_security_admin_common_target}</th>
+                <th>${msg_security_admin_common_description}</th>
+                <th>${msg_security_admin_common_createdAt}</th>
+                <th>${msg_security_admin_wafSync_lastResultAt}</th>
+                <th>${msg_security_admin_common_action}</th>
             </tr>
             </thead>
             <tbody>
@@ -89,15 +116,15 @@
                     <td><div class="sync-detail"><c:out value="${i.detailMessage}"/></div></td>
                     <td><fmt:formatDate value="${i.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                     <td>
-                        <span class="sync-meta"><spring:message code="security.admin.wafSync.updatedAt"/>: <fmt:formatDate value="${i.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
-                        <span class="sync-meta"><spring:message code="security.admin.wafSync.syncedAt"/>: <fmt:formatDate value="${i.syncedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
+                        <span class="sync-meta">${msg_security_admin_wafSync_updatedAt}: <fmt:formatDate value="${i.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
+                        <span class="sync-meta">${msg_security_admin_wafSync_syncedAt}: <fmt:formatDate value="${i.syncedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
                     </td>
                     <td>
                         <button class="adm-btn js-waf-modal-open" type="button" data-modal-id="waf-detail-${i.syncIdx}">
-                            <spring:message code="security.admin.common.detail"/>
+                            ${msg_security_admin_common_detail}
                         </button>
                         <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/waf-sync/${i.syncIdx}/retry" style="display:inline;">
-                            <button class="adm-btn" type="submit"><spring:message code="security.admin.wafSync.retry"/></button>
+                            <button class="adm-btn" type="submit">${msg_security_admin_wafSync_retry}</button>
                         </form>
                     </td>
                 </tr>
@@ -106,43 +133,43 @@
                         <div class="waf-detail-card" role="dialog" aria-modal="true" aria-labelledby="waf-detail-title-${i.syncIdx}">
                             <div class="waf-detail-head">
                                 <div>
-                                    <h2 id="waf-detail-title-${i.syncIdx}" style="margin:0;"><spring:message code="security.admin.wafSync.detailTitle"/></h2>
+                                    <h2 id="waf-detail-title-${i.syncIdx}" style="margin:0;">${msg_security_admin_wafSync_detailTitle}</h2>
                                     <div class="adm-muted">#<c:out value="${i.syncIdx}"/> · <c:out value="${i.status}"/></div>
                                 </div>
-                                <button class="waf-detail-close js-waf-modal-close" type="button"><spring:message code="security.admin.common.close"/></button>
+                                <button class="waf-detail-close js-waf-modal-close" type="button">${msg_security_admin_common_close}</button>
                             </div>
                             <div class="waf-detail-body">
                                 <div class="waf-detail-grid">
                                     <div class="waf-detail-item">
-                                        <div class="waf-detail-label"><spring:message code="security.admin.common.status"/></div>
+                                        <div class="waf-detail-label">${msg_security_admin_common_status}</div>
                                         <div class="waf-detail-value"><c:out value="${i.status}" default="-"/></div>
                                     </div>
                                     <div class="waf-detail-item">
-                                        <div class="waf-detail-label"><spring:message code="security.admin.wafSync.source"/></div>
+                                        <div class="waf-detail-label">${msg_security_admin_wafSync_source}</div>
                                         <div class="waf-detail-value"><c:out value="${i.sourceType}" default="-"/> #<c:out value="${i.sourceId}" default="-"/></div>
                                     </div>
                                     <div class="waf-detail-item">
-                                        <div class="waf-detail-label"><spring:message code="security.admin.wafSync.action"/></div>
+                                        <div class="waf-detail-label">${msg_security_admin_wafSync_action}</div>
                                         <div class="waf-detail-value"><c:out value="${i.syncAction}" default="-"/></div>
                                     </div>
                                     <div class="waf-detail-item">
-                                        <div class="waf-detail-label"><spring:message code="security.admin.common.target"/></div>
+                                        <div class="waf-detail-label">${msg_security_admin_common_target}</div>
                                         <div class="waf-detail-value"><c:out value="${i.targetType}" default="-"/>: <c:out value="${i.targetValue}" default="-"/></div>
                                     </div>
                                     <div class="waf-detail-item">
-                                        <div class="waf-detail-label"><spring:message code="security.admin.common.createdAt"/></div>
+                                        <div class="waf-detail-label">${msg_security_admin_common_createdAt}</div>
                                         <div class="waf-detail-value"><fmt:formatDate value="${i.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
                                     </div>
                                     <div class="waf-detail-item">
-                                        <div class="waf-detail-label"><spring:message code="security.admin.wafSync.lastResultAt"/></div>
+                                        <div class="waf-detail-label">${msg_security_admin_wafSync_lastResultAt}</div>
                                         <div class="waf-detail-value">
-                                            <spring:message code="security.admin.wafSync.updatedAt"/>: <fmt:formatDate value="${i.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/><br>
-                                            <spring:message code="security.admin.wafSync.syncedAt"/>: <fmt:formatDate value="${i.syncedAtDate}" pattern="yyyy-MM-dd HH:mm"/>
+                                            ${msg_security_admin_wafSync_updatedAt}: <fmt:formatDate value="${i.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/><br>
+                                            ${msg_security_admin_wafSync_syncedAt}: <fmt:formatDate value="${i.syncedAtDate}" pattern="yyyy-MM-dd HH:mm"/>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="waf-detail-item" style="margin-top:12px;">
-                                    <div class="waf-detail-label"><spring:message code="security.admin.common.description"/></div>
+                                    <div class="waf-detail-label">${msg_security_admin_common_description}</div>
                                     <div class="waf-detail-value"><c:out value="${i.detailMessage}" default="-"/></div>
                                 </div>
                             </div>
@@ -151,7 +178,7 @@
                 </td></tr>
             </c:forEach>
             <c:if test="${empty items}">
-                <tr><td colspan="8" class="adm-empty"><spring:message code="security.admin.empty.wafSync"/></td></tr>
+                <tr><td colspan="8" class="adm-empty">${msg_security_admin_empty_wafSync}</td></tr>
             </c:if>
             </tbody>
         </table>

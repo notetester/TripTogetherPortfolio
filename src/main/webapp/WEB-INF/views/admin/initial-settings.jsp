@@ -2,19 +2,35 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_initialSettings_title" code="admin.initialSettings.title"/>
+<spring:message var="msg_admin_initialSettings_desc" code="admin.initialSettings.desc"/>
+<spring:message var="msg_admin_layout_menu_runtimeSettings" code="admin.layout.menu.runtimeSettings"/>
+<spring:message var="msg_admin_layout_menu_policyHistory" code="admin.layout.menu.policyHistory"/>
+<spring:message var="msg_admin_initialSettings_exportTitle" code="admin.initialSettings.exportTitle"/>
+<spring:message var="msg_admin_initialSettings_exportDesc" code="admin.initialSettings.exportDesc"/>
+<spring:message var="msg_admin_initialSettings_exportButton" code="admin.initialSettings.exportButton"/>
+<spring:message var="msg_admin_initialSettings_exportScope" code="admin.initialSettings.exportScope"/>
+<spring:message var="msg_admin_initialSettings_importTitle" code="admin.initialSettings.importTitle"/>
+<spring:message var="msg_admin_initialSettings_importDesc" code="admin.initialSettings.importDesc"/>
+<spring:message var="msg_admin_initialSettings_importFile" code="admin.initialSettings.importFile"/>
+<spring:message var="msg_admin_initialSettings_importButton" code="admin.initialSettings.importButton"/>
+<spring:message var="msg_admin_initialSettings_importNotice" code="admin.initialSettings.importNotice"/>
+<c:set var="pageTitle" value="${msg_admin_initialSettings_title}"/>
 <c:set var="activeMenu" value="initialSettings"/>
-<spring:message var="pageTitle" code="admin.initialSettings.title"/>
+
 <%@ include file="layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1><spring:message code="admin.initialSettings.title"/></h1>
-            <p class="adm-page-desc"><spring:message code="admin.initialSettings.desc"/></p>
+            <h1>${msg_admin_initialSettings_title}</h1>
+            <p class="adm-page-desc">${msg_admin_initialSettings_desc}</p>
         </div>
         <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/runtime-settings"><spring:message code="admin.layout.menu.runtimeSettings"/></a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/policy-history"><spring:message code="admin.layout.menu.policyHistory"/></a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/runtime-settings">${msg_admin_layout_menu_runtimeSettings}</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/policy-history">${msg_admin_layout_menu_policyHistory}</a>
         </div>
     </div>
 
@@ -31,16 +47,16 @@
     <div class="adm-card" style="margin-bottom:16px;">
         <div class="adm-card-header">
             <div>
-                <div class="adm-card-title"><spring:message code="admin.initialSettings.exportTitle"/></div>
-                <div class="adm-muted"><spring:message code="admin.initialSettings.exportDesc"/></div>
+                <div class="adm-card-title">${msg_admin_initialSettings_exportTitle}</div>
+                <div class="adm-muted">${msg_admin_initialSettings_exportDesc}</div>
             </div>
         </div>
         <div class="adm-card-body">
             <a class="adm-btn primary" href="${pageContext.request.contextPath}/admin/initial-settings/export">
-                <spring:message code="admin.initialSettings.exportButton"/>
+                ${msg_admin_initialSettings_exportButton}
             </a>
             <div class="adm-muted" style="margin-top:10px;line-height:1.7;">
-                <spring:message code="admin.initialSettings.exportScope"/>
+                ${msg_admin_initialSettings_exportScope}
             </div>
         </div>
     </div>
@@ -48,21 +64,21 @@
     <div class="adm-card">
         <div class="adm-card-header">
             <div>
-                <div class="adm-card-title"><spring:message code="admin.initialSettings.importTitle"/></div>
-                <div class="adm-muted"><spring:message code="admin.initialSettings.importDesc"/></div>
+                <div class="adm-card-title">${msg_admin_initialSettings_importTitle}</div>
+                <div class="adm-muted">${msg_admin_initialSettings_importDesc}</div>
             </div>
         </div>
         <div class="adm-card-body">
             <form method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/admin/initial-settings/import">
-                <label><spring:message code="admin.initialSettings.importFile"/>
+                <label>${msg_admin_initialSettings_importFile}
                     <input class="adm-input" type="file" name="file" accept="application/json,.json" required>
                 </label>
                 <div class="adm-actions" style="margin-top:12px;">
-                    <button class="adm-btn primary" type="submit"><spring:message code="admin.initialSettings.importButton"/></button>
+                    <button class="adm-btn primary" type="submit">${msg_admin_initialSettings_importButton}</button>
                 </div>
             </form>
             <div class="adm-muted" style="margin-top:10px;line-height:1.7;">
-                <spring:message code="admin.initialSettings.importNotice"/>
+                ${msg_admin_initialSettings_importNotice}
             </div>
         </div>
     </div>

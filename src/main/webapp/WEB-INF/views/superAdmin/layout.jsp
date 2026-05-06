@@ -2,17 +2,37 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="superadminLayoutLogoutMsg" code="superAdmin.layout.logout"/>
-<spring:message var="superadminLayoutThemeToggleMsg" code="superAdmin.layout.themeToggle"/>
-<spring:message var="superadminLayoutThemeDarkMsg" code="superAdmin.layout.theme.dark" javaScriptEscape="true"/>
-<spring:message var="superadminLayoutThemeLightMsg" code="superAdmin.layout.theme.light" javaScriptEscape="true"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_superAdmin_layout_logout" code="superAdmin.layout.logout"/>
+<spring:message var="msg_superAdmin_layout_themeToggle" code="superAdmin.layout.themeToggle"/>
+<spring:message var="msg_superAdmin_layout_theme_dark_js" code="superAdmin.layout.theme.dark" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_layout_theme_light_js" code="superAdmin.layout.theme.light" javaScriptEscape="true"/>
+<spring:message var="msg_superAdmin_layout_titleSuffix" code="superAdmin.layout.titleSuffix"/>
+<spring:message var="msg_superAdmin_layout_brandName" code="superAdmin.layout.brandName"/>
+<spring:message var="msg_superAdmin_layout_brandSub" code="superAdmin.layout.brandSub"/>
+<spring:message var="msg_superAdmin_layout_section_admin" code="superAdmin.layout.section.admin"/>
+<spring:message var="msg_superAdmin_layout_menu_adminMembers" code="superAdmin.layout.menu.adminMembers"/>
+<spring:message var="msg_superAdmin_layout_menu_org" code="superAdmin.layout.menu.org"/>
+<spring:message var="msg_superAdmin_layout_section_permissions" code="superAdmin.layout.section.permissions"/>
+<spring:message var="msg_superAdmin_layout_menu_permissionItems" code="superAdmin.layout.menu.permissionItems"/>
+<spring:message var="msg_superAdmin_layout_menu_permissionGroups" code="superAdmin.layout.menu.permissionGroups"/>
+<spring:message var="msg_superAdmin_layout_menu_permissionTemplates" code="superAdmin.layout.menu.permissionTemplates"/>
+<spring:message var="msg_superAdmin_layout_section_analytics" code="superAdmin.layout.section.analytics"/>
+<spring:message var="msg_superAdmin_layout_menu_salary" code="superAdmin.layout.menu.salary"/>
+<spring:message var="msg_superAdmin_layout_menu_stats" code="superAdmin.layout.menu.stats"/>
+<spring:message var="msg_superAdmin_layout_menu_adminPanel" code="superAdmin.layout.menu.adminPanel"/>
+<spring:message var="msg_superAdmin_layout_menu_viewSite" code="superAdmin.layout.menu.viewSite"/>
+<spring:message var="msg_superAdmin_layout_role" code="superAdmin.layout.role"/>
+<spring:message var="msg_superAdmin_layout_theme_light" code="superAdmin.layout.theme.light"/>
+<spring:message var="msg_superAdmin_layout_pathRoot" code="superAdmin.layout.pathRoot"/>
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/TripTogetherFavicon.png">
-    <title>${pageTitle} — <spring:message code="superAdmin.layout.titleSuffix"/></title>
+    <title>${pageTitle} — ${msg_superAdmin_layout_titleSuffix}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/admin/admin.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/superAdmin/superadmin.css">
@@ -38,45 +58,45 @@
         <a class="adm-brand" href="${pageContext.request.contextPath}/superAdmin">
             <div class="adm-brand-icon">🔑</div>
             <div>
-                <div class="adm-brand-text"><spring:message code="superAdmin.layout.brandName"/></div>
-                <div class="adm-brand-sub"><spring:message code="superAdmin.layout.brandSub"/></div>
+                <div class="adm-brand-text">${msg_superAdmin_layout_brandName}</div>
+                <div class="adm-brand-sub">${msg_superAdmin_layout_brandSub}</div>
             </div>
         </a>
 
         <nav class="adm-nav">
-            <div class="adm-nav-section"><spring:message code="superAdmin.layout.section.admin"/></div>
+            <div class="adm-nav-section">${msg_superAdmin_layout_section_admin}</div>
             <a class="adm-nav-item ${activeMenu=='members'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/members">
-                <span class="adm-nav-icon">👤</span> <spring:message code="superAdmin.layout.menu.adminMembers"/>
+                <span class="adm-nav-icon">👤</span> ${msg_superAdmin_layout_menu_adminMembers}
             </a>
             <a class="adm-nav-item ${activeMenu=='org'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/org">
-                <span class="adm-nav-icon">🏢</span> <spring:message code="superAdmin.layout.menu.org"/>
+                <span class="adm-nav-icon">🏢</span> ${msg_superAdmin_layout_menu_org}
             </a>
 
-            <div class="adm-nav-section" style="margin-top:16px;"><spring:message code="superAdmin.layout.section.permissions"/></div>
+            <div class="adm-nav-section" style="margin-top:16px;">${msg_superAdmin_layout_section_permissions}</div>
             <a class="adm-nav-item ${activeMenu=='permissions'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/permissions">
-                <span class="adm-nav-icon">🔑</span> <spring:message code="superAdmin.layout.menu.permissionItems"/>
+                <span class="adm-nav-icon">🔑</span> ${msg_superAdmin_layout_menu_permissionItems}
             </a>
             <a class="adm-nav-item ${activeMenu=='groups'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/groups">
-                <span class="adm-nav-icon">🔐</span> <spring:message code="superAdmin.layout.menu.permissionGroups"/>
+                <span class="adm-nav-icon">🔐</span> ${msg_superAdmin_layout_menu_permissionGroups}
             </a>
             <a class="adm-nav-item ${activeMenu=='permissionCodes'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/permission-codes">
-                <span class="adm-nav-icon">🗂️</span> <spring:message code="superAdmin.layout.menu.permissionTemplates"/>
+                <span class="adm-nav-icon">🗂️</span> ${msg_superAdmin_layout_menu_permissionTemplates}
             </a>
 
-            <div class="adm-nav-section" style="margin-top:16px;"><spring:message code="superAdmin.layout.section.analytics"/></div>
+            <div class="adm-nav-section" style="margin-top:16px;">${msg_superAdmin_layout_section_analytics}</div>
             <a class="adm-nav-item ${activeMenu=='salary'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/salary">
-                <span class="adm-nav-icon">💰</span> <spring:message code="superAdmin.layout.menu.salary"/>
+                <span class="adm-nav-icon">💰</span> ${msg_superAdmin_layout_menu_salary}
             </a>
             <a class="adm-nav-item ${activeMenu=='stats'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/stats">
-                <span class="adm-nav-icon">📊</span> <spring:message code="superAdmin.layout.menu.stats"/>
+                <span class="adm-nav-icon">📊</span> ${msg_superAdmin_layout_menu_stats}
             </a>
 
             <div style="margin-top:16px; padding: 0 10px;">
                 <a class="adm-nav-item sa-nav-aux" href="${pageContext.request.contextPath}/admin">
-                    <span class="adm-nav-icon">↩️</span> <spring:message code="superAdmin.layout.menu.adminPanel"/>
+                    <span class="adm-nav-icon">↩️</span> ${msg_superAdmin_layout_menu_adminPanel}
                 </a>
                 <a class="adm-nav-item sa-nav-aux" href="${pageContext.request.contextPath}/" target="_blank" style="margin-top:4px;">
-                    <span class="adm-nav-icon">↗️</span> <spring:message code="superAdmin.layout.menu.viewSite"/>
+                    <span class="adm-nav-icon">↗️</span> ${msg_superAdmin_layout_menu_viewSite}
                 </a>
             </div>
         </nav>
@@ -86,9 +106,9 @@
                 <div class="adm-user-av">${sessionScope.loginUser.nickname.substring(0,1)}</div>
                 <div>
                     <div class="adm-user-name">${sessionScope.loginUser.nickname}</div>
-                    <div class="adm-user-role"><spring:message code="superAdmin.layout.role"/></div>
+                    <div class="adm-user-role">${msg_superAdmin_layout_role}</div>
                 </div>
-                <a href="${pageContext.request.contextPath}/auth/logout" class="adm-logout" title="${superadminLayoutLogoutMsg}">⏏</a>
+                <a href="${pageContext.request.contextPath}/auth/logout" class="adm-logout" title="${msg_superAdmin_layout_logout}">⏏</a>
             </div>
         </div>
     </aside>
@@ -102,9 +122,9 @@
                 <span class="adm-nav-toggle-bar"></span>
             </button>
             <div class="adm-topbar-title">${pageTitle}</div>
-            <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="${superadminLayoutThemeToggleMsg}"><spring:message code="superAdmin.layout.theme.light"/></button>
+            <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="${msg_superAdmin_layout_themeToggle}">${msg_superAdmin_layout_theme_light}</button>
             <div class="adm-topbar-path">
-                <span><spring:message code="superAdmin.layout.pathRoot"/></span>
+                <span>${msg_superAdmin_layout_pathRoot}</span>
                 <c:if test="${not empty pageTitle}"><span>${pageTitle}</span></c:if>
             </div>
         </div>
@@ -114,8 +134,8 @@
     var btn = document.getElementById('saThemeBtn');
     var isLight = document.body.classList.contains('sa-light');
     if (btn) btn.textContent = isLight
-        ? '${superadminLayoutThemeDarkMsg}'
-        : '${superadminLayoutThemeLightMsg}';
+        ? '${msg_superAdmin_layout_theme_dark_js}'
+        : '${msg_superAdmin_layout_theme_light_js}';
 })();
 
 function saToggleTheme() {
@@ -124,11 +144,11 @@ function saToggleTheme() {
     if (body.classList.contains('sa-light')) {
         body.classList.remove('sa-light');
         localStorage.setItem('tt_theme', 'dark');
-        if (btn) btn.textContent = '${superadminLayoutThemeLightMsg}';
+        if (btn) btn.textContent = '${msg_superAdmin_layout_theme_light_js}';
     } else {
         body.classList.add('sa-light');
         localStorage.setItem('tt_theme', 'light');
-        if (btn) btn.textContent = '${superadminLayoutThemeDarkMsg}';
+        if (btn) btn.textContent = '${msg_superAdmin_layout_theme_dark_js}';
     }
 }
 </script>

@@ -2,13 +2,72 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_auth_register_email_placeholder" code="auth.register.email.placeholder"/>
+<spring:message var="msg_auth_register_nickname_placeholder" code="auth.register.nickname.placeholder"/>
+<spring:message var="msg_auth_register_password_placeholder" code="auth.register.password.placeholder"/>
+<spring:message var="msg_auth_register_passwordConfirm_placeholder" code="auth.register.passwordConfirm.placeholder"/>
+<spring:message var="msg_auth_register_userId_placeholder" code="auth.register.userId.placeholder"/>
+<spring:message var="msg_auth_register_title1" code="auth.register.title1"/>
+<spring:message var="msg_auth_register_subtitle1" code="auth.register.subtitle1"/>
+<spring:message var="msg_auth_register_kakao" code="auth.register.kakao"/>
+<spring:message var="msg_auth_register_naver" code="auth.register.naver"/>
+<spring:message var="msg_auth_register_google" code="auth.register.google"/>
+<spring:message var="msg_auth_register_or" code="auth.register.or"/>
+<spring:message var="msg_auth_register_userId" code="auth.register.userId"/>
+<spring:message var="msg_auth_register_email" code="auth.register.email"/>
+<spring:message var="msg_auth_register_optional" code="auth.register.optional"/>
+<spring:message var="msg_auth_register_password" code="auth.register.password"/>
+<spring:message var="msg_auth_register_passwordConfirm" code="auth.register.passwordConfirm"/>
+<spring:message var="msg_auth_register_next" code="auth.register.next"/>
+<spring:message var="msg_auth_register_title2" code="auth.register.title2"/>
+<spring:message var="msg_auth_register_subtitle2" code="auth.register.subtitle2"/>
+<spring:message var="msg_auth_register_nickname" code="auth.register.nickname"/>
+<spring:message var="msg_auth_register_nationality" code="auth.register.nationality"/>
+<spring:message var="msg_auth_register_nationality_placeholder" code="auth.register.nationality.placeholder"/>
+<spring:message var="msg_auth_register_nationality_option_kr" code="auth.register.nationality.option.kr"/>
+<spring:message var="msg_auth_register_nationality_option_us" code="auth.register.nationality.option.us"/>
+<spring:message var="msg_auth_register_nationality_option_jp" code="auth.register.nationality.option.jp"/>
+<spring:message var="msg_auth_register_nationality_option_cn" code="auth.register.nationality.option.cn"/>
+<spring:message var="msg_auth_register_nationality_option_gb" code="auth.register.nationality.option.gb"/>
+<spring:message var="msg_auth_register_nationality_option_fr" code="auth.register.nationality.option.fr"/>
+<spring:message var="msg_auth_register_nationality_option_de" code="auth.register.nationality.option.de"/>
+<spring:message var="msg_auth_register_nationality_option_au" code="auth.register.nationality.option.au"/>
+<spring:message var="msg_auth_register_nationality_option_ca" code="auth.register.nationality.option.ca"/>
+<spring:message var="msg_auth_register_nationality_option_other" code="auth.register.nationality.option.other"/>
+<spring:message var="msg_auth_register_language" code="auth.register.language"/>
+<spring:message var="msg_auth_register_language_placeholder" code="auth.register.language.placeholder"/>
+<spring:message var="msg_auth_register_language_option_ko" code="auth.register.language.option.ko"/>
+<spring:message var="msg_auth_register_language_option_en" code="auth.register.language.option.en"/>
+<spring:message var="msg_auth_register_language_option_ja" code="auth.register.language.option.ja"/>
+<spring:message var="msg_auth_register_language_option_zh" code="auth.register.language.option.zh"/>
+<spring:message var="msg_auth_register_prev" code="auth.register.prev"/>
+<spring:message var="msg_auth_register_complete" code="auth.register.complete"/>
+<spring:message var="msg_auth_register_hasAccount" code="auth.register.hasAccount"/>
+<spring:message var="msg_header_auth_login" code="header.auth.login"/>
+<spring:message var="msg_auth_register_email_duplicate_js" code="auth.register.email.duplicate" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_email_ok_js" code="auth.register.email.ok" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_email_rule_js" code="auth.register.email.rule" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_fail_js" code="auth.register.fail" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_language_required_js" code="auth.register.language.required" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_nationality_required_js" code="auth.register.nationality.required" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_nickname_duplicate_js" code="auth.register.nickname.duplicate" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_nickname_ok_js" code="auth.register.nickname.ok" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_nickname_required_js" code="auth.register.nickname.required" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_nickname_rule_js" code="auth.register.nickname.rule" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_password_match_js" code="auth.register.password.match" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_password_mismatch_js" code="auth.register.password.mismatch" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_password_short_js" code="auth.register.password.short" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_server_js" code="auth.register.server" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_userId_duplicate_js" code="auth.register.userId.duplicate" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_userId_invalid_js" code="auth.register.userId.invalid" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_userId_ok_js" code="auth.register.userId.ok" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_userId_rule_js" code="auth.register.userId.rule" javaScriptEscape="true"/>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
-<spring:message code="auth.register.email.placeholder" var="authRegisterEmailPlaceholder"/>
-<spring:message code="auth.register.nickname.placeholder" var="authRegisterNicknamePlaceholder"/>
-<spring:message code="auth.register.password.placeholder" var="authRegisterPasswordPlaceholder"/>
-<spring:message code="auth.register.passwordConfirm.placeholder" var="authRegisterPasswordConfirmPlaceholder"/>
-<spring:message code="auth.register.userId.placeholder" var="authRegisterUserIdPlaceholder"/>
+
+
 <html lang="${pageContext.response.locale.language}">
 <body>
 <div class="auth-wrap">
@@ -28,18 +87,18 @@
 
     <!-- ═══ STEP 1 ═══ -->
     <div id="step1">
-      <h1 class="auth-title"><spring:message code="auth.register.title1"/></h1>
-      <p class="auth-sub"><spring:message code="auth.register.subtitle1"/></p>
+      <h1 class="auth-title">${msg_auth_register_title1}</h1>
+      <p class="auth-sub">${msg_auth_register_subtitle1}</p>
 
       <!-- 소셜 가입 -->
       <div class="social-btns">
         <a href="${kakaoAuthUrl}" class="social-btn kakao">
           <span class="social-icon kakao-mark">k</span>
-          <spring:message code="auth.register.kakao"/>
+          ${msg_auth_register_kakao}
         </a>
         <a href="${naverAuthUrl}" class="social-btn naver">
           <span class="social-icon naver-mark">N</span>
-          <spring:message code="auth.register.naver"/>
+          ${msg_auth_register_naver}
         </a>
         <a href="${googleAuthUrl}" class="social-btn google">
           <span class="social-icon google-mark">
@@ -50,31 +109,31 @@
               <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
             </svg>
           </span>
-          <spring:message code="auth.register.google"/>
+          ${msg_auth_register_google}
         </a>
       </div>
 
-      <div class="auth-divider"><spring:message code="auth.register.or"/></div>
+      <div class="auth-divider">${msg_auth_register_or}</div>
 
       <div class="form-group">
-        <label class="form-label" for="userId"><spring:message code="auth.register.userId"/> <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="userId">${msg_auth_register_userId} <span style="color:#ef4444">*</span></label>
         <input class="form-input" type="text" id="userId" name="userId"
-               placeholder="${authRegisterUserIdPlaceholder}" maxlength="20" autocomplete="username">
+               placeholder="${msg_auth_register_userId_placeholder}" maxlength="20" autocomplete="username">
         <div class="field-msg" id="userIdMsg"></div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="userEmail"><spring:message code="auth.register.email"/> <span style="color:var(--gray-400);font-weight:400"><spring:message code="auth.register.optional"/></span></label>
+        <label class="form-label" for="userEmail">${msg_auth_register_email} <span style="color:var(--gray-400);font-weight:400">${msg_auth_register_optional}</span></label>
         <input class="form-input" type="email" id="userEmail" name="userEmail"
-               placeholder="${authRegisterEmailPlaceholder}" autocomplete="email">
+               placeholder="${msg_auth_register_email_placeholder}" autocomplete="email">
         <div class="field-msg" id="emailMsg"></div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="password"><spring:message code="auth.register.password"/> <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="password">${msg_auth_register_password} <span style="color:#ef4444">*</span></label>
         <div class="pw-wrap">
           <input class="form-input" type="password" id="password" name="password"
-                 placeholder="${authRegisterPasswordPlaceholder}" maxlength="64" autocomplete="new-password">
+                 placeholder="${msg_auth_register_password_placeholder}" maxlength="64" autocomplete="new-password">
           <button type="button" class="pw-toggle" id="pwToggle1">👁</button>
         </div>
         <div class="pw-strength" id="pwStrengthBar">
@@ -86,58 +145,58 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="passwordConfirm"><spring:message code="auth.register.passwordConfirm"/> <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="passwordConfirm">${msg_auth_register_passwordConfirm} <span style="color:#ef4444">*</span></label>
         <div class="pw-wrap">
           <input class="form-input" type="password" id="passwordConfirm"
-                 placeholder="${authRegisterPasswordConfirmPlaceholder}" maxlength="64" autocomplete="new-password">
+                 placeholder="${msg_auth_register_passwordConfirm_placeholder}" maxlength="64" autocomplete="new-password">
           <button type="button" class="pw-toggle" id="pwToggle2">👁</button>
         </div>
         <div class="field-msg" id="pwConfirmMsg"></div>
       </div>
 
       <button type="button" class="btn-submit" id="step1Btn" style="margin-top:4px;">
-        <spring:message code="auth.register.next"/>
+        ${msg_auth_register_next}
       </button>
     </div>
 
     <!-- ═══ STEP 2 ═══ -->
     <div id="step2" style="display:none">
-      <h1 class="auth-title"><spring:message code="auth.register.title2"/></h1>
-      <p class="auth-sub"><spring:message code="auth.register.subtitle2"/></p>
+      <h1 class="auth-title">${msg_auth_register_title2}</h1>
+      <p class="auth-sub">${msg_auth_register_subtitle2}</p>
 
       <div class="form-group">
-        <label class="form-label" for="nickname"><spring:message code="auth.register.nickname"/> <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="nickname">${msg_auth_register_nickname} <span style="color:#ef4444">*</span></label>
         <input class="form-input" type="text" id="nickname" name="nickname"
-               placeholder="${authRegisterNicknamePlaceholder}" maxlength="20">
+               placeholder="${msg_auth_register_nickname_placeholder}" maxlength="20">
         <div class="field-msg" id="nicknameMsg"></div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="nationality"><spring:message code="auth.register.nationality"/> <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="nationality">${msg_auth_register_nationality} <span style="color:#ef4444">*</span></label>
         <select class="form-select" id="nationality" name="nationality">
-          <option value=""><spring:message code="auth.register.nationality.placeholder"/></option>
-          <option value="KR">🇰🇷 <spring:message code="auth.register.nationality.option.kr"/></option>
-          <option value="US">🇺🇸 <spring:message code="auth.register.nationality.option.us"/></option>
-          <option value="JP">🇯🇵 <spring:message code="auth.register.nationality.option.jp"/></option>
-          <option value="CN">🇨🇳 <spring:message code="auth.register.nationality.option.cn"/></option>
-          <option value="GB">🇬🇧 <spring:message code="auth.register.nationality.option.gb"/></option>
-          <option value="FR">🇫🇷 <spring:message code="auth.register.nationality.option.fr"/></option>
-          <option value="DE">🇩🇪 <spring:message code="auth.register.nationality.option.de"/></option>
-          <option value="AU">🇦🇺 <spring:message code="auth.register.nationality.option.au"/></option>
-          <option value="CA">🇨🇦 <spring:message code="auth.register.nationality.option.ca"/></option>
-          <option value="OTHER">🌍 <spring:message code="auth.register.nationality.option.other"/></option>
+          <option value="">${msg_auth_register_nationality_placeholder}</option>
+          <option value="KR">🇰🇷 ${msg_auth_register_nationality_option_kr}</option>
+          <option value="US">🇺🇸 ${msg_auth_register_nationality_option_us}</option>
+          <option value="JP">🇯🇵 ${msg_auth_register_nationality_option_jp}</option>
+          <option value="CN">🇨🇳 ${msg_auth_register_nationality_option_cn}</option>
+          <option value="GB">🇬🇧 ${msg_auth_register_nationality_option_gb}</option>
+          <option value="FR">🇫🇷 ${msg_auth_register_nationality_option_fr}</option>
+          <option value="DE">🇩🇪 ${msg_auth_register_nationality_option_de}</option>
+          <option value="AU">🇦🇺 ${msg_auth_register_nationality_option_au}</option>
+          <option value="CA">🇨🇦 ${msg_auth_register_nationality_option_ca}</option>
+          <option value="OTHER">🌍 ${msg_auth_register_nationality_option_other}</option>
         </select>
         <div class="field-msg" id="nationalityMsg"></div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="preferredLang"><spring:message code="auth.register.language"/> <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="preferredLang">${msg_auth_register_language} <span style="color:#ef4444">*</span></label>
         <select class="form-select" id="preferredLang" name="preferredLang">
-          <option value=""><spring:message code="auth.register.language.placeholder"/></option>
-          <option value="ko">🇰🇷 <spring:message code="auth.register.language.option.ko"/></option>
-          <option value="en">🇺🇸 <spring:message code="auth.register.language.option.en"/></option>
-          <option value="ja">🇯🇵 <spring:message code="auth.register.language.option.ja"/></option>
-          <option value="zh">🇨🇳 <spring:message code="auth.register.language.option.zh"/></option>
+          <option value="">${msg_auth_register_language_placeholder}</option>
+          <option value="ko">🇰🇷 ${msg_auth_register_language_option_ko}</option>
+          <option value="en">🇺🇸 ${msg_auth_register_language_option_en}</option>
+          <option value="ja">🇯🇵 ${msg_auth_register_language_option_ja}</option>
+          <option value="zh">🇨🇳 ${msg_auth_register_language_option_zh}</option>
         </select>
         <div class="field-msg" id="langMsg"></div>
       </div>
@@ -148,17 +207,17 @@
         <button type="button" class="btn-submit" id="backBtn"
                 style="background:var(--gray-100);color:var(--gray-700);
                        box-shadow:none;flex:0 0 80px;font-weight:600;">
-          <spring:message code="auth.register.prev"/>
+          ${msg_auth_register_prev}
         </button>
         <button type="button" class="btn-submit" id="registerBtn" style="flex:1;">
-          <spring:message code="auth.register.complete"/>
+          ${msg_auth_register_complete}
         </button>
       </div>
     </div>
 
     <div class="auth-footer">
-      <spring:message code="auth.register.hasAccount"/>
-      <a href="${pageContext.request.contextPath}/auth/login"><spring:message code="header.auth.login"/></a>
+      ${msg_auth_register_hasAccount}
+      <a href="${pageContext.request.contextPath}/auth/login">${msg_header_auth_login}</a>
     </div>
 
   </div>
@@ -167,51 +226,51 @@
 <script>
 (function () {
   const ctx = '${pageContext.request.contextPath}';
-  <spring:message code="auth.register.email.duplicate" javaScriptEscape="true" var="authRegisterEmailDuplicateJs"/>
-  <spring:message code="auth.register.email.ok" javaScriptEscape="true" var="authRegisterEmailOkJs"/>
-  <spring:message code="auth.register.email.rule" javaScriptEscape="true" var="authRegisterEmailRuleJs"/>
-  <spring:message code="auth.register.fail" javaScriptEscape="true" var="authRegisterFailJs"/>
-  <spring:message code="auth.register.language.required" javaScriptEscape="true" var="authRegisterLanguageRequiredJs"/>
-  <spring:message code="auth.register.nationality.required" javaScriptEscape="true" var="authRegisterNationalityRequiredJs"/>
-  <spring:message code="auth.register.nickname.duplicate" javaScriptEscape="true" var="authRegisterNicknameDuplicateJs"/>
-  <spring:message code="auth.register.nickname.ok" javaScriptEscape="true" var="authRegisterNicknameOkJs"/>
-  <spring:message code="auth.register.nickname.required" javaScriptEscape="true" var="authRegisterNicknameRequiredJs"/>
-  <spring:message code="auth.register.nickname.rule" javaScriptEscape="true" var="authRegisterNicknameRuleJs"/>
-  <spring:message code="auth.register.password.match" javaScriptEscape="true" var="authRegisterPasswordMatchJs"/>
-  <spring:message code="auth.register.password.mismatch" javaScriptEscape="true" var="authRegisterPasswordMismatchJs"/>
-  <spring:message code="auth.register.password.short" javaScriptEscape="true" var="authRegisterPasswordShortJs"/>
-  <spring:message code="auth.register.server" javaScriptEscape="true" var="authRegisterServerJs"/>
-  <spring:message code="auth.register.userId.duplicate" javaScriptEscape="true" var="authRegisterUserIdDuplicateJs"/>
-  <spring:message code="auth.register.userId.invalid" javaScriptEscape="true" var="authRegisterUserIdInvalidJs"/>
-  <spring:message code="auth.register.userId.ok" javaScriptEscape="true" var="authRegisterUserIdOkJs"/>
-  <spring:message code="auth.register.userId.rule" javaScriptEscape="true" var="authRegisterUserIdRuleJs"/>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
   const registerMessages = {
     email: {
-      duplicate: '${authRegisterEmailDuplicateJs}',
-      ok: '${authRegisterEmailOkJs}',
-      rule: '${authRegisterEmailRuleJs}'
+      duplicate: '${msg_auth_register_email_duplicate_js}',
+      ok: '${msg_auth_register_email_ok_js}',
+      rule: '${msg_auth_register_email_rule_js}'
     },
-    fail: '${authRegisterFailJs}',
-    languageRequired: '${authRegisterLanguageRequiredJs}',
-    nationalityRequired: '${authRegisterNationalityRequiredJs}',
+    fail: '${msg_auth_register_fail_js}',
+    languageRequired: '${msg_auth_register_language_required_js}',
+    nationalityRequired: '${msg_auth_register_nationality_required_js}',
     nickname: {
-      duplicate: '${authRegisterNicknameDuplicateJs}',
-      ok: '${authRegisterNicknameOkJs}',
-      required: '${authRegisterNicknameRequiredJs}',
-      rule: '${authRegisterNicknameRuleJs}'
+      duplicate: '${msg_auth_register_nickname_duplicate_js}',
+      ok: '${msg_auth_register_nickname_ok_js}',
+      required: '${msg_auth_register_nickname_required_js}',
+      rule: '${msg_auth_register_nickname_rule_js}'
     },
     password: {
-      match: '${authRegisterPasswordMatchJs}',
-      mismatch: '${authRegisterPasswordMismatchJs}',
-      short: '${authRegisterPasswordShortJs}'
+      match: '${msg_auth_register_password_match_js}',
+      mismatch: '${msg_auth_register_password_mismatch_js}',
+      short: '${msg_auth_register_password_short_js}'
     },
-    server: '${authRegisterServerJs}',
+    server: '${msg_auth_register_server_js}',
     userId: {
-      duplicate: '${authRegisterUserIdDuplicateJs}',
-      invalid: '${authRegisterUserIdInvalidJs}',
-      ok: '${authRegisterUserIdOkJs}',
-      rule: '${authRegisterUserIdRuleJs}'
+      duplicate: '${msg_auth_register_userId_duplicate_js}',
+      invalid: '${msg_auth_register_userId_invalid_js}',
+      ok: '${msg_auth_register_userId_ok_js}',
+      rule: '${msg_auth_register_userId_rule_js}'
     }
   };
 

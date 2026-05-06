@@ -4,29 +4,78 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_translation_label_exploreReviewContent" code="admin.translation.label.exploreReviewContent"/>
+<spring:message var="msg_admin_explore_detail_maxTagLimit_js" code="admin.explore.detail.maxTagLimit" javaScriptEscape="true"/>
+<spring:message var="msg_admin_explore_detail_confirmDelete_js" code="admin.explore.detail.confirmDelete" javaScriptEscape="true"/>
+<spring:message var="msg_admin_explore_detail_confirmBlockReview_js" code="admin.explore.detail.confirmBlockReview" javaScriptEscape="true"/>
+<spring:message var="msg_admin_explore_detail_error_requestFailed_js" code="admin.explore.detail.error.requestFailed" javaScriptEscape="true"/>
+<spring:message var="msg_admin_explore_detail_pageTitle" code="admin.explore.detail.pageTitle"/>
+<spring:message var="msg_admin_explore_detail_backToList" code="admin.explore.detail.backToList"/>
+<spring:message var="msg_admin_explore_detail_title" code="admin.explore.detail.title"/>
+<spring:message var="msg_admin_explore_detail_userView" code="admin.explore.detail.userView"/>
+<spring:message var="msg_admin_common_edit" code="admin.common.edit"/>
+<spring:message var="msg_admin_common_delete" code="admin.common.delete"/>
+<spring:message var="msg_admin_explore_detail_imageEmpty" code="admin.explore.detail.imageEmpty"/>
+<spring:message var="msg_admin_explore_detail_spotName" code="admin.explore.detail.spotName"/>
+<spring:message var="msg_admin_explore_status_active" code="admin.explore.status.active"/>
+<spring:message var="msg_admin_explore_status_deleted" code="admin.explore.status.deleted"/>
+<spring:message var="msg_admin_explore_detail_author" code="admin.explore.detail.author"/>
+<spring:message var="msg_admin_explore_detail_region" code="admin.explore.detail.region"/>
+<spring:message var="msg_admin_explore_detail_spotId" code="admin.explore.detail.spotId"/>
+<spring:message var="msg_admin_explore_detail_ratingReviews" code="admin.explore.detail.ratingReviews"/>
+<spring:message var="msg_admin_explore_detail_reviewCount" code="admin.explore.detail.reviewCount"/>
+<spring:message var="msg_admin_explore_detail_likeTags" code="admin.explore.detail.likeTags"/>
+<spring:message var="msg_admin_explore_detail_likeTagsValue" code="admin.explore.detail.likeTagsValue"/>
+<spring:message var="msg_admin_explore_detail_address" code="admin.explore.detail.address"/>
+<spring:message var="msg_admin_explore_detail_coordinates" code="admin.explore.detail.coordinates"/>
+<spring:message var="msg_admin_explore_detail_coordinatesValue" code="admin.explore.detail.coordinatesValue"/>
+<spring:message var="msg_admin_explore_detail_description" code="admin.explore.detail.description"/>
+<spring:message var="msg_admin_explore_detail_tags" code="admin.explore.detail.tags"/>
+<spring:message var="msg_admin_explore_detail_tagsEmpty" code="admin.explore.detail.tagsEmpty"/>
+<spring:message var="msg_admin_explore_detail_editTitle" code="admin.explore.detail.editTitle"/>
+<spring:message var="msg_admin_explore_detail_editSub" code="admin.explore.detail.editSub"/>
+<spring:message var="msg_admin_explore_detail_latitude" code="admin.explore.detail.latitude"/>
+<spring:message var="msg_admin_explore_detail_longitude" code="admin.explore.detail.longitude"/>
+<spring:message var="msg_admin_explore_detail_imageReplace" code="admin.explore.detail.imageReplace"/>
+<spring:message var="msg_admin_explore_detail_imageReplaceSub" code="admin.explore.detail.imageReplaceSub"/>
+<spring:message var="msg_admin_explore_detail_tagSelect" code="admin.explore.detail.tagSelect"/>
+<spring:message var="msg_admin_explore_detail_tagLimit" code="admin.explore.detail.tagLimit"/>
+<spring:message var="msg_admin_common_cancel" code="admin.common.cancel"/>
+<spring:message var="msg_admin_common_save" code="admin.common.save"/>
+<spring:message var="msg_admin_explore_detail_reviewsTitle" code="admin.explore.detail.reviewsTitle"/>
+<spring:message var="msg_admin_explore_detail_reviewsManageAll" code="admin.explore.detail.reviewsManageAll"/>
+<spring:message var="msg_admin_explore_detail_reviewId" code="admin.explore.detail.reviewId"/>
+<spring:message var="msg_admin_explore_detail_reviewAuthor" code="admin.explore.detail.reviewAuthor"/>
+<spring:message var="msg_admin_explore_detail_reviewRating" code="admin.explore.detail.reviewRating"/>
+<spring:message var="msg_admin_explore_detail_reviewContent" code="admin.explore.detail.reviewContent"/>
+<spring:message var="msg_admin_common_status" code="admin.common.status"/>
+<spring:message var="msg_admin_explore_detail_reviewCreatedAt" code="admin.explore.detail.reviewCreatedAt"/>
+<spring:message var="msg_admin_common_action" code="admin.common.action"/>
+<spring:message var="msg_admin_explore_reviewStatus_active" code="admin.explore.reviewStatus.active"/>
+<spring:message var="msg_admin_explore_reviewStatus_blocked" code="admin.explore.reviewStatus.blocked"/>
+<spring:message var="msg_admin_explore_reviews_action_block" code="admin.explore.reviews.action.block"/>
+<spring:message var="msg_admin_explore_detail_reviewEmpty" code="admin.explore.detail.reviewEmpty"/>
 <c:set var="activeMenu" value="explore"/>
-<spring:message var="adminTranslationLabelExploreReviewContentMsg" code="admin.translation.label.exploreReviewContent"/>
-<spring:message var="adminExploreDetailMaxTagLimitMsg" code="admin.explore.detail.maxTagLimit" javaScriptEscape="true"/>
-<spring:message var="adminExploreDetailConfirmDeleteMsg" code="admin.explore.detail.confirmDelete" javaScriptEscape="true"/>
-<spring:message var="adminExploreDetailConfirmBlockReviewMsg" code="admin.explore.detail.confirmBlockReview" javaScriptEscape="true"/>
-<spring:message var="adminExploreDetailErrorRequestFailedMsg" code="admin.explore.detail.error.requestFailed" javaScriptEscape="true"/>
-<spring:message code="admin.explore.detail.pageTitle" var="adminExploreDetailPageTitle"/>
-<c:set var="pageTitle" value="${adminExploreDetailPageTitle}"/>
+
+
+<c:set var="pageTitle" value="${msg_admin_explore_detail_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <a class="adm-back-link" href="${pageContext.request.contextPath}/admin/explore">
-        <spring:message code="admin.explore.detail.backToList"/>
+        ${msg_admin_explore_detail_backToList}
     </a>
 
     <div class="adm-card" style="margin-top:16px;margin-bottom:20px;">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.explore.detail.title"/></div>
+            <div class="adm-card-title">${msg_admin_explore_detail_title}</div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/detail/${spot.spotIdx}" target="_blank"><spring:message code="admin.explore.detail.userView"/></a>
-                <button type="button" class="adm-btn" onclick="toggleEditForm()"><spring:message code="admin.common.edit"/></button>
+                <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/detail/${spot.spotIdx}" target="_blank">${msg_admin_explore_detail_userView}</a>
+                <button type="button" class="adm-btn" onclick="toggleEditForm()">${msg_admin_common_edit}</button>
                 <c:if test="${spot.displayStatus != 'DELETED'}">
-                    <button class="adm-btn adm-btn-ghost" type="button" data-id="${spot.spotIdx}" onclick="deleteSpot(this)"><spring:message code="admin.common.delete"/></button>
+                    <button class="adm-btn adm-btn-ghost" type="button" data-id="${spot.spotIdx}" onclick="deleteSpot(this)">${msg_admin_common_delete}</button>
                 </c:if>
             </div>
         </div>
@@ -38,7 +87,7 @@
                     </c:when>
                     <c:otherwise>
                         <div class="adm-image-placeholder" style="width:100%;height:220px;border-radius:14px;display:flex;align-items:center;justify-content:center;">
-                            <spring:message code="admin.explore.detail.imageEmpty"/>
+                            ${msg_admin_explore_detail_imageEmpty}
                         </div>
                     </c:otherwise>
                 </c:choose>
@@ -46,19 +95,19 @@
             <div style="display:grid;gap:12px;">
                 <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start;">
                     <div>
-                        <div class="adm-summary-label"><spring:message code="admin.explore.detail.spotName"/></div>
+                        <div class="adm-summary-label">${msg_admin_explore_detail_spotName}</div>
                         <div class="adm-field-value" style="font-size:22px;font-weight:700;">${fn:escapeXml(spot.name)}</div>
                     </div>
                     <span class="status-badge ${spot.displayStatus}">
                         <c:choose>
-                            <c:when test="${spot.displayStatus == 'ACTIVE'}"><spring:message code="admin.explore.status.active"/></c:when>
-                            <c:otherwise><spring:message code="admin.explore.status.deleted"/></c:otherwise>
+                            <c:when test="${spot.displayStatus == 'ACTIVE'}">${msg_admin_explore_status_active}</c:when>
+                            <c:otherwise>${msg_admin_explore_status_deleted}</c:otherwise>
                         </c:choose>
                     </span>
                 </div>
                 <div class="adm-summary-grid" style="grid-template-columns:repeat(2, minmax(0, 1fr));margin-bottom:0;">
                     <div class="adm-card" style="padding:14px;">
-                        <div class="adm-summary-label"><spring:message code="admin.explore.detail.author"/></div>
+                        <div class="adm-summary-label">${msg_admin_explore_detail_author}</div>
                         <button type="button"
                                 class="adm-inline-link js-open-member-context"
                                 data-user-idx="${spot.userIdx}"
@@ -75,42 +124,42 @@
                         </div>
                     </div>
                     <div class="adm-card" style="padding:14px;">
-                        <div class="adm-summary-label"><spring:message code="admin.explore.detail.region"/></div>
+                        <div class="adm-summary-label">${msg_admin_explore_detail_region}</div>
                         <div class="adm-field-value" style="font-size:14px;margin-top:4px;">${fn:escapeXml(spot.region)}</div>
                     </div>
                     <div class="adm-card" style="padding:14px;">
-                        <div class="adm-summary-label"><spring:message code="admin.explore.detail.spotId"/></div>
+                        <div class="adm-summary-label">${msg_admin_explore_detail_spotId}</div>
                         <div class="adm-field-value-sub" style="font-size:13px;margin-top:4px;">${fn:escapeXml(spot.spotId)}</div>
                     </div>
                     <div class="adm-card" style="padding:14px;">
-                        <div class="adm-summary-label"><spring:message code="admin.explore.detail.ratingReviews"/></div>
-                        <div class="adm-field-value" style="font-size:14px;margin-top:4px;"><fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/> / <spring:message code="admin.explore.detail.reviewCount"/></div>
+                        <div class="adm-summary-label">${msg_admin_explore_detail_ratingReviews}</div>
+                        <div class="adm-field-value" style="font-size:14px;margin-top:4px;"><fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/> / ${msg_admin_explore_detail_reviewCount}</div>
                     </div>
                     <div class="adm-card" style="padding:14px;">
-                        <div class="adm-summary-label"><spring:message code="admin.explore.detail.likeTags"/></div>
-                        <div class="adm-field-value" style="font-size:14px;margin-top:4px;"><spring:message code="admin.explore.detail.likeTagsValue"/></div>
+                        <div class="adm-summary-label">${msg_admin_explore_detail_likeTags}</div>
+                        <div class="adm-field-value" style="font-size:14px;margin-top:4px;">${msg_admin_explore_detail_likeTagsValue}</div>
                     </div>
                 </div>
                 <div class="adm-card" style="padding:14px;">
-                    <div class="adm-summary-label"><spring:message code="admin.explore.detail.address"/></div>
+                    <div class="adm-summary-label">${msg_admin_explore_detail_address}</div>
                     <div class="adm-field-value" style="font-size:14px;margin-top:4px;">${fn:escapeXml(spot.address)}</div>
                 </div>
                 <div class="adm-card" style="padding:14px;">
-                    <div class="adm-summary-label"><spring:message code="admin.explore.detail.coordinates"/></div>
-                    <div class="adm-field-value-sub" style="font-size:13px;margin-top:4px;"><spring:message code="admin.explore.detail.coordinatesValue"/></div>
+                    <div class="adm-summary-label">${msg_admin_explore_detail_coordinates}</div>
+                    <div class="adm-field-value-sub" style="font-size:13px;margin-top:4px;">${msg_admin_explore_detail_coordinatesValue}</div>
                 </div>
                 <div class="adm-card" style="padding:14px;">
-                    <div class="adm-summary-label"><spring:message code="admin.explore.detail.description"/></div>
+                    <div class="adm-summary-label">${msg_admin_explore_detail_description}</div>
                     <div class="adm-field-value" style="font-size:14px;margin-top:4px;line-height:1.7;">${fn:escapeXml(spot.description)}</div>
                 </div>
                 <div class="adm-card" style="padding:14px;">
-                    <div class="adm-summary-label" style="margin-bottom:8px;"><spring:message code="admin.explore.detail.tags"/></div>
+                    <div class="adm-summary-label" style="margin-bottom:8px;">${msg_admin_explore_detail_tags}</div>
                     <div style="display:flex;gap:8px;flex-wrap:wrap;">
                         <c:forEach items="${tags}" var="tag">
                             <span class="adm-nav-badge adm-tag-badge">${fn:escapeXml(tag)}</span>
                         </c:forEach>
                         <c:if test="${empty tags}">
-                            <span class="adm-muted-inline"><spring:message code="admin.explore.detail.tagsEmpty"/></span>
+                            <span class="adm-muted-inline">${msg_admin_explore_detail_tagsEmpty}</span>
                         </c:if>
                     </div>
                 </div>
@@ -120,8 +169,8 @@
 
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.explore.detail.editTitle"/></div>
-            <div class="adm-muted-inline"><spring:message code="admin.explore.detail.editSub"/></div>
+            <div class="adm-card-title">${msg_admin_explore_detail_editTitle}</div>
+            <div class="adm-muted-inline">${msg_admin_explore_detail_editSub}</div>
         </div>
         <div class="adm-card-body">
             <c:if test="${not empty adminEditError}">
@@ -142,38 +191,38 @@
                   style="display:none;">
                 <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;">
                     <div>
-                        <label for="spotName" class="adm-filter-label"><spring:message code="admin.explore.detail.spotName"/></label>
+                        <label for="spotName" class="adm-filter-label">${msg_admin_explore_detail_spotName}</label>
                         <input type="text" id="spotName" name="name" maxlength="100" value="${fn:escapeXml(adminEditForm.name)}" required class="adm-input">
                     </div>
                     <div>
-                        <label for="spotRegion" class="adm-filter-label"><spring:message code="admin.explore.detail.region"/></label>
+                        <label for="spotRegion" class="adm-filter-label">${msg_admin_explore_detail_region}</label>
                         <input type="text" id="spotRegion" name="region" maxlength="100" value="${fn:escapeXml(adminEditForm.region)}" required class="adm-input">
                     </div>
                     <div style="grid-column:1 / -1;">
-                        <label for="spotAddress" class="adm-filter-label"><spring:message code="admin.explore.detail.address"/></label>
+                        <label for="spotAddress" class="adm-filter-label">${msg_admin_explore_detail_address}</label>
                         <input type="text" id="spotAddress" name="address" maxlength="255" value="${fn:escapeXml(adminEditForm.address)}" required class="adm-input">
                     </div>
                     <div>
-                        <label for="spotLatitude" class="adm-filter-label"><spring:message code="admin.explore.detail.latitude"/></label>
+                        <label for="spotLatitude" class="adm-filter-label">${msg_admin_explore_detail_latitude}</label>
                         <input type="number" id="spotLatitude" name="latitude" step="0.000001" value="${adminEditForm.latitude}" required class="adm-input">
                     </div>
                     <div>
-                        <label for="spotLongitude" class="adm-filter-label"><spring:message code="admin.explore.detail.longitude"/></label>
+                        <label for="spotLongitude" class="adm-filter-label">${msg_admin_explore_detail_longitude}</label>
                         <input type="number" id="spotLongitude" name="longitude" step="0.000001" value="${adminEditForm.longitude}" required class="adm-input">
                     </div>
                     <div style="grid-column:1 / -1;">
-                        <label for="spotDescription" class="adm-filter-label"><spring:message code="admin.explore.detail.description"/></label>
+                        <label for="spotDescription" class="adm-filter-label">${msg_admin_explore_detail_description}</label>
                         <textarea id="spotDescription" name="description" maxlength="2000" required class="adm-input" style="min-height:140px;resize:vertical;">${fn:escapeXml(adminEditForm.description)}</textarea>
                     </div>
                     <div style="grid-column:1 / -1;">
-                        <label for="spotImage" class="adm-filter-label"><spring:message code="admin.explore.detail.imageReplace"/></label>
+                        <label for="spotImage" class="adm-filter-label">${msg_admin_explore_detail_imageReplace}</label>
                         <input type="file" id="spotImage" name="image" accept=".jpg,.jpeg,.png,.gif,.webp" class="adm-input">
-                        <div class="adm-muted-note"><spring:message code="admin.explore.detail.imageReplaceSub"/></div>
+                        <div class="adm-muted-note">${msg_admin_explore_detail_imageReplaceSub}</div>
                     </div>
                     <div style="grid-column:1 / -1;">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                            <label class="adm-filter-label"><spring:message code="admin.explore.detail.tagSelect"/></label>
-                            <span class="adm-muted-inline"><spring:message code="admin.explore.detail.tagLimit"/></span>
+                            <label class="adm-filter-label">${msg_admin_explore_detail_tagSelect}</label>
+                            <span class="adm-muted-inline">${msg_admin_explore_detail_tagLimit}</span>
                         </div>
                         <div style="display:flex;gap:10px;flex-wrap:wrap;">
                             <c:forEach var="tag" items="${writeTagList}">
@@ -187,8 +236,8 @@
                     </div>
                 </div>
                 <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
-                    <button type="button" class="adm-btn adm-btn-ghost" onclick="closeEditForm()"><spring:message code="admin.common.cancel"/></button>
-                    <button type="submit" class="adm-btn"><spring:message code="admin.common.save"/></button>
+                    <button type="button" class="adm-btn adm-btn-ghost" onclick="closeEditForm()">${msg_admin_common_cancel}</button>
+                    <button type="submit" class="adm-btn">${msg_admin_common_save}</button>
                 </div>
             </form>
         </div>
@@ -196,20 +245,20 @@
 
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.explore.detail.reviewsTitle"/></div>
-            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/explore/reviews?searchType=name&keyword=${spot.name}"><spring:message code="admin.explore.detail.reviewsManageAll"/></a>
+            <div class="adm-card-title">${msg_admin_explore_detail_reviewsTitle}</div>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/explore/reviews?searchType=name&keyword=${spot.name}">${msg_admin_explore_detail_reviewsManageAll}</a>
         </div>
         <div class="adm-table-wrap">
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th style="width:70px;"><spring:message code="admin.explore.detail.reviewId"/></th>
-                    <th style="width:120px;"><spring:message code="admin.explore.detail.reviewAuthor"/></th>
-                    <th style="width:90px;"><spring:message code="admin.explore.detail.reviewRating"/></th>
-                    <th><spring:message code="admin.explore.detail.reviewContent"/></th>
-                    <th style="width:90px;"><spring:message code="admin.common.status"/></th>
-                    <th style="width:110px;"><spring:message code="admin.explore.detail.reviewCreatedAt"/></th>
-                    <th style="width:90px;"><spring:message code="admin.common.action"/></th>
+                    <th style="width:70px;">${msg_admin_explore_detail_reviewId}</th>
+                    <th style="width:120px;">${msg_admin_explore_detail_reviewAuthor}</th>
+                    <th style="width:90px;">${msg_admin_explore_detail_reviewRating}</th>
+                    <th>${msg_admin_explore_detail_reviewContent}</th>
+                    <th style="width:90px;">${msg_admin_common_status}</th>
+                    <th style="width:110px;">${msg_admin_explore_detail_reviewCreatedAt}</th>
+                    <th style="width:90px;">${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -237,7 +286,7 @@
                             ${fn:escapeXml(review.content)}
                             <c:if test="${not empty review.content}">
                                 <div class="adm-tr-inline js-admin-translation-widget"
-                                     data-label="${adminTranslationLabelExploreReviewContentMsg}"
+                                     data-label="${msg_admin_translation_label_exploreReviewContent}"
                                      data-source-type="EXPLORE_REVIEW"
                                      data-source-idx="${review.reviewIdx}"
                                      data-field-name="content"
@@ -248,22 +297,22 @@
                         <td>
                             <span class="status-badge ${review.displayStatus}">
                                 <c:choose>
-                                    <c:when test="${review.displayStatus == 'ACTIVE'}"><spring:message code="admin.explore.reviewStatus.active"/></c:when>
-                                    <c:otherwise><spring:message code="admin.explore.reviewStatus.blocked"/></c:otherwise>
+                                    <c:when test="${review.displayStatus == 'ACTIVE'}">${msg_admin_explore_reviewStatus_active}</c:when>
+                                    <c:otherwise>${msg_admin_explore_reviewStatus_blocked}</c:otherwise>
                                 </c:choose>
                             </span>
                         </td>
                         <td class="adm-muted-inline"><fmt:formatDate value="${review.createdAtDate}" type="date" dateStyle="short"/></td>
                         <td>
                             <c:if test="${review.displayStatus != 'BLOCKED'}">
-                                <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${review.reviewIdx}" onclick="blockReview(this)"><spring:message code="admin.explore.reviews.action.block"/></button>
+                                <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${review.reviewIdx}" onclick="blockReview(this)">${msg_admin_explore_reviews_action_block}</button>
                             </c:if>
                         </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty reviews}">
                     <tr>
-                        <td colspan="7" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.explore.detail.reviewEmpty"/></td>
+                        <td colspan="7" style="text-align:center;padding:40px;color:#475569;">${msg_admin_explore_detail_reviewEmpty}</td>
                     </tr>
                 </c:if>
                 </tbody>
@@ -275,10 +324,10 @@
 <script>
 var ctx = '${pageContext.request.contextPath}';
 var EXPLORE_DETAIL_MSG = {
-    maxTagLimit: '${adminExploreDetailMaxTagLimitMsg}',
-    confirmDelete: '${adminExploreDetailConfirmDeleteMsg}',
-    confirmBlockReview: '${adminExploreDetailConfirmBlockReviewMsg}',
-    requestFailed: '${adminExploreDetailErrorRequestFailedMsg}'
+    maxTagLimit: '${msg_admin_explore_detail_maxTagLimit_js}',
+    confirmDelete: '${msg_admin_explore_detail_confirmDelete_js}',
+    confirmBlockReview: '${msg_admin_explore_detail_confirmBlockReview_js}',
+    requestFailed: '${msg_admin_explore_detail_error_requestFailed_js}'
 };
 var spotEditForm = document.getElementById('spotEditForm');
 var hasEditMessage = ${not empty adminEditError or not empty adminEditSuccess ? 'true' : 'false'};

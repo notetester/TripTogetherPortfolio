@@ -4,6 +4,44 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_home_hero_title" code="home.hero.title"/>
+<spring:message var="msg_home_hero_subtitle" code="home.hero.subtitle"/>
+<spring:message var="msg_home_hero_explore" code="home.hero.explore"/>
+<spring:message var="msg_home_hero_ai" code="home.hero.ai"/>
+<spring:message var="msg_home_feature_ai_title" code="home.feature.ai.title"/>
+<spring:message var="msg_home_feature_ai_desc" code="home.feature.ai.desc"/>
+<spring:message var="msg_home_feature_schedule_title" code="home.feature.schedule.title"/>
+<spring:message var="msg_home_feature_schedule_desc" code="home.feature.schedule.desc"/>
+<spring:message var="msg_home_feature_community_title" code="home.feature.community.title"/>
+<spring:message var="msg_home_feature_community_desc" code="home.feature.community.desc"/>
+<spring:message var="msg_home_popular_title" code="home.popular.title"/>
+<spring:message var="msg_home_more" code="home.more"/>
+<spring:message var="msg_home_empty_spots" code="home.empty.spots"/>
+<spring:message var="msg_home_packages_prev" code="home.packages.prev"/>
+<spring:message var="msg_home_packages_next" code="home.packages.next"/>
+<spring:message var="msg_home_packages_title" code="home.packages.title"/>
+<spring:message var="msg_home_packages_subtitle" code="home.packages.subtitle"/>
+<spring:message var="msg_home_packages_partnerBadge" code="home.packages.partnerBadge"/>
+<spring:message var="msg_home_packages_noSummary" code="home.packages.noSummary"/>
+<spring:message var="msg_home_packages_bookingCount" code="home.packages.bookingCount"/>
+<spring:message var="msg_home_courses_title" code="home.courses.title"/>
+<spring:message var="msg_home_empty_courses" code="home.empty.courses"/>
+<spring:message var="msg_home_plan_duration" code="home.plan.duration"/>
+<spring:message var="msg_home_plan_author" code="home.plan.author"/>
+<spring:message var="msg_home_community_title" code="home.community.title"/>
+<spring:message var="msg_home_empty_posts" code="home.empty.posts"/>
+<spring:message var="msg_home_postType_review" code="home.postType.review"/>
+<spring:message var="msg_home_postType_photo" code="home.postType.photo"/>
+<spring:message var="msg_home_postType_tip" code="home.postType.tip"/>
+<spring:message var="msg_home_postType_question" code="home.postType.question"/>
+<spring:message var="msg_community_blocked_ai" code="community.blocked.ai"/>
+<spring:message var="msg_community_blocked_report" code="community.blocked.report"/>
+<spring:message var="msg_community_badge_ai" code="community.badge.ai"/>
+<spring:message var="msg_home_blocked_report" code="home.blocked.report"/>
+<spring:message var="msg_home_blocked_post" code="home.blocked.post"/>
+<spring:message var="msg_home_blocked_user" code="home.blocked.user"/>
 <c:set var="pageCSS" value="home/home.css"/>
 <%@ include file="../common/header.jsp" %>
 <body>
@@ -13,14 +51,14 @@
     <div class="hero-bg"></div>
     <div class="hero-ov"></div>
     <div class="hero-c">
-        <h1><spring:message code="home.hero.title"/></h1>
-        <p><spring:message code="home.hero.subtitle"/></p>
+        <h1>${msg_home_hero_title}</h1>
+        <p>${msg_home_hero_subtitle}</p>
         <div class="hero-btns">
             <button class="btn-pri" onclick="location.href='${pageContext.request.contextPath}/explore'">
-                &#128205; <spring:message code="home.hero.explore"/>
+                &#128205; ${msg_home_hero_explore}
             </button>
             <button class="btn-sec" onclick="location.href='${pageContext.request.contextPath}/assistant'">
-                &#10024; <spring:message code="home.hero.ai"/>
+                &#10024; ${msg_home_hero_ai}
             </button>
         </div>
     </div>
@@ -33,20 +71,20 @@
             <div class="feat-card" style="cursor:pointer;"
                  onclick="location.href='${pageContext.request.contextPath}/assistant'">
                 <div class="feat-icon fi-b">&#10024;</div>
-                <h3><spring:message code="home.feature.ai.title"/></h3>
-                <p><spring:message code="home.feature.ai.desc"/></p>
+                <h3>${msg_home_feature_ai_title}</h3>
+                <p>${msg_home_feature_ai_desc}</p>
             </div>
             <div class="feat-card" style="cursor:pointer;"
                  onclick="location.href='${pageContext.request.contextPath}/courses/list'">
                 <div class="feat-icon fi-p">&#128197;</div>
-                <h3><spring:message code="home.feature.schedule.title"/></h3>
-                <p><spring:message code="home.feature.schedule.desc"/></p>
+                <h3>${msg_home_feature_schedule_title}</h3>
+                <p>${msg_home_feature_schedule_desc}</p>
             </div>
             <div class="feat-card" style="cursor:pointer;"
                  onclick="location.href='${pageContext.request.contextPath}/community/list'">
                 <div class="feat-icon fi-g">&#128172;</div>
-                <h3><spring:message code="home.feature.community.title"/></h3>
-                <p><spring:message code="home.feature.community.desc"/></p>
+                <h3>${msg_home_feature_community_title}</h3>
+                <p>${msg_home_feature_community_desc}</p>
             </div>
         </div>
     </div>
@@ -56,13 +94,13 @@
 <section class="cs">
     <div class="si">
         <div class="sh">
-            <h2 class="st"><spring:message code="home.popular.title"/></h2>
-            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/explore'"><spring:message code="home.more"/> &#8594;</button>
+            <h2 class="st">${msg_home_popular_title}</h2>
+            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/explore'">${msg_home_more} &#8594;</button>
         </div>
         <div id="spotsSection">
             <c:choose>
                 <c:when test="${empty popularSpots}">
-                    <div style="padding:40px;text-align:center;color:var(--gray-400);"><spring:message code="home.empty.spots"/></div>
+                    <div style="padding:40px;text-align:center;color:var(--gray-400);">${msg_home_empty_spots}</div>
                 </c:when>
                 <c:otherwise>
                     <div class="home-grid">
@@ -122,20 +160,20 @@
 
 <!-- ===== 추천 여행 패키지 섹션 ===== -->
 <c:if test="${not empty recommendedPackages}">
-    <spring:message code="home.packages.prev" var="packagePrevLabel"/>
-    <spring:message code="home.packages.next" var="packageNextLabel"/>
+    
+    
     <section class="cs home-package-sec">
         <div class="si">
             <div class="sh package-sh">
                 <div>
-                    <h2 class="st"><spring:message code="home.packages.title"/></h2>
-                    <p class="package-sub"><spring:message code="home.packages.subtitle"/></p>
+                    <h2 class="st">${msg_home_packages_title}</h2>
+                    <p class="package-sub">${msg_home_packages_subtitle}</p>
                 </div>
                 <div class="package-controls">
-                    <button type="button" class="package-nav-btn" id="packagePrevBtn" aria-label="${packagePrevLabel}">&#8249;</button>
-                    <button type="button" class="package-nav-btn" id="packageNextBtn" aria-label="${packageNextLabel}">&#8250;</button>
+                    <button type="button" class="package-nav-btn" id="packagePrevBtn" aria-label="${msg_home_packages_prev}">&#8249;</button>
+                    <button type="button" class="package-nav-btn" id="packageNextBtn" aria-label="${msg_home_packages_next}">&#8250;</button>
                     <button type="button" class="vm" data-home-package-list-url="${pageContext.request.contextPath}/packages">
-                        <spring:message code="home.more"/> &#8594;
+                        ${msg_home_more} &#8594;
                     </button>
                 </div>
             </div>
@@ -164,7 +202,7 @@
                                 </c:choose>
 
                                 <c:if test="${pkg.sellerRole eq 'PARTNER'}">
-                                    <span class="home-package-partner"><spring:message code="home.packages.partnerBadge"/></span>
+                                    <span class="home-package-partner">${msg_home_packages_partnerBadge}</span>
                                 </c:if>
                             </div>
 
@@ -179,7 +217,7 @@
                                             ${fn:escapeXml(pkg.packageSummary)}
                                         </c:when>
                                         <c:otherwise>
-                                            <spring:message code="home.packages.noSummary"/>
+                                            ${msg_home_packages_noSummary}
                                         </c:otherwise>
                                     </c:choose>
                                 </p>
@@ -189,7 +227,7 @@
                                         ${fn:escapeXml(pkg.currencyCode)}
                                     </span>
                                     <span>
-                                        <spring:message code="home.packages.bookingCount"/>
+                                        ${msg_home_packages_bookingCount}
                                         ${pkg.bookingCount}
                                     </span>
                                 </div>
@@ -206,13 +244,13 @@
 <section class="cs bg">
     <div class="si">
         <div class="sh">
-            <h2 class="st"><spring:message code="home.courses.title"/></h2>
-            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/courses/list'"><spring:message code="home.more"/> &#8594;</button>
+            <h2 class="st">${msg_home_courses_title}</h2>
+            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/courses/list'">${msg_home_more} &#8594;</button>
         </div>
         <div id="plansSection">
             <c:choose>
                 <c:when test="${empty trendingPlans}">
-                    <div style="padding:40px;text-align:center;color:var(--gray-400);"><spring:message code="home.empty.courses"/></div>
+                    <div style="padding:40px;text-align:center;color:var(--gray-400);">${msg_home_empty_courses}</div>
                 </c:when>
                 <c:otherwise>
                     <div class="home-grid">
@@ -232,13 +270,13 @@
                                                 <c:if test="${not empty plan.nights}">
                                                     <c:choose>
                                                         <c:when test="${plan.nights <= 1}">
-                                                            <span class="tc-badge tc-badge-short"><spring:message code="home.plan.duration"/></span>
+                                                            <span class="tc-badge tc-badge-short">${msg_home_plan_duration}</span>
                                                         </c:when>
                                                         <c:when test="${plan.nights == 2}">
-                                                            <span class="tc-badge tc-badge-standard"><spring:message code="home.plan.duration"/></span>
+                                                            <span class="tc-badge tc-badge-standard">${msg_home_plan_duration}</span>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <span class="tc-badge tc-badge-long"><spring:message code="home.plan.duration"/></span>
+                                                            <span class="tc-badge tc-badge-long">${msg_home_plan_duration}</span>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </c:if>
@@ -246,7 +284,7 @@
                                             <div class="tc-b">
                                                 <div class="tc-title">${plan.title}</div>
                                                 <div class="tc-foot">
-                                                    <span class="tc-auth"><spring:message code="home.plan.author"/></span>
+                                                    <span class="tc-auth">${msg_home_plan_author}</span>
                                                     <c:if test="${not empty plan.destination}">
                                                         <span class="tc-dest">&#128205; ${plan.destination}</span>
                                                     </c:if>
@@ -267,13 +305,13 @@
 <section class="cs">
     <div class="si">
         <div class="sh">
-            <h2 class="st"><spring:message code="home.community.title"/></h2>
-            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/community/list'"><spring:message code="home.more"/> &#8594;</button>
+            <h2 class="st">${msg_home_community_title}</h2>
+            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/community/list'">${msg_home_more} &#8594;</button>
         </div>
         <div id="communitySection">
             <c:choose>
                 <c:when test="${empty popularPosts}">
-                    <div style="padding:40px;text-align:center;color:var(--gray-400);"><spring:message code="home.empty.posts"/></div>
+                    <div style="padding:40px;text-align:center;color:var(--gray-400);">${msg_home_empty_posts}</div>
                 </c:when>
                 <c:otherwise>
                     <div class="home-grid">
@@ -302,10 +340,10 @@
                                                     </c:choose>
                                                     <span class="cc-badge cc-badge-${post.postType}">
                                                         <c:choose>
-                                                            <c:when test="${post.postType == 'review'}"><spring:message code="home.postType.review"/></c:when>
-                                                            <c:when test="${post.postType == 'photo'}"><spring:message code="home.postType.photo"/></c:when>
-                                                            <c:when test="${post.postType == 'tip'}"><spring:message code="home.postType.tip"/></c:when>
-                                                            <c:when test="${post.postType == 'question'}"><spring:message code="home.postType.question"/></c:when>
+                                                            <c:when test="${post.postType == 'review'}">${msg_home_postType_review}</c:when>
+                                                            <c:when test="${post.postType == 'photo'}">${msg_home_postType_photo}</c:when>
+                                                            <c:when test="${post.postType == 'tip'}">${msg_home_postType_tip}</c:when>
+                                                            <c:when test="${post.postType == 'question'}">${msg_home_postType_question}</c:when>
                                                             <c:otherwise>${post.postType}</c:otherwise>
                                                         </c:choose>
                                                     </span>
@@ -330,24 +368,24 @@
                                             <c:if test="${isReportBlur}">
                                                 <div class="report-blurred-overlay" onclick="removeReportBlur(this)">
                                                     <c:choose>
-                                                        <c:when test="${post.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
-                                                        <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                                        <c:when test="${post.aiFlagged}">${msg_community_blocked_ai}</c:when>
+                                                        <c:otherwise>${msg_community_blocked_report}</c:otherwise>
                                                     </c:choose>
                                                 </div>
                                             </c:if>
                                             <c:if test="${isAdminMode}">
                                                 <c:choose>
                                                     <c:when test="${post.aiFlagged}">
-                                                        <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                                                        <span class="blocked-badge">${msg_community_badge_ai}</span>
                                                     </c:when>
                                                     <c:when test="${post.postStatus == 'BLOCKED' and post.reportCount >= reportThreshold}">
-                                                        <span class="blocked-badge"><spring:message code="home.blocked.report"/></span>
+                                                        <span class="blocked-badge">${msg_home_blocked_report}</span>
                                                     </c:when>
                                                     <c:when test="${post.postStatus == 'BLOCKED'}">
-                                                        <span class="blocked-badge"><spring:message code="home.blocked.post"/></span>
+                                                        <span class="blocked-badge">${msg_home_blocked_post}</span>
                                                     </c:when>
                                                     <c:when test="${post.accountStatus == 'BLOCKED'}">
-                                                        <span class="blocked-badge"><spring:message code="home.blocked.user"/></span>
+                                                        <span class="blocked-badge">${msg_home_blocked_user}</span>
                                                     </c:when>
                                                 </c:choose>
                                             </c:if>

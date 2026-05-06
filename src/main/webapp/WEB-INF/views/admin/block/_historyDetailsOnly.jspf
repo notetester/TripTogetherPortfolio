@@ -1,29 +1,56 @@
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_blocks_targetKey" code="admin.blocks.targetKey"/>
+<spring:message var="msg_admin_blocks_historyKind" code="admin.blocks.historyKind"/>
+<spring:message var="msg_admin_context_ruleAction" code="admin.context.ruleAction"/>
+<spring:message var="msg_admin_blocks_controlMode" code="admin.blocks.controlMode"/>
+<spring:message var="msg_admin_common_member" code="admin.common.member"/>
+<spring:message var="msg_admin_blocks_filter_blockType" code="admin.blocks.filter.blockType"/>
+<spring:message var="msg_admin_context_blockedIp" code="admin.context.blockedIp"/>
+<spring:message var="msg_admin_blocks_sourceMatch" code="admin.blocks.sourceMatch"/>
+<spring:message var="msg_admin_context_batch" code="admin.context.batch"/>
+<spring:message var="msg_admin_blocks_batchOperation" code="admin.blocks.batchOperation"/>
+<spring:message var="msg_admin_blocks_blockedAt" code="admin.blocks.blockedAt"/>
+<spring:message var="msg_admin_context_expiresAt" code="admin.context.expiresAt"/>
+<spring:message var="msg_admin_blocks_releasedAt" code="admin.blocks.releasedAt"/>
+<spring:message var="msg_admin_blocks_syncedAt" code="admin.blocks.syncedAt"/>
+<spring:message var="msg_admin_blocks_changeDescription" code="admin.blocks.changeDescription"/>
+<spring:message var="msg_admin_blocks_snapshot" code="admin.blocks.snapshot"/>
+<spring:message var="msg_admin_context_before" code="admin.context.before"/>
+<spring:message var="msg_admin_context_after" code="admin.context.after"/>
+<spring:message var="msg_admin_blocks_ruleState" code="admin.blocks.ruleState"/>
+<spring:message var="msg_admin_blocks_batchState" code="admin.blocks.batchState"/>
+<spring:message var="msg_admin_blocks_effectiveState" code="admin.blocks.effectiveState"/>
+<spring:message var="msg_admin_blocks_resultCode" code="admin.blocks.resultCode"/>
 <c:forEach var="h" items="${histories}">
     <template id="detail-history-${h.blockIdx}">
         <div class="detail-grid">
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.targetKey"/></div><div class="detail-value">${h.blockTargetKey}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.historyKind"/></div><div class="detail-value">${h.historyKind}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.ruleAction"/></div><div class="detail-value">${empty h.ruleAction ? '-' : h.ruleAction}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.controlMode"/></div><div class="detail-value">${empty h.controlMode ? '-' : h.controlMode}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.member"/></div><div class="detail-value">${empty h.nickname ? '-' : h.nickname} / ${empty h.userId ? '-' : h.userId}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.filter.blockType"/></div><div class="detail-value">${h.blockType}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.blockedIp"/></div><div class="detail-value">${empty h.blockedIp ? '-' : h.blockedIp}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.sourceMatch"/></div><div class="detail-value">${h.blockScope} / ${empty h.ipMatchType ? '-' : h.ipMatchType}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.batch"/></div><div class="detail-value">${empty h.batchName ? '-' : h.batchName} <c:if test="${not empty h.batchCode}">(${h.batchCode})</c:if></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.batchOperation"/></div><div class="detail-value">${empty h.batchOperationIdx ? '-' : h.batchOperationIdx}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.blockedAt"/></div><div class="detail-value"><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.expiresAt"/></div><div class="detail-value"><c:choose><c:when test="${h.expiresAtDate != null}"><fmt:formatDate value="${h.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>${adminBlocksNoneLabel}</c:otherwise></c:choose></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.releasedAt"/></div><div class="detail-value"><c:choose><c:when test="${h.releasedAtDate != null}"><fmt:formatDate value="${h.releasedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.syncedAt"/></div><div class="detail-value"><c:choose><c:when test="${h.listSyncedAtDate != null}"><fmt:formatDate value="${h.listSyncedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_targetKey}</div><div class="detail-value">${h.blockTargetKey}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_historyKind}</div><div class="detail-value">${h.historyKind}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_context_ruleAction}</div><div class="detail-value">${empty h.ruleAction ? '-' : h.ruleAction}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_controlMode}</div><div class="detail-value">${empty h.controlMode ? '-' : h.controlMode}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_common_member}</div><div class="detail-value">${empty h.nickname ? '-' : h.nickname} / ${empty h.userId ? '-' : h.userId}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_filter_blockType}</div><div class="detail-value">${h.blockType}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_context_blockedIp}</div><div class="detail-value">${empty h.blockedIp ? '-' : h.blockedIp}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_sourceMatch}</div><div class="detail-value">${h.blockScope} / ${empty h.ipMatchType ? '-' : h.ipMatchType}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_context_batch}</div><div class="detail-value">${empty h.batchName ? '-' : h.batchName} <c:if test="${not empty h.batchCode}">(${h.batchCode})</c:if></div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_batchOperation}</div><div class="detail-value">${empty h.batchOperationIdx ? '-' : h.batchOperationIdx}</div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_blockedAt}</div><div class="detail-value"><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_context_expiresAt}</div><div class="detail-value"><c:choose><c:when test="${h.expiresAtDate != null}"><fmt:formatDate value="${h.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>${adminBlocksNoneLabel}</c:otherwise></c:choose></div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_releasedAt}</div><div class="detail-value"><c:choose><c:when test="${h.releasedAtDate != null}"><fmt:formatDate value="${h.releasedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
+            <div class="detail-item"><div class="detail-label">${msg_admin_blocks_syncedAt}</div><div class="detail-value"><c:choose><c:when test="${h.listSyncedAtDate != null}"><fmt:formatDate value="${h.listSyncedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
         </div>
-        <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.changeDescription"/></div><div class="detail-value">${empty h.controlReason ? '-' : fn:escapeXml(h.controlReason)}</div></div>
+        <div class="detail-item" style="margin-top:14px;"><div class="detail-label">${msg_admin_blocks_changeDescription}</div><div class="detail-value">${empty h.controlReason ? '-' : fn:escapeXml(h.controlReason)}</div></div>
         <table class="history-table" style="margin-top:14px;">
-            <thead><tr><th><spring:message code="admin.blocks.snapshot"/></th><th><spring:message code="admin.context.before"/></th><th><spring:message code="admin.context.after"/></th></tr></thead>
+            <thead><tr><th>${msg_admin_blocks_snapshot}</th><th>${msg_admin_context_before}</th><th>${msg_admin_context_after}</th></tr></thead>
             <tbody>
-            <tr><td><spring:message code="admin.blocks.ruleState"/></td><td>${empty h.beforeRuleIsActive ? '-' : (h.beforeRuleIsActive ? 'ON' : 'OFF')}</td><td>${empty h.afterRuleIsActive ? '-' : (h.afterRuleIsActive ? 'ON' : 'OFF')}</td></tr>
-            <tr><td><spring:message code="admin.blocks.batchState"/></td><td>${empty h.beforeBatchIsActive ? '-' : (h.beforeBatchIsActive ? 'ON' : 'OFF')}</td><td>${empty h.afterBatchIsActive ? '-' : (h.afterBatchIsActive ? 'ON' : 'OFF')}</td></tr>
-            <tr><td><spring:message code="admin.blocks.effectiveState"/></td><td>${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus}</td><td>${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</td></tr>
-            <tr><td><spring:message code="admin.blocks.resultCode"/></td><td colspan="2">${empty h.effectiveResult ? '-' : h.effectiveResult}</td></tr>
+            <tr><td>${msg_admin_blocks_ruleState}</td><td>${empty h.beforeRuleIsActive ? '-' : (h.beforeRuleIsActive ? 'ON' : 'OFF')}</td><td>${empty h.afterRuleIsActive ? '-' : (h.afterRuleIsActive ? 'ON' : 'OFF')}</td></tr>
+            <tr><td>${msg_admin_blocks_batchState}</td><td>${empty h.beforeBatchIsActive ? '-' : (h.beforeBatchIsActive ? 'ON' : 'OFF')}</td><td>${empty h.afterBatchIsActive ? '-' : (h.afterBatchIsActive ? 'ON' : 'OFF')}</td></tr>
+            <tr><td>${msg_admin_blocks_effectiveState}</td><td>${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus}</td><td>${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</td></tr>
+            <tr><td>${msg_admin_blocks_resultCode}</td><td colspan="2">${empty h.effectiveResult ? '-' : h.effectiveResult}</td></tr>
             </tbody>
         </table>
     </template>

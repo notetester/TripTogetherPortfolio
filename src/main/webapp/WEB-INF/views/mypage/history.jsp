@@ -4,11 +4,20 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="mypageHistoryRelativeJustNowMsg" code="mypage.history.relative.justNow" javaScriptEscape="true"/>
-<spring:message var="mypageHistoryRelativeMinutesMsg" code="mypage.history.relative.minutes" javaScriptEscape="true"/>
-<spring:message var="mypageHistoryRelativeHoursMsg" code="mypage.history.relative.hours" javaScriptEscape="true"/>
-<spring:message var="mypageHistoryRelativeYesterdayMsg" code="mypage.history.relative.yesterday" javaScriptEscape="true"/>
-<spring:message var="mypageHistoryRelativeDaysMsg" code="mypage.history.relative.days" javaScriptEscape="true"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_mypage_history_relative_justNow_js" code="mypage.history.relative.justNow" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_history_relative_minutes_js" code="mypage.history.relative.minutes" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_history_relative_hours_js" code="mypage.history.relative.hours" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_history_relative_yesterday_js" code="mypage.history.relative.yesterday" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_history_relative_days_js" code="mypage.history.relative.days" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_history_clearAllConfirm_js" code="mypage.history.clearAllConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_history_deleteConfirm_js" code="mypage.history.deleteConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_mypage_history_title" code="mypage.history.title"/>
+<spring:message var="msg_mypage_history_clearAll" code="mypage.history.clearAll"/>
+<spring:message var="msg_mypage_empty_history" code="mypage.empty.history"/>
+<spring:message var="msg_mypage_history_deleted" code="mypage.history.deleted"/>
+<spring:message var="msg_mypage_common_backToMypage" code="mypage.common.backToMypage"/>
 <%--
   마이페이지 - 최근 조회 내역 전체 보기
   Controller : GET /mypage/history
@@ -23,10 +32,6 @@
 <%@ include file="../common/header.jsp" %>
 <body>
 
-<spring:message code="mypage.history.clearAllConfirm"
-                javaScriptEscape="true" var="historyClearAllConfirmJs"/>
-<spring:message code="mypage.history.deleteConfirm"
-                javaScriptEscape="true" var="historyDeleteConfirmJs"/>
 
 <div class="mp-wrap">
     <div class="mp-container">
@@ -35,12 +40,12 @@
             <div class="mp-history-page-head">
                 <div class="mp-history-page-title">
                     <span>🕒</span>
-                    <spring:message code="mypage.history.title"/>
+                    ${msg_mypage_history_title}
                     <span class="mp-card-count">${historyCount}</span>
                 </div>
                 <c:if test="${not empty historyList}">
                     <button type="button" class="mp-history-clear-btn" id="mpHistoryClearBtn">
-                        🗑 <spring:message code="mypage.history.clearAll"/>
+                        🗑 ${msg_mypage_history_clearAll}
                     </button>
                 </c:if>
             </div>
@@ -49,7 +54,7 @@
                 <c:when test="${empty historyList}">
                     <div class="mp-history-empty">
                         <div class="mp-history-empty-icon">🕒</div>
-                        <spring:message code="mypage.empty.history"/>
+                        ${msg_mypage_empty_history}
                     </div>
                 </c:when>
                 <c:otherwise>
@@ -74,7 +79,7 @@
                                         <div class="mp-list-title">
                                             <c:choose>
                                                 <c:when test="${h.available and not empty h.title}">${h.title}</c:when>
-                                                <c:otherwise><spring:message code="mypage.history.deleted"/></c:otherwise>
+                                                <c:otherwise>${msg_mypage_history_deleted}</c:otherwise>
                                             </c:choose>
                                         </div>
                                         <div class="mp-list-meta">
@@ -86,7 +91,7 @@
                                     </div>
                                     <div class="mp-list-badges">
                                         <span class="mp-badge mp-history-type-${typeKey}">
-                                            <spring:message code="mypage.history.type.${typeKey}"/>
+                                            <spring:message var="msg_mypage_history_type_typeKey" code="mypage.history.type.${typeKey}"/>${msg_mypage_history_type_typeKey}
                                         </span>
                                     </div>
                                 </a>
@@ -102,7 +107,7 @@
 
         <div style="text-align:center;margin-top:16px;">
             <a href="${pageContext.request.contextPath}/mypage" class="mp-history-clear-btn" style="text-decoration:none;">
-                <spring:message code="mypage.common.backToMypage"/>
+                ${msg_mypage_common_backToMypage}
             </a>
         </div>
     </div>
@@ -112,11 +117,11 @@
 (function () {
     var CTX = '${pageContext.request.contextPath}';
     var LABELS = {
-        justNow:   '${mypageHistoryRelativeJustNowMsg}',
-        minutes:   '${mypageHistoryRelativeMinutesMsg}',
-        hours:     '${mypageHistoryRelativeHoursMsg}',
-        yesterday: '${mypageHistoryRelativeYesterdayMsg}',
-        days:      '${mypageHistoryRelativeDaysMsg}'
+        justNow:   '${msg_mypage_history_relative_justNow_js}',
+        minutes:   '${msg_mypage_history_relative_minutes_js}',
+        hours:     '${msg_mypage_history_relative_hours_js}',
+        yesterday: '${msg_mypage_history_relative_yesterday_js}',
+        days:      '${msg_mypage_history_relative_days_js}'
     };
     function relTime(ts) {
         var now = Date.now();
@@ -137,7 +142,7 @@
         btn.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
-            if (!confirm('${historyDeleteConfirmJs}')) return;
+            if (!confirm('${msg_mypage_history_deleteConfirm_js}')) return;
             var idx = btn.dataset.historyIdx;
             fetch(CTX + '/mypage/history/' + idx + '/delete', {
                 method: 'POST',
@@ -160,7 +165,7 @@
     var clearBtn = document.getElementById('mpHistoryClearBtn');
     if (clearBtn) {
         clearBtn.addEventListener('click', function () {
-            if (!confirm('${historyClearAllConfirmJs}')) return;
+            if (!confirm('${msg_mypage_history_clearAllConfirm_js}')) return;
             fetch(CTX + '/mypage/history/clear', {
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }

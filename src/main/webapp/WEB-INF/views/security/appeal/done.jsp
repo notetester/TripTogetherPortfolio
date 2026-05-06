@@ -2,11 +2,19 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_security_appeal_done_pageTitle" code="security.appeal.done.pageTitle"/>
+<spring:message var="msg_security_appeal_done_title" code="security.appeal.done.title"/>
+<spring:message var="msg_security_appeal_done_lead" code="security.appeal.done.lead"/>
+<spring:message var="msg_security_appeal_done_notice" code="security.appeal.done.notice"/>
+<spring:message var="msg_security_appeal_result_lookupLink" code="security.appeal.result.lookupLink"/>
+<spring:message var="msg_security_appeal_done_home" code="security.appeal.done.home"/>
 <!DOCTYPE html>
 <html lang="${pageLang}">
 <head>
     <meta charset="UTF-8">
-    <title><spring:message code="security.appeal.done.pageTitle"/></title>
+    <title>${msg_security_appeal_done_pageTitle}</title>
     <style>
         body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#f8fafc; font-family:Arial,'Noto Sans KR',sans-serif; color:#0f172a; }
         .card { width:min(620px, calc(100vw - 32px)); background:#fff; border:1px solid #e2e8f0; border-radius:22px; padding:34px; box-shadow:0 24px 70px rgba(15,23,42,.12); }
@@ -18,12 +26,12 @@
 </head>
 <body>
 <main class="card">
-    <h1><spring:message code="security.appeal.done.title"/></h1>
-    <p><spring:message code="security.appeal.done.lead"/></p>
+    <h1>${msg_security_appeal_done_title}</h1>
+    <p>${msg_security_appeal_done_lead}</p>
     <div class="code"><c:out value="${publicRequestId}"/></div>
-    <p><spring:message code="security.appeal.done.notice"/></p>
-    <a href="${pageContext.request.contextPath}/security/appeal/result?lang=${pageLang}"><spring:message code="security.appeal.result.lookupLink"/></a>
-    <a href="${pageContext.request.contextPath}/"><spring:message code="security.appeal.done.home"/></a>
+    <p>${msg_security_appeal_done_notice}</p>
+    <a href="${pageContext.request.contextPath}/security/appeal/result?lang=${pageLang}">${msg_security_appeal_result_lookupLink}</a>
+    <a href="${pageContext.request.contextPath}/">${msg_security_appeal_done_home}</a>
 </main>
 </body>
 </html>

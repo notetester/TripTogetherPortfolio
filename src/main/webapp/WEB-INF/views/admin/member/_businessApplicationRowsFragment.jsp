@@ -4,10 +4,24 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="adminTranslationLabelBusinessAppDescriptionMsg" code="admin.translation.label.businessAppDescription"/>
-<spring:message var="adminTranslationLabelBusinessAppRejectReasonMsg" code="admin.translation.label.businessAppRejectReason"/>
-<spring:message var="adminBusinessConfirmApproveMsg" code="admin.business.confirmApprove" javaScriptEscape="true"/>
-<spring:message var="adminBusinessRejectReasonPlaceholderMsg" code="admin.business.rejectReasonPlaceholder"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_translation_label_businessAppDescription" code="admin.translation.label.businessAppDescription"/>
+<spring:message var="msg_admin_translation_label_businessAppRejectReason" code="admin.translation.label.businessAppRejectReason"/>
+<spring:message var="msg_admin_business_confirmApprove_js" code="admin.business.confirmApprove" javaScriptEscape="true"/>
+<spring:message var="msg_admin_business_rejectReasonPlaceholder" code="admin.business.rejectReasonPlaceholder"/>
+<spring:message var="msg_admin_business_socialOnly" code="admin.business.socialOnly"/>
+<spring:message var="msg_admin_business_currentRole" code="admin.business.currentRole"/>
+<spring:message var="msg_admin_business_role_business" code="admin.business.role.business"/>
+<spring:message var="msg_admin_business_role_partner" code="admin.business.role.partner"/>
+<spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
+<spring:message var="msg_admin_business_businessNumber" code="admin.business.businessNumber"/>
+<spring:message var="msg_admin_business_status_pending" code="admin.business.status.pending"/>
+<spring:message var="msg_admin_business_status_approved" code="admin.business.status.approved"/>
+<spring:message var="msg_admin_business_status_rejected" code="admin.business.status.rejected"/>
+<spring:message var="msg_admin_business_reviewer" code="admin.business.reviewer"/>
+<spring:message var="msg_admin_business_reviewDone" code="admin.business.reviewDone"/>
+<spring:message var="msg_admin_business_noResults" code="admin.business.noResults"/>
 <c:forEach var="app" items="${applicationList}" varStatus="st">
     <fmt:formatDate var="appCreatedAtDisplay" value="${app.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/>
     <fmt:formatDate var="appReviewedAtDisplay" value="${app.reviewedAtDate}" type="both" dateStyle="short" timeStyle="short"/>
@@ -46,10 +60,10 @@
                 <span class="mem-uid">
                     <c:choose>
                         <c:when test="${not empty app.userId}">@${fn:escapeXml(app.userId)}</c:when>
-                        <c:otherwise><spring:message code="admin.business.socialOnly"/></c:otherwise>
+                        <c:otherwise>${msg_admin_business_socialOnly}</c:otherwise>
                     </c:choose>
                 </span>
-                <span class="adm-cell-link-note"><spring:message code="admin.business.currentRole"/></span>
+                <span class="adm-cell-link-note">${msg_admin_business_currentRole}</span>
             </button>
         </td>
         <td>
@@ -58,12 +72,12 @@
                     data-default-focus="role">
                 <span class="role-badge ${app.requestedRole}">
                     <c:choose>
-                        <c:when test="${app.requestedRole eq 'BUSINESS'}"><spring:message code="admin.business.role.business"/></c:when>
-                        <c:when test="${app.requestedRole eq 'PARTNER'}"><spring:message code="admin.business.role.partner"/></c:when>
+                        <c:when test="${app.requestedRole eq 'BUSINESS'}">${msg_admin_business_role_business}</c:when>
+                        <c:when test="${app.requestedRole eq 'PARTNER'}">${msg_admin_business_role_partner}</c:when>
                         <c:otherwise>${fn:escapeXml(app.requestedRole)}</c:otherwise>
                     </c:choose>
                 </span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.viewDetail"/></span>
+                <span class="adm-cell-link-note">${msg_admin_common_viewDetail}</span>
             </button>
         </td>
         <td>
@@ -72,21 +86,21 @@
                     data-default-focus="company">
                 <span style="font-weight:700;color:#e2e8f0;">${fn:escapeXml(app.companyName)}</span>
                 <span class="adm-cell-link-note" style="margin-top:3px;">
-                    <spring:message code="admin.business.businessNumber"/>
+                    ${msg_admin_business_businessNumber}
                     <c:choose>
                         <c:when test="${not empty app.businessNumber}">${fn:escapeXml(app.businessNumber)}</c:when>
                         <c:otherwise>-</c:otherwise>
                     </c:choose>
                 </span>
                 <span class="adm-cell-link-note">
-                    <spring:message code="admin.business.managerInfo" arguments="${fn:escapeXml(app.managerName)},${fn:escapeXml(app.managerPhone)}"/>
+                    <spring:message var="msg_admin_business_managerInfo_args_fn_escapeXml_app_managerName_fn_escapeXml_app_mana" code="admin.business.managerInfo" arguments="${fn:escapeXml(app.managerName)},${fn:escapeXml(app.managerPhone)}"/>${msg_admin_business_managerInfo_args_fn_escapeXml_app_managerName_fn_escapeXml_app_mana}
                 </span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.viewDetail"/></span>
+                <span class="adm-cell-link-note">${msg_admin_common_viewDetail}</span>
             </button>
             <c:if test="${not empty app.description}">
                 <div style="font-size:12px;color:#cbd5e1;margin-top:6px;max-width:420px;white-space:pre-wrap;">${fn:escapeXml(app.description)}</div>
                 <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="${adminTranslationLabelBusinessAppDescriptionMsg}"
+                     data-label="${msg_admin_translation_label_businessAppDescription}"
                      data-source-type="BUSINESS_APPLICATION"
                      data-source-idx="${app.applicationIdx}"
                      data-field-name="description"
@@ -101,9 +115,9 @@
                     data-application-idx="${app.applicationIdx}">
                 <span class="status-badge ${app.applicationStatus}">
                     <c:choose>
-                        <c:when test="${app.applicationStatus eq 'PENDING'}"><spring:message code="admin.business.status.pending"/></c:when>
-                        <c:when test="${app.applicationStatus eq 'APPROVED'}"><spring:message code="admin.business.status.approved"/></c:when>
-                        <c:when test="${app.applicationStatus eq 'REJECTED'}"><spring:message code="admin.business.status.rejected"/></c:when>
+                        <c:when test="${app.applicationStatus eq 'PENDING'}">${msg_admin_business_status_pending}</c:when>
+                        <c:when test="${app.applicationStatus eq 'APPROVED'}">${msg_admin_business_status_approved}</c:when>
+                        <c:when test="${app.applicationStatus eq 'REJECTED'}">${msg_admin_business_status_rejected}</c:when>
                         <c:otherwise>${fn:escapeXml(app.applicationStatus)}</c:otherwise>
                     </c:choose>
                 </span>
@@ -111,13 +125,13 @@
                     <span class="adm-cell-link-note" style="color:#fca5a5;">${fn:escapeXml(app.rejectReason)}</span>
                 </c:if>
                 <c:if test="${not empty app.reviewerNickname}">
-                    <span class="adm-cell-link-note"><spring:message code="admin.business.reviewer"/></span>
+                    <span class="adm-cell-link-note">${msg_admin_business_reviewer}</span>
                 </c:if>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.viewDetail"/></span>
+                <span class="adm-cell-link-note">${msg_admin_common_viewDetail}</span>
             </button>
             <c:if test="${not empty app.rejectReason}">
                 <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="${adminTranslationLabelBusinessAppRejectReasonMsg}"
+                     data-label="${msg_admin_translation_label_businessAppRejectReason}"
                      data-source-type="BUSINESS_APPLICATION"
                      data-source-idx="${app.applicationIdx}"
                      data-field-name="reject_reason"
@@ -131,7 +145,7 @@
                     data-default-focus="date"
                     data-application-idx="${app.applicationIdx}">
                 <span>${appCreatedAtDisplay}</span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.viewDetail"/></span>
+                <span class="adm-cell-link-note">${msg_admin_common_viewDetail}</span>
             </button>
         </td>
         <td>
@@ -140,16 +154,16 @@
                     <div class="business-review-actions js-business-review-actions" id="business-review-actions-${app.applicationIdx}">
                         <form method="post" class="js-business-review-form" action="${pageContext.request.contextPath}/admin/business-applications/${app.applicationIdx}/approve">
                             <button type="submit" class="adm-row-btn detail"
-                                    onclick="return confirm('${adminBusinessConfirmApproveMsg}')"><spring:message code="admin.business.status.approved"/></button>
+                                    onclick="return confirm('${msg_admin_business_confirmApprove_js}')">${msg_admin_business_status_approved}</button>
                         </form>
                         <form method="post" class="js-business-review-form" action="${pageContext.request.contextPath}/admin/business-applications/${app.applicationIdx}/reject">
-                            <input class="adm-input" name="rejectReason" maxlength="500" placeholder="${adminBusinessRejectReasonPlaceholderMsg}" required>
-                            <button type="submit" class="adm-row-btn danger"><spring:message code="admin.business.status.rejected"/></button>
+                            <input class="adm-input" name="rejectReason" maxlength="500" placeholder="${msg_admin_business_rejectReasonPlaceholder}" required>
+                            <button type="submit" class="adm-row-btn danger">${msg_admin_business_status_rejected}</button>
                         </form>
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <span style="color:#64748b;font-size:12px;"><spring:message code="admin.business.reviewDone"/></span>
+                    <span style="color:#64748b;font-size:12px;">${msg_admin_business_reviewDone}</span>
                 </c:otherwise>
             </c:choose>
         </td>
@@ -159,7 +173,7 @@
 <c:if test="${empty applicationList}">
     <tr class="adm-local-empty">
         <td colspan="7" style="text-align:center;padding:40px;color:#64748b;">
-            <spring:message code="admin.business.noResults"/>
+            ${msg_admin_business_noResults}
         </td>
     </tr>
 </c:if>

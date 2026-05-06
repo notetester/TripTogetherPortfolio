@@ -4,55 +4,117 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="inquiryAdminClearBlurConfirmMsg" code="inquiry.admin.clearBlur.confirm" javaScriptEscape="true"/>
-<spring:message var="inquiryAdminClearBlurFailMsg" code="inquiry.admin.clearBlur.fail" javaScriptEscape="true"/>
-<spring:message var="inquiryWriteServerMsg" code="inquiry.write.server" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailRequestFailMsg" code="inquiry.detail.requestFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminStatusPendingConfirmMsg" code="inquiry.detail.admin.status.pendingConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminStatusInProgressConfirmMsg" code="inquiry.detail.admin.status.inProgressConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminStatusCompletedConfirmMsg" code="inquiry.detail.admin.status.completedConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminStatusChangeFailMsg" code="inquiry.detail.admin.status.changeFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminAiDraftLoadingMsg" code="inquiry.detail.admin.aiDraft.loading" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminAiDraftFailMsg" code="inquiry.detail.admin.aiDraft.fail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminAnswerRequiredMsg" code="inquiry.detail.admin.answerRequired" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminAnswerRegisterFailMsg" code="inquiry.detail.admin.answerRegisterFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminAnswerCompleteFailMsg" code="inquiry.detail.admin.answerCompleteFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminDeleteApproveConfirmMsg" code="inquiry.detail.admin.deleteApproveConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminDeleteApproveFailMsg" code="inquiry.detail.admin.deleteApproveFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminPublicApproveConfirmMsg" code="inquiry.detail.admin.publicApproveConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminPublicApproveFailMsg" code="inquiry.detail.admin.publicApproveFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminPrivateApproveConfirmMsg" code="inquiry.detail.admin.privateApproveConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminPrivateApproveFailMsg" code="inquiry.detail.admin.privateApproveFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAdminAnswerEditFailMsg" code="inquiry.detail.admin.answerEdit.fail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailEditMsg" code="inquiry.detail.edit" javaScriptEscape="true"/>
-<spring:message var="inquiryWriteCancelMsg" code="inquiry.write.cancel" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailEditFailMsg" code="inquiry.detail.edit.fail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAttachDeleteConfirmMsg" code="inquiry.detail.attachDeleteConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailAttachDeleteFailMsg" code="inquiry.detail.attachDeleteFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailDeleteConfirmMsg" code="inquiry.detail.deleteConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailDeleteFailMsg" code="inquiry.detail.deleteFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailUserCompleteConfirmMsg" code="inquiry.detail.user.completeConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailUserCompleteFailMsg" code="inquiry.detail.user.completeFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailUserCancelConfirmMsg" code="inquiry.detail.user.cancelConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailUserCancelFailMsg" code="inquiry.detail.user.cancelFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailUserDeleteRequestConfirmMsg" code="inquiry.detail.user.deleteRequestConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailUserDeleteRequestFailMsg" code="inquiry.detail.user.deleteRequestFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailUserDeleteCancelConfirmMsg" code="inquiry.detail.user.deleteCancelConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailUserDeleteCancelFailMsg" code="inquiry.detail.user.deleteCancelFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailUserPrivateRequestConfirmMsg" code="inquiry.detail.user.privateRequestConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailUserPrivateRequestFailMsg" code="inquiry.detail.user.privateRequestFail" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailUserPublicRequestConfirmMsg" code="inquiry.detail.user.publicRequestConfirm" javaScriptEscape="true"/>
-<spring:message var="inquiryDetailUserPublicRequestFailMsg" code="inquiry.detail.user.publicRequestFail" javaScriptEscape="true"/>
-<spring:message var="inquiryWriteErrorTitleMsg" code="inquiry.write.error.title" javaScriptEscape="true"/>
-<spring:message var="inquiryWriteErrorContentMsg" code="inquiry.write.error.content" javaScriptEscape="true"/>
-<spring:message var="inquiryAnswerHistoryToggleMsg" code="inquiry.answer.history.toggle" javaScriptEscape="true"/>
-<spring:message var="inquiryAnswerHistoryTitleMsg" code="inquiry.answer.history.title" javaScriptEscape="true"/>
-<spring:message var="inquiryAnswerHistoryEmptyMsg" code="inquiry.answer.history.empty" javaScriptEscape="true"/>
-<spring:message var="inquiryAnswerHistoryTypeUPDATEMsg" code="inquiry.answer.history.type.UPDATE" javaScriptEscape="true"/>
-<spring:message var="inquiryAnswerHistoryTypeDELETEMsg" code="inquiry.answer.history.type.DELETE" javaScriptEscape="true"/>
-<spring:message var="inquiryAnswerHistoryChangedByMsg" code="inquiry.answer.history.changedBy" javaScriptEscape="true"/>
-<spring:message var="inquiryAnswerHistoryPrevContentMsg" code="inquiry.answer.history.prevContent" javaScriptEscape="true"/>
-<spring:message var="inquiryAnswerHistoryLoadFailMsg" code="inquiry.answer.history.loadFail" javaScriptEscape="true"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_inquiry_admin_clearBlur_confirm_js" code="inquiry.admin.clearBlur.confirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_admin_clearBlur_fail_js" code="inquiry.admin.clearBlur.fail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_write_server_js" code="inquiry.write.server" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_requestFail_js" code="inquiry.detail.requestFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_status_pendingConfirm_js" code="inquiry.detail.admin.status.pendingConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_status_inProgressConfirm_js" code="inquiry.detail.admin.status.inProgressConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_status_completedConfirm_js" code="inquiry.detail.admin.status.completedConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_status_changeFail_js" code="inquiry.detail.admin.status.changeFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_aiDraft_loading_js" code="inquiry.detail.admin.aiDraft.loading" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_aiDraft_fail_js" code="inquiry.detail.admin.aiDraft.fail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_answerRequired_js" code="inquiry.detail.admin.answerRequired" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_answerRegisterFail_js" code="inquiry.detail.admin.answerRegisterFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_answerCompleteFail_js" code="inquiry.detail.admin.answerCompleteFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_deleteApproveConfirm_js" code="inquiry.detail.admin.deleteApproveConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_deleteApproveFail_js" code="inquiry.detail.admin.deleteApproveFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_publicApproveConfirm_js" code="inquiry.detail.admin.publicApproveConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_publicApproveFail_js" code="inquiry.detail.admin.publicApproveFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_privateApproveConfirm_js" code="inquiry.detail.admin.privateApproveConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_privateApproveFail_js" code="inquiry.detail.admin.privateApproveFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_admin_answerEdit_fail_js" code="inquiry.detail.admin.answerEdit.fail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_edit_js" code="inquiry.detail.edit" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_write_cancel_js" code="inquiry.write.cancel" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_edit_fail_js" code="inquiry.detail.edit.fail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_attachDeleteConfirm_js" code="inquiry.detail.attachDeleteConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_attachDeleteFail_js" code="inquiry.detail.attachDeleteFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_deleteConfirm_js" code="inquiry.detail.deleteConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_deleteFail_js" code="inquiry.detail.deleteFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_user_completeConfirm_js" code="inquiry.detail.user.completeConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_user_completeFail_js" code="inquiry.detail.user.completeFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_user_cancelConfirm_js" code="inquiry.detail.user.cancelConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_user_cancelFail_js" code="inquiry.detail.user.cancelFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_user_deleteRequestConfirm_js" code="inquiry.detail.user.deleteRequestConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_user_deleteRequestFail_js" code="inquiry.detail.user.deleteRequestFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_user_deleteCancelConfirm_js" code="inquiry.detail.user.deleteCancelConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_user_deleteCancelFail_js" code="inquiry.detail.user.deleteCancelFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_user_privateRequestConfirm_js" code="inquiry.detail.user.privateRequestConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_user_privateRequestFail_js" code="inquiry.detail.user.privateRequestFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_user_publicRequestConfirm_js" code="inquiry.detail.user.publicRequestConfirm" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_detail_user_publicRequestFail_js" code="inquiry.detail.user.publicRequestFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_write_error_title_js" code="inquiry.write.error.title" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_write_error_content_js" code="inquiry.write.error.content" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_answer_history_toggle_js" code="inquiry.answer.history.toggle" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_answer_history_title_js" code="inquiry.answer.history.title" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_answer_history_empty_js" code="inquiry.answer.history.empty" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_answer_history_type_UPDATE_js" code="inquiry.answer.history.type.UPDATE" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_answer_history_type_DELETE_js" code="inquiry.answer.history.type.DELETE" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_answer_history_changedBy_js" code="inquiry.answer.history.changedBy" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_answer_history_prevContent_js" code="inquiry.answer.history.prevContent" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_answer_history_loadFail_js" code="inquiry.answer.history.loadFail" javaScriptEscape="true"/>
+<spring:message var="msg_inquiry_write_back" code="inquiry.write.back"/>
+<spring:message var="msg_inquiry_private_tag" code="inquiry.private.tag"/>
+<spring:message var="msg_inquiry_badge_ai" code="inquiry.badge.ai"/>
+<spring:message var="msg_inquiry_anonymous" code="inquiry.anonymous"/>
+<spring:message var="msg_inquiry_detail_views" code="inquiry.detail.views"/>
+<spring:message var="msg_inquiry_detail_edited" code="inquiry.detail.edited"/>
+<spring:message var="msg_inquiry_detail_attachments" code="inquiry.detail.attachments"/>
+<spring:message var="msg_inquiry_detail_answer_title" code="inquiry.detail.answer.title"/>
+<spring:message var="msg_inquiry_detail_answer_pending" code="inquiry.detail.answer.pending"/>
+<spring:message var="msg_inquiry_detail_answer_pendingSub" code="inquiry.detail.answer.pendingSub"/>
+<spring:message var="msg_inquiry_detail_admin_panel" code="inquiry.detail.admin.panel"/>
+<spring:message var="msg_inquiry_detail_admin_status_label" code="inquiry.detail.admin.status.label"/>
+<spring:message var="msg_inquiry_detail_admin_deleteWaiting" code="inquiry.detail.admin.deleteWaiting"/>
+<spring:message var="msg_inquiry_detail_admin_publicWaiting" code="inquiry.detail.admin.publicWaiting"/>
+<spring:message var="msg_inquiry_detail_admin_privateWaiting" code="inquiry.detail.admin.privateWaiting"/>
+<spring:message var="msg_inquiry_detail_admin_answer_placeholder" code="inquiry.detail.admin.answer.placeholder"/>
+<spring:message var="msg_inquiry_detail_admin_answerEdit" code="inquiry.detail.admin.answerEdit"/>
+<spring:message var="msg_inquiry_detail_admin_aiDraft" code="inquiry.detail.admin.aiDraft"/>
+<spring:message var="msg_inquiry_detail_admin_answerRegister" code="inquiry.detail.admin.answerRegister"/>
+<spring:message var="msg_inquiry_detail_admin_answerComplete" code="inquiry.detail.admin.answerComplete"/>
+<spring:message var="msg_inquiry_detail_save" code="inquiry.detail.save"/>
+<spring:message var="msg_inquiry_detail_edit_disabled" code="inquiry.detail.edit.disabled"/>
+<spring:message var="msg_inquiry_detail_actions_list" code="inquiry.detail.actions.list"/>
+<spring:message var="msg_inquiry_detail_edit" code="inquiry.detail.edit"/>
+<spring:message var="msg_inquiry_detail_delete" code="inquiry.detail.delete"/>
+<spring:message var="msg_inquiry_detail_user_cancel" code="inquiry.detail.user.cancel"/>
+<spring:message var="msg_inquiry_detail_user_complete" code="inquiry.detail.user.complete"/>
+<spring:message var="msg_inquiry_detail_user_deleteRequest" code="inquiry.detail.user.deleteRequest"/>
+<spring:message var="msg_inquiry_detail_user_privateRequest" code="inquiry.detail.user.privateRequest"/>
+<spring:message var="msg_inquiry_detail_user_deleteCancel" code="inquiry.detail.user.deleteCancel"/>
+<spring:message var="msg_inquiry_detail_user_publicRequest" code="inquiry.detail.user.publicRequest"/>
+<spring:message var="msg_inquiry_category_service" code="inquiry.category.service"/>
+<spring:message var="msg_inquiry_category_payment" code="inquiry.category.payment"/>
+<spring:message var="msg_inquiry_category_account" code="inquiry.category.account"/>
+<spring:message var="msg_inquiry_category_bug" code="inquiry.category.bug"/>
+<spring:message var="msg_inquiry_category_etc" code="inquiry.category.etc"/>
+<spring:message var="msg_inquiry_status_pending" code="inquiry.status.pending"/>
+<spring:message var="msg_inquiry_status_inProgress" code="inquiry.status.inProgress"/>
+<spring:message var="msg_inquiry_status_answerDone" code="inquiry.status.answerDone"/>
+<spring:message var="msg_inquiry_status_cancelled" code="inquiry.status.cancelled"/>
+<spring:message var="msg_inquiry_status_userCompleted" code="inquiry.status.userCompleted"/>
+<spring:message var="msg_inquiry_status_deleteRequested" code="inquiry.status.deleteRequested"/>
+<spring:message var="msg_inquiry_status_privateRequested" code="inquiry.status.privateRequested"/>
+<spring:message var="msg_inquiry_status_publicRequested" code="inquiry.status.publicRequested"/>
+<spring:message var="msg_inquiry_admin_clearBlur" code="inquiry.admin.clearBlur"/>
+<spring:message var="msg_inquiry_answer_history_toggle" code="inquiry.answer.history.toggle"/>
+<spring:message var="msg_inquiry_detail_admin_deleteApprove" code="inquiry.detail.admin.deleteApprove"/>
+<spring:message var="msg_inquiry_detail_admin_publicApprove" code="inquiry.detail.admin.publicApprove"/>
+<spring:message var="msg_inquiry_detail_admin_privateApprove" code="inquiry.detail.admin.privateApprove"/>
+<spring:message var="msg_inquiry_write_cancel" code="inquiry.write.cancel"/>
+<spring:message var="msg_inquiry_write_type" code="inquiry.write.type"/>
+<spring:message var="msg_inquiry_write_type_service" code="inquiry.write.type.service"/>
+<spring:message var="msg_inquiry_write_type_payment" code="inquiry.write.type.payment"/>
+<spring:message var="msg_inquiry_write_type_account" code="inquiry.write.type.account"/>
+<spring:message var="msg_inquiry_write_type_bug" code="inquiry.write.type.bug"/>
+<spring:message var="msg_inquiry_write_type_etc" code="inquiry.write.type.etc"/>
+<spring:message var="msg_inquiry_write_subject" code="inquiry.write.subject"/>
+<spring:message var="msg_inquiry_write_content" code="inquiry.write.content"/>
+<spring:message var="msg_inquiry_write_private" code="inquiry.write.private"/>
+<spring:message var="msg_inquiry_detail_attachAdd" code="inquiry.detail.attachAdd"/>
 <%--
   =============================================
   문의 게시판 상세 페이지
@@ -81,44 +143,13 @@
 <%@ include file="../common/header.jsp" %>
 <body>
 
-<spring:message code="inquiry.write.back" var="inquiryBackLabel"/>
-<spring:message code="inquiry.private.tag" var="inquiryPrivateTagLabel"/>
-<spring:message code="inquiry.badge.ai" var="inquiryAiBadgeLabel"/>
-<spring:message code="inquiry.anonymous" var="inquiryAnonymousLabel"/>
-<spring:message code="inquiry.detail.views" var="inquiryViewsLabel"/>
-<spring:message code="inquiry.detail.edited" var="inquiryEditedLabel"/>
-<spring:message code="inquiry.detail.attachments" var="inquiryAttachmentsLabel"/>
-<spring:message code="inquiry.detail.answer.title" var="inquiryAnswerTitleLabel"/>
-<spring:message code="inquiry.detail.answer.pending" var="inquiryAnswerPendingLabel"/>
-<spring:message code="inquiry.detail.answer.pendingSub" var="inquiryAnswerPendingSubLabel"/>
-<spring:message code="inquiry.detail.admin.panel" var="inquiryAdminPanelLabel"/>
-<spring:message code="inquiry.detail.admin.status.label" var="inquiryAdminStatusLabel"/>
-<spring:message code="inquiry.detail.admin.deleteWaiting" var="inquiryAdminDeleteWaitingLabel"/>
-<spring:message code="inquiry.detail.admin.publicWaiting" var="inquiryAdminPublicWaitingLabel"/>
-<spring:message code="inquiry.detail.admin.privateWaiting" var="inquiryAdminPrivateWaitingLabel"/>
-<spring:message code="inquiry.detail.admin.answer.placeholder" var="inquiryAdminAnswerPlaceholder"/>
-<spring:message code="inquiry.detail.admin.answerEdit" var="inquiryAdminAnswerEditLabel"/>
-<spring:message code="inquiry.detail.admin.aiDraft" var="inquiryAdminAiDraftLabel"/>
-<spring:message code="inquiry.detail.admin.answerRegister" var="inquiryAdminAnswerRegisterLabel"/>
-<spring:message code="inquiry.detail.admin.answerComplete" var="inquiryAdminAnswerCompleteLabel"/>
-<spring:message code="inquiry.detail.save" var="inquirySaveLabel"/>
-<spring:message code="inquiry.detail.edit.disabled" var="inquiryEditDisabledLabel"/>
-<spring:message code="inquiry.detail.actions.list" var="inquiryActionListLabel"/>
-<spring:message code="inquiry.detail.edit" var="inquiryEditLabel"/>
-<spring:message code="inquiry.detail.delete" var="inquiryDeleteLabel"/>
-<spring:message code="inquiry.detail.user.cancel" var="inquiryUserCancelLabel"/>
-<spring:message code="inquiry.detail.user.complete" var="inquiryUserCompleteLabel"/>
-<spring:message code="inquiry.detail.user.deleteRequest" var="inquiryUserDeleteRequestLabel"/>
-<spring:message code="inquiry.detail.user.privateRequest" var="inquiryUserPrivateRequestLabel"/>
-<spring:message code="inquiry.detail.user.deleteCancel" var="inquiryUserDeleteCancelLabel"/>
-<spring:message code="inquiry.detail.user.publicRequest" var="inquiryUserPublicRequestLabel"/>
 
 <div class="inq-detail-wrap">
   <div class="inq-detail-inner">
 
     <%-- 뒤로가기 버튼 --%>
     <button class="inq-back-btn" onclick="goBackToList()">
-      ${inquiryBackLabel}
+      ${msg_inquiry_write_back}
     </button>
 
     <%-- =============================================
@@ -132,31 +163,31 @@
           <%-- 카테고리 태그 --%>
           <span class="inq-category-tag">
             <c:choose>
-              <c:when test="${inquiry.category eq 'service'}"><spring:message code="inquiry.category.service"/></c:when>
-              <c:when test="${inquiry.category eq 'payment'}"><spring:message code="inquiry.category.payment"/></c:when>
-              <c:when test="${inquiry.category eq 'account'}"><spring:message code="inquiry.category.account"/></c:when>
-              <c:when test="${inquiry.category eq 'bug'}"><spring:message code="inquiry.category.bug"/></c:when>
-              <c:otherwise><spring:message code="inquiry.category.etc"/></c:otherwise>
+              <c:when test="${inquiry.category eq 'service'}">${msg_inquiry_category_service}</c:when>
+              <c:when test="${inquiry.category eq 'payment'}">${msg_inquiry_category_payment}</c:when>
+              <c:when test="${inquiry.category eq 'account'}">${msg_inquiry_category_account}</c:when>
+              <c:when test="${inquiry.category eq 'bug'}">${msg_inquiry_category_bug}</c:when>
+              <c:otherwise>${msg_inquiry_category_etc}</c:otherwise>
             </c:choose>
           </span>
 
           <%-- 상태 뱃지: CSS 클래스명이 status 값과 일치 (PENDING/IN_PROGRESS/COMPLETED) --%>
           <span class="inq-status-badge ${inquiry.status}">
             <c:choose>
-              <c:when test="${inquiry.status eq 'PENDING'}"><spring:message code="inquiry.status.pending"/></c:when>
-              <c:when test="${inquiry.status eq 'IN_PROGRESS'}"><spring:message code="inquiry.status.inProgress"/></c:when>
-              <c:when test="${inquiry.status eq 'COMPLETED'}"><spring:message code="inquiry.status.answerDone"/></c:when>
-              <c:when test="${inquiry.status eq 'CANCELLED'}"><spring:message code="inquiry.status.cancelled"/></c:when>
-              <c:when test="${inquiry.status eq 'USER_COMPLETED'}"><spring:message code="inquiry.status.userCompleted"/></c:when>
-              <c:when test="${inquiry.status eq 'DELETE_REQUESTED'}"><spring:message code="inquiry.status.deleteRequested"/></c:when>
-              <c:when test="${inquiry.status eq 'PRIVATE_REQUESTED'}"><spring:message code="inquiry.status.privateRequested"/></c:when>
-              <c:when test="${inquiry.status eq 'PUBLIC_REQUESTED'}"><spring:message code="inquiry.status.publicRequested"/></c:when>
+              <c:when test="${inquiry.status eq 'PENDING'}">${msg_inquiry_status_pending}</c:when>
+              <c:when test="${inquiry.status eq 'IN_PROGRESS'}">${msg_inquiry_status_inProgress}</c:when>
+              <c:when test="${inquiry.status eq 'COMPLETED'}">${msg_inquiry_status_answerDone}</c:when>
+              <c:when test="${inquiry.status eq 'CANCELLED'}">${msg_inquiry_status_cancelled}</c:when>
+              <c:when test="${inquiry.status eq 'USER_COMPLETED'}">${msg_inquiry_status_userCompleted}</c:when>
+              <c:when test="${inquiry.status eq 'DELETE_REQUESTED'}">${msg_inquiry_status_deleteRequested}</c:when>
+              <c:when test="${inquiry.status eq 'PRIVATE_REQUESTED'}">${msg_inquiry_status_privateRequested}</c:when>
+              <c:when test="${inquiry.status eq 'PUBLIC_REQUESTED'}">${msg_inquiry_status_publicRequested}</c:when>
             </c:choose>
           </span>
 
           <%-- 비공개 태그 --%>
           <c:if test="${inquiry.isPrivate == 1}">
-            <span class="inq-private-tag">${inquiryPrivateTagLabel}</span>
+            <span class="inq-private-tag">${msg_inquiry_private_tag}</span>
           </c:if>
         </div>
 
@@ -166,10 +197,10 @@
         <%-- 관리자 전용 AI 감지 배지 + BLUR 해제 버튼 --%>
         <c:if test="${isAdmin and inquiry.aiFlagged}">
           <div style="margin:8px 0;">
-            <span class="inq-ai-badge">${inquiryAiBadgeLabel}</span>
+            <span class="inq-ai-badge">${msg_inquiry_badge_ai}</span>
             <button type="button" class="inq-admin-clear-blur-btn"
                     id="postClearBlurBtn" data-id="${inquiry.inquiryId}">
-              <spring:message code="inquiry.admin.clearBlur"/>
+              ${msg_inquiry_admin_clearBlur}
             </button>
           </div>
         </c:if>
@@ -179,7 +210,7 @@
           <span class="inq-detail-nick">
             <%-- 비공개 글이고 어드민이 아니면 익명 표시 --%>
             <c:choose>
-              <c:when test="${inquiry.isPrivate == 1 and !isAdmin}">${inquiryAnonymousLabel}</c:when>
+              <c:when test="${inquiry.isPrivate == 1 and !isAdmin}">${msg_inquiry_anonymous}</c:when>
               <c:otherwise><c:out value="${inquiry.nickname}"/></c:otherwise>
             </c:choose>
           </span>
@@ -188,10 +219,10 @@
             <fmt:formatDate value="${inquiry.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/>
           </span>
           <span class="inq-detail-divider">·</span>
-          <span class="inq-detail-views">${inquiryViewsLabel} ${inquiry.viewCount}</span>
+          <span class="inq-detail-views">${msg_inquiry_detail_views} ${inquiry.viewCount}</span>
           <c:if test="${inquiry.updatedAt != null and inquiry.updatedAt.time != inquiry.createdAt.time}">
             <span class="inq-detail-divider">·</span>
-            <span class="inq-detail-edited">${inquiryEditedLabel} <fmt:formatDate value="${inquiry.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
+            <span class="inq-detail-edited">${msg_inquiry_detail_edited} <fmt:formatDate value="${inquiry.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
           </c:if>
         </div>
       </div>
@@ -204,12 +235,12 @@
       <%-- 첨부파일 목록 --%>
       <c:if test="${not empty attachmentList}">
         <div class="inq-attachment-list">
-          <div class="inq-attachment-title">${inquiryAttachmentsLabel}</div>
+          <div class="inq-attachment-title">${msg_inquiry_detail_attachments}</div>
           <c:forEach var="att" items="${attachmentList}">
             <div class="inq-attachment-item">
               <a href="${att.fileUrl}" target="_blank">
                 <img src="${att.fileUrl}"
-                     alt="<c:out value='${att.fileName}'/>"
+                     alt="${fn:escapeXml(att.fileName)}"
                      class="inq-attachment-img"/>
               </a>
               <span class="inq-attachment-name"><c:out value="${att.fileName}"/></span>
@@ -232,12 +263,12 @@
           <div class="inq-answer-head">
             <span class="inq-answer-icon">✅</span>
             <div>
-              <div class="inq-answer-title">${inquiryAnswerTitleLabel}</div>
+              <div class="inq-answer-title">${msg_inquiry_detail_answer_title}</div>
               <div class="inq-answer-meta">
                 <c:out value="${answer.adminNickname}"/> ·
                 <fmt:formatDate value="${answer.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/>
                 <c:if test="${answer.updatedAt != null and answer.updatedAt.time != answer.createdAt.time}">
-                  · <span class="inq-detail-edited">${inquiryEditedLabel} <fmt:formatDate value="${answer.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
+                  · <span class="inq-detail-edited">${msg_inquiry_detail_edited} <fmt:formatDate value="${answer.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
                 </c:if>
               </div>
             </div>
@@ -251,7 +282,7 @@
               <button type="button" class="inq-btn-cancel"
                       id="answerHistoryToggleBtn"
                       data-id="${inquiry.inquiryId}">
-                <spring:message code="inquiry.answer.history.toggle"/>
+                ${msg_inquiry_answer_history_toggle}
               </button>
               <div class="inq-answer-history-list" id="answerHistoryList" hidden></div>
             </div>
@@ -263,8 +294,8 @@
       <c:otherwise>
         <div class="inq-no-answer">
           <div class="inq-no-answer-icon">⏳</div>
-          <div class="inq-no-answer-msg">${inquiryAnswerPendingLabel}</div>
-          <div class="inq-no-answer-sub">${inquiryAnswerPendingSubLabel}</div>
+          <div class="inq-no-answer-msg">${msg_inquiry_detail_answer_pending}</div>
+          <div class="inq-no-answer-sub">${msg_inquiry_detail_answer_pendingSub}</div>
         </div>
       </c:otherwise>
     </c:choose>
@@ -276,57 +307,57 @@
          ============================================= --%>
     <c:if test="${isAdmin and isAdminMode}">
       <div class="inq-admin-form">
-        <div class="inq-admin-form-title">${inquiryAdminPanelLabel}</div>
+        <div class="inq-admin-form-title">${msg_inquiry_detail_admin_panel}</div>
 
         <%-- 상태 변경 버튼 영역 --%>
         <div class="inq-admin-status-bar">
-          <span class="inq-admin-status-label">${inquiryAdminStatusLabel}</span>
-          <button class="inq-btn-status inq-btn-status-pending" id="btnStatusPending">🔔 <spring:message code="inquiry.status.pending"/></button>
-          <button class="inq-btn-status" id="btnStatusInProgress">🔄 <spring:message code="inquiry.status.inProgress"/></button>
-          <button class="inq-btn-status inq-btn-status-complete" id="btnStatusCompleted">✅ <spring:message code="inquiry.status.answerDone"/></button>
+          <span class="inq-admin-status-label">${msg_inquiry_detail_admin_status_label}</span>
+          <button class="inq-btn-status inq-btn-status-pending" id="btnStatusPending">🔔 ${msg_inquiry_status_pending}</button>
+          <button class="inq-btn-status" id="btnStatusInProgress">🔄 ${msg_inquiry_status_inProgress}</button>
+          <button class="inq-btn-status inq-btn-status-complete" id="btnStatusCompleted">✅ ${msg_inquiry_status_answerDone}</button>
         </div>
 
         <%-- 삭제 요청 수락 버튼 (DELETE_REQUESTED 상태일 때만 표시) --%>
         <c:if test="${inquiry.status eq 'DELETE_REQUESTED'}">
           <div class="inq-admin-status-bar">
-            <span class="inq-admin-status-label">${inquiryAdminDeleteWaitingLabel}</span>
+            <span class="inq-admin-status-label">${msg_inquiry_detail_admin_deleteWaiting}</span>
             <button class="inq-btn-submit" id="btnApproveDelete"
-                    style="background:#ef4444;"><spring:message code="inquiry.detail.admin.deleteApprove"/></button>
+                    style="background:#ef4444;">${msg_inquiry_detail_admin_deleteApprove}</button>
           </div>
         </c:if>
 
         <%-- 공개/비공개 요청 수락 버튼 (해당 상태일 때만 표시) --%>
         <c:if test="${inquiry.status eq 'PUBLIC_REQUESTED'}">
           <div class="inq-admin-status-bar">
-            <span class="inq-admin-status-label">${inquiryAdminPublicWaitingLabel}</span>
-            <button class="inq-btn-submit" id="btnApprovePublic"><spring:message code="inquiry.detail.admin.publicApprove"/></button>
+            <span class="inq-admin-status-label">${msg_inquiry_detail_admin_publicWaiting}</span>
+            <button class="inq-btn-submit" id="btnApprovePublic">${msg_inquiry_detail_admin_publicApprove}</button>
           </div>
         </c:if>
         <c:if test="${inquiry.status eq 'PRIVATE_REQUESTED'}">
           <div class="inq-admin-status-bar">
-            <span class="inq-admin-status-label">${inquiryAdminPrivateWaitingLabel}</span>
-            <button class="inq-btn-submit" id="btnApprovePrivate"><spring:message code="inquiry.detail.admin.privateApprove"/></button>
+            <span class="inq-admin-status-label">${msg_inquiry_detail_admin_privateWaiting}</span>
+            <button class="inq-btn-submit" id="btnApprovePrivate">${msg_inquiry_detail_admin_privateApprove}</button>
           </div>
         </c:if>
 
         <%-- 답변 작성/수정 영역 --%>
         <textarea class="inq-form-textarea" id="adminContent" rows="6"
-                  placeholder="${inquiryAdminAnswerPlaceholder}"
+                  placeholder="${msg_inquiry_detail_admin_answer_placeholder}"
                   <c:if test="${not empty answer}">disabled</c:if>
         ><c:if test="${not empty answer}"><c:out value="${answer.content}"/></c:if></textarea>
         <div class="inq-admin-form-actions">
           <c:choose>
             <%-- 답변 있을 때: 답변 수정 버튼 --%>
             <c:when test="${not empty answer}">
-              <button class="inq-btn-cancel" id="answerEditToggleBtn">${inquiryAdminAnswerEditLabel}</button>
-              <button class="inq-btn-submit" id="answerEditSaveBtn" style="display:none;">${inquirySaveLabel}</button>
-              <button class="inq-btn-cancel" id="answerEditCancelBtn" style="display:none;"><spring:message code="inquiry.write.cancel"/></button>
+              <button class="inq-btn-cancel" id="answerEditToggleBtn">${msg_inquiry_detail_admin_answerEdit}</button>
+              <button class="inq-btn-submit" id="answerEditSaveBtn" style="display:none;">${msg_inquiry_detail_save}</button>
+              <button class="inq-btn-cancel" id="answerEditCancelBtn" style="display:none;">${msg_inquiry_write_cancel}</button>
             </c:when>
             <%-- 답변 없을 때: AI 초안 / 등록 / 답변+완료 동시처리 버튼 --%>
             <c:otherwise>
-              <button class="inq-btn-cancel" id="aiDraftBtn">${inquiryAdminAiDraftLabel}</button>
-              <button class="inq-btn-cancel" id="answerBtn">${inquiryAdminAnswerRegisterLabel}</button>
-              <button class="inq-btn-submit" id="answerAndCompleteBtn">${inquiryAdminAnswerCompleteLabel}</button>
+              <button class="inq-btn-cancel" id="aiDraftBtn">${msg_inquiry_detail_admin_aiDraft}</button>
+              <button class="inq-btn-cancel" id="answerBtn">${msg_inquiry_detail_admin_answerRegister}</button>
+              <button class="inq-btn-submit" id="answerAndCompleteBtn">${msg_inquiry_detail_admin_answerComplete}</button>
             </c:otherwise>
           </c:choose>
         </div>
@@ -343,23 +374,23 @@
         <div class="inq-write-card">
           <%-- 문의 유형 --%>
           <div class="inq-form-group">
-            <label class="inq-form-label"><spring:message code="inquiry.write.type"/></label>
+            <label class="inq-form-label">${msg_inquiry_write_type}</label>
             <select class="inq-form-select" id="editCategory">
-              <option value="service" ${inquiry.category eq 'service' ? 'selected' : ''}><spring:message code="inquiry.write.type.service"/></option>
-              <option value="payment" ${inquiry.category eq 'payment' ? 'selected' : ''}><spring:message code="inquiry.write.type.payment"/></option>
-              <option value="account" ${inquiry.category eq 'account' ? 'selected' : ''}><spring:message code="inquiry.write.type.account"/></option>
-              <option value="bug"     ${inquiry.category eq 'bug'     ? 'selected' : ''}><spring:message code="inquiry.write.type.bug"/></option>
-              <option value="etc"     ${inquiry.category eq 'etc'     ? 'selected' : ''}><spring:message code="inquiry.write.type.etc"/></option>
+              <option value="service" ${inquiry.category eq 'service' ? 'selected' : ''}>${msg_inquiry_write_type_service}</option>
+              <option value="payment" ${inquiry.category eq 'payment' ? 'selected' : ''}>${msg_inquiry_write_type_payment}</option>
+              <option value="account" ${inquiry.category eq 'account' ? 'selected' : ''}>${msg_inquiry_write_type_account}</option>
+              <option value="bug"     ${inquiry.category eq 'bug'     ? 'selected' : ''}>${msg_inquiry_write_type_bug}</option>
+              <option value="etc"     ${inquiry.category eq 'etc'     ? 'selected' : ''}>${msg_inquiry_write_type_etc}</option>
             </select>
           </div>
           <%-- 제목 --%>
           <div class="inq-form-group">
-            <label class="inq-form-label"><spring:message code="inquiry.write.subject"/></label>
+            <label class="inq-form-label">${msg_inquiry_write_subject}</label>
             <input class="inq-form-input" type="text" id="editTitle" value="${fn:escapeXml(inquiry.title)}">
           </div>
           <%-- 내용 --%>
           <div class="inq-form-group">
-            <label class="inq-form-label"><spring:message code="inquiry.write.content"/></label>
+            <label class="inq-form-label">${msg_inquiry_write_content}</label>
             <textarea class="inq-form-textarea" id="editContent" rows="10"><c:out value="${inquiry.content}"/></textarea>
           </div>
           <%-- 비공개 여부 --%>
@@ -367,12 +398,12 @@
             <label class="inq-private-toggle">
               <input type="checkbox" id="editIsPrivate" ${inquiry.isPrivate == 1 ? 'checked' : ''}>
               <span class="inq-toggle-slider"></span>
-              <span class="inq-toggle-label"><spring:message code="inquiry.write.private"/></span>
+              <span class="inq-toggle-label">${msg_inquiry_write_private}</span>
             </label>
           </div>
           <%-- 첨부파일 업로드 --%>
           <div class="inq-form-group">
-            <label class="inq-form-label"><spring:message code="inquiry.detail.attachAdd"/></label>
+            <label class="inq-form-label">${msg_inquiry_detail_attachAdd}</label>
             <input type="file" class="inq-form-input" id="editAttachFile" multiple
                    accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.zip">
             <c:if test="${not empty attachmentList}">
@@ -389,8 +420,8 @@
           </div>
           <%-- 취소 / 저장 버튼 --%>
           <div class="inq-write-actions">
-            <button class="inq-btn-cancel" id="editCancelBtn"><spring:message code="inquiry.write.cancel"/></button>
-            <button class="inq-btn-submit" id="editSaveBtn">${inquirySaveLabel}</button>
+            <button class="inq-btn-cancel" id="editCancelBtn">${msg_inquiry_write_cancel}</button>
+            <button class="inq-btn-submit" id="editSaveBtn">${msg_inquiry_detail_save}</button>
           </div>
         </div>
       </div>
@@ -399,7 +430,7 @@
     <%-- 수정 불가 안내 --%>
     <c:if test="${(isOwner or isAdmin) and (inquiry.status eq 'COMPLETED' or inquiry.status eq 'IN_PROGRESS' or inquiry.status eq 'USER_COMPLETED' or inquiry.status eq 'CANCELLED')}">
       <div style="font-size:13px; color:var(--gray-400); margin-bottom:8px;">
-        ${inquiryEditDisabledLabel}
+        ${msg_inquiry_detail_edit_disabled}
       </div>
     </c:if>
 
@@ -411,60 +442,60 @@
     <div class="inq-detail-actions">
       <%-- 목록으로 버튼 --%>
       <button class="inq-btn-cancel" onclick="goBackToList()">
-        ${inquiryActionListLabel}
+        ${msg_inquiry_detail_actions_list}
       </button>
 
       <%-- PENDING: 수정 + 삭제 --%>
       <c:if test="${(isOwner or isAdmin) and inquiry.status eq 'PENDING'}">
-        <button class="inq-btn-cancel" id="editBtn">${inquiryEditLabel}</button>
+        <button class="inq-btn-cancel" id="editBtn">${msg_inquiry_detail_edit}</button>
         <button class="inq-btn-submit" id="deleteBtn"
-                style="background:#ef4444;">${inquiryDeleteLabel}</button>
+                style="background:#ef4444;">${msg_inquiry_detail_delete}</button>
       </c:if>
 
       <%-- CANCELLED: 삭제만 --%>
       <c:if test="${(isOwner or isAdmin) and inquiry.status eq 'CANCELLED'}">
         <button class="inq-btn-submit" id="deleteBtn"
-                style="background:#ef4444;">${inquiryDeleteLabel}</button>
+                style="background:#ef4444;">${msg_inquiry_detail_delete}</button>
       </c:if>
 
       <%-- 유저 전용: 문의 취소 버튼 (PENDING/IN_PROGRESS일 때) --%>
       <c:if test="${isOwner and (inquiry.status eq 'PENDING' or inquiry.status eq 'IN_PROGRESS')}">
         <button class="inq-btn-submit" id="cancelInquiryBtn"
-                style="background:#f59e0b;">${inquiryUserCancelLabel}</button>
+                style="background:#f59e0b;">${msg_inquiry_detail_user_cancel}</button>
       </c:if>
 
       <%-- 유저 전용: 해결됐어요 버튼 (IN_PROGRESS 또는 COMPLETED일 때) --%>
       <c:if test="${isOwner and (inquiry.status eq 'IN_PROGRESS' or inquiry.status eq 'COMPLETED')}">
         <button class="inq-btn-submit" id="userCompleteBtn"
-                style="background:#10b981;">${inquiryUserCompleteLabel}</button>
+                style="background:#10b981;">${msg_inquiry_detail_user_complete}</button>
       </c:if>
 
       <%-- 유저 전용: COMPLETED일 때 삭제요청 / 비공개 요청 --%>
       <c:if test="${isOwner and inquiry.status eq 'COMPLETED'}">
         <button class="inq-btn-submit" id="deleteRequestBtn"
-                style="background:#ef4444;">${inquiryUserDeleteRequestLabel}</button>
+                style="background:#ef4444;">${msg_inquiry_detail_user_deleteRequest}</button>
         <c:if test="${inquiry.isPrivate == 0}">
-          <button class="inq-btn-cancel" id="privateRequestBtn">${inquiryUserPrivateRequestLabel}</button>
+          <button class="inq-btn-cancel" id="privateRequestBtn">${msg_inquiry_detail_user_privateRequest}</button>
         </c:if>
       </c:if>
 
       <%-- 유저 전용: USER_COMPLETED일 때 삭제요청만 --%>
       <c:if test="${isOwner and inquiry.status eq 'USER_COMPLETED'}">
         <button class="inq-btn-submit" id="deleteRequestBtn"
-                style="background:#ef4444;">${inquiryUserDeleteRequestLabel}</button>
+                style="background:#ef4444;">${msg_inquiry_detail_user_deleteRequest}</button>
       </c:if>
 
       <%-- 유저 전용: DELETE_REQUESTED일 때 삭제 요청 취소 --%>
       <c:if test="${isOwner and inquiry.status eq 'DELETE_REQUESTED'}">
         <button class="inq-btn-submit" id="deleteCancelBtn"
-                style="background:#f59e0b;">${inquiryUserDeleteCancelLabel}</button>
+                style="background:#f59e0b;">${msg_inquiry_detail_user_deleteCancel}</button>
       </c:if>
 
       <%-- 유저 전용: 비공개 상태일 때 공개 요청 (CANCELLED/USER_COMPLETED 제외) --%>
       <c:if test="${isOwner and inquiry.isPrivate == 1
                    and inquiry.status ne 'CANCELLED'
                    and inquiry.status ne 'USER_COMPLETED'}">
-        <button class="inq-btn-cancel" id="publicRequestBtn">${inquiryUserPublicRequestLabel}</button>
+        <button class="inq-btn-cancel" id="publicRequestBtn">${msg_inquiry_detail_user_publicRequest}</button>
       </c:if>
     </div>
 
@@ -495,55 +526,55 @@ function goBackToList() {
   var ctx = '${pageContext.request.contextPath}';
   var inquiryId = ${inquiry.inquiryId};
   var inquiryMessages = {
-    clearBlurConfirm: '${inquiryAdminClearBlurConfirmMsg}',
-    clearBlurFail: '${inquiryAdminClearBlurFailMsg}',
-    genericError: '${inquiryWriteServerMsg}',
-    requestFail: '${inquiryDetailRequestFailMsg}',
-    statusPendingConfirm: '${inquiryDetailAdminStatusPendingConfirmMsg}',
-    statusInProgressConfirm: '${inquiryDetailAdminStatusInProgressConfirmMsg}',
-    statusCompletedConfirm: '${inquiryDetailAdminStatusCompletedConfirmMsg}',
-    statusChangeFail: '${inquiryDetailAdminStatusChangeFailMsg}',
-    aiDraftLoading: '${inquiryDetailAdminAiDraftLoadingMsg}',
-    aiDraftFail: '${inquiryDetailAdminAiDraftFailMsg}',
-    answerRequired: '${inquiryDetailAdminAnswerRequiredMsg}',
-    answerRegisterFail: '${inquiryDetailAdminAnswerRegisterFailMsg}',
-    answerCompleteFail: '${inquiryDetailAdminAnswerCompleteFailMsg}',
-    deleteApproveConfirm: '${inquiryDetailAdminDeleteApproveConfirmMsg}',
-    deleteApproveFail: '${inquiryDetailAdminDeleteApproveFailMsg}',
-    publicApproveConfirm: '${inquiryDetailAdminPublicApproveConfirmMsg}',
-    publicApproveFail: '${inquiryDetailAdminPublicApproveFailMsg}',
-    privateApproveConfirm: '${inquiryDetailAdminPrivateApproveConfirmMsg}',
-    privateApproveFail: '${inquiryDetailAdminPrivateApproveFailMsg}',
-    answerEditFail: '${inquiryDetailAdminAnswerEditFailMsg}',
-    editOpen: '${inquiryDetailEditMsg}',
-    editClose: '${inquiryWriteCancelMsg}',
-    editFail: '${inquiryDetailEditFailMsg}',
-    attachmentDeleteConfirm: '${inquiryDetailAttachDeleteConfirmMsg}',
-    attachmentDeleteFail: '${inquiryDetailAttachDeleteFailMsg}',
-    deleteConfirm: '${inquiryDetailDeleteConfirmMsg}',
-    deleteFail: '${inquiryDetailDeleteFailMsg}',
-    userCompleteConfirm: '${inquiryDetailUserCompleteConfirmMsg}',
-    userCompleteFail: '${inquiryDetailUserCompleteFailMsg}',
-    cancelConfirm: '${inquiryDetailUserCancelConfirmMsg}',
-    cancelFail: '${inquiryDetailUserCancelFailMsg}',
-    deleteRequestConfirm: '${inquiryDetailUserDeleteRequestConfirmMsg}',
-    deleteRequestFail: '${inquiryDetailUserDeleteRequestFailMsg}',
-    deleteCancelConfirm: '${inquiryDetailUserDeleteCancelConfirmMsg}',
-    deleteCancelFail: '${inquiryDetailUserDeleteCancelFailMsg}',
-    privateRequestConfirm: '${inquiryDetailUserPrivateRequestConfirmMsg}',
-    privateRequestFail: '${inquiryDetailUserPrivateRequestFailMsg}',
-    publicRequestConfirm: '${inquiryDetailUserPublicRequestConfirmMsg}',
-    publicRequestFail: '${inquiryDetailUserPublicRequestFailMsg}',
-    titleRequired: '${inquiryWriteErrorTitleMsg}',
-    contentRequired: '${inquiryWriteErrorContentMsg}',
-    historyToggle: '${inquiryAnswerHistoryToggleMsg}',
-    historyTitle: '${inquiryAnswerHistoryTitleMsg}',
-    historyEmpty: '${inquiryAnswerHistoryEmptyMsg}',
-    historyTypeUpdate: '${inquiryAnswerHistoryTypeUPDATEMsg}',
-    historyTypeDelete: '${inquiryAnswerHistoryTypeDELETEMsg}',
-    historyChangedBy: '${inquiryAnswerHistoryChangedByMsg}',
-    historyPrevContent: '${inquiryAnswerHistoryPrevContentMsg}',
-    historyLoadFail: '${inquiryAnswerHistoryLoadFailMsg}'
+    clearBlurConfirm: '${msg_inquiry_admin_clearBlur_confirm_js}',
+    clearBlurFail: '${msg_inquiry_admin_clearBlur_fail_js}',
+    genericError: '${msg_inquiry_write_server_js}',
+    requestFail: '${msg_inquiry_detail_requestFail_js}',
+    statusPendingConfirm: '${msg_inquiry_detail_admin_status_pendingConfirm_js}',
+    statusInProgressConfirm: '${msg_inquiry_detail_admin_status_inProgressConfirm_js}',
+    statusCompletedConfirm: '${msg_inquiry_detail_admin_status_completedConfirm_js}',
+    statusChangeFail: '${msg_inquiry_detail_admin_status_changeFail_js}',
+    aiDraftLoading: '${msg_inquiry_detail_admin_aiDraft_loading_js}',
+    aiDraftFail: '${msg_inquiry_detail_admin_aiDraft_fail_js}',
+    answerRequired: '${msg_inquiry_detail_admin_answerRequired_js}',
+    answerRegisterFail: '${msg_inquiry_detail_admin_answerRegisterFail_js}',
+    answerCompleteFail: '${msg_inquiry_detail_admin_answerCompleteFail_js}',
+    deleteApproveConfirm: '${msg_inquiry_detail_admin_deleteApproveConfirm_js}',
+    deleteApproveFail: '${msg_inquiry_detail_admin_deleteApproveFail_js}',
+    publicApproveConfirm: '${msg_inquiry_detail_admin_publicApproveConfirm_js}',
+    publicApproveFail: '${msg_inquiry_detail_admin_publicApproveFail_js}',
+    privateApproveConfirm: '${msg_inquiry_detail_admin_privateApproveConfirm_js}',
+    privateApproveFail: '${msg_inquiry_detail_admin_privateApproveFail_js}',
+    answerEditFail: '${msg_inquiry_detail_admin_answerEdit_fail_js}',
+    editOpen: '${msg_inquiry_detail_edit_js}',
+    editClose: '${msg_inquiry_write_cancel_js}',
+    editFail: '${msg_inquiry_detail_edit_fail_js}',
+    attachmentDeleteConfirm: '${msg_inquiry_detail_attachDeleteConfirm_js}',
+    attachmentDeleteFail: '${msg_inquiry_detail_attachDeleteFail_js}',
+    deleteConfirm: '${msg_inquiry_detail_deleteConfirm_js}',
+    deleteFail: '${msg_inquiry_detail_deleteFail_js}',
+    userCompleteConfirm: '${msg_inquiry_detail_user_completeConfirm_js}',
+    userCompleteFail: '${msg_inquiry_detail_user_completeFail_js}',
+    cancelConfirm: '${msg_inquiry_detail_user_cancelConfirm_js}',
+    cancelFail: '${msg_inquiry_detail_user_cancelFail_js}',
+    deleteRequestConfirm: '${msg_inquiry_detail_user_deleteRequestConfirm_js}',
+    deleteRequestFail: '${msg_inquiry_detail_user_deleteRequestFail_js}',
+    deleteCancelConfirm: '${msg_inquiry_detail_user_deleteCancelConfirm_js}',
+    deleteCancelFail: '${msg_inquiry_detail_user_deleteCancelFail_js}',
+    privateRequestConfirm: '${msg_inquiry_detail_user_privateRequestConfirm_js}',
+    privateRequestFail: '${msg_inquiry_detail_user_privateRequestFail_js}',
+    publicRequestConfirm: '${msg_inquiry_detail_user_publicRequestConfirm_js}',
+    publicRequestFail: '${msg_inquiry_detail_user_publicRequestFail_js}',
+    titleRequired: '${msg_inquiry_write_error_title_js}',
+    contentRequired: '${msg_inquiry_write_error_content_js}',
+    historyToggle: '${msg_inquiry_answer_history_toggle_js}',
+    historyTitle: '${msg_inquiry_answer_history_title_js}',
+    historyEmpty: '${msg_inquiry_answer_history_empty_js}',
+    historyTypeUpdate: '${msg_inquiry_answer_history_type_UPDATE_js}',
+    historyTypeDelete: '${msg_inquiry_answer_history_type_DELETE_js}',
+    historyChangedBy: '${msg_inquiry_answer_history_changedBy_js}',
+    historyPrevContent: '${msg_inquiry_answer_history_prevContent_js}',
+    historyLoadFail: '${msg_inquiry_answer_history_loadFail_js}'
   };
 
   /* =============================================
@@ -702,7 +733,7 @@ function goBackToList() {
         alert(inquiryMessages.genericError);
       } finally {
         btn.disabled = false;
-        btn.textContent = '${inquiryAdminAiDraftLabel}';
+        btn.textContent = '${msg_inquiry_detail_admin_aiDraft}';
       }
     });
   }

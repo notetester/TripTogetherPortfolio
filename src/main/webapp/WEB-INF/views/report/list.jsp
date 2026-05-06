@@ -3,6 +3,39 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_report_list_pageTitle_all" code="report.list.pageTitle.all"/>
+<spring:message var="msg_report_list_pageTitle_mine" code="report.list.pageTitle.mine"/>
+<spring:message var="msg_report_list_pageSubtitle_all" code="report.list.pageSubtitle.all"/>
+<spring:message var="msg_report_list_pageSubtitle_mine" code="report.list.pageSubtitle.mine"/>
+<spring:message var="msg_report_list_tab_all" code="report.list.tab.all"/>
+<spring:message var="msg_report_list_tab_post" code="report.list.tab.post"/>
+<spring:message var="msg_report_list_tab_comment" code="report.list.tab.comment"/>
+<spring:message var="msg_report_list_tab_review" code="report.list.tab.review"/>
+<spring:message var="msg_report_list_tab_user" code="report.list.tab.user"/>
+<spring:message var="msg_report_list_totalCount" code="report.list.totalCount"/>
+<spring:message var="msg_report_list_column_no" code="report.list.column.no"/>
+<spring:message var="msg_report_list_column_targetType" code="report.list.column.targetType"/>
+<spring:message var="msg_report_list_column_reason" code="report.list.column.reason"/>
+<spring:message var="msg_report_list_column_status" code="report.list.column.status"/>
+<spring:message var="msg_report_list_column_reportedAt" code="report.list.column.reportedAt"/>
+<spring:message var="msg_report_list_empty" code="report.list.empty"/>
+<spring:message var="msg_report_common_target_post" code="report.common.target.post"/>
+<spring:message var="msg_report_common_target_comment" code="report.common.target.comment"/>
+<spring:message var="msg_report_common_target_review" code="report.common.target.review"/>
+<spring:message var="msg_report_common_target_user" code="report.common.target.user"/>
+<spring:message var="msg_report_common_none" code="report.common.none"/>
+<spring:message var="msg_report_common_reason_spam" code="report.common.reason.spam"/>
+<spring:message var="msg_report_common_reason_abuse" code="report.common.reason.abuse"/>
+<spring:message var="msg_report_common_reason_privacy" code="report.common.reason.privacy"/>
+<spring:message var="msg_report_common_reason_adult" code="report.common.reason.adult"/>
+<spring:message var="msg_report_common_reason_illegal" code="report.common.reason.illegal"/>
+<spring:message var="msg_report_common_reason_other" code="report.common.reason.other"/>
+<spring:message var="msg_report_common_status_inReview" code="report.common.status.inReview"/>
+<spring:message var="msg_report_common_status_resolved" code="report.common.status.resolved"/>
+<spring:message var="msg_report_common_status_dismissed" code="report.common.status.dismissed"/>
+<spring:message var="msg_report_common_status_cancelled" code="report.common.status.cancelled"/>
 <%--
   =============================================
   신고 내역 목록 페이지
@@ -34,25 +67,25 @@
 <div class="rpt-ph">
     <div class="si">
         <c:choose>
-          <c:when test="${isAdmin}"><h1><spring:message code="report.list.pageTitle.all"/></h1></c:when>
-          <c:otherwise><h1><spring:message code="report.list.pageTitle.mine"/></h1></c:otherwise>
+          <c:when test="${isAdmin}"><h1>${msg_report_list_pageTitle_all}</h1></c:when>
+          <c:otherwise><h1>${msg_report_list_pageTitle_mine}</h1></c:otherwise>
         </c:choose>
         <c:choose>
-          <c:when test="${isAdmin}"><p class="rpt-ph-sub"><spring:message code="report.list.pageSubtitle.all"/></p></c:when>
-          <c:otherwise><p class="rpt-ph-sub"><spring:message code="report.list.pageSubtitle.mine"/></p></c:otherwise>
+          <c:when test="${isAdmin}"><p class="rpt-ph-sub">${msg_report_list_pageSubtitle_all}</p></c:when>
+          <c:otherwise><p class="rpt-ph-sub">${msg_report_list_pageSubtitle_mine}</p></c:otherwise>
         </c:choose>
 
         <div class="rpt-tabs">
             <a href="${pageContext.request.contextPath}/report/list"
-               class="rpt-tab ${empty search.targetType ? 'active' : ''}"><spring:message code="report.list.tab.all"/></a>
+               class="rpt-tab ${empty search.targetType ? 'active' : ''}">${msg_report_list_tab_all}</a>
             <a href="${pageContext.request.contextPath}/report/list?targetType=post"
-               class="rpt-tab ${search.targetType eq 'post' ? 'active' : ''}"><spring:message code="report.list.tab.post"/></a>
+               class="rpt-tab ${search.targetType eq 'post' ? 'active' : ''}">${msg_report_list_tab_post}</a>
             <a href="${pageContext.request.contextPath}/report/list?targetType=comment"
-               class="rpt-tab ${search.targetType eq 'comment' ? 'active' : ''}"><spring:message code="report.list.tab.comment"/></a>
+               class="rpt-tab ${search.targetType eq 'comment' ? 'active' : ''}">${msg_report_list_tab_comment}</a>
             <a href="${pageContext.request.contextPath}/report/list?targetType=review"
-               class="rpt-tab ${search.targetType eq 'review' ? 'active' : ''}"><spring:message code="report.list.tab.review"/></a>
+               class="rpt-tab ${search.targetType eq 'review' ? 'active' : ''}">${msg_report_list_tab_review}</a>
             <a href="${pageContext.request.contextPath}/report/list?targetType=user"
-               class="rpt-tab ${search.targetType eq 'user' ? 'active' : ''}"><spring:message code="report.list.tab.user"/></a>
+               class="rpt-tab ${search.targetType eq 'user' ? 'active' : ''}">${msg_report_list_tab_user}</a>
         </div>
     </div>
 </div>
@@ -67,7 +100,7 @@
              2. 툴바
              ============================================= --%>
         <div class="rpt-toolbar">
-            <span class="rpt-total"><spring:message code="report.list.totalCount"/></span>
+            <span class="rpt-total">${msg_report_list_totalCount}</span>
         </div>
 
         <%-- =============================================
@@ -84,11 +117,11 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th><spring:message code="report.list.column.no"/></th>
-                        <th><spring:message code="report.list.column.targetType"/></th>
-                        <th><spring:message code="report.list.column.reason"/></th>
-                        <th><spring:message code="report.list.column.status"/></th>
-                        <th><spring:message code="report.list.column.reportedAt"/></th>
+                        <th>${msg_report_list_column_no}</th>
+                        <th>${msg_report_list_column_targetType}</th>
+                        <th>${msg_report_list_column_reason}</th>
+                        <th>${msg_report_list_column_status}</th>
+                        <th>${msg_report_list_column_reportedAt}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -98,7 +131,7 @@
                             <td colspan="5" class="rpt-empty">
                                 <div class="rpt-empty-inner">
                                     <div class="rpt-empty-icon">📭</div>
-                                    <div class="rpt-empty-msg"><spring:message code="report.list.empty"/></div>
+                                    <div class="rpt-empty-msg">${msg_report_list_empty}</div>
                                 </div>
                             </td>
                         </tr>
@@ -113,16 +146,16 @@
                                 <td>
                                     <c:choose>
                                         <c:when test="${r.targetType eq 'post'}">
-                                            <span class="rpt-type-tag type-post"><spring:message code="report.common.target.post"/></span>
+                                            <span class="rpt-type-tag type-post">${msg_report_common_target_post}</span>
                                         </c:when>
                                         <c:when test="${r.targetType eq 'comment'}">
-                                            <span class="rpt-type-tag type-comment"><spring:message code="report.common.target.comment"/></span>
+                                            <span class="rpt-type-tag type-comment">${msg_report_common_target_comment}</span>
                                         </c:when>
                                         <c:when test="${r.targetType eq 'review'}">
-                                            <span class="rpt-type-tag type-review"><spring:message code="report.common.target.review"/></span>
+                                            <span class="rpt-type-tag type-review">${msg_report_common_target_review}</span>
                                         </c:when>
                                         <c:when test="${r.targetType eq 'user'}">
-                                            <span class="rpt-type-tag type-user"><spring:message code="report.common.target.user"/></span>
+                                            <span class="rpt-type-tag type-user">${msg_report_common_target_user}</span>
                                         </c:when>
                                         <c:otherwise>
                                             <span class="rpt-type-tag">${r.targetType}</span>
@@ -136,23 +169,23 @@
                                             <span class="rpt-reason-text">
                                                 <c:choose>
                                                     <c:when test="${not empty r.description}">${r.description}</c:when>
-                                                    <c:otherwise><spring:message code="report.common.none"/></c:otherwise>
+                                                    <c:otherwise>${msg_report_common_none}</c:otherwise>
                                                 </c:choose>
                                             </span>
                                         </c:when>
                                         <c:otherwise>
                                             <span class="rpt-reason-text">
                                                 <c:choose>
-                                                    <c:when test="${r.reason eq 'spam'}"><spring:message code="report.common.reason.spam"/></c:when>
-                                                    <c:when test="${r.reason eq 'abuse'}"><spring:message code="report.common.reason.abuse"/></c:when>
-                                                    <c:when test="${r.reason eq 'privacy'}"><spring:message code="report.common.reason.privacy"/></c:when>
-                                                    <c:when test="${r.reason eq 'adult'}"><spring:message code="report.common.reason.adult"/></c:when>
-                                                    <c:when test="${r.reason eq 'illegal'}"><spring:message code="report.common.reason.illegal"/></c:when>
-                                                    <c:when test="${r.reason eq 'other'}"><spring:message code="report.common.reason.other"/></c:when>
+                                                    <c:when test="${r.reason eq 'spam'}">${msg_report_common_reason_spam}</c:when>
+                                                    <c:when test="${r.reason eq 'abuse'}">${msg_report_common_reason_abuse}</c:when>
+                                                    <c:when test="${r.reason eq 'privacy'}">${msg_report_common_reason_privacy}</c:when>
+                                                    <c:when test="${r.reason eq 'adult'}">${msg_report_common_reason_adult}</c:when>
+                                                    <c:when test="${r.reason eq 'illegal'}">${msg_report_common_reason_illegal}</c:when>
+                                                    <c:when test="${r.reason eq 'other'}">${msg_report_common_reason_other}</c:when>
                                                     <c:otherwise>
                                                         <c:choose>
                                                             <c:when test="${not empty r.reason}">${r.reason}</c:when>
-                                                            <c:otherwise><spring:message code="report.common.none"/></c:otherwise>
+                                                            <c:otherwise>${msg_report_common_none}</c:otherwise>
                                                         </c:choose>
                                                     </c:otherwise>
                                                 </c:choose>
@@ -164,10 +197,10 @@
                                 <td>
                                     <span class="rpt-status-badge ${r.status}">
                                         <c:choose>
-                                            <c:when test="${r.status eq 'IN_REVIEW'}"><spring:message code="report.common.status.inReview"/></c:when>
-                                            <c:when test="${r.status eq 'RESOLVED'}"><spring:message code="report.common.status.resolved"/></c:when>
-                                            <c:when test="${r.status eq 'DISMISSED'}"><spring:message code="report.common.status.dismissed"/></c:when>
-                                            <c:when test="${r.status eq 'CANCELLED'}"><spring:message code="report.common.status.cancelled"/></c:when>
+                                            <c:when test="${r.status eq 'IN_REVIEW'}">${msg_report_common_status_inReview}</c:when>
+                                            <c:when test="${r.status eq 'RESOLVED'}">${msg_report_common_status_resolved}</c:when>
+                                            <c:when test="${r.status eq 'DISMISSED'}">${msg_report_common_status_dismissed}</c:when>
+                                            <c:when test="${r.status eq 'CANCELLED'}">${msg_report_common_status_cancelled}</c:when>
                                             <c:otherwise>${r.status}</c:otherwise>
                                         </c:choose>
                                     </span>

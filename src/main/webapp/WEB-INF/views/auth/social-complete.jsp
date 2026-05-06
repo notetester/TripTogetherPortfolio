@@ -1,12 +1,47 @@
-<spring:message var="authRegisterNicknamePlaceholderMsg" code="auth.register.nickname.placeholder"/>
-<spring:message var="authRegisterNicknameRuleMsg" code="auth.register.nickname.rule" javaScriptEscape="true"/>
-<spring:message var="authRegisterNicknameDuplicateMsg" code="auth.register.nickname.duplicate" javaScriptEscape="true"/>
-<spring:message var="authRegisterNicknameOkMsg" code="auth.register.nickname.ok" javaScriptEscape="true"/>
-<spring:message var="authRegisterNicknameRequiredMsg" code="auth.register.nickname.required" javaScriptEscape="true"/>
-<spring:message var="authRegisterNationalityRequiredMsg" code="auth.register.nationality.required" javaScriptEscape="true"/>
-<spring:message var="authRegisterLanguageRequiredMsg" code="auth.register.language.required" javaScriptEscape="true"/>
-<spring:message var="authCommonErrorPrefixMsg" code="auth.common.errorPrefix" javaScriptEscape="true"/>
-<spring:message var="authRegisterServerMsg" code="auth.register.server" javaScriptEscape="true"/>
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_auth_register_nickname_placeholder" code="auth.register.nickname.placeholder"/>
+<spring:message var="msg_auth_register_nickname_rule_js" code="auth.register.nickname.rule" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_nickname_duplicate_js" code="auth.register.nickname.duplicate" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_nickname_ok_js" code="auth.register.nickname.ok" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_nickname_required_js" code="auth.register.nickname.required" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_nationality_required_js" code="auth.register.nationality.required" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_language_required_js" code="auth.register.language.required" javaScriptEscape="true"/>
+<spring:message var="msg_auth_common_errorPrefix_js" code="auth.common.errorPrefix" javaScriptEscape="true"/>
+<spring:message var="msg_auth_register_server_js" code="auth.register.server" javaScriptEscape="true"/>
+<spring:message var="msg_auth_social_processing" code="auth.social.processing"/>
+<spring:message var="msg_auth_social_title" code="auth.social.title"/>
+<spring:message var="msg_auth_social_subtitle" code="auth.social.subtitle"/>
+<spring:message var="msg_auth_social_linkedEmail" code="auth.social.linkedEmail"/>
+<spring:message var="msg_auth_social_emailConflictTitle" code="auth.social.emailConflictTitle"/>
+<spring:message var="msg_auth_social_emailConflictBody" code="auth.social.emailConflictBody"/>
+<spring:message var="msg_auth_social_emailReferenceTitle" code="auth.social.emailReferenceTitle"/>
+<spring:message var="msg_auth_social_emailReferenceBody" code="auth.social.emailReferenceBody"/>
+<spring:message var="msg_auth_social_emailMissingTitle" code="auth.social.emailMissingTitle"/>
+<spring:message var="msg_auth_social_emailMissingBody" code="auth.social.emailMissingBody"/>
+<spring:message var="msg_auth_register_nickname" code="auth.register.nickname"/>
+<spring:message var="msg_auth_register_nationality" code="auth.register.nationality"/>
+<spring:message var="msg_auth_register_nationality_placeholder" code="auth.register.nationality.placeholder"/>
+<spring:message var="msg_auth_register_nationality_option_kr" code="auth.register.nationality.option.kr"/>
+<spring:message var="msg_auth_register_nationality_option_us" code="auth.register.nationality.option.us"/>
+<spring:message var="msg_auth_register_nationality_option_jp" code="auth.register.nationality.option.jp"/>
+<spring:message var="msg_auth_register_nationality_option_cn" code="auth.register.nationality.option.cn"/>
+<spring:message var="msg_auth_register_nationality_option_gb" code="auth.register.nationality.option.gb"/>
+<spring:message var="msg_auth_register_nationality_option_fr" code="auth.register.nationality.option.fr"/>
+<spring:message var="msg_auth_register_nationality_option_de" code="auth.register.nationality.option.de"/>
+<spring:message var="msg_auth_register_nationality_option_au" code="auth.register.nationality.option.au"/>
+<spring:message var="msg_auth_register_nationality_option_ca" code="auth.register.nationality.option.ca"/>
+<spring:message var="msg_auth_register_nationality_option_other" code="auth.register.nationality.option.other"/>
+<spring:message var="msg_auth_register_language" code="auth.register.language"/>
+<spring:message var="msg_auth_register_language_placeholder" code="auth.register.language.placeholder"/>
+<spring:message var="msg_auth_register_language_option_ko" code="auth.register.language.option.ko"/>
+<spring:message var="msg_auth_register_language_option_en" code="auth.register.language.option.en"/>
+<spring:message var="msg_auth_register_language_option_ja" code="auth.register.language.option.ja"/>
+<spring:message var="msg_auth_register_language_option_zh" code="auth.register.language.option.zh"/>
+<spring:message var="msg_auth_social_submit" code="auth.social.submit"/>
+<spring:message var="msg_auth_social_backToLogin" code="auth.social.backToLogin"/>
+
+
 ﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -36,36 +71,36 @@
             </svg>
           </span>Google</c:when>
         </c:choose>
-        <spring:message code="auth.social.processing"/>
+        ${msg_auth_social_processing}
       </span>
     </div>
 
-    <h1 class="auth-title"><spring:message code="auth.social.title"/></h1>
-    <p class="auth-sub"><spring:message code="auth.social.subtitle"/></p>
+    <h1 class="auth-title">${msg_auth_social_title}</h1>
+    <p class="auth-sub">${msg_auth_social_subtitle}</p>
 
     <c:if test="${socialEmailNotice.emailAvailable}">
       <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--gray-600);margin-bottom:16px;">
-        <spring:message code="auth.social.linkedEmail"/> <strong>${socialEmailNotice.socialEmail}</strong>
+        ${msg_auth_social_linkedEmail} <strong>${socialEmailNotice.socialEmail}</strong>
       </div>
     </c:if>
 
     <c:choose>
       <c:when test="${socialEmailNotice.noticeType == 'RECOMMEND_LINK'}">
         <div style="background:#fff7ed;border:1px solid #fdba74;border-radius:10px;padding:12px 14px;font-size:13px;color:#9a3412;line-height:1.7;margin-bottom:16px;">
-          <div style="font-weight:700;margin-bottom:4px;"><spring:message code="auth.social.emailConflictTitle"/></div>
-          <div><spring:message code="auth.social.emailConflictBody"/></div>
+          <div style="font-weight:700;margin-bottom:4px;">${msg_auth_social_emailConflictTitle}</div>
+          <div>${msg_auth_social_emailConflictBody}</div>
         </div>
       </c:when>
       <c:when test="${socialEmailNotice.noticeType == 'REFERENCE'}">
         <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:13px;color:#1d4ed8;line-height:1.7;margin-bottom:16px;">
-          <div style="font-weight:700;margin-bottom:4px;"><spring:message code="auth.social.emailReferenceTitle"/></div>
-          <div><spring:message code="auth.social.emailReferenceBody"/></div>
+          <div style="font-weight:700;margin-bottom:4px;">${msg_auth_social_emailReferenceTitle}</div>
+          <div>${msg_auth_social_emailReferenceBody}</div>
         </div>
       </c:when>
       <c:otherwise>
         <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;padding:12px 14px;font-size:13px;color:#334155;line-height:1.7;margin-bottom:16px;">
-          <div style="font-weight:700;margin-bottom:4px;"><spring:message code="auth.social.emailMissingTitle"/></div>
-          <div><spring:message code="auth.social.emailMissingBody"/></div>
+          <div style="font-weight:700;margin-bottom:4px;">${msg_auth_social_emailMissingTitle}</div>
+          <div>${msg_auth_social_emailMissingBody}</div>
         </div>
       </c:otherwise>
     </c:choose>
@@ -73,47 +108,47 @@
     <div id="socialCompleteError" class="auth-error-banner"></div>
 
     <div class="form-group">
-      <label class="form-label" for="nickname"><spring:message code="auth.register.nickname"/><span style="color:#ef4444">*</span></label>
-      <input class="form-input" type="text" id="nickname" name="nickname" placeholder="${authRegisterNicknamePlaceholderMsg}" value="${socialTemp.nickname}" maxlength="20">
+      <label class="form-label" for="nickname">${msg_auth_register_nickname}<span style="color:#ef4444">*</span></label>
+      <input class="form-input" type="text" id="nickname" name="nickname" placeholder="${msg_auth_register_nickname_placeholder}" value="${socialTemp.nickname}" maxlength="20">
       <div class="field-msg" id="nicknameMsg"></div>
     </div>
 
     <div class="form-group">
-      <label class="form-label" for="nationality"><spring:message code="auth.register.nationality"/> <span style="color:#ef4444">*</span></label>
+      <label class="form-label" for="nationality">${msg_auth_register_nationality} <span style="color:#ef4444">*</span></label>
       <select class="form-select" id="nationality" name="nationality">
-        <option value=""><spring:message code="auth.register.nationality.placeholder"/></option>
-        <option value="KR"><spring:message code="auth.register.nationality.option.kr"/></option>
-        <option value="US"><spring:message code="auth.register.nationality.option.us"/></option>
-        <option value="JP"><spring:message code="auth.register.nationality.option.jp"/></option>
-        <option value="CN"><spring:message code="auth.register.nationality.option.cn"/></option>
-        <option value="GB"><spring:message code="auth.register.nationality.option.gb"/></option>
-        <option value="FR"><spring:message code="auth.register.nationality.option.fr"/></option>
-        <option value="DE"><spring:message code="auth.register.nationality.option.de"/></option>
-        <option value="AU"><spring:message code="auth.register.nationality.option.au"/></option>
-        <option value="CA"><spring:message code="auth.register.nationality.option.ca"/></option>
-        <option value="OTHER"><spring:message code="auth.register.nationality.option.other"/></option>
+        <option value="">${msg_auth_register_nationality_placeholder}</option>
+        <option value="KR">${msg_auth_register_nationality_option_kr}</option>
+        <option value="US">${msg_auth_register_nationality_option_us}</option>
+        <option value="JP">${msg_auth_register_nationality_option_jp}</option>
+        <option value="CN">${msg_auth_register_nationality_option_cn}</option>
+        <option value="GB">${msg_auth_register_nationality_option_gb}</option>
+        <option value="FR">${msg_auth_register_nationality_option_fr}</option>
+        <option value="DE">${msg_auth_register_nationality_option_de}</option>
+        <option value="AU">${msg_auth_register_nationality_option_au}</option>
+        <option value="CA">${msg_auth_register_nationality_option_ca}</option>
+        <option value="OTHER">${msg_auth_register_nationality_option_other}</option>
       </select>
       <div class="field-msg" id="nationalityMsg"></div>
     </div>
 
     <div class="form-group">
-      <label class="form-label" for="preferredLang"><spring:message code="auth.register.language"/> <span style="color:#ef4444">*</span></label>
+      <label class="form-label" for="preferredLang">${msg_auth_register_language} <span style="color:#ef4444">*</span></label>
       <select class="form-select" id="preferredLang" name="preferredLang">
-        <option value=""><spring:message code="auth.register.language.placeholder"/></option>
-        <option value="ko"><spring:message code="auth.register.language.option.ko"/></option>
-        <option value="en"><spring:message code="auth.register.language.option.en"/></option>
-        <option value="ja"><spring:message code="auth.register.language.option.ja"/></option>
-        <option value="zh"><spring:message code="auth.register.language.option.zh"/></option>
+        <option value="">${msg_auth_register_language_placeholder}</option>
+        <option value="ko">${msg_auth_register_language_option_ko}</option>
+        <option value="en">${msg_auth_register_language_option_en}</option>
+        <option value="ja">${msg_auth_register_language_option_ja}</option>
+        <option value="zh">${msg_auth_register_language_option_zh}</option>
       </select>
       <div class="field-msg" id="langMsg"></div>
     </div>
 
     <button type="button" class="btn-submit" id="completeBtn" style="margin-top:4px;">
-      <spring:message code="auth.social.submit"/>
+      ${msg_auth_social_submit}
     </button>
 
     <div class="auth-footer">
-      <a href="${pageContext.request.contextPath}/auth/login"><spring:message code="auth.social.backToLogin"/></a>
+      <a href="${pageContext.request.contextPath}/auth/login">${msg_auth_social_backToLogin}</a>
     </div>
   </div>
 </div>
@@ -130,7 +165,7 @@
     if (v.length < 2 || v.length > 20) {
       input.className = 'form-input error';
       msgEl.className = 'field-msg error';
-      msgEl.textContent = '${authRegisterNicknameRuleMsg}';
+      msgEl.textContent = '${msg_auth_register_nickname_rule_js}';
       return;
     }
 
@@ -141,11 +176,11 @@
       if (data.duplicate) {
         input.className = 'form-input error';
         msgEl.className = 'field-msg error';
-        msgEl.textContent = '${authRegisterNicknameDuplicateMsg}';
+        msgEl.textContent = '${msg_auth_register_nickname_duplicate_js}';
       } else {
         input.className = 'form-input success';
         msgEl.className = 'field-msg success';
-        msgEl.textContent = '${authRegisterNicknameOkMsg}';
+        msgEl.textContent = '${msg_auth_register_nickname_ok_js}';
       }
     }, 500);
   });
@@ -156,9 +191,9 @@
     const preferredLang = document.getElementById('preferredLang').value;
     const errorBanner = document.getElementById('socialCompleteError');
 
-    if (!nickname) { showFieldError('nickname', 'nicknameMsg', '${authRegisterNicknameRequiredMsg}'); return; }
-    if (!nationality) { showFieldError('nationality', 'nationalityMsg', '${authRegisterNationalityRequiredMsg}'); return; }
-    if (!preferredLang) { showFieldError('preferredLang', 'langMsg', '${authRegisterLanguageRequiredMsg}'); return; }
+    if (!nickname) { showFieldError('nickname', 'nicknameMsg', '${msg_auth_register_nickname_required_js}'); return; }
+    if (!nationality) { showFieldError('nationality', 'nationalityMsg', '${msg_auth_register_nationality_required_js}'); return; }
+    if (!preferredLang) { showFieldError('preferredLang', 'langMsg', '${msg_auth_register_language_required_js}'); return; }
 
     this.classList.add('loading');
     this.disabled = true;
@@ -174,11 +209,11 @@
       if (data.success) {
         location.href = data.redirect;
       } else {
-        errorBanner.textContent = '${authCommonErrorPrefixMsg} ' + (data.message || '${authRegisterServerMsg}');
+        errorBanner.textContent = '${msg_auth_common_errorPrefix_js} ' + (data.message || '${msg_auth_register_server_js}');
         errorBanner.classList.add('show');
       }
     } catch (e) {
-      errorBanner.textContent = '${authCommonErrorPrefixMsg} ${authRegisterServerMsg}';
+      errorBanner.textContent = '${msg_auth_common_errorPrefix_js} ${msg_auth_register_server_js}';
       errorBanner.classList.add('show');
     } finally {
       this.classList.remove('loading');

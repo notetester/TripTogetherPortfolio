@@ -4,30 +4,85 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_translation_label_reportTargetTitle" code="admin.translation.label.reportTargetTitle"/>
+<spring:message var="msg_admin_translation_label_reportTargetContent" code="admin.translation.label.reportTargetContent"/>
+<spring:message var="msg_admin_translation_label_reportReviewContent" code="admin.translation.label.reportReviewContent"/>
+<spring:message var="msg_admin_translation_label_reportDescription" code="admin.translation.label.reportDescription"/>
+<spring:message var="msg_admin_reports_detail_pageTitle" code="admin.reports.detail.pageTitle"/>
+<spring:message var="msg_admin_reports_detail_backToList" code="admin.reports.detail.backToList"/>
+<spring:message var="msg_admin_reports_detail_reporterInfoTitle" code="admin.reports.detail.reporterInfoTitle"/>
+<spring:message var="msg_admin_reports_detail_processingTitle" code="admin.reports.detail.processingTitle"/>
+<spring:message var="msg_admin_reports_detail_confirmRejected" code="admin.reports.detail.confirmRejected"/>
+<spring:message var="msg_admin_reports_detail_confirmDeleteContent" code="admin.reports.detail.confirmDeleteContent"/>
+<spring:message var="msg_admin_reports_detail_confirmBlockAuthor" code="admin.reports.detail.confirmBlockAuthor"/>
+<spring:message var="msg_admin_reports_detail_confirmBlockUser" code="admin.reports.detail.confirmBlockUser"/>
+<spring:message var="msg_admin_reports_detail_confirmDeleteAndBlock" code="admin.reports.detail.confirmDeleteAndBlock"/>
+<spring:message var="msg_admin_reports_detail_confirmDeleteAndBlockReview" code="admin.reports.detail.confirmDeleteAndBlockReview"/>
+<spring:message var="msg_admin_reports_detail_confirmDeleteReview" code="admin.reports.detail.confirmDeleteReview"/>
+<spring:message var="msg_admin_reports_detail_confirmRevert" code="admin.reports.detail.confirmRevert"/>
+<spring:message var="msg_admin_reports_detail_processFailed" code="admin.reports.detail.processFailed"/>
+<spring:message var="msg_admin_reports_detail_title" code="admin.reports.detail.title"/>
+<spring:message var="msg_admin_reports_status_inReview" code="admin.reports.status.inReview"/>
+<spring:message var="msg_admin_reports_status_resolved" code="admin.reports.status.resolved"/>
+<spring:message var="msg_admin_reports_status_dismissed" code="admin.reports.status.dismissed"/>
+<spring:message var="msg_admin_reports_detail_viewOriginal" code="admin.reports.detail.viewOriginal"/>
+<spring:message var="msg_admin_reports_detail_viewSpot" code="admin.reports.detail.viewSpot"/>
+<spring:message var="msg_admin_reports_detail_reportTarget" code="admin.reports.detail.reportTarget"/>
+<spring:message var="msg_admin_reports_target_post" code="admin.reports.target.post"/>
+<spring:message var="msg_admin_layout_menu_community" code="admin.layout.menu.community"/>
+<spring:message var="msg_admin_reports_target_comment" code="admin.reports.target.comment"/>
+<spring:message var="msg_admin_reports_target_review" code="admin.reports.target.review"/>
+<spring:message var="msg_admin_layout_menu_explore" code="admin.layout.menu.explore"/>
+<spring:message var="msg_admin_reports_target_user" code="admin.reports.target.user"/>
+<spring:message var="msg_admin_common_member" code="admin.common.member"/>
+<spring:message var="msg_admin_reports_targetBlocked" code="admin.reports.targetBlocked"/>
+<spring:message var="msg_admin_reports_targetDeleted" code="admin.reports.targetDeleted"/>
+<spring:message var="msg_admin_common_viewTarget" code="admin.common.viewTarget"/>
+<spring:message var="msg_admin_common_sameTarget" code="admin.common.sameTarget"/>
+<spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
+<spring:message var="msg_admin_common_viewSpot" code="admin.common.viewSpot"/>
+<spring:message var="msg_admin_common_title" code="admin.common.title"/>
+<spring:message var="msg_admin_reports_detail_commentBody" code="admin.reports.detail.commentBody"/>
+<spring:message var="msg_admin_reports_detail_spot" code="admin.reports.detail.spot"/>
+<spring:message var="msg_admin_reports_detail_reviewBody" code="admin.reports.detail.reviewBody"/>
+<spring:message var="msg_admin_common_reason" code="admin.common.reason"/>
+<spring:message var="msg_admin_reports_reason_spam" code="admin.reports.reason.spam"/>
+<spring:message var="msg_admin_reports_reason_abuse" code="admin.reports.reason.abuse"/>
+<spring:message var="msg_admin_reports_reason_privacy" code="admin.reports.reason.privacy"/>
+<spring:message var="msg_admin_reports_reason_adult" code="admin.reports.reason.adult"/>
+<spring:message var="msg_admin_reports_reason_illegal" code="admin.reports.reason.illegal"/>
+<spring:message var="msg_admin_reports_reason_other" code="admin.reports.reason.other"/>
+<spring:message var="msg_admin_reports_reason_user" code="admin.reports.reason.user"/>
+<spring:message var="msg_admin_common_description" code="admin.common.description"/>
+<spring:message var="msg_admin_reports_detail_sameTargetReports" code="admin.reports.detail.sameTargetReports"/>
+<spring:message var="msg_admin_common_countSuffix" code="admin.common.countSuffix"/>
+<spring:message var="msg_admin_reports_reportedAt" code="admin.reports.reportedAt"/>
+<spring:message var="msg_admin_reports_resolvedAt" code="admin.reports.resolvedAt"/>
+<spring:message var="msg_admin_reports_detail_resolveAction" code="admin.reports.detail.resolveAction"/>
+<spring:message var="msg_admin_common_userId" code="admin.common.userId"/>
+<spring:message var="msg_admin_common_nickname" code="admin.common.nickname"/>
+<spring:message var="msg_admin_common_memberInfoView" code="admin.common.memberInfoView"/>
+<spring:message var="msg_admin_common_sameReporter" code="admin.common.sameReporter"/>
+<spring:message var="msg_admin_reports_detail_rejectKeepContent" code="admin.reports.detail.rejectKeepContent"/>
+<spring:message var="msg_admin_reports_detail_blockReview" code="admin.reports.detail.blockReview"/>
+<spring:message var="msg_admin_reports_detail_deleteContent" code="admin.reports.detail.deleteContent"/>
+<spring:message var="msg_admin_reports_detail_blockAuthor" code="admin.reports.detail.blockAuthor"/>
+<spring:message var="msg_admin_reports_detail_blockReviewAndAuthor" code="admin.reports.detail.blockReviewAndAuthor"/>
+<spring:message var="msg_admin_reports_detail_deleteAndBlockAuthor" code="admin.reports.detail.deleteAndBlockAuthor"/>
+<spring:message var="msg_admin_reports_detail_rejectKeepUser" code="admin.reports.detail.rejectKeepUser"/>
+<spring:message var="msg_admin_reports_detail_blockUser" code="admin.reports.detail.blockUser"/>
+<spring:message var="msg_admin_reports_detail_revertToPending" code="admin.reports.detail.revertToPending"/>
 <c:set var="activeMenu" value="reports"/>
-<spring:message var="adminTranslationLabelReportTargetTitleMsg" code="admin.translation.label.reportTargetTitle"/>
-<spring:message var="adminTranslationLabelReportTargetContentMsg" code="admin.translation.label.reportTargetContent"/>
-<spring:message var="adminTranslationLabelReportReviewContentMsg" code="admin.translation.label.reportReviewContent"/>
-<spring:message var="adminTranslationLabelReportDescriptionMsg" code="admin.translation.label.reportDescription"/>
-<spring:message code="admin.reports.detail.pageTitle" var="adminReportsDetailPageTitle"/>
-<spring:message code="admin.reports.detail.backToList" var="adminReportsDetailBackToList"/>
-<spring:message code="admin.reports.detail.reporterInfoTitle" var="adminReportsDetailReporterInfoTitle"/>
-<spring:message code="admin.reports.detail.processingTitle" var="adminReportsDetailProcessingTitle"/>
-<spring:message code="admin.reports.detail.confirmRejected" var="adminReportsDetailConfirmRejected"/>
-<spring:message code="admin.reports.detail.confirmDeleteContent" var="adminReportsDetailConfirmDeleteContent"/>
-<spring:message code="admin.reports.detail.confirmBlockAuthor" var="adminReportsDetailConfirmBlockAuthor"/>
-<spring:message code="admin.reports.detail.confirmBlockUser" var="adminReportsDetailConfirmBlockUser"/>
-<spring:message code="admin.reports.detail.confirmDeleteAndBlock" var="adminReportsDetailConfirmDeleteAndBlock"/>
-<spring:message code="admin.reports.detail.confirmDeleteAndBlockReview" var="adminReportsDetailConfirmDeleteAndBlockReview"/>
-<spring:message code="admin.reports.detail.confirmDeleteReview" var="adminReportsDetailConfirmDeleteReview"/>
-<spring:message code="admin.reports.detail.confirmRevert" var="adminReportsDetailConfirmRevert"/>
-<spring:message code="admin.reports.detail.processFailed" var="adminReportsDetailProcessFailed"/>
-<c:set var="pageTitle" value="${adminReportsDetailPageTitle}"/>
+
+
+<c:set var="pageTitle" value="${msg_admin_reports_detail_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div style="margin-bottom:16px;">
-        <a href="javascript:goBackToList()" class="adm-back-link">← ${adminReportsDetailBackToList}</a>
+        <a href="javascript:goBackToList()" class="adm-back-link">← ${msg_admin_reports_detail_backToList}</a>
     </div>
 
     <div class="adm-split-layout">
@@ -36,13 +91,13 @@
         <div>
             <div class="adm-card">
                 <div class="adm-card-head">
-                    <div class="adm-card-title"><spring:message code="admin.reports.detail.title"/></div>
+                    <div class="adm-card-title">${msg_admin_reports_detail_title}</div>
                     <div style="display:flex;gap:8px;align-items:center;">
                         <span class="status-badge ${report.status}">
                             <c:choose>
-                                <c:when test="${report.status eq 'IN_REVIEW'}"><spring:message code="admin.reports.status.inReview"/></c:when>
-                                <c:when test="${report.status eq 'RESOLVED'}"><spring:message code="admin.reports.status.resolved"/></c:when>
-                                <c:when test="${report.status eq 'DISMISSED'}"><spring:message code="admin.reports.status.dismissed"/></c:when>
+                                <c:when test="${report.status eq 'IN_REVIEW'}">${msg_admin_reports_status_inReview}</c:when>
+                                <c:when test="${report.status eq 'RESOLVED'}">${msg_admin_reports_status_resolved}</c:when>
+                                <c:when test="${report.status eq 'DISMISSED'}">${msg_admin_reports_status_dismissed}</c:when>
                                 <c:otherwise>${report.status}</c:otherwise>
                             </c:choose>
                         </span>
@@ -52,19 +107,19 @@
                             <a href="${pageContext.request.contextPath}/community/${report.targetId}"
                                target="_blank"
                                class="adm-btn adm-btn-ghost"
-                               style="font-size:12px;text-decoration:none;"><spring:message code="admin.reports.detail.viewOriginal"/></a>
+                               style="font-size:12px;text-decoration:none;">${msg_admin_reports_detail_viewOriginal}</a>
                         </c:if>
                         <c:if test="${report.targetType eq 'comment' and report.targetStatus ne 'DELETED'}">
                             <a href="${pageContext.request.contextPath}/community/${empty report.sourceId ? report.targetPostId : report.sourceId}"
                                target="_blank"
                                class="adm-btn adm-btn-ghost"
-                               style="font-size:12px;text-decoration:none;"><spring:message code="admin.reports.detail.viewOriginal"/></a>
+                               style="font-size:12px;text-decoration:none;">${msg_admin_reports_detail_viewOriginal}</a>
                         </c:if>
                         <c:if test="${report.targetType eq 'review' and report.targetStatus ne 'DELETED' and not empty report.targetSpotIdx}">
                             <a href="${pageContext.request.contextPath}/detail/${report.targetSpotIdx}"
                                target="_blank"
                                class="adm-btn adm-btn-ghost"
-                               style="font-size:12px;text-decoration:none;"><spring:message code="admin.reports.detail.viewSpot"/></a>
+                               style="font-size:12px;text-decoration:none;">${msg_admin_reports_detail_viewSpot}</a>
                         </c:if>
                     </div>
                 </div>
@@ -73,20 +128,20 @@
                     <%-- 대상 정보 --%>
                     <div style="display:flex;flex-direction:column;gap:14px;">
                         <div class="adm-meta-row">
-                            <div class="adm-meta-key"><spring:message code="admin.reports.detail.reportTarget"/></div>
+                            <div class="adm-meta-key">${msg_admin_reports_detail_reportTarget}</div>
                             <div class="adm-detail-value">
                                 <c:choose>
                                     <c:when test="${report.targetType eq 'post'}">
-                                        <spring:message code="admin.reports.target.post"/><span class="adm-module-badge adm-module-community"><spring:message code="admin.layout.menu.community"/></span>
+                                        ${msg_admin_reports_target_post}<span class="adm-module-badge adm-module-community">${msg_admin_layout_menu_community}</span>
                                     </c:when>
                                     <c:when test="${report.targetType eq 'comment'}">
-                                        <spring:message code="admin.reports.target.comment"/><span class="adm-module-badge adm-module-community"><spring:message code="admin.layout.menu.community"/></span>
+                                        ${msg_admin_reports_target_comment}<span class="adm-module-badge adm-module-community">${msg_admin_layout_menu_community}</span>
                                     </c:when>
                                     <c:when test="${report.targetType eq 'review'}">
-                                        <spring:message code="admin.reports.target.review"/><span class="adm-module-badge adm-module-explore"><spring:message code="admin.layout.menu.explore"/></span>
+                                        ${msg_admin_reports_target_review}<span class="adm-module-badge adm-module-explore">${msg_admin_layout_menu_explore}</span>
                                     </c:when>
                                     <c:when test="${report.targetType eq 'user'}">
-                                        <spring:message code="admin.reports.target.user"/><span class="adm-module-badge adm-module-user"><spring:message code="admin.common.member"/></span>
+                                        ${msg_admin_reports_target_user}<span class="adm-module-badge adm-module-user">${msg_admin_common_member}</span>
                                     </c:when>
                                     <c:otherwise>${report.targetType}</c:otherwise>
                                 </c:choose>
@@ -94,8 +149,8 @@
                                 <c:if test="${report.targetStatus eq 'DELETED'}">
                                     <span style="margin-left:8px;font-size:11px;background:#450a0a;color:#fca5a5;padding:2px 8px;border-radius:4px;">
                                         <c:choose>
-                                            <c:when test="${report.targetType eq 'review'}">🗑 <spring:message code="admin.reports.targetBlocked"/></c:when>
-                                            <c:otherwise>🗑 <spring:message code="admin.reports.targetDeleted"/></c:otherwise>
+                                            <c:when test="${report.targetType eq 'review'}">🗑 ${msg_admin_reports_targetBlocked}</c:when>
+                                            <c:otherwise>🗑 ${msg_admin_reports_targetDeleted}</c:otherwise>
                                         </c:choose>
                                     </span>
                                 </c:if>
@@ -104,31 +159,31 @@
                                         <button type="button"
                                                 class="adm-inline-chip js-open-member-context"
                                                 data-user-idx="${report.targetId}">
-                                            <spring:message code="admin.common.viewTarget"/>
+                                            ${msg_admin_common_viewTarget}
                                         </button>
                                     </c:if>
                                     <a href="${pageContext.request.contextPath}/admin/reports?targetType=${report.targetType}&amp;keyword=${report.targetId}"
                                        class="adm-inline-chip">
-                                        <spring:message code="admin.common.sameTarget"/>
+                                        ${msg_admin_common_sameTarget}
                                     </a>
                                     <c:if test="${report.targetType eq 'post' and report.targetStatus ne 'DELETED'}">
                                         <a href="${pageContext.request.contextPath}/community/${report.targetId}"
                                            target="_blank"
                                            class="adm-inline-chip">
-                                            <spring:message code="admin.common.viewDetail"/>
+                                            ${msg_admin_common_viewDetail}
                                         </a>
                                     </c:if>
                                     <c:if test="${report.targetType eq 'comment' and report.targetStatus ne 'DELETED'}">
                                         <a href="${pageContext.request.contextPath}/community/${empty report.sourceId ? report.targetPostId : report.sourceId}"
                                            target="_blank"
                                            class="adm-inline-chip">
-                                            <spring:message code="admin.common.viewDetail"/>
+                                            ${msg_admin_common_viewDetail}
                                         </a>
                                     </c:if>
                                     <c:if test="${report.targetType eq 'review' and report.targetStatus ne 'DELETED' and not empty report.targetSpotIdx}">
                                         <a href="${pageContext.request.contextPath}/admin/explore/spots/${report.targetSpotIdx}"
                                            class="adm-inline-chip">
-                                            <spring:message code="admin.common.viewSpot"/>
+                                            ${msg_admin_common_viewSpot}
                                         </a>
                                     </c:if>
                                 </span>
@@ -138,10 +193,10 @@
                         <%-- 컨텍스트 조각: 제목 / 본문 / 스팟명 --%>
                         <c:if test="${report.targetType eq 'post' and not empty report.targetTitle}">
                             <div class="adm-meta-row">
-                                <div class="adm-meta-key"><spring:message code="admin.common.title"/></div>
+                                <div class="adm-meta-key">${msg_admin_common_title}</div>
                                 <div class="adm-detail-value" style="font-weight:600;">${fn:escapeXml(report.targetTitle)}</div>
                                 <div class="adm-tr-inline js-admin-translation-widget"
-                                     data-label="${adminTranslationLabelReportTargetTitleMsg}"
+                                     data-label="${msg_admin_translation_label_reportTargetTitle}"
                                      data-source-type="REPORT_TARGET"
                                      data-source-idx="${report.targetId}"
                                      data-field-name="target_title"
@@ -151,7 +206,7 @@
                         </c:if>
                         <c:if test="${report.targetType eq 'comment' and not empty report.targetContent}">
                             <div class="adm-meta-row">
-                                <div class="adm-meta-key"><spring:message code="admin.reports.detail.commentBody"/></div>
+                                <div class="adm-meta-key">${msg_admin_reports_detail_commentBody}</div>
                                 <div class="adm-detail-value" style="white-space:pre-wrap;word-break:break-word;">
                                     <c:choose>
                                         <c:when test="${fn:length(report.targetContent) > 200}">${fn:escapeXml(fn:substring(report.targetContent, 0, 200))}…</c:when>
@@ -159,7 +214,7 @@
                                     </c:choose>
                                 </div>
                                 <div class="adm-tr-inline js-admin-translation-widget"
-                                     data-label="${adminTranslationLabelReportTargetContentMsg}"
+                                     data-label="${msg_admin_translation_label_reportTargetContent}"
                                      data-source-type="REPORT_TARGET"
                                      data-source-idx="${report.targetId}"
                                      data-field-name="target_content"
@@ -170,7 +225,7 @@
                         <c:if test="${report.targetType eq 'review'}">
                             <c:if test="${not empty report.targetSpotName}">
                                 <div class="adm-meta-row">
-                                    <div class="adm-meta-key"><spring:message code="admin.reports.detail.spot"/></div>
+                                    <div class="adm-meta-key">${msg_admin_reports_detail_spot}</div>
                                     <div class="adm-detail-value" style="font-weight:600;">
                                         ${fn:escapeXml(report.targetSpotName)}
                                         <span style="color:#64748b;margin-left:4px;font-weight:400;">#${report.targetSpotIdx}</span>
@@ -179,7 +234,7 @@
                             </c:if>
                             <c:if test="${not empty report.targetContent}">
                                 <div class="adm-meta-row">
-                                    <div class="adm-meta-key"><spring:message code="admin.reports.detail.reviewBody"/></div>
+                                    <div class="adm-meta-key">${msg_admin_reports_detail_reviewBody}</div>
                                     <div class="adm-detail-value" style="white-space:pre-wrap;word-break:break-word;">
                                         <c:choose>
                                             <c:when test="${fn:length(report.targetContent) > 200}">${fn:escapeXml(fn:substring(report.targetContent, 0, 200))}…</c:when>
@@ -187,7 +242,7 @@
                                         </c:choose>
                                     </div>
                                     <div class="adm-tr-inline js-admin-translation-widget"
-                                         data-label="${adminTranslationLabelReportReviewContentMsg}"
+                                         data-label="${msg_admin_translation_label_reportReviewContent}"
                                          data-source-type="REPORT_TARGET"
                                          data-source-idx="${report.targetId}"
                                          data-field-name="target_content"
@@ -198,16 +253,16 @@
                         </c:if>
 
                         <div class="adm-meta-row">
-                            <div class="adm-meta-key"><spring:message code="admin.common.reason"/></div>
+                            <div class="adm-meta-key">${msg_admin_common_reason}</div>
                             <div class="adm-detail-value">
                                 <c:choose>
-                                    <c:when test="${report.reason eq 'spam'}"><spring:message code="admin.reports.reason.spam"/></c:when>
-                                    <c:when test="${report.reason eq 'abuse'}"><spring:message code="admin.reports.reason.abuse"/></c:when>
-                                    <c:when test="${report.reason eq 'privacy'}"><spring:message code="admin.reports.reason.privacy"/></c:when>
-                                    <c:when test="${report.reason eq 'adult'}"><spring:message code="admin.reports.reason.adult"/></c:when>
-                                    <c:when test="${report.reason eq 'illegal'}"><spring:message code="admin.reports.reason.illegal"/></c:when>
-                                    <c:when test="${report.reason eq 'other'}"><spring:message code="admin.reports.reason.other"/></c:when>
-                                    <c:when test="${report.reason eq 'user'}"><spring:message code="admin.reports.reason.user"/></c:when>
+                                    <c:when test="${report.reason eq 'spam'}">${msg_admin_reports_reason_spam}</c:when>
+                                    <c:when test="${report.reason eq 'abuse'}">${msg_admin_reports_reason_abuse}</c:when>
+                                    <c:when test="${report.reason eq 'privacy'}">${msg_admin_reports_reason_privacy}</c:when>
+                                    <c:when test="${report.reason eq 'adult'}">${msg_admin_reports_reason_adult}</c:when>
+                                    <c:when test="${report.reason eq 'illegal'}">${msg_admin_reports_reason_illegal}</c:when>
+                                    <c:when test="${report.reason eq 'other'}">${msg_admin_reports_reason_other}</c:when>
+                                    <c:when test="${report.reason eq 'user'}">${msg_admin_reports_reason_user}</c:when>
                                     <c:when test="${not empty report.reason}">${report.reason}</c:when>
                                     <c:otherwise><span style="color:#64748b;">—</span></c:otherwise>
                                 </c:choose>
@@ -216,10 +271,10 @@
 
                         <c:if test="${not empty report.description}">
                         <div class="adm-meta-row">
-                            <div class="adm-meta-key"><spring:message code="admin.common.description"/></div>
+                            <div class="adm-meta-key">${msg_admin_common_description}</div>
                             <div class="adm-report-desc">${report.description}</div>
                             <div class="adm-tr-inline js-admin-translation-widget"
-                                 data-label="${adminTranslationLabelReportDescriptionMsg}"
+                                 data-label="${msg_admin_translation_label_reportDescription}"
                                  data-source-type="REPORT"
                                  data-source-idx="${report.reportId}"
                                  data-field-name="description"
@@ -229,14 +284,14 @@
                     </c:if>
 
                         <div class="adm-meta-row">
-                            <div class="adm-meta-key"><spring:message code="admin.reports.detail.sameTargetReports"/></div>
+                            <div class="adm-meta-key">${msg_admin_reports_detail_sameTargetReports}</div>
                             <div style="font-size:13px;">
                                 <c:choose>
                                     <c:when test="${report.targetReportCount >= 3}">
-                                        <span style="color:#f87171;font-weight:700;">🔴 ${report.targetReportCount}<spring:message code="admin.common.countSuffix"/></span>
+                                        <span style="color:#f87171;font-weight:700;">🔴 ${report.targetReportCount}${msg_admin_common_countSuffix}</span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span style="color:#94a3b8;">${report.targetReportCount}<spring:message code="admin.common.countSuffix"/></span>
+                                        <span style="color:#94a3b8;">${report.targetReportCount}${msg_admin_common_countSuffix}</span>
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -244,12 +299,12 @@
 
                         <div style="border-top:1px solid #1e2736;padding-top:12px;
                                     display:flex;gap:20px;font-size:12px;color:#64748b;">
-                            <span><spring:message code="admin.reports.reportedAt"/> <fmt:formatDate value="${report.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
+                            <span>${msg_admin_reports_reportedAt} <fmt:formatDate value="${report.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
                             <c:if test="${not empty report.resolvedAt}">
-                                <span><spring:message code="admin.reports.resolvedAt"/> <fmt:formatDate value="${report.resolvedAt}" type="both" dateStyle="short" timeStyle="short"/></span>
+                                <span>${msg_admin_reports_resolvedAt} <fmt:formatDate value="${report.resolvedAt}" type="both" dateStyle="short" timeStyle="short"/></span>
                             </c:if>
                             <c:if test="${not empty report.resolveAction}">
-                                <span><spring:message code="admin.reports.detail.resolveAction"/> ${report.resolveAction}</span>
+                                <span>${msg_admin_reports_detail_resolveAction} ${report.resolveAction}</span>
                             </c:if>
                         </div>
                     </div>
@@ -262,7 +317,7 @@
         <div>
             <div class="adm-card adm-side-sticky">
                 <div class="adm-card-head">
-                    <div class="adm-card-title">${adminReportsDetailReporterInfoTitle}</div>
+                    <div class="adm-card-title">${msg_admin_reports_detail_reporterInfoTitle}</div>
                 </div>
                 <div class="adm-card-body">
                     <div class="adm-side-section">
@@ -276,11 +331,11 @@
                             </div>
                         </c:if>
                         <div>
-                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.userId"/></div>
+                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${msg_admin_common_userId}</div>
                             <div style="font-size:14px;font-weight:600;">${report.userId}</div>
                         </div>
                         <div>
-                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.nickname"/></div>
+                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${msg_admin_common_nickname}</div>
                             <div style="font-size:14px;font-weight:600;">${report.nickname}</div>
                         </div>
 
@@ -291,14 +346,14 @@
                                             class="adm-btn adm-btn-ghost js-open-member-context"
                                             data-user-idx="${report.userIdx}"
                                             style="width:100%;text-align:center;font-size:12px;display:block;">
-                                        <spring:message code="admin.common.memberInfoView"/>
+                                        ${msg_admin_common_memberInfoView}
                                     </button>
                                 </c:when>
                                 <c:otherwise>
                                     <a href="${pageContext.request.contextPath}/admin/members?searchType=userId&keyword=${report.userId}"
                                        class="adm-btn adm-btn-ghost"
                                        style="text-align:center;font-size:12px;text-decoration:none;display:block;">
-                                        <spring:message code="admin.common.memberInfoView"/>
+                                        ${msg_admin_common_memberInfoView}
                                     </a>
                                 </c:otherwise>
                             </c:choose>
@@ -310,42 +365,42 @@
                                     data-keyword="${report.userId}"
                                     onclick="openReportFilter(this)"
                                     style="width:100%;text-align:center;font-size:12px;">
-                                <spring:message code="admin.common.sameReporter"/>
+                                ${msg_admin_common_sameReporter}
                             </button>
                         </div>
 
                         <%-- 처리 버튼: targetType에 따라 조건부 --%>
                         <div class="adm-meta-actions" id="report-processing-actions">
-                            <div style="font-size:11px;color:#64748b;margin-bottom:8px;">${adminReportsDetailProcessingTitle}</div>
+                            <div style="font-size:11px;color:#64748b;margin-bottom:8px;">${msg_admin_reports_detail_processingTitle}</div>
                             <div style="display:flex;flex-direction:column;gap:6px;">
 
                                 <%-- post / comment / review 공통 버튼 --%>
                                 <c:if test="${report.targetType eq 'post' or report.targetType eq 'comment' or report.targetType eq 'review'}">
                                     <button class="adm-btn adm-btn-ghost"
                                             style="font-size:11px;color:#94a3b8;border-color:#94a3b8;"
-                                            onclick="resolve('REJECTED')"><spring:message code="admin.reports.detail.rejectKeepContent"/></button>
+                                            onclick="resolve('REJECTED')">${msg_admin_reports_detail_rejectKeepContent}</button>
                                     <%-- 이미 삭제/차단된 콘텐츠면 삭제 계열 버튼 숨김 --%>
                                     <c:if test="${report.targetStatus ne 'DELETED'}">
                                         <button class="adm-btn adm-btn-ghost"
                                                 style="font-size:11px;color:#fb923c;border-color:#fb923c;"
                                                 onclick="resolve('DELETE_CONTENT')">
                                                 <c:choose>
-                                                    <c:when test="${report.targetType eq 'review'}"><spring:message code="admin.reports.detail.blockReview"/></c:when>
-                                                    <c:otherwise><spring:message code="admin.reports.detail.deleteContent"/></c:otherwise>
+                                                    <c:when test="${report.targetType eq 'review'}">${msg_admin_reports_detail_blockReview}</c:when>
+                                                    <c:otherwise>${msg_admin_reports_detail_deleteContent}</c:otherwise>
                                                 </c:choose>
                                             </button>
                                         </c:if>
                                     <c:if test="${report.targetUserRole ne 'SYSTEM'}">
                                         <button class="adm-btn adm-btn-ghost"
                                                 style="font-size:11px;color:#f87171;border-color:#f87171;"
-                                                onclick="resolve('BLOCK_AUTHOR')"><spring:message code="admin.reports.detail.blockAuthor"/></button>
+                                                onclick="resolve('BLOCK_AUTHOR')">${msg_admin_reports_detail_blockAuthor}</button>
                                         <c:if test="${report.targetStatus ne 'DELETED'}">
                                             <button class="adm-btn adm-btn-ghost"
                                                     style="font-size:11px;color:#dc2626;border-color:#dc2626;"
                                                     onclick="resolve('DELETE_AND_BLOCK')">
                                                 <c:choose>
-                                                    <c:when test="${report.targetType eq 'review'}"><spring:message code="admin.reports.detail.blockReviewAndAuthor"/></c:when>
-                                                    <c:otherwise><spring:message code="admin.reports.detail.deleteAndBlockAuthor"/></c:otherwise>
+                                                    <c:when test="${report.targetType eq 'review'}">${msg_admin_reports_detail_blockReviewAndAuthor}</c:when>
+                                                    <c:otherwise>${msg_admin_reports_detail_deleteAndBlockAuthor}</c:otherwise>
                                                 </c:choose>
                                             </button>
                                         </c:if>
@@ -356,11 +411,11 @@
                                 <c:if test="${report.targetType eq 'user'}">
                                     <button class="adm-btn adm-btn-ghost"
                                             style="font-size:11px;color:#94a3b8;border-color:#94a3b8;"
-                                            onclick="resolve('REJECTED')"><spring:message code="admin.reports.detail.rejectKeepUser"/></button>
+                                            onclick="resolve('REJECTED')">${msg_admin_reports_detail_rejectKeepUser}</button>
                                     <c:if test="${report.targetUserRole ne 'SYSTEM'}">
                                         <button class="adm-btn adm-btn-ghost"
                                                 style="font-size:11px;color:#f87171;border-color:#f87171;"
-                                                onclick="resolve('BLOCK_USER')"><spring:message code="admin.reports.detail.blockUser"/></button>
+                                                onclick="resolve('BLOCK_USER')">${msg_admin_reports_detail_blockUser}</button>
                                     </c:if>
                                 </c:if>
 
@@ -368,7 +423,7 @@
                                 <c:if test="${report.status eq 'RESOLVED' or report.status eq 'DISMISSED'}">
                                     <button class="adm-btn adm-btn-ghost"
                                             style="font-size:11px;color:#7dd3fc;border-color:#7dd3fc;margin-top:4px;"
-                                            onclick="resolve('REVERT_TO_PENDING')"><spring:message code="admin.reports.detail.revertToPending"/></button>
+                                            onclick="resolve('REVERT_TO_PENDING')">${msg_admin_reports_detail_revertToPending}</button>
                                 </c:if>
 
                             </div>
@@ -387,15 +442,15 @@ var ctx        = '${pageContext.request.contextPath}';
 var reportId   = ${report.reportId};
 var targetType = '${report.targetType}';
 var REPORT_DETAIL_MSG = {
-    rejected: '${fn:escapeXml(adminReportsDetailConfirmRejected)}',
-    deleteContent: '${fn:escapeXml(adminReportsDetailConfirmDeleteContent)}',
-    blockAuthor: '${fn:escapeXml(adminReportsDetailConfirmBlockAuthor)}',
-    blockUser: '${fn:escapeXml(adminReportsDetailConfirmBlockUser)}',
-    deleteAndBlock: '${fn:escapeXml(adminReportsDetailConfirmDeleteAndBlock)}',
-    deleteAndBlockReview: '${fn:escapeXml(adminReportsDetailConfirmDeleteAndBlockReview)}',
-    deleteReview: '${fn:escapeXml(adminReportsDetailConfirmDeleteReview)}',
-    revert: '${fn:escapeXml(adminReportsDetailConfirmRevert)}',
-    processFailed: '${fn:escapeXml(adminReportsDetailProcessFailed)}'
+    rejected: '${fn:escapeXml(msg_admin_reports_detail_confirmRejected)}',
+    deleteContent: '${fn:escapeXml(msg_admin_reports_detail_confirmDeleteContent)}',
+    blockAuthor: '${fn:escapeXml(msg_admin_reports_detail_confirmBlockAuthor)}',
+    blockUser: '${fn:escapeXml(msg_admin_reports_detail_confirmBlockUser)}',
+    deleteAndBlock: '${fn:escapeXml(msg_admin_reports_detail_confirmDeleteAndBlock)}',
+    deleteAndBlockReview: '${fn:escapeXml(msg_admin_reports_detail_confirmDeleteAndBlockReview)}',
+    deleteReview: '${fn:escapeXml(msg_admin_reports_detail_confirmDeleteReview)}',
+    revert: '${fn:escapeXml(msg_admin_reports_detail_confirmRevert)}',
+    processFailed: '${fn:escapeXml(msg_admin_reports_detail_processFailed)}'
 };
 
 

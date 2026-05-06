@@ -4,25 +4,52 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+
+<%-- i18n message declarations: var names are derived from message codes. --%>
+<spring:message var="msg_admin_policyHistory_title" code="admin.policyHistory.title"/>
+<spring:message var="msg_admin_policyHistory_placeholder_keyword" code="admin.policyHistory.placeholder.keyword"/>
+<spring:message var="msg_admin_policyHistory_diffEmpty" code="admin.policyHistory.diffEmpty"/>
+<spring:message var="msg_admin_policyHistory_diffInvalidJson" code="admin.policyHistory.diffInvalidJson"/>
+<spring:message var="msg_admin_policyHistory_desc" code="admin.policyHistory.desc"/>
+<spring:message var="msg_admin_layout_menu_runtimeSettings" code="admin.layout.menu.runtimeSettings"/>
+<spring:message var="msg_security_admin_nav_policies" code="security.admin.nav.policies"/>
+<spring:message var="msg_security_admin_nav_appealPolicy" code="security.admin.nav.appealPolicy"/>
+<spring:message var="msg_admin_policyHistory_sourceType" code="admin.policyHistory.sourceType"/>
+<spring:message var="msg_admin_common_all" code="admin.common.all"/>
+<spring:message var="msg_admin_policyHistory_keyword" code="admin.policyHistory.keyword"/>
+<spring:message var="msg_admin_policyHistory_limit" code="admin.policyHistory.limit"/>
+<spring:message var="msg_admin_common_search" code="admin.common.search"/>
+<spring:message var="msg_admin_policyHistory_listTitle" code="admin.policyHistory.listTitle"/>
+<spring:message var="msg_admin_policyHistory_listDesc" code="admin.policyHistory.listDesc"/>
+<spring:message var="msg_admin_policyHistory_changedAt" code="admin.policyHistory.changedAt"/>
+<spring:message var="msg_admin_policyHistory_itemKey" code="admin.policyHistory.itemKey"/>
+<spring:message var="msg_admin_policyHistory_changeType" code="admin.policyHistory.changeType"/>
+<spring:message var="msg_admin_policyHistory_actor" code="admin.policyHistory.actor"/>
+<spring:message var="msg_admin_policyHistory_snapshot" code="admin.policyHistory.snapshot"/>
+<spring:message var="msg_admin_policyHistory_showSnapshot" code="admin.policyHistory.showSnapshot"/>
+<spring:message var="msg_admin_policyHistory_before" code="admin.policyHistory.before"/>
+<spring:message var="msg_admin_policyHistory_after" code="admin.policyHistory.after"/>
+<spring:message var="msg_admin_policyHistory_diff" code="admin.policyHistory.diff"/>
+<spring:message var="msg_admin_policyHistory_empty" code="admin.policyHistory.empty"/>
+<c:set var="pageTitle" value="${msg_admin_policyHistory_title}"/>
 <c:set var="activeMenu" value="policyHistory"/>
-<spring:message var="pageTitle" code="admin.policyHistory.title"/>
-<spring:message var="keywordPlaceholder" code="admin.policyHistory.placeholder.keyword"/>
+
+
 <%@ include file="layout.jsp" %>
 
-<spring:message var="adminPolicyHistoryDiffEmptyMsg" code="admin.policyHistory.diffEmpty"/>
-<spring:message var="adminPolicyHistoryDiffInvalidJsonMsg" code="admin.policyHistory.diffInvalidJson"/>
+
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1><spring:message code="admin.policyHistory.title"/></h1>
-            <p class="adm-page-desc"><spring:message code="admin.policyHistory.desc"/></p>
+            <h1>${msg_admin_policyHistory_title}</h1>
+            <p class="adm-page-desc">${msg_admin_policyHistory_desc}</p>
         </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const text = {
-        empty: '${adminPolicyHistoryDiffEmptyMsg}',
-        invalid: '${adminPolicyHistoryDiffInvalidJsonMsg}'
+        empty: '${msg_admin_policyHistory_diffEmpty}',
+        invalid: '${msg_admin_policyHistory_diffInvalidJson}'
     };
     const parseJson = function (value) {
         if (!value || !value.trim()) return {};
@@ -58,17 +85,17 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
         <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/runtime-settings"><spring:message code="admin.layout.menu.runtimeSettings"/></a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies"><spring:message code="security.admin.nav.policies"/></a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/appeal-policy"><spring:message code="security.admin.nav.appealPolicy"/></a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/runtime-settings">${msg_admin_layout_menu_runtimeSettings}</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies">${msg_security_admin_nav_policies}</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/appeal-policy">${msg_security_admin_nav_appealPolicy}</a>
         </div>
     </div>
 
     <form method="get" class="adm-card" style="margin-bottom:16px;">
         <div class="adm-form-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
-            <label><spring:message code="admin.policyHistory.sourceType"/>
+            <label>${msg_admin_policyHistory_sourceType}
                 <select class="adm-input" name="sourceType">
-                    <option value=""><spring:message code="admin.common.all"/></option>
+                    <option value="">${msg_admin_common_all}</option>
                     <option value="SYSTEM_POLICY" ${sourceType == 'SYSTEM_POLICY' ? 'selected' : ''}>SYSTEM_POLICY</option>
                     <option value="LOGIN_RISK_POLICY" ${sourceType == 'LOGIN_RISK_POLICY' ? 'selected' : ''}>LOGIN_RISK_POLICY</option>
                     <option value="SECURITY_APPEAL_POLICY" ${sourceType == 'SECURITY_APPEAL_POLICY' ? 'selected' : ''}>SECURITY_APPEAL_POLICY</option>
@@ -76,14 +103,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     <option value="PROVIDER_CONFIG" ${sourceType == 'PROVIDER_CONFIG' ? 'selected' : ''}>PROVIDER_CONFIG</option>
                 </select>
             </label>
-            <label><spring:message code="admin.policyHistory.keyword"/>
-                <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${keywordPlaceholder}">
+            <label>${msg_admin_policyHistory_keyword}
+                <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${msg_admin_policyHistory_placeholder_keyword}">
             </label>
-            <label><spring:message code="admin.policyHistory.limit"/>
+            <label>${msg_admin_policyHistory_limit}
                 <input class="adm-input" type="number" min="20" max="500" name="limit" value="${limit}">
             </label>
             <div style="align-self:end;">
-                <button class="adm-btn primary" type="submit"><spring:message code="admin.common.search"/></button>
+                <button class="adm-btn primary" type="submit">${msg_admin_common_search}</button>
             </div>
         </div>
     </form>
@@ -91,8 +118,8 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="adm-card">
         <div class="adm-card-header">
             <div>
-                <div class="adm-card-title"><spring:message code="admin.policyHistory.listTitle"/></div>
-                <div class="adm-muted"><spring:message code="admin.policyHistory.listDesc"/></div>
+                <div class="adm-card-title">${msg_admin_policyHistory_listTitle}</div>
+                <div class="adm-muted">${msg_admin_policyHistory_listDesc}</div>
             </div>
         </div>
         <div class="adm-card-body">
@@ -100,12 +127,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 <table class="adm-table">
                     <thead>
                     <tr>
-                        <th><spring:message code="admin.policyHistory.changedAt"/></th>
-                        <th><spring:message code="admin.policyHistory.sourceType"/></th>
-                        <th><spring:message code="admin.policyHistory.itemKey"/></th>
-                        <th><spring:message code="admin.policyHistory.changeType"/></th>
-                        <th><spring:message code="admin.policyHistory.actor"/></th>
-                        <th><spring:message code="admin.policyHistory.snapshot"/></th>
+                        <th>${msg_admin_policyHistory_changedAt}</th>
+                        <th>${msg_admin_policyHistory_sourceType}</th>
+                        <th>${msg_admin_policyHistory_itemKey}</th>
+                        <th>${msg_admin_policyHistory_changeType}</th>
+                        <th>${msg_admin_policyHistory_actor}</th>
+                        <th>${msg_admin_policyHistory_snapshot}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -118,19 +145,19 @@ document.addEventListener('DOMContentLoaded', function () {
                             <td><c:out value="${h.actorUserIdx}" default="-"/></td>
                             <td>
                                 <details>
-                                    <summary><spring:message code="admin.policyHistory.showSnapshot"/></summary>
+                                    <summary>${msg_admin_policyHistory_showSnapshot}</summary>
                                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
                                         <div>
-                                            <div class="adm-muted"><spring:message code="admin.policyHistory.before"/></div>
+                                            <div class="adm-muted">${msg_admin_policyHistory_before}</div>
                                             <pre class="js-policy-before" style="white-space:pre-wrap;max-height:220px;overflow:auto;"><c:out value="${h.beforeConfigJson}"/></pre>
                                         </div>
                                         <div>
-                                            <div class="adm-muted"><spring:message code="admin.policyHistory.after"/></div>
+                                            <div class="adm-muted">${msg_admin_policyHistory_after}</div>
                                             <pre class="js-policy-after" style="white-space:pre-wrap;max-height:220px;overflow:auto;"><c:out value="${h.afterConfigJson}"/></pre>
                                         </div>
                                     </div>
                                     <div style="margin-top:10px;">
-                                        <button type="button" class="adm-btn js-policy-diff-run"><spring:message code="admin.policyHistory.diff"/></button>
+                                        <button type="button" class="adm-btn js-policy-diff-run">${msg_admin_policyHistory_diff}</button>
                                         <pre class="js-policy-diff" style="white-space:pre-wrap;max-height:220px;overflow:auto;margin-top:8px;"></pre>
                                     </div>
                                 </details>
@@ -138,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         </tr>
                     </c:forEach>
                     <c:if test="${empty histories}">
-                        <tr><td colspan="6" class="adm-empty"><spring:message code="admin.policyHistory.empty"/></td></tr>
+                        <tr><td colspan="6" class="adm-empty">${msg_admin_policyHistory_empty}</td></tr>
                     </c:if>
                     </tbody>
                 </table>
