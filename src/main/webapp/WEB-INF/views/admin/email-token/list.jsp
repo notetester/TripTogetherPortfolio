@@ -122,7 +122,6 @@
       <div class="adm-email-selection-bar" id="emailTokenSelectionBar" aria-live="polite">
         <span class="adm-email-selected-count" id="emailTokenSelectedCount">0건 선택</span>
         <button type="button" class="adm-btn adm-btn-ghost" onclick="clearEmailTokenSelection()">선택 해제</button>
-        <button type="button" class="adm-btn adm-btn-primary js-email-token-selected-export" onclick="exportEmailTokens('selected')" disabled>선택 내보내기</button>
       </div>
       <div class="adm-email-view-tools">
         <div id="emailTokenPrimaryTools" class="adm-email-primary-tools">

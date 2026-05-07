@@ -133,7 +133,6 @@
             <div class="adm-email-selection-bar" id="emailRequestSelectionBar" aria-live="polite">
                 <span class="adm-email-selected-count" id="emailRequestSelectedCount">0건 선택</span>
                 <button type="button" class="adm-btn adm-btn-ghost" onclick="clearEmailSelection()">선택 해제</button>
-                <button type="button" class="adm-btn adm-btn-primary js-email-selected-export" onclick="exportEmailRequests('selected')" disabled>선택 내보내기</button>
             </div>
             <div class="adm-email-view-tools">
                 <div id="emailPrimaryTools" class="adm-email-primary-tools">
