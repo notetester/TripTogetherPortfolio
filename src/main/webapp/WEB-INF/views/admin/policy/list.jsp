@@ -50,7 +50,9 @@
 <spring:message var="msg_admin_policy_configJsonHelp" code="admin.policy.configJsonHelp"/>
 <spring:message var="msg_admin_policy_formatJson" code="admin.policy.formatJson"/>
 <spring:message var="msg_admin_policy_configJsonRequired" code="admin.policy.configJsonRequired"/>
+<spring:message var="msg_admin_common_noData" code="admin.common.noData"/>
 <c:set var="activeMenu" value="policies"/>
+<spring:message var="msg_admin_policy_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(policies)}"/>
 
 <c:set var="pageTitle" value="${msg_admin_policy_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
@@ -58,7 +60,10 @@
 <div class="adm-content adm-governance-page adm-policy-page">
     <div class="adm-card adm-policy-overview-shell">
         <div class="adm-card-head">
-            <div class="adm-card-title">${msg_admin_policy_centerTitle}</div>
+            <div class="adm-card-title">
+                ${msg_admin_policy_centerTitle}
+                <span class="adm-section-total-inline">${msg_admin_policy_totalCountDisplay}</span>
+            </div>
         </div>
         <div class="adm-card-body">
             <div class="policy-overview-grid">
@@ -98,6 +103,9 @@
                         </div>
                     </div>
                 </c:forEach>
+                <c:if test="${empty policies}">
+                    <div class="adm-policy-empty">${msg_admin_common_noData}</div>
+                </c:if>
             </div>
         </div>
     </div>
@@ -200,9 +208,12 @@
             </c:forEach>
         </div>
 
-        <div class="adm-card">
+        <div class="adm-card adm-policy-history-shell">
             <div class="adm-card-head">
-                <div class="adm-card-title">${msg_admin_policy_historyTitle}</div>
+                <div class="adm-card-title">
+                    ${msg_admin_policy_historyTitle}
+                    <span class="adm-section-total-inline">${msg_admin_policy_totalCountDisplay}</span>
+                </div>
             </div>
             <div class="adm-card-body policy-history-column">
                 <c:forEach items="${policies}" var="policy">
@@ -244,6 +255,9 @@
                         </div>
                     </div>
                 </c:forEach>
+                <c:if test="${empty policies}">
+                    <div class="adm-policy-empty">${msg_admin_common_noData}</div>
+                </c:if>
             </div>
         </div>
     </div>
