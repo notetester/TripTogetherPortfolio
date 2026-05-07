@@ -48,7 +48,7 @@
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/reviews">${msg_security_admin_nav_reviews}</a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/assessments">${msg_security_admin_nav_externalAssessments}</a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences">${msg_security_admin_nav_notifications}</a>
-                    <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
         </div>
     </div>
 
@@ -56,36 +56,39 @@
         <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
-    <div class="adm-card" style="margin-bottom:16px;">
+    <div class="adm-card adm-policy-guide-card">
         <div class="adm-card-body">
-            <div style="font-weight:800;color:#0f172a;">${msg_security_admin_policies_appealGuide_title}</div>
-            <div style="font-size:12px;color:#64748b;margin-top:6px;line-height:1.7;">
-                ${msg_security_admin_policies_appealGuide_desc}<br>
-                ${msg_security_admin_policies_appealGuide_observation}<br>
-                ${msg_security_admin_policies_appealGuide_threshold}<br>
-                ${msg_security_admin_policies_appealGuide_distinct}
+            <div class="adm-policy-guide-title">${msg_security_admin_policies_appealGuide_title}</div>
+            <div class="adm-policy-guide-list">
+                <span>${msg_security_admin_policies_appealGuide_desc}</span>
+                <span>${msg_security_admin_policies_appealGuide_observation}</span>
+                <span>${msg_security_admin_policies_appealGuide_threshold}</span>
+                <span>${msg_security_admin_policies_appealGuide_distinct}</span>
             </div>
         </div>
     </div>
 
     <c:forEach var="p" items="${policies}">
-        <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/policies/${p.policyIdx}" class="adm-card" style="margin-bottom:16px;">
-            <div class="adm-card-header">
-                <div>
+        <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/policies/${p.policyIdx}" class="adm-card adm-login-policy-card">
+            <div class="adm-card-header adm-login-policy-card-head">
+                <div class="adm-login-policy-titleblock">
                     <div class="adm-card-title"><c:out value="${p.policyName}"/></div>
                     <div class="adm-muted"><c:out value="${p.policyCode}"/> · <c:out value="${p.policyType}"/> · <c:out value="${p.actionType}"/></div>
                 </div>
-                <label class="adm-check">
-                    <input type="checkbox" name="active" ${p.active ? 'checked' : ''}>
-                    ${msg_security_admin_common_enabled}
-                </label>
+                <div class="adm-login-policy-controls">
+                    <label class="adm-check adm-login-policy-active">
+                        <input type="checkbox" name="active" ${p.active ? 'checked' : ''}>
+                        ${msg_security_admin_common_enabled}
+                    </label>
+                    <button type="submit" class="adm-btn primary">${msg_security_admin_common_save}</button>
+                </div>
             </div>
             <div class="adm-card-body">
                 <input type="hidden" name="policyCode" value="${fn:escapeXml(p.policyCode)}">
                 <input type="hidden" name="policyType" value="${fn:escapeXml(p.policyType)}">
                 <input type="hidden" name="actionType" value="${fn:escapeXml(p.actionType)}">
 
-                <div class="adm-form-grid" style="grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px;">
+                <div class="adm-form-grid adm-login-policy-metric-grid">
                     <label>${msg_security_admin_policies_observationMinutes}
                         <input class="adm-input" type="number" name="observationMinutes" value="${p.observationMinutes}">
                     </label>
@@ -115,31 +118,30 @@
                     <label>${msg_security_admin_policies_aiRiskScoreThreshold}
                         <input class="adm-input" type="number" name="aiRiskScoreThreshold" value="${p.aiRiskScoreThreshold}">
                     </label>
-                    <label class="adm-check" style="align-self:end;">
+                </div>
+
+                <div class="adm-login-policy-toggle-grid">
+                    <label class="adm-check adm-login-policy-toggle">
                         <input type="checkbox" name="resetOnSuccess" ${p.resetOnSuccess ? 'checked' : ''}>
-                        ${msg_security_admin_policies_resetOnSuccess}
+                        <span>${msg_security_admin_policies_resetOnSuccess}</span>
                     </label>
-                    <label class="adm-check" style="align-self:end;">
+                    <label class="adm-check adm-login-policy-toggle">
                         <input type="checkbox" name="requireAdminReview" ${p.requireAdminReview ? 'checked' : ''}>
-                        ${msg_security_admin_policies_requireAdminReview}
+                        <span>${msg_security_admin_policies_requireAdminReview}</span>
                     </label>
-                    <label class="adm-check" style="align-self:end;">
+                    <label class="adm-check adm-login-policy-toggle">
                         <input type="checkbox" name="aiAssistEnabled" ${p.aiAssistEnabled ? 'checked' : ''}>
-                        ${msg_security_admin_policies_aiAssistEnabled}
+                        <span>${msg_security_admin_policies_aiAssistEnabled}</span>
                     </label>
-                    <label class="adm-check" style="align-self:end;">
+                    <label class="adm-check adm-login-policy-toggle">
                         <input type="checkbox" name="wafSyncEnabled" ${p.wafSyncEnabled ? 'checked' : ''}>
-                        ${msg_security_admin_policies_wafSyncEnabled}
+                        <span>${msg_security_admin_policies_wafSyncEnabled}</span>
                     </label>
                 </div>
 
-                <label style="display:block;margin-top:12px;">${msg_security_admin_common_description}
+                <label class="adm-login-policy-description">${msg_security_admin_common_description}
                     <textarea class="adm-input" name="description" rows="2"><c:out value="${p.description}"/></textarea>
                 </label>
-
-                <div class="adm-actions" style="margin-top:12px;">
-                    <button type="submit" class="adm-btn primary">${msg_security_admin_common_save}</button>
-                </div>
             </div>
         </form>
     </c:forEach>

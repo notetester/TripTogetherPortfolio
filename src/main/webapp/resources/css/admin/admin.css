@@ -5069,3 +5069,155 @@ body.sa-light .adm-governance-page .adm-notification-option-desc {
         grid-template-columns: 1fr;
     }
 }
+
+/* Login risk policy settings */
+.adm-governance-page .adm-policy-guide-card,
+.adm-governance-page .adm-login-policy-card {
+    overflow: visible;
+    border-radius: 8px;
+}
+
+.adm-governance-page .adm-policy-guide-card {
+    margin-bottom: 12px;
+}
+
+.adm-governance-page .adm-policy-guide-title {
+    color: #f8fafc;
+    font-weight: 800;
+}
+
+.adm-governance-page .adm-policy-guide-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 14px;
+    margin-top: 8px;
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.adm-governance-page .adm-login-policy-card {
+    margin-bottom: 12px;
+}
+
+.adm-governance-page .adm-login-policy-card-head {
+    gap: 12px;
+}
+
+.adm-governance-page .adm-login-policy-titleblock {
+    min-width: 0;
+}
+
+.adm-governance-page .adm-login-policy-titleblock .adm-card-title,
+.adm-governance-page .adm-login-policy-titleblock .adm-muted {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.adm-governance-page .adm-login-policy-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+
+.adm-governance-page .adm-login-policy-active {
+    min-height: 34px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+.adm-governance-page .adm-login-policy-metric-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+}
+
+.adm-governance-page .adm-login-policy-toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.adm-governance-page .adm-login-policy-toggle {
+    display: grid !important;
+    grid-template-columns: 18px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    min-height: 48px;
+    margin: 0 !important;
+    padding: 10px 12px;
+    border: 1px solid rgba(148,163,184,.16);
+    border-radius: 8px;
+    background: rgba(15,23,42,.34);
+}
+
+.adm-governance-page .adm-login-policy-toggle input {
+    margin-top: 2px;
+}
+
+.adm-governance-page .adm-login-policy-toggle span {
+    min-width: 0;
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.adm-governance-page .adm-login-policy-description {
+    display: block;
+    margin-top: 10px;
+}
+
+.adm-governance-page .adm-login-policy-description textarea.adm-input {
+    min-height: 58px;
+    resize: vertical;
+}
+
+body.sa-light .adm-governance-page .adm-policy-guide-title {
+    color: #0f172a;
+}
+
+body.sa-light .adm-governance-page .adm-policy-guide-list {
+    color: #64748b;
+}
+
+body.sa-light .adm-governance-page .adm-login-policy-toggle {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+body.sa-light .adm-governance-page .adm-login-policy-toggle span {
+    color: #334155;
+}
+
+@media (max-width: 1200px) {
+    .adm-governance-page .adm-login-policy-metric-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+
+    .adm-governance-page .adm-login-policy-toggle-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .adm-governance-page .adm-policy-guide-list,
+    .adm-governance-page .adm-login-policy-metric-grid,
+    .adm-governance-page .adm-login-policy-toggle-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .adm-governance-page .adm-login-policy-card-head {
+        align-items: stretch;
+    }
+
+    .adm-governance-page .adm-login-policy-controls {
+        justify-content: flex-start;
+    }
+
+    .adm-governance-page .adm-login-policy-controls .adm-btn {
+        width: auto;
+    }
+}
