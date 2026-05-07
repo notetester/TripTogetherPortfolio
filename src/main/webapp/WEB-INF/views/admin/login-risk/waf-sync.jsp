@@ -39,16 +39,16 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content adm-governance-page">
+<div class="adm-content adm-governance-page adm-waf-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_security_admin_wafSync_title}</h1>
             <p class="adm-page-desc">${msg_security_admin_wafSync_desc}</p>
         </div>
-        <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">${msg_security_admin_nav_providerConfigs}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/policy-history?sourceType=PROVIDER_CONFIG">${msg_admin_layout_menu_policyHistory}</a>
+        <div class="adm-actions adm-waf-page-actions">
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">${msg_security_admin_nav_providerConfigs}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/policy-history?sourceType=PROVIDER_CONFIG">${msg_admin_layout_menu_policyHistory}</a>
         </div>
     </div>
 
@@ -56,11 +56,11 @@
         <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
-    <form method="get" class="adm-card adm-waf-filter-card">
+    <form method="get" class="adm-card adm-waf-filter-card adm-overflow-visible">
         <div class="adm-card-body">
             <div class="adm-waf-filterbar">
                 <label>${msg_security_admin_common_status}
-                    <select class="adm-input" name="status">
+                    <select class="adm-select" name="status">
                         <option value="">${msg_security_admin_common_all}</option>
                         <option value="PENDING" ${status == 'PENDING' ? 'selected' : ''}>PENDING</option>
                         <option value="EXTERNAL_PROVIDER_PENDING" ${status == 'EXTERNAL_PROVIDER_PENDING' ? 'selected' : ''}>EXTERNAL_PROVIDER_PENDING</option>
@@ -75,14 +75,14 @@
                     <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${msg_security_admin_placeholder_wafSync}">
                 </label>
                 <div class="adm-waf-filter-actions">
-                    <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
-                    <a class="adm-btn ghost" href="${pageContext.request.contextPath}/admin/login-risk/waf-sync">${msg_admin_common_reset}</a>
+                    <button class="adm-btn adm-btn-primary" type="submit">${msg_security_admin_common_search}</button>
+                    <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/waf-sync">${msg_admin_common_reset}</a>
                 </div>
             </div>
         </div>
     </form>
 
-    <div class="adm-card adm-waf-list-card">
+    <div class="adm-card adm-waf-list-card adm-overflow-visible">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_security_admin_wafSync_title}</div>
             <div class="adm-page-muted">${msg_admin_common_totalCount}</div>
@@ -123,18 +123,18 @@
                         </td>
                         <td>
                             <div class="adm-waf-row-actions">
-                                <button class="adm-btn js-waf-modal-open" type="button" data-modal-id="waf-detail-${i.syncIdx}">
+                                <button class="adm-btn adm-btn-ghost js-waf-modal-open" type="button" data-modal-id="waf-detail-${i.syncIdx}">
                                     ${msg_security_admin_common_detail}
                                 </button>
                                 <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/waf-sync/${i.syncIdx}/retry">
-                                    <button class="adm-btn" type="submit">${msg_security_admin_wafSync_retry}</button>
+                                    <button class="adm-btn adm-btn-primary" type="submit">${msg_security_admin_wafSync_retry}</button>
                                 </form>
                             </div>
                         </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty items}">
-                    <tr><td colspan="8" class="adm-empty">${msg_security_admin_empty_wafSync}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="8" class="adm-local-empty-cell">${msg_security_admin_empty_wafSync}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -148,7 +148,7 @@
                             <h2 id="waf-detail-title-${i.syncIdx}" class="waf-detail-title">${msg_security_admin_wafSync_detailTitle}</h2>
                             <div class="adm-page-muted">#<c:out value="${i.syncIdx}"/> · <c:out value="${i.status}"/></div>
                         </div>
-                        <button class="adm-btn js-waf-modal-close" type="button">${msg_security_admin_common_close}</button>
+                        <button class="adm-btn adm-btn-ghost js-waf-modal-close" type="button">${msg_security_admin_common_close}</button>
                     </div>
                     <div class="waf-detail-body">
                         <div class="waf-detail-grid">
@@ -219,3 +219,5 @@
     });
 })();
 </script>
+
+<%@ include file="../layout-close.jsp" %>

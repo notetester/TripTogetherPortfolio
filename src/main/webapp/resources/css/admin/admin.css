@@ -8193,6 +8193,14 @@ body.sa-light .adm-governance-page .appeal-modal-value {
 }
 
 /* WAF sync queue */
+.adm-governance-page.adm-waf-page {
+    max-width: min(100%, 1680px);
+}
+
+.adm-governance-page .adm-waf-page-actions .adm-btn {
+    white-space: nowrap;
+}
+
 .adm-governance-page .adm-waf-filter-card,
 .adm-governance-page .adm-waf-list-card {
     overflow: visible;
@@ -8219,6 +8227,15 @@ body.sa-light .adm-governance-page .appeal-modal-value {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.adm-governance-page .adm-waf-filter-actions .adm-btn {
+    white-space: nowrap;
+}
+
+.adm-governance-page .adm-waf-table {
+    min-width: 1220px;
 }
 
 .adm-governance-page .adm-waf-table td {
