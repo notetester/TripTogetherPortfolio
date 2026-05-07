@@ -68,18 +68,18 @@
 <c:set var="pageTitle" value="${msg_admin_activity_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 <div class="adm-content">
-  <div class="adm-card" style="margin-bottom:20px;">
+  <div class="adm-card adm-audit-filter-card adm-activity-audit-filter-card">
     <div class="adm-card-body">
       <form method="get" action="${pageContext.request.contextPath}/admin/activity-logs">
-        <div class="adm-filter-bar">
-          <div class="adm-search-box" style="flex:1;min-width:220px;"><div class="adm-filter-label">${msg_admin_common_search}</div><span class="adm-search-ico">🔍</span><input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_activity_searchPlaceholder}"></div>
+        <div class="adm-filter-bar adm-audit-filterbar adm-activity-audit-filterbar">
+          <div class="adm-search-box adm-audit-search-box"><div class="adm-filter-label">${msg_admin_common_search}</div><span class="adm-search-ico">🔍</span><input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_activity_searchPlaceholder}"></div>
           <div><div class="adm-filter-label">${msg_admin_activity_domain}</div><select class="adm-select" name="activityDomain"><option value="ALL" ${search.activityDomain=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="GENERAL" ${search.activityDomain=='GENERAL'?'selected':''}>${msg_admin_activity_domain_general}</option><option value="AUTH" ${search.activityDomain=='AUTH'?'selected':''}>${msg_admin_activity_domain_auth}</option><option value="ADMIN" ${search.activityDomain=='ADMIN'?'selected':''}>${msg_admin_activity_domain_admin}</option><option value="COMMUNITY" ${search.activityDomain=='COMMUNITY'?'selected':''}>${msg_admin_activity_domain_community}</option><option value="MYPAGE" ${search.activityDomain=='MYPAGE'?'selected':''}>${msg_admin_activity_domain_mypage}</option><option value="INQUIRY" ${search.activityDomain=='INQUIRY'?'selected':''}>${msg_admin_activity_domain_inquiry}</option></select></div>
           <div><div class="adm-filter-label">${msg_admin_activity_type}</div><select class="adm-select" name="activityType"><option value="ALL" ${search.activityType=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="PAGE_VIEW" ${search.activityType=='PAGE_VIEW'?'selected':''}>${msg_admin_activity_type_pageView}</option><option value="ACTION" ${search.activityType=='ACTION'?'selected':''}>${msg_admin_activity_type_action}</option><option value="AJAX" ${search.activityType=='AJAX'?'selected':''}>${msg_admin_activity_type_ajax}</option><option value="API" ${search.activityType=='API'?'selected':''}>${msg_admin_activity_type_api}</option></select></div>
           <div><div class="adm-filter-label">${msg_admin_logs_provider}</div><select class="adm-select" name="activityProvider"><option value="ALL" ${search.activityProvider=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="LOCAL" ${search.activityProvider=='LOCAL'?'selected':''}>${msg_admin_logs_provider_local}</option><option value="KAKAO" ${search.activityProvider=='KAKAO'?'selected':''}>${msg_admin_logs_provider_kakao}</option><option value="NAVER" ${search.activityProvider=='NAVER'?'selected':''}>${msg_admin_logs_provider_naver}</option><option value="GOOGLE" ${search.activityProvider=='GOOGLE'?'selected':''}>${msg_admin_logs_provider_google}</option></select></div>
           <div><div class="adm-filter-label">${msg_admin_activity_authEvent}</div><select class="adm-select" name="authEventType"><option value="ALL" ${search.authEventType=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="LOGIN" ${search.authEventType=='LOGIN'?'selected':''}>${msg_admin_activity_authEvent_login}</option><option value="LOGOUT" ${search.authEventType=='LOGOUT'?'selected':''}>${msg_admin_activity_authEvent_logout}</option><option value="LINK" ${search.authEventType=='LINK'?'selected':''}>${msg_admin_activity_authEvent_link}</option><option value="UNLINK" ${search.authEventType=='UNLINK'?'selected':''}>${msg_admin_activity_authEvent_unlink}</option></select></div>
           <div><div class="adm-filter-label">${msg_admin_activity_method}</div><select class="adm-select" name="httpMethod"><option value="ALL" ${search.httpMethod=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="GET" ${search.httpMethod=='GET'?'selected':''}>${msg_admin_activity_method_get}</option><option value="POST" ${search.httpMethod=='POST'?'selected':''}>${msg_admin_activity_method_post}</option><option value="PUT" ${search.httpMethod=='PUT'?'selected':''}>${msg_admin_activity_method_put}</option><option value="DELETE" ${search.httpMethod=='DELETE'?'selected':''}>${msg_admin_activity_method_delete}</option></select></div>
           <div><div class="adm-filter-label">${msg_admin_logs_success}</div><select class="adm-select" name="success"><option value="ALL" ${search.success=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="SUCCESS" ${search.success=='SUCCESS'?'selected':''}>${msg_admin_common_success}</option><option value="FAIL" ${search.success=='FAIL'?'selected':''}>${msg_admin_common_fail}</option></select></div>
-          <div style="display:flex;align-items:flex-end;gap:8px;">
+          <div class="adm-audit-filter-actions">
             <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
             <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/activity-logs">${msg_admin_common_reset}</a>
           </div>
@@ -87,8 +87,8 @@
       </form>
     </div>
   </div>
-  <div class="adm-card">
-    <div class="adm-card-head"><div class="adm-card-title">${msg_admin_activity_historyTitle}</div><div style="font-size:12px;color:#64748b;">${msg_admin_common_totalCount}</div></div>
+  <div class="adm-card adm-activity-log-card">
+    <div class="adm-card-head"><div class="adm-card-title">${msg_admin_activity_historyTitle}<span class="adm-section-total-inline">${msg_admin_common_totalCount}</span></div></div>
     <div class="adm-table-wrap">
       <table class="adm-table">
         <thead><tr>
@@ -120,8 +120,8 @@
             <td>
               <c:choose>
                 <c:when test="${not empty item.userIdx}">
-                  <button type="button" class="adm-inline-link js-open-member-context" data-user-idx="${item.userIdx}" data-default-tab="activity" style="font-weight:700;color:#93c5fd;"><c:out value="${item.nickname}"/></button>
-                  <div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="${item.userIdx}" data-default-tab="activity" style="color:#94a3b8;">@${item.userId}</button></div>
+                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="${item.userIdx}" data-default-tab="activity"><c:out value="${item.nickname}"/></button>
+                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="${item.userIdx}" data-default-tab="activity">@${item.userId}</button></div>
                 </c:when>
                 <c:otherwise>
                   <div class="mem-name">${msg_admin_activity_guest}</div>
@@ -166,7 +166,7 @@
                 <c:otherwise><div>-</div></c:otherwise>
               </c:choose>
               <c:if test="${not empty item.activityProvider or not empty item.authEventType}">
-                <div style="margin-top:4px;font-size:11px;color:#64748b;">
+                <div class="adm-activity-code-meta">
                   <c:choose>
                     <c:when test="${item.activityProvider eq 'LOCAL'}">${msg_admin_logs_provider_local}</c:when>
                     <c:when test="${item.activityProvider eq 'KAKAO'}">${msg_admin_logs_provider_kakao}</c:when>
@@ -203,7 +203,7 @@
             </td>
             <td>
               <button type="button" class="adm-cell-link" data-keyword="${item.requestUri}" onclick="applyKeywordFilter(this)">
-                <span style="word-break:break-all;"><c:out value="${item.requestUri}"/></span>
+                <span class="adm-cell-break"><c:out value="${item.requestUri}"/></span>
                 <c:if test="${not empty item.detailSummary}">
                   <span class="adm-cell-link-note"><c:out value="${item.detailSummary}"/></span>
                 </c:if>
@@ -240,7 +240,7 @@
               <c:choose>
                 <c:when test="${not empty item.ipAddress}">
                   <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="${item.ipAddress}" data-default-tab="activity">
-                    <span style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></span>
+                    <span class="adm-activity-ip"><c:out value="${item.ipAddress}"/></span>
                     <span class="adm-cell-link-note">${msg_admin_common_sameIp}</span>
                   </button>
                 </c:when>
@@ -249,7 +249,7 @@
             </td>
             <td>
               <button type="button" class="adm-cell-link" data-keyword="${not empty item.requestId ? item.requestId : item.flowTraceId}" onclick="applyKeywordFilter(this)">
-                <span style="font-size:12px;color:#64748b;"><c:out value="${empty item.requestId ? '-' : item.requestId}"/></span>
+                <span class="adm-flow-id"><c:out value="${empty item.requestId ? '-' : item.requestId}"/></span>
                 <c:if test="${not empty item.flowTraceId}">
                   <span class="adm-cell-link-note">${msg_admin_common_trace}: <c:out value="${item.flowTraceId}"/></span>
                 </c:if>
@@ -283,7 +283,7 @@
             </td>
           </tr>
         </c:forEach>
-        <c:if test="${empty list}"><tr><td colspan="11" style="text-align:center;padding:40px;color:#475569;">${msg_admin_common_noResults}</td></tr></c:if>
+        <c:if test="${empty list}"><tr class="adm-local-empty"><td colspan="11" class="adm-local-empty-cell">${msg_admin_common_noResults}</td></tr></c:if>
       </tbody></table>
     </div>
     <c:if test="${paging.totalPage > 1}"><div class="adm-paging"><c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if><c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p"><button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button></c:forEach><c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if><span class="adm-page-info">${msg_admin_common_pageStatus}</span></div></c:if>
@@ -291,13 +291,13 @@
 </div>
 
 <div id="rowDetailModal" class="adm-modal-overlay" onclick="this.classList.remove('open')">
-  <div class="adm-modal" style="max-width:560px;width:100%;" onclick="event.stopPropagation()">
+  <div class="adm-modal adm-audit-row-detail-modal" onclick="event.stopPropagation()">
     <div class="adm-modal-head">
       <div class="adm-modal-title" id="rowDetailModalTitle"></div>
       <button class="adm-modal-close" onclick="document.getElementById('rowDetailModal').classList.remove('open')">✕</button>
     </div>
-    <div class="adm-modal-body" style="padding:20px 24px;max-height:72vh;overflow-y:auto;">
-      <dl id="rowDetailModalContent" style="margin:0;"></dl>
+    <div class="adm-modal-body adm-audit-row-detail-body">
+      <dl id="rowDetailModalContent" class="adm-audit-row-detail-list"></dl>
     </div>
   </div>
 </div>
@@ -383,10 +383,10 @@ function showRowDetail(title, fields) {
     var label = pair[0], value = pair[1];
     if (!value || value === '' || value === '-' || value === 'null' || value === ' / ') return;
     var dt = document.createElement('dt');
-    dt.style.cssText = 'font-size:11px;color:#64748b;margin-top:12px;margin-bottom:2px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;';
+    dt.className = 'adm-audit-row-detail-key';
     dt.textContent = label;
     var dd = document.createElement('dd');
-    dd.style.cssText = 'font-size:13px;color:#e2e8f0;word-break:break-all;margin:0;padding:6px 10px;background:#0f1520;border-radius:4px;';
+    dd.className = 'adm-audit-row-detail-value';
     dd.textContent = value;
     content.appendChild(dt);
     content.appendChild(dd);
