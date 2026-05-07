@@ -106,6 +106,7 @@
 <spring:message var="msg_superAdmin_salary_action_apply" code="superAdmin.salary.action.apply"/>
 <c:set var="pageTitle" value="${msg_superAdmin_salary_pageTitle}"/>
 <c:set var="activeMenu" value="salary"/>
+<spring:message var="msg_superAdmin_salary_totalCountDisplay" code="superAdmin.salary.table.count" arguments="${total}"/>
 
 
 <%@ include file="layout.jsp" %>
@@ -113,7 +114,10 @@
 <div class="adm-content sa-salary-page">
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">${msg_superAdmin_salary_cardTitle}</div>
+            <div class="adm-card-title">
+                ${msg_superAdmin_salary_cardTitle}
+                <span class="adm-section-total-inline">${msg_superAdmin_salary_totalCountDisplay}</span>
+            </div>
             <div class="sa-card-subtitle">${msg_superAdmin_salary_cardDescription}</div>
         </div>
         <div class="adm-card-body sa-table-card-body">
@@ -148,12 +152,12 @@
                        class="adm-btn adm-btn-ghost">
                         ${msg_superAdmin_salary_action_exportExcel}
                     </a>
-                    <span class="sa-salary-count">${msg_superAdmin_salary_table_count}</span>
+                    <span class="sa-salary-count">${msg_superAdmin_salary_totalCountDisplay}</span>
                 </div>
             </form>
 
             <div class="sa-table-scroll">
-                <table class="sa-salary-table" id="salaryTable">
+                <table class="sa-salary-table" id="salaryTable" data-admin-list-ignore="true">
                     <thead>
                         <tr>
                             <th>${msg_superAdmin_salary_table_nickname}</th>
@@ -337,7 +341,7 @@
             <div id="salaryPreviewSummary" class="sa-preview-summary"></div>
             <div id="salaryPreviewWarn" class="sa-preview-warning"></div>
             <div class="sa-preview-table-wrap">
-                <table class="sa-salary-table sa-preview-table" id="salaryPreviewTable">
+                <table class="sa-salary-table sa-preview-table" id="salaryPreviewTable" data-admin-list-ignore="true">
                     <thead>
                         <tr>
                             <th class="sa-preview-row-col">${msg_superAdmin_salary_preview_row}</th>

@@ -26,6 +26,9 @@
 <spring:message var="msg_superAdmin_stats_card_withoutManagerAdmins" code="superAdmin.stats.card.withoutManagerAdmins"/>
 <c:set var="pageTitle" value="${msg_superAdmin_stats_pageTitle}"/>
 <c:set var="activeMenu" value="stats"/>
+<spring:message var="msg_superAdmin_stats_dormantTotalDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(dormantAdmins)}"/>
+<spring:message var="msg_superAdmin_stats_noPermissionTotalDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(adminsWithoutPermissions)}"/>
+<spring:message var="msg_superAdmin_stats_withoutManagerTotalDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(adminsWithoutManager)}"/>
 
 
 <%@ include file="layout.jsp" %>
@@ -98,7 +101,11 @@
 
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">${msg_superAdmin_stats_card_dormantAdmins} <span class="sa-exception-count">(${msg_superAdmin_stats_suffix_days90})</span></div>
+                <div class="adm-card-title">
+                    ${msg_superAdmin_stats_card_dormantAdmins}
+                    <span class="adm-section-total-inline">${msg_superAdmin_stats_dormantTotalDisplay}</span>
+                    <span class="sa-exception-count">(${msg_superAdmin_stats_suffix_days90})</span>
+                </div>
             </div>
             <div class="adm-card-body sa-table-card-body sa-table-scroll">
                 <c:choose>
@@ -106,7 +113,7 @@
                         <div class="sa-exception-empty">${msg_superAdmin_stats_empty}</div>
                     </c:when>
                     <c:otherwise>
-                        <table class="sa-exception-table">
+                        <table class="sa-exception-table" data-admin-list-ignore="true">
                             <thead><tr><th>${msg_superAdmin_stats_table_nickname}</th><th>${msg_superAdmin_stats_table_department}</th><th>${msg_superAdmin_stats_table_lastLogin}</th></tr></thead>
                             <tbody>
                             <c:forEach var="m" items="${dormantAdmins}">
@@ -125,7 +132,10 @@
 
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">${msg_superAdmin_stats_card_noPermissionAdmins}</div>
+                <div class="adm-card-title">
+                    ${msg_superAdmin_stats_card_noPermissionAdmins}
+                    <span class="adm-section-total-inline">${msg_superAdmin_stats_noPermissionTotalDisplay}</span>
+                </div>
             </div>
             <div class="adm-card-body sa-table-card-body sa-table-scroll">
                 <c:choose>
@@ -133,7 +143,7 @@
                         <div class="sa-exception-empty">${msg_superAdmin_stats_empty}</div>
                     </c:when>
                     <c:otherwise>
-                        <table class="sa-exception-table">
+                        <table class="sa-exception-table" data-admin-list-ignore="true">
                             <thead><tr><th>${msg_superAdmin_stats_table_nickname}</th><th>${msg_superAdmin_stats_table_department}</th><th>${msg_superAdmin_stats_table_title}</th></tr></thead>
                             <tbody>
                             <c:forEach var="m" items="${adminsWithoutPermissions}">
@@ -152,7 +162,10 @@
 
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">${msg_superAdmin_stats_card_withoutManagerAdmins}</div>
+                <div class="adm-card-title">
+                    ${msg_superAdmin_stats_card_withoutManagerAdmins}
+                    <span class="adm-section-total-inline">${msg_superAdmin_stats_withoutManagerTotalDisplay}</span>
+                </div>
             </div>
             <div class="adm-card-body sa-table-card-body sa-table-scroll">
                 <c:choose>
@@ -160,7 +173,7 @@
                         <div class="sa-exception-empty">${msg_superAdmin_stats_empty}</div>
                     </c:when>
                     <c:otherwise>
-                        <table class="sa-exception-table">
+                        <table class="sa-exception-table" data-admin-list-ignore="true">
                             <thead><tr><th>${msg_superAdmin_stats_table_nickname}</th><th>${msg_superAdmin_stats_table_department}</th><th>${msg_superAdmin_stats_table_title}</th></tr></thead>
                             <tbody>
                             <c:forEach var="m" items="${adminsWithoutManager}">

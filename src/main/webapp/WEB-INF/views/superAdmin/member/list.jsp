@@ -117,6 +117,7 @@
 <spring:message var="msg_superAdmin_member_list_bulk_save" code="superAdmin.member.list.bulk.save"/>
 <c:set var="pageTitle" value="${msg_superAdmin_member_list_pageTitle}"/>
 <c:set var="activeMenu" value="members"/>
+<spring:message var="msg_superAdmin_member_list_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${total}"/>
 
 
 <%@ include file="../layout.jsp" %>
@@ -180,7 +181,6 @@
                     <div class="sa-members-filter-actions">
                         <button type="submit" class="adm-btn adm-btn-primary">${msg_admin_common_search}</button>
                         <a href="${pageContext.request.contextPath}/superAdmin/members" class="adm-btn adm-btn-ghost">${msg_admin_common_reset}</a>
-                        <button type="button" class="adm-btn adm-btn-ghost" onclick="openGrantModal()">${msg_superAdmin_member_list_card_grantButton}</button>
                     </div>
                 </div>
             </form>
@@ -190,9 +190,18 @@
     <%-- ══════════════════════════════════════════
          관리자 테이블
     ══════════════════════════════════════════ --%>
-    <div class="adm-card">
+    <div class="adm-card sa-members-list-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">
+                ${msg_superAdmin_member_list_pageTitle}
+                <span class="adm-section-total-inline">${msg_superAdmin_member_list_totalCountDisplay}</span>
+            </div>
+            <div class="sa-list-head-actions">
+                <button type="button" class="adm-btn adm-btn-ghost" onclick="openGrantModal()">${msg_superAdmin_member_list_card_grantButton}</button>
+            </div>
+        </div>
         <div class="adm-card-body sa-table-card-body">
-            <table class="adm-table">
+            <table class="adm-table sa-members-table" data-admin-list-ignore="true">
                 <thead>
                     <tr>
                         <th class="sa-check-head">

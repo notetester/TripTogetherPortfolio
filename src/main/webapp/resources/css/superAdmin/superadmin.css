@@ -93,6 +93,9 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-members-filter-field .adm-select,
 .sa-members-status-field .adm-select { width:100%; }
 .sa-members-filter-actions { display:flex; align-items:flex-end; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+.sa-members-list-card { overflow:visible; }
+.sa-list-head-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+.sa-members-table { min-width:1120px; }
 .sa-inline-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
 .sa-inline-row.is-top { margin-top:8px; margin-bottom:0; }
 .sa-inline-row .adm-select,
@@ -117,9 +120,12 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
     .sa-members-filterbar,
     .sa-members-search-row { grid-template-columns:1fr; display:grid; }
     .sa-members-search-type,
+    .sa-list-head-actions,
+    .sa-list-head-actions .adm-btn,
     .sa-members-filter-actions .adm-btn,
     .sa-modal-search-row .adm-btn { width:100%; }
     .sa-members-filter-actions,
+    .sa-list-head-actions,
     .sa-modal-search-row,
     .sa-modal-inline-control,
     .sa-policy-head-row,

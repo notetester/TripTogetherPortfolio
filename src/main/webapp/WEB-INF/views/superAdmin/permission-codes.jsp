@@ -78,6 +78,7 @@
 <spring:message var="msg_superAdmin_permissionCodes_modal_close" code="superAdmin.permissionCodes.modal.close"/>
 <c:set var="pageTitle" value="${msg_superAdmin_permissionCodes_pageTitle}"/>
 <c:set var="activeMenu" value="permissionCodes"/>
+<spring:message var="msg_superAdmin_permissionCodes_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(codeList)}"/>
 
 
 <%@ include file="layout.jsp" %>
@@ -88,7 +89,10 @@
         <div class="adm-card-body">
             <div class="sa-policy-head-row">
                 <div>
-                    <div class="sa-policy-head-title">${msg_superAdmin_permissionCodes_cardTitle}</div>
+                    <div class="sa-policy-head-title">
+                        ${msg_superAdmin_permissionCodes_cardTitle}
+                        <span class="adm-section-total-inline">${msg_superAdmin_permissionCodes_totalCountDisplay}</span>
+                    </div>
                     <div class="sa-card-subtitle">${msg_superAdmin_permissionCodes_cardDescription}</div>
                 </div>
                 <button class="adm-btn adm-btn-primary" onclick="openCreateModal()">${msg_superAdmin_permissionCodes_createButton}</button>
@@ -104,6 +108,7 @@
                 </c:when>
                 <c:otherwise>
                     <c:forEach var="c" items="${codeList}">
+                    <spring:message var="msg_superAdmin_permissionCodes_itemCountDisplay" code="superAdmin.permissionCodes.list.count" arguments="${c.permissionItemCount},${c.groupItemCount}" argumentSeparator=","/>
                     <div class="sa-group-row ${c.active ? '' : 'sa-group-inactive'}">
                         <div>
                             <span class="sa-group-code">${fn:escapeXml(c.adminPermissionCode)}</span>
@@ -112,7 +117,7 @@
                             <div class="sa-group-name">${fn:escapeXml(c.displayName)}</div>
                             <div class="sa-group-desc">${fn:escapeXml(c.description)}</div>
                         </div>
-                        <div class="sa-group-cnt">${msg_superAdmin_permissionCodes_list_count}</div>
+                        <div class="sa-group-cnt">${msg_superAdmin_permissionCodes_itemCountDisplay}</div>
                         <div>
                             <c:choose>
                                 <c:when test="${c.active}"><span class="adm-badge adm-badge-green">${msg_superAdmin_permissionCodes_status_active}</span></c:when>

@@ -70,6 +70,7 @@
 <spring:message var="msg_superAdmin_groups_modal_close" code="superAdmin.groups.modal.close"/>
 <c:set var="pageTitle" value="${msg_superAdmin_groups_pageTitle}"/>
 <c:set var="activeMenu" value="groups"/>
+<spring:message var="msg_superAdmin_groups_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(groupList)}"/>
 
 
 <%@ include file="layout.jsp" %>
@@ -81,7 +82,10 @@
         <div class="adm-card-body">
             <div class="sa-policy-head-row">
                 <div>
-                    <div class="sa-policy-head-title">${msg_superAdmin_groups_cardTitle}</div>
+                    <div class="sa-policy-head-title">
+                        ${msg_superAdmin_groups_cardTitle}
+                        <span class="adm-section-total-inline">${msg_superAdmin_groups_totalCountDisplay}</span>
+                    </div>
                     <div class="sa-card-subtitle">${msg_superAdmin_groups_cardDescription}</div>
                 </div>
                 <button class="adm-btn adm-btn-primary" onclick="openCreateModal()">${msg_superAdmin_groups_createButton}</button>
@@ -97,6 +101,7 @@
                 </c:when>
                 <c:otherwise>
                     <c:forEach var="g" items="${groupList}">
+                    <spring:message var="msg_superAdmin_groups_itemCountDisplay" code="superAdmin.groups.list.itemCount" arguments="${g.itemCount}"/>
                     <div class="sa-group-row ${g.active ? '' : 'sa-group-inactive'}">
                         <div>
                             <span class="sa-group-code">${fn:escapeXml(g.groupCode)}</span>
@@ -105,7 +110,7 @@
                             <div class="sa-group-name">${fn:escapeXml(g.displayName)}</div>
                             <div class="sa-group-desc">${fn:escapeXml(g.description)}</div>
                         </div>
-                        <div class="sa-group-cnt">${msg_superAdmin_groups_list_itemCount}</div>
+                        <div class="sa-group-cnt">${msg_superAdmin_groups_itemCountDisplay}</div>
                         <div>
                             <c:choose>
                                 <c:when test="${g.active}"><span class="adm-badge adm-badge-green">${msg_superAdmin_groups_status_active}</span></c:when>

@@ -12,6 +12,7 @@
 <spring:message var="msg_superAdmin_org_empty" code="superAdmin.org.empty"/>
 <c:set var="pageTitle" value="${msg_superAdmin_org_pageTitle}"/>
 <c:set var="activeMenu" value="org"/>
+<spring:message var="msg_superAdmin_org_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(adminList)}"/>
 
 
 <%@ include file="layout.jsp" %>
@@ -19,7 +20,10 @@
 <div class="adm-content sa-org-page">
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">${msg_superAdmin_org_cardTitle}</div>
+            <div class="adm-card-title">
+                ${msg_superAdmin_org_cardTitle}
+                <span class="adm-section-total-inline">${msg_superAdmin_org_totalCountDisplay}</span>
+            </div>
             <div class="sa-card-subtitle">${msg_superAdmin_org_cardDescription}</div>
         </div>
         <div class="adm-card-body">
