@@ -167,6 +167,7 @@ public class AdminController {
 
     @PostMapping("/packages/{packageIdx}/approve")
     public String approvePackage(@PathVariable Long packageIdx,
+                                 @RequestParam(defaultValue = "PENDING") String status,
                                  HttpSession session,
                                  RedirectAttributes redirectAttributes) {
         var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
@@ -177,12 +178,13 @@ public class AdminController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
         }
-        return "redirect:/admin/packages";
+        return redirectPackageList(status);
     }
 
     @PostMapping("/packages/{packageIdx}/reject")
     public String rejectPackage(@PathVariable Long packageIdx,
                                 @RequestParam String rejectReason,
+                                @RequestParam(defaultValue = "PENDING") String status,
                                 HttpSession session,
                                 RedirectAttributes redirectAttributes) {
         var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
@@ -193,11 +195,12 @@ public class AdminController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
         }
-        return "redirect:/admin/packages";
+        return redirectPackageList(status);
     }
 
     @PostMapping("/packages/revisions/{packageRevisionIdx}/approve")
     public String approvePackageRevision(@PathVariable Long packageRevisionIdx,
+                                         @RequestParam(defaultValue = "PENDING") String status,
                                          HttpSession session,
                                          RedirectAttributes redirectAttributes) {
         var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
@@ -208,12 +211,13 @@ public class AdminController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
         }
-        return "redirect:/admin/packages";
+        return redirectPackageList(status);
     }
 
     @PostMapping("/packages/revisions/{packageRevisionIdx}/reject")
     public String rejectPackageRevision(@PathVariable Long packageRevisionIdx,
                                         @RequestParam String rejectReason,
+                                        @RequestParam(defaultValue = "PENDING") String status,
                                         HttpSession session,
                                         RedirectAttributes redirectAttributes) {
         var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
@@ -224,7 +228,7 @@ public class AdminController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
         }
-        return "redirect:/admin/packages";
+        return redirectPackageList(status);
     }
 
     @PostMapping("/business-applications/{applicationIdx}/approve")
@@ -1306,6 +1310,14 @@ public class AdminController {
             result.put("message", e.getMessage());
         }
         return result;
+    }
+
+    private String redirectPackageList(String status) {
+        String normalized = status == null ? "PENDING" : status.trim().toUpperCase();
+        if (!List.of("ALL", "PENDING", "APPROVED", "REJECTED", "DRAFT", "BLOCKED").contains(normalized)) {
+            normalized = "PENDING";
+        }
+        return "redirect:/admin/packages?status=" + normalized;
     }
 
     /**

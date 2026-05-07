@@ -50,6 +50,8 @@
 <spring:message var="msg_package_admin_reject" code="package.admin.reject"/>
 <spring:message var="msg_package_admin_notPending" code="package.admin.notPending"/>
 <spring:message var="msg_package_admin_noResults" code="package.admin.noResults"/>
+<spring:message var="msg_admin_package_revisionTotalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(revisionList)}"/>
+<spring:message var="msg_admin_package_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(packageList)}"/>
 <c:set var="activeMenu" value="packages"/>
 
 
@@ -99,15 +101,17 @@
     </div>
 
     <div class="adm-card adm-package-section-card">
-        <div class="adm-card-body">
-            <div class="adm-package-section-head">
-                <div>
-                    <h2 class="adm-package-section-title">${msg_package_revision_adminTitle}</h2>
-                    <p class="adm-package-section-desc">${msg_package_revision_adminDesc}</p>
+        <div class="adm-card-head adm-package-section-head">
+            <div>
+                <div class="adm-card-title">
+                    ${msg_package_revision_adminTitle}
+                    <span class="adm-section-total-inline">${msg_admin_package_revisionTotalCountDisplay}</span>
                 </div>
-                <span class="status-badge PENDING">${msg_package_status_pending}</span>
+                <div class="adm-package-section-desc">${msg_package_revision_adminDesc}</div>
             </div>
-
+            <span class="status-badge PENDING">${msg_package_status_pending}</span>
+        </div>
+        <div class="adm-card-body">
             <c:choose>
                 <c:when test="${empty revisionList}">
                     <div class="adm-package-empty-box">
@@ -116,7 +120,7 @@
                 </c:when>
                 <c:otherwise>
                     <div class="adm-table-wrap">
-                        <table class="adm-table adm-package-table adm-package-revision-table">
+                        <table class="adm-table adm-package-table adm-package-revision-table" data-admin-list-ignore="true">
                             <colgroup>
                                 <col>
                                 <col class="adm-package-col-seller">
@@ -196,6 +200,7 @@
                                     <td>
                                         <div class="adm-row-actions" id="package-action-revision-${revision.packageRevisionIdx}">
                                             <form method="post" action="${pageContext.request.contextPath}/admin/packages/revisions/${revision.packageRevisionIdx}/approve">
+                                                <input type="hidden" name="status" value="${status}">
                                                 <button type="submit" class="adm-row-btn detail">
                                                     ${msg_package_revision_approve}
                                                 </button>
@@ -208,6 +213,7 @@
                                                     <form class="action-menu-form"
                                                           method="post"
                                                           action="${pageContext.request.contextPath}/admin/packages/revisions/${revision.packageRevisionIdx}/reject">
+                                                        <input type="hidden" name="status" value="${status}">
                                                         <label class="action-menu-head" for="revision-reject-${revision.packageRevisionIdx}">
                                                             ${msg_package_revision_reject}
                                                         </label>
@@ -236,8 +242,14 @@
     </div>
 
     <div class="adm-card adm-package-list-card">
+        <div class="adm-card-head adm-package-list-head">
+            <div class="adm-card-title">
+                ${msg_package_admin_title}
+                <span class="adm-section-total-inline">${msg_admin_package_totalCountDisplay}</span>
+            </div>
+        </div>
         <div class="adm-table-wrap">
-            <table class="adm-table adm-package-table adm-package-main-table">
+            <table class="adm-table adm-package-table adm-package-main-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col>
                     <col class="adm-package-col-seller">
@@ -361,6 +373,7 @@
                                 <c:when test="${pkg.packageStatus eq 'PENDING'}">
                                     <div class="adm-row-actions" id="package-action-package-${pkg.packageIdx}">
                                             <form method="post" action="${pageContext.request.contextPath}/admin/packages/${pkg.packageIdx}/approve">
+                                                <input type="hidden" name="status" value="${status}">
                                                 <button type="submit" class="adm-row-btn detail"
                                                     onclick="return confirm('${msg_admin_packages_confirmApprove_js}');">${msg_package_admin_approve}</button>
                                             </form>
@@ -372,6 +385,7 @@
                                                 <form class="action-menu-form"
                                                       method="post"
                                                       action="${pageContext.request.contextPath}/admin/packages/${pkg.packageIdx}/reject">
+                                                    <input type="hidden" name="status" value="${status}">
                                                     <label class="action-menu-head" for="package-reject-${pkg.packageIdx}">
                                                         ${msg_package_admin_reject}
                                                     </label>

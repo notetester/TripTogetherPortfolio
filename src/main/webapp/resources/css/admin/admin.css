@@ -10127,6 +10127,11 @@ body.sa-light .adm-explore-rating-value {
     margin-bottom: 20px;
 }
 
+.adm-package-section-card,
+.adm-package-list-card {
+    overflow: visible;
+}
+
 .adm-filter-bar.adm-package-filterbar {
     display: grid;
     grid-template-columns: minmax(180px, 260px) auto;
@@ -10145,17 +10150,14 @@ body.sa-light .adm-explore-rating-value {
 }
 
 .adm-package-section-head {
-    margin-bottom: 14px;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: 14px;
 }
 
-.adm-package-section-title {
-    margin: 0;
-    color: #e2e8f0;
-    font-size: 18px;
+.adm-package-list-head {
+    align-items: center;
 }
 
 .adm-package-section-desc {
@@ -10167,7 +10169,7 @@ body.sa-light .adm-explore-rating-value {
 .adm-package-empty-box {
     padding: 24px;
     border: 1px dashed rgba(148, 163, 184, .32);
-    border-radius: 14px;
+    border-radius: 8px;
     color: #64748b;
     text-align: center;
 }
@@ -10299,7 +10301,6 @@ body.sa-light .adm-explore-rating-value {
     font-size: 12px;
 }
 
-body.sa-light .adm-package-section-title,
 body.sa-light .adm-package-strong-line,
 body.sa-light .adm-package-spot-name {
     color: #0f172a;
