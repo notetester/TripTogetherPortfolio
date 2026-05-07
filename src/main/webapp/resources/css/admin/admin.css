@@ -7947,6 +7947,14 @@ body.sa-light .adm-governance-page .adm-appeal-policy-section-title {
 }
 
 /* Security appeal list */
+.adm-governance-page.adm-appeal-page {
+    max-width: min(100%, 1680px);
+}
+
+.adm-governance-page .adm-appeal-page-actions .adm-btn {
+    white-space: nowrap;
+}
+
 .adm-governance-page .adm-appeal-filter-card,
 .adm-governance-page .adm-appeal-list-card {
     overflow: visible;
@@ -7973,6 +7981,15 @@ body.sa-light .adm-governance-page .adm-appeal-policy-section-title {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.adm-governance-page .adm-appeal-filter-actions .adm-btn {
+    white-space: nowrap;
+}
+
+.adm-governance-page .adm-appeal-table {
+    min-width: 1180px;
 }
 
 .adm-governance-page .adm-appeal-table td {

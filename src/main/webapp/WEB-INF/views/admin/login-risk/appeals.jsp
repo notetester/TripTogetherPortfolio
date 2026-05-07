@@ -49,16 +49,16 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content adm-governance-page">
+<div class="adm-content adm-governance-page adm-appeal-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_security_admin_appeals_title}</h1>
             <p class="adm-page-desc">${msg_security_admin_appeals_desc}</p>
         </div>
-        <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/appeal-policy">${msg_security_admin_nav_appealPolicy}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">${msg_security_admin_nav_securityReviews}</a>
+        <div class="adm-actions adm-appeal-page-actions">
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/appeal-policy">${msg_security_admin_nav_appealPolicy}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">${msg_security_admin_nav_securityReviews}</a>
         </div>
     </div>
 
@@ -66,11 +66,11 @@
         <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
-    <form method="get" class="adm-card adm-appeal-filter-card">
+    <form method="get" class="adm-card adm-appeal-filter-card adm-overflow-visible">
         <div class="adm-card-body">
             <div class="adm-appeal-filterbar">
                 <label>${msg_security_admin_common_status}
-                    <select class="adm-input" name="status">
+                    <select class="adm-select" name="status">
                         <option value="">${msg_security_admin_common_all}</option>
                         <option value="PENDING" ${status == 'PENDING' ? 'selected' : ''}>PENDING</option>
                         <option value="HOLD" ${status == 'HOLD' ? 'selected' : ''}>HOLD</option>
@@ -86,14 +86,14 @@
                     <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${msg_security_admin_placeholder_accountTitleTarget}">
                 </label>
                 <div class="adm-appeal-filter-actions">
-                    <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
-                    <a class="adm-btn ghost" href="${pageContext.request.contextPath}/admin/login-risk/appeals">${msg_admin_common_reset}</a>
+                    <button class="adm-btn adm-btn-primary" type="submit">${msg_security_admin_common_search}</button>
+                    <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/appeals">${msg_admin_common_reset}</a>
                 </div>
             </div>
         </div>
     </form>
 
-    <div class="adm-card adm-appeal-list-card">
+    <div class="adm-card adm-appeal-list-card adm-overflow-visible">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_security_admin_appeals_title}</div>
             <div class="adm-page-muted">${msg_admin_common_totalCount}</div>
@@ -153,25 +153,25 @@
                         <td><fmt:formatDate value="${a.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                         <td>
                             <div class="adm-appeal-row-actions">
-                                <button class="adm-btn js-appeal-modal-open" type="button" data-modal-id="appeal-modal-${a.appealIdx}">
+                                <button class="adm-btn adm-btn-ghost js-appeal-modal-open" type="button" data-modal-id="appeal-modal-${a.appealIdx}">
                                     ${msg_security_admin_common_detail}
                                 </button>
                                 <c:if test="${a.appealStatus == 'PENDING' || a.appealStatus == 'HOLD'}">
                                     <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeals/${a.appealIdx}/accept">
                                         <input type="hidden" name="comment" value="${fn:escapeXml(msg_security_admin_comment_appealAccepted)}">
-                                        <button class="adm-btn primary" type="submit">${msg_security_admin_common_accept}</button>
+                                        <button class="adm-btn adm-btn-primary" type="submit">${msg_security_admin_common_accept}</button>
                                     </form>
                                     <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeals/${a.appealIdx}/hold">
                                         <input type="hidden" name="comment" value="${fn:escapeXml(msg_security_admin_comment_needMoreCheck)}">
-                                        <button class="adm-btn" type="submit">${msg_security_admin_common_hold}</button>
+                                        <button class="adm-btn adm-btn-ghost" type="submit">${msg_security_admin_common_hold}</button>
                                     </form>
                                     <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeals/${a.appealIdx}/reject">
                                         <input type="hidden" name="comment" value="${fn:escapeXml(msg_security_admin_comment_appealRejected)}">
-                                        <button class="adm-btn danger" type="submit">${msg_security_admin_common_rejectAppeal}</button>
+                                        <button class="adm-btn adm-btn-danger" type="submit">${msg_security_admin_common_rejectAppeal}</button>
                                     </form>
                                     <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeals/${a.appealIdx}/close">
                                         <input type="hidden" name="comment" value="${fn:escapeXml(msg_security_admin_comment_appealClosed)}">
-                                        <button class="adm-btn" type="submit">${msg_security_admin_common_closeAppeal}</button>
+                                        <button class="adm-btn adm-btn-ghost" type="submit">${msg_security_admin_common_closeAppeal}</button>
                                     </form>
                                 </c:if>
                                 <c:if test="${a.appealStatus != 'PENDING' && a.appealStatus != 'HOLD'}">
@@ -179,7 +179,7 @@
                                     <c:if test="${a.appealStatus == 'REJECTED'}">
                                         <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeals/${a.appealIdx}/close">
                                             <input type="hidden" name="comment" value="${fn:escapeXml(msg_security_admin_comment_appealClosed)}">
-                                            <button class="adm-btn" type="submit">${msg_security_admin_common_closeAppeal}</button>
+                                            <button class="adm-btn adm-btn-ghost" type="submit">${msg_security_admin_common_closeAppeal}</button>
                                         </form>
                                     </c:if>
                                 </c:if>
@@ -188,7 +188,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty appeals}">
-                    <tr><td colspan="6" class="adm-empty">${msg_security_admin_empty_appeals}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="6" class="adm-local-empty-cell">${msg_security_admin_empty_appeals}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -202,7 +202,7 @@
                             <h2 id="appeal-modal-title-${a.appealIdx}" class="appeal-modal-title">${msg_security_admin_appeals_detail_title}</h2>
                             <div class="adm-page-muted">${msg_security_admin_common_publicRequestId}: <c:out value="${a.publicRequestId}" default="-"/></div>
                         </div>
-                        <button class="adm-btn js-appeal-modal-close" type="button">${msg_security_admin_common_close}</button>
+                        <button class="adm-btn adm-btn-ghost js-appeal-modal-close" type="button">${msg_security_admin_common_close}</button>
                     </div>
                     <div class="appeal-modal-body">
                         <div class="appeal-modal-grid">
@@ -297,3 +297,5 @@
     });
 })();
 </script>
+
+<%@ include file="../layout-close.jsp" %>
