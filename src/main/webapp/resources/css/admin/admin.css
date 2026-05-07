@@ -9769,6 +9769,122 @@ body.sa-light .adm-ad-note-box {
     line-height: 1.6;
 }
 
+.adm-ai-link-filter-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+}
+
+.adm-ai-range-group,
+.adm-ai-range-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.adm-ai-range-buttons {
+    flex-wrap: wrap;
+}
+
+.adm-ai-toolbar-label {
+    flex: 0 0 auto;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.adm-ai-compact-btn {
+    min-height: 30px;
+    padding: 4px 12px;
+    font-size: 12px;
+}
+
+.adm-ai-toolbar-total {
+    flex: 0 0 auto;
+    color: #94a3b8;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.adm-ai-toolbar-total strong {
+    color: #60a5fa;
+}
+
+.adm-ai-chart-card {
+    margin-bottom: 16px;
+    padding: 16px;
+}
+
+.adm-ai-card-title,
+.adm-ai-table-title {
+    color: #f1f5f9;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.adm-ai-card-title {
+    margin-bottom: 12px;
+}
+
+.adm-ai-table-title {
+    padding: 14px 16px;
+    border-bottom: 1px solid #1e2330;
+}
+
+.adm-ai-empty-panel {
+    padding: 24px;
+    color: #94a3b8;
+    font-size: 13px;
+    text-align: center;
+}
+
+.adm-ai-bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 150px;
+    overflow-x: auto;
+    padding: 4px 2px 10px;
+}
+
+.adm-ai-bar-item {
+    display: flex;
+    flex: 0 0 34px;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 34px;
+}
+
+.adm-ai-bar-count {
+    color: #94a3b8;
+    font-size: 10px;
+    line-height: 1;
+}
+
+.adm-ai-chart-bar {
+    width: 22px;
+    min-height: 2px;
+    height: max(2px, var(--adm-ai-pct, 0%));
+    border-radius: 3px 3px 0 0;
+    background: linear-gradient(180deg, #60a5fa, #2563eb);
+}
+
+.adm-ai-bar-date {
+    margin-top: 6px;
+    color: #94a3b8;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 9px;
+    line-height: 1;
+    transform: rotate(-45deg);
+    transform-origin: center;
+    white-space: nowrap;
+}
+
 .adm-ai-table-card {
     overflow: visible;
 }
@@ -9791,6 +9907,10 @@ body.sa-light .adm-ad-note-box {
 
 .adm-ai-conversations-table {
     min-width: 1160px;
+}
+
+.adm-ai-links-table {
+    min-width: 820px;
 }
 
 .adm-ai-messages-table,
@@ -9863,6 +9983,22 @@ body.sa-light .adm-ad-note-box {
     width: 84px;
 }
 
+.adm-ai-col-rank {
+    width: 56px;
+}
+
+.adm-ai-col-url {
+    width: auto;
+}
+
+.adm-ai-col-clicks {
+    width: 120px;
+}
+
+.adm-ai-col-distribution {
+    width: 240px;
+}
+
 .adm-ai-col-quota,
 .adm-ai-col-period,
 .adm-ai-col-refund {
@@ -9894,6 +10030,49 @@ body.sa-light .adm-ad-note-box {
 
 .adm-ai-muted {
     color: #94a3b8;
+}
+
+.adm-ai-url-cell,
+.adm-ai-url-link {
+    word-break: break-all;
+}
+
+.adm-ai-url-link {
+    color: #93c5fd;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.adm-ai-url-link:hover {
+    color: #bfdbfe;
+    text-decoration: underline;
+}
+
+.adm-ai-number-head,
+.adm-ai-number-cell {
+    text-align: right;
+}
+
+.adm-ai-count-btn {
+    min-width: 54px;
+    justify-content: center;
+}
+
+.adm-ai-progress {
+    width: 100%;
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #273244;
+}
+
+.adm-ai-progress-bar {
+    width: var(--adm-ai-pct, 0%);
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #60a5fa, #2563eb);
 }
 
 .adm-ai-score {
@@ -10320,6 +10499,8 @@ body.sa-light .adm-ai-tab.active {
 }
 
 body.sa-light .adm-ai-section-title,
+body.sa-light .adm-ai-card-title,
+body.sa-light .adm-ai-table-title,
 body.sa-light .adm-ai-message-title {
     color: #0f172a;
 }
@@ -10328,8 +10509,30 @@ body.sa-light .adm-ai-kpi-label,
 body.sa-light .adm-ai-description,
 body.sa-light .adm-ai-subtext,
 body.sa-light .adm-ai-muted,
+body.sa-light .adm-ai-toolbar-label,
+body.sa-light .adm-ai-toolbar-total,
+body.sa-light .adm-ai-empty-panel,
+body.sa-light .adm-ai-bar-count,
+body.sa-light .adm-ai-bar-date,
 body.sa-light .adm-ai-time-separator {
     color: #64748b;
+}
+
+body.sa-light .adm-ai-table-title {
+    border-color: #e2e8f0;
+}
+
+body.sa-light .adm-ai-toolbar-total strong,
+body.sa-light .adm-ai-url-link {
+    color: #2563eb;
+}
+
+body.sa-light .adm-ai-url-link:hover {
+    color: #1d4ed8;
+}
+
+body.sa-light .adm-ai-progress {
+    background: #e2e8f0;
 }
 
 body.sa-light .adm-ai-ellipsis-cell {
@@ -10643,6 +10846,15 @@ body.sa-light .adm-context-metric-value.is-danger {
         grid-template-columns: 1fr auto;
     }
 
+    .adm-ai-link-filter-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .adm-ai-toolbar-total {
+        align-self: flex-end;
+    }
+
     .adm-ai-search-input {
         grid-column: 1 / -1;
     }
@@ -10801,6 +11013,29 @@ body.sa-light .adm-context-metric-value.is-danger {
 
     .adm-ai-search-form {
         display: flex;
+    }
+
+    .adm-ai-range-group {
+        align-items: stretch;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .adm-ai-range-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .adm-ai-range-buttons .adm-btn,
+    .adm-ai-toolbar-total {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .adm-ai-bar-chart {
+        height: 132px;
     }
 
     .adm-ai-search-form .adm-btn,
