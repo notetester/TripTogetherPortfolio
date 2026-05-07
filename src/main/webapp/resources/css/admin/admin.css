@@ -6864,8 +6864,17 @@ body.sa-light .adm-initial-note {
 }
 
 /* Policy history */
+.adm-policy-history-page-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
 .adm-policy-history-filter-card {
     margin-bottom: 16px;
+    overflow: visible;
+}
+
+.adm-policy-history-list-card {
     overflow: visible;
 }
 

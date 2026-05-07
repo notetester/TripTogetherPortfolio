@@ -19,6 +19,7 @@
 <spring:message var="msg_admin_policyHistory_keyword" code="admin.policyHistory.keyword"/>
 <spring:message var="msg_admin_policyHistory_limit" code="admin.policyHistory.limit"/>
 <spring:message var="msg_admin_common_search" code="admin.common.search"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_policyHistory_listTitle" code="admin.policyHistory.listTitle"/>
 <spring:message var="msg_admin_policyHistory_listDesc" code="admin.policyHistory.listDesc"/>
 <spring:message var="msg_admin_policyHistory_changedAt" code="admin.policyHistory.changedAt"/>
@@ -39,6 +40,8 @@
 
 
 <div class="adm-content adm-governance-page adm-policy-history-page">
+    <spring:message var="msg_admin_policyHistory_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(histories)}"/>
+
     <div class="adm-page-head">
         <div>
             <h1>${msg_admin_policyHistory_title}</h1>
@@ -46,7 +49,7 @@
         </div>
 
 
-        <div class="adm-actions">
+        <div class="adm-actions adm-policy-history-page-actions">
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/runtime-settings">${msg_admin_layout_menu_runtimeSettings}</a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies">${msg_security_admin_nav_policies}</a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/appeal-policy">${msg_security_admin_nav_appealPolicy}</a>
@@ -73,20 +76,26 @@
             </label>
             <div class="adm-policy-history-actions">
                 <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_search}</button>
+                <c:if test="${not empty sourceType or not empty keyword or limit ne 100}">
+                    <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/policy-history">${msg_admin_common_reset}</a>
+                </c:if>
             </div>
         </div>
     </form>
 
-    <div class="adm-card">
+    <div class="adm-card adm-policy-history-list-card">
         <div class="adm-card-header">
             <div>
-                <div class="adm-card-title">${msg_admin_policyHistory_listTitle}</div>
+                <div class="adm-card-title">
+                    ${msg_admin_policyHistory_listTitle}
+                    <span class="adm-section-total-inline">${msg_admin_policyHistory_totalCountDisplay}</span>
+                </div>
                 <div class="adm-muted">${msg_admin_policyHistory_listDesc}</div>
             </div>
         </div>
         <div class="adm-card-body">
             <div class="adm-table-wrap">
-                <table class="adm-table adm-policy-history-table">
+                <table class="adm-table adm-policy-history-table" data-admin-list-ignore="true">
                     <thead>
                     <tr>
                         <th>${msg_admin_policyHistory_changedAt}</th>
