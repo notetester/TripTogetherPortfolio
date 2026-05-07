@@ -97,16 +97,16 @@
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th data-sort="time" onclick="sortBy('time')">${msg_admin_emailRequests_requestedAt}<span class="sort-ico">▼</span></th>
-                    <th data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}<span class="sort-ico">▼</span></th>
-                    <th data-sort="purpose" onclick="sortBy('purpose')">${msg_admin_emailRequests_purpose}<span class="sort-ico">▼</span></th>
-                    <th data-sort="requestEmail" onclick="sortBy('requestEmail')">${msg_admin_context_requestEmail}<span class="sort-ico">▼</span></th>
-                    <th data-sort="status" onclick="sortBy('status')">${msg_admin_common_status}<span class="sort-ico">▼</span></th>
-                    <th data-sort="verifiedAt" onclick="sortBy('verifiedAt')">${msg_admin_emailRequests_verifiedAt}<span class="sort-ico">▼</span></th>
-                    <th data-sort="appliedAt" onclick="sortBy('appliedAt')">${msg_admin_emailRequests_appliedAt}<span class="sort-ico">▼</span></th>
-                    <th data-sort="expiresAt" onclick="sortBy('expiresAt')">${msg_admin_context_expiresAt}<span class="sort-ico">▼</span></th>
-                    <th data-sort="ip" onclick="sortBy('ip')">${msg_admin_common_ip}<span class="sort-ico">▼</span></th>
-                    <th data-sort="requestId" onclick="sortBy('requestId')">${msg_admin_context_requestId}<span class="sort-ico">▼</span></th>
+          <th data-sort="time" onclick="sortBy('time')">${msg_admin_emailRequests_requestedAt}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="purpose" onclick="sortBy('purpose')">${msg_admin_emailRequests_purpose}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="requestEmail" onclick="sortBy('requestEmail')">${msg_admin_context_requestEmail}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="status" onclick="sortBy('status')">${msg_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="verifiedAt" onclick="sortBy('verifiedAt')">${msg_admin_emailRequests_verifiedAt}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="appliedAt" onclick="sortBy('appliedAt')">${msg_admin_emailRequests_appliedAt}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="expiresAt" onclick="sortBy('expiresAt')">${msg_admin_context_expiresAt}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="ip" onclick="sortBy('ip')">${msg_admin_common_ip}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="requestId" onclick="sortBy('requestId')">${msg_admin_context_requestId}<span class="sort-ico" aria-hidden="true"></span></th>
                     <th></th>
                 </tr>
                 </thead>

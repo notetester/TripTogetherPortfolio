@@ -92,16 +92,16 @@
     <div class="adm-table-wrap">
       <table class="adm-table">
         <thead><tr>
-          <th data-sort="time" onclick="sortBy('time')">${msg_admin_common_time}<span class="sort-ico">▼</span></th>
-          <th data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}<span class="sort-ico">▼</span></th>
-          <th data-sort="domain" onclick="sortBy('domain')">${msg_admin_activity_domain}<span class="sort-ico">▼</span></th>
-          <th data-sort="type" onclick="sortBy('type')">${msg_admin_activity_type}<span class="sort-ico">▼</span></th>
-          <th data-sort="activityCode" onclick="sortBy('activityCode')">${msg_admin_activity_code}<span class="sort-ico">▼</span></th>
-          <th data-sort="uri" onclick="sortBy('uri')">${msg_admin_common_uri}<span class="sort-ico">▼</span></th>
-          <th data-sort="method" onclick="sortBy('method')">${msg_admin_activity_method}<span class="sort-ico">▼</span></th>
-          <th data-sort="status" onclick="sortBy('status')">${msg_admin_common_status}<span class="sort-ico">▼</span></th>
-          <th data-sort="ip" onclick="sortBy('ip')">${msg_admin_common_ip}<span class="sort-ico">▼</span></th>
-          <th data-sort="flow" onclick="sortBy('flow')">${msg_admin_activity_flow}<span class="sort-ico">▼</span></th>
+          <th data-sort="time" onclick="sortBy('time')">${msg_admin_common_time}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="domain" onclick="sortBy('domain')">${msg_admin_activity_domain}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="type" onclick="sortBy('type')">${msg_admin_activity_type}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="activityCode" onclick="sortBy('activityCode')">${msg_admin_activity_code}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="uri" onclick="sortBy('uri')">${msg_admin_common_uri}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="method" onclick="sortBy('method')">${msg_admin_activity_method}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="status" onclick="sortBy('status')">${msg_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="ip" onclick="sortBy('ip')">${msg_admin_common_ip}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="flow" onclick="sortBy('flow')">${msg_admin_activity_flow}<span class="sort-ico" aria-hidden="true"></span></th>
           <th></th>
         </tr></thead>
         <tbody>

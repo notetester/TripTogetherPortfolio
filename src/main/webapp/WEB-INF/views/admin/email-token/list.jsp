@@ -85,14 +85,14 @@
     <div class="adm-table-wrap">
       <table class="adm-table">
         <thead><tr>
-          <th data-sort="time" onclick="sortBy('time')">${msg_admin_emailTokens_createdAt}<span class="sort-ico">▼</span></th>
-          <th data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}<span class="sort-ico">▼</span></th>
-          <th data-sort="purpose" onclick="sortBy('purpose')">${msg_admin_emailRequests_purpose}<span class="sort-ico">▼</span></th>
-          <th data-sort="targetEmail" onclick="sortBy('targetEmail')">${msg_admin_context_targetEmail}<span class="sort-ico">▼</span></th>
-          <th data-sort="used" onclick="sortBy('used')">${msg_admin_emailTokens_used}<span class="sort-ico">▼</span></th>
-          <th data-sort="usedAt" onclick="sortBy('usedAt')">${msg_admin_emailTokens_usedAt}<span class="sort-ico">▼</span></th>
-          <th data-sort="expiresAt" onclick="sortBy('expiresAt')">${msg_admin_context_expiresAt}<span class="sort-ico">▼</span></th>
-          <th data-sort="requestId" onclick="sortBy('requestId')">${msg_admin_context_requestId}<span class="sort-ico">▼</span></th>
+          <th data-sort="time" onclick="sortBy('time')">${msg_admin_emailTokens_createdAt}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="purpose" onclick="sortBy('purpose')">${msg_admin_emailRequests_purpose}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="targetEmail" onclick="sortBy('targetEmail')">${msg_admin_context_targetEmail}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="used" onclick="sortBy('used')">${msg_admin_emailTokens_used}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="usedAt" onclick="sortBy('usedAt')">${msg_admin_emailTokens_usedAt}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="expiresAt" onclick="sortBy('expiresAt')">${msg_admin_context_expiresAt}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th data-sort="requestId" onclick="sortBy('requestId')">${msg_admin_context_requestId}<span class="sort-ico" aria-hidden="true"></span></th>
           <th></th>
         </tr></thead>
         <tbody>
