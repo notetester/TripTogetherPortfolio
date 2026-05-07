@@ -61,8 +61,8 @@
 <c:set var="pageTitle" value="${msg_admin_inquiry_detail_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
-    <div style="margin-bottom:16px;">
+<div class="adm-content adm-inquiry-page">
+    <div class="adm-inquiry-back-row">
         <a href="javascript:goBackToList()" class="adm-back-link">← ${msg_admin_inquiry_detail_backToList}</a>
     </div>
 
@@ -72,10 +72,10 @@
         <div>
 
             <%-- 문의 내용 카드 --%>
-            <div class="adm-card" style="margin-bottom:20px;">
+            <div class="adm-card adm-inquiry-detail-card">
                 <div class="adm-card-head">
                     <div class="adm-card-title">${msg_admin_inquiry_detail_title}</div>
-                    <div style="display:flex;gap:8px;align-items:center;">
+                    <div class="adm-inquiry-detail-head-actions">
                         <span class="status-badge ${inquiry.status}">
                             <c:choose>
                                 <c:when test="${inquiry.status eq 'PENDING'}">${msg_admin_inquiry_status_pending}</c:when>
@@ -89,12 +89,11 @@
                         </span>
                         <a href="${pageContext.request.contextPath}/inquiry/${inquiry.inquiryId}"
                            target="_blank"
-                           class="adm-btn adm-btn-ghost"
-                           style="font-size:12px;text-decoration:none;">${msg_admin_inquiry_detail_viewOriginal}</a>
+                           class="adm-btn adm-btn-ghost adm-inquiry-small-btn">${msg_admin_inquiry_detail_viewOriginal}</a>
                     </div>
                 </div>
                 <div class="adm-card-body">
-                    <div style="margin-bottom:10px;">
+                    <div class="adm-inquiry-detail-tags">
                         <span class="adm-post-type-badge">
                             <c:choose>
                                 <c:when test="${inquiry.category eq 'service'}">${msg_admin_inquiry_category_service}</c:when>
@@ -111,7 +110,7 @@
                             ${msg_admin_common_sameCategory}
                         </button>
                         <c:if test="${inquiry.privateFlag}">
-                            <span style="font-size:11px;color:#94a3b8;">🔒 ${msg_admin_inquiry_privateFlag}</span>
+                            <span class="adm-inquiry-private-note">🔒 ${msg_admin_inquiry_privateFlag}</span>
                         </c:if>
                     </div>
                     <h3 class="adm-detail-title">${inquiry.title}</h3>
@@ -130,8 +129,7 @@
                          data-field-name="content"
                          data-default-source-lang="ko"
                          data-source-text="${fn:escapeXml(inquiry.content)}"></div>
-                    <div style="margin-top:16px;padding-top:12px;border-top:1px solid #1e2736;
-                                display:flex;gap:20px;font-size:12px;color:#64748b;">
+                    <div class="adm-inquiry-detail-meta">
                         <span>${msg_admin_inquiry_viewCount}</span>
                         <span><fmt:formatDate value="${inquiry.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
                     </div>
@@ -143,7 +141,7 @@
                 <div class="adm-card-head">
                     <div class="adm-card-title">${msg_admin_inquiry_detail_answerTitle}</div>
                     <c:if test="${not empty inquiry.answerId}">
-                        <div style="font-size:12px;color:#64748b;">
+                        <div class="adm-inquiry-answer-meta">
                             ${inquiry.answerAdminNickname} ·
                             <fmt:formatDate value="${inquiry.answeredAtDate}" type="both" dateStyle="short" timeStyle="short"/>
                         </div>
@@ -162,22 +160,21 @@
                                  data-field-name="content"
                                  data-default-source-lang="ko"
                                  data-source-text="${fn:escapeXml(inquiry.answerContent)}"></div>
-                            <div style="display:flex;gap:8px;">
-                                <button class="adm-btn adm-btn-ghost" style="font-size:12px;"
+                            <div class="adm-inquiry-answer-actions">
+                                <button class="adm-btn adm-btn-ghost adm-inquiry-small-btn"
                                         onclick="showEditForm()">${msg_admin_inquiry_detail_answerEdit}</button>
-                                <button class="adm-btn adm-btn-ghost"
-                                        style="font-size:12px;color:#f87171;border-color:#f87171;"
+                                <button class="adm-btn adm-btn-ghost adm-inquiry-small-btn adm-inquiry-danger-btn"
                                         onclick="deleteAnswer()">${msg_admin_inquiry_detail_answerDelete}</button>
                             </div>
                         </div>
-                        <div id="answerEditForm" style="display:none;">
-                            <textarea id="answerEditContent" class="adm-input"
-                                      style="width:100%;height:150px;resize:vertical;padding:10px;font-size:13px;"
+                        <div id="answerEditForm" hidden>
+                            <textarea id="answerEditContent"
+                                      class="adm-input adm-inquiry-answer-textarea"
                                       >${inquiry.answerContent}</textarea>
-                            <div style="display:flex;gap:8px;margin-top:8px;">
-                                <button class="adm-btn adm-btn-primary" style="font-size:12px;"
+                            <div class="adm-inquiry-answer-actions">
+                                <button class="adm-btn adm-btn-primary adm-inquiry-small-btn"
                                         onclick="saveAnswer(true)">${msg_admin_inquiry_detail_save}</button>
-                                <button class="adm-btn adm-btn-ghost" style="font-size:12px;"
+                                <button class="adm-btn adm-btn-ghost adm-inquiry-small-btn"
                                         onclick="hideEditForm()">${msg_admin_common_cancel}</button>
                             </div>
                         </div>
@@ -186,11 +183,11 @@
                     <%-- 답변 없을 때 작성 폼 --%>
                     <c:if test="${empty inquiry.answerId}">
                         <div id="answerWriteForm">
-                            <textarea id="answerNewContent" class="adm-input"
-                                      style="width:100%;height:150px;resize:vertical;padding:10px;font-size:13px;"
+                            <textarea id="answerNewContent"
+                                      class="adm-input adm-inquiry-answer-textarea"
                                       placeholder="${fn:escapeXml(msg_admin_inquiry_detail_answerPlaceholder)}"></textarea>
-                            <div style="display:flex;gap:8px;margin-top:8px;">
-                                <button class="adm-btn adm-btn-primary" style="font-size:12px;"
+                            <div class="adm-inquiry-answer-actions">
+                                <button class="adm-btn adm-btn-primary adm-inquiry-small-btn"
                                         onclick="saveAnswer(false)">${msg_admin_inquiry_detail_answerRegister}</button>
                             </div>
                         </div>
@@ -211,28 +208,26 @@
                     <div class="adm-side-section">
 
                         <div>
-                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${adminCommonUserId}</div>
-                            <div style="font-size:14px;font-weight:600;">${inquiry.userId}</div>
+                            <div class="adm-inquiry-side-label">${adminCommonUserId}</div>
+                            <div class="adm-inquiry-side-value">${inquiry.userId}</div>
                         </div>
                         <div>
-                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${msg_admin_common_nickname}</div>
-                            <div style="font-size:14px;font-weight:600;">${inquiry.nickname}</div>
+                            <div class="adm-inquiry-side-label">${msg_admin_common_nickname}</div>
+                            <div class="adm-inquiry-side-value">${inquiry.nickname}</div>
                         </div>
 
                         <div class="adm-meta-actions">
                             <c:choose>
                                 <c:when test="${not empty inquiry.userIdx}">
                                     <button type="button"
-                                            class="adm-btn adm-btn-ghost js-open-member-context"
-                                            data-user-idx="${inquiry.userIdx}"
-                                            style="width:100%;text-align:center;font-size:12px;display:block;">
+                                            class="adm-btn adm-btn-ghost adm-inquiry-side-full-btn js-open-member-context"
+                                            data-user-idx="${inquiry.userIdx}">
                                         ${msg_admin_common_memberInfoView}
                                     </button>
                                 </c:when>
                                 <c:otherwise>
                                     <a href="${pageContext.request.contextPath}/admin/members?searchType=userId&keyword=${inquiry.userId}"
-                                       class="adm-btn adm-btn-ghost"
-                                       style="text-align:center;font-size:12px;text-decoration:none;display:block;">
+                                       class="adm-btn adm-btn-ghost adm-inquiry-side-full-btn">
                                         ${msg_admin_common_memberInfoView}
                                     </a>
                                 </c:otherwise>
@@ -257,18 +252,15 @@
 
                         <%-- 상태 변경 --%>
                         <div class="adm-meta-actions" id="inquiry-status-actions">
-                            <div style="font-size:11px;color:#64748b;margin-bottom:8px;">${msg_admin_inquiry_detail_statusChange}</div>
-                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                                <button class="adm-btn adm-btn-ghost"
-                                        style="font-size:11px;padding:4px 10px;color:#fbbf24;border-color:#fbbf24;"
+                            <div class="adm-inquiry-side-label is-spaced">${msg_admin_inquiry_detail_statusChange}</div>
+                            <div class="adm-inquiry-status-actions">
+                                <button class="adm-btn adm-btn-ghost adm-inquiry-status-btn is-pending"
                                         data-status="PENDING"
                                         onclick="changeStatus(this.getAttribute('data-status'))">${msg_admin_inquiry_status_pending}</button>
-                                <button class="adm-btn adm-btn-ghost"
-                                        style="font-size:11px;padding:4px 10px;color:#fb923c;border-color:#fb923c;"
+                                <button class="adm-btn adm-btn-ghost adm-inquiry-status-btn is-progress"
                                         data-status="IN_PROGRESS"
                                         onclick="changeStatus(this.getAttribute('data-status'))">${msg_admin_inquiry_status_inProgress}</button>
-                                <button class="adm-btn adm-btn-ghost"
-                                        style="font-size:11px;padding:4px 10px;color:#34d399;border-color:#34d399;"
+                                <button class="adm-btn adm-btn-ghost adm-inquiry-status-btn is-complete"
                                         data-status="COMPLETED"
                                         onclick="changeStatus(this.getAttribute('data-status'))">${msg_admin_inquiry_status_completed}</button>
                             </div>
@@ -277,13 +269,11 @@
                         <%-- 삭제 요청 처리: DELETE_REQUESTED 상태일 때만 --%>
                         <c:if test="${inquiry.status eq 'DELETE_REQUESTED'}">
                             <div class="adm-meta-actions">
-                                <div style="font-size:11px;color:#fbbf24;margin-bottom:8px;">⚠ ${msg_admin_inquiry_detail_deleteRequestPending}</div>
-                                <div style="display:flex;flex-direction:column;gap:6px;">
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:12px;color:#ef4444;border-color:#ef4444;"
+                                <div class="adm-inquiry-delete-warning">⚠ ${msg_admin_inquiry_detail_deleteRequestPending}</div>
+                                <div class="adm-inquiry-side-stack">
+                                    <button class="adm-btn adm-btn-ghost adm-inquiry-danger-btn"
                                             onclick="approveDeleteRequest()">🗑️ ${msg_admin_inquiry_detail_approveDeleteRequest}</button>
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:12px;color:#94a3b8;border-color:#94a3b8;"
+                                    <button class="adm-btn adm-btn-ghost adm-inquiry-muted-btn"
                                             onclick="rejectDeleteRequest()">✖ ${msg_admin_inquiry_detail_rejectDeleteRequest}</button>
                                 </div>
                             </div>
@@ -292,8 +282,7 @@
                         <%-- 삭제: DELETE_REQUESTED가 아닐 때만 (중복 방지) --%>
                         <c:if test="${inquiry.status ne 'DELETE_REQUESTED'}">
                             <div class="adm-meta-actions">
-                                <button class="adm-btn adm-btn-ghost"
-                                        style="font-size:12px;color:#f87171;border-color:#f87171;width:100%;"
+                                <button class="adm-btn adm-btn-ghost adm-inquiry-danger-btn adm-inquiry-side-full-btn"
                                         onclick="deleteInquiry()">${msg_admin_inquiry_detail_deleteInquiry}</button>
                             </div>
                         </c:if>
@@ -462,13 +451,13 @@ function rejectDeleteRequest() {
 }
 
 function showEditForm() {
-    document.getElementById('answerView').style.display = 'none';
-    document.getElementById('answerEditForm').style.display = 'block';
+    document.getElementById('answerView').hidden = true;
+    document.getElementById('answerEditForm').hidden = false;
 }
 
 function hideEditForm() {
-    document.getElementById('answerEditForm').style.display = 'none';
-    document.getElementById('answerView').style.display = 'block';
+    document.getElementById('answerEditForm').hidden = true;
+    document.getElementById('answerView').hidden = false;
 }
 </script>
 <%@ include file="../layout-close.jsp" %>

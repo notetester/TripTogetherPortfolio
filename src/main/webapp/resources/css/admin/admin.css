@@ -7193,6 +7193,146 @@ body.sa-light .adm-audit-row-detail-value {
     padding: 0 10px;
 }
 
+.adm-inquiry-back-row,
+.adm-inquiry-detail-card {
+    margin-bottom: 16px;
+}
+
+.adm-inquiry-detail-head-actions,
+.adm-inquiry-detail-tags,
+.adm-inquiry-answer-actions,
+.adm-inquiry-status-actions,
+.adm-inquiry-side-stack {
+    display: flex;
+    gap: 8px;
+}
+
+.adm-inquiry-detail-head-actions {
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.adm-inquiry-detail-tags {
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.adm-inquiry-small-btn {
+    min-height: 30px;
+    padding: 5px 10px;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.adm-inquiry-private-note,
+.adm-inquiry-answer-meta,
+.adm-inquiry-detail-meta,
+.adm-inquiry-side-label {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.adm-inquiry-private-note,
+.adm-inquiry-side-label {
+    font-size: 11px;
+}
+
+.adm-inquiry-detail-meta {
+    display: flex;
+    gap: 20px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #1e2736;
+}
+
+.adm-inquiry-answer-actions {
+    align-items: center;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.adm-inquiry-answer-textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 10px;
+    font-size: 13px;
+    resize: vertical;
+}
+
+.adm-inquiry-side-label {
+    margin-bottom: 2px;
+}
+
+.adm-inquiry-side-label.is-spaced,
+.adm-inquiry-delete-warning {
+    margin-bottom: 8px;
+}
+
+.adm-inquiry-side-value {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.adm-inquiry-side-full-btn {
+    display: block;
+    width: 100%;
+    font-size: 12px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.adm-inquiry-status-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.adm-inquiry-status-btn {
+    min-height: 28px;
+    padding: 4px 10px;
+    font-size: 11px;
+}
+
+.adm-inquiry-status-btn.is-pending {
+    color: #fbbf24;
+    border-color: #fbbf24;
+}
+
+.adm-inquiry-status-btn.is-progress {
+    color: #fb923c;
+    border-color: #fb923c;
+}
+
+.adm-inquiry-status-btn.is-complete {
+    color: #34d399;
+    border-color: #34d399;
+}
+
+.adm-inquiry-delete-warning {
+    color: #fbbf24;
+    font-size: 11px;
+}
+
+.adm-inquiry-side-stack {
+    flex-direction: column;
+    gap: 6px;
+}
+
+.adm-inquiry-danger-btn {
+    color: #f87171;
+    border-color: #f87171;
+}
+
+.adm-inquiry-muted-btn {
+    color: #94a3b8;
+    border-color: #94a3b8;
+}
+
+body.sa-light .adm-inquiry-detail-meta {
+    border-top-color: #e2e8f0;
+}
+
 body.sa-light .adm-inquiry-member-name {
     color: #2563eb;
 }
