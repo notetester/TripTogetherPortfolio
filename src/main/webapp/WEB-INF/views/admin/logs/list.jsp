@@ -72,7 +72,7 @@
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
-    <div class="adm-card adm-audit-filter-card adm-login-audit-filter-card">
+    <div class="adm-card adm-audit-filter-card adm-login-audit-filter-card adm-overflow-visible">
         <div class="adm-card-body">
             <form id="loginSearchForm" method="get" action="${pageContext.request.contextPath}/admin/logins">
                 <div class="adm-filter-bar adm-audit-filterbar adm-login-audit-filterbar">
@@ -142,7 +142,7 @@
         </div>
     </div>
 
-    <div class="adm-card adm-managed-section-card js-login-section-card" data-section="loginAudits" data-enhanced="true">
+    <div class="adm-card adm-managed-section-card js-login-section-card adm-overflow-visible" data-section="loginAudits" data-enhanced="true">
         <div class="adm-card-head">
             <div class="adm-card-title">
                 ${msg_admin_logs_historyTitle}
@@ -165,7 +165,7 @@
         </div>
         <div class="adm-local-toolbar adm-managed-local-toolbar">
             <div class="adm-local-toolbar-group adm-managed-toolbar-actions">
-                <button type="button" class="adm-dash-sort-reset js-login-sort-reset" id="loginSortResetBtn" style="display:none;" onclick="resetLoginSort()"></button>
+                <button type="button" class="adm-dash-sort-reset js-login-sort-reset adm-is-hidden" id="loginSortResetBtn" onclick="resetLoginSort()"></button>
                 <select class="adm-select js-login-section-mode" id="loginModeSelect" title="${msg_admin_blocks_mode_label}">
                     <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
                     <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
@@ -177,7 +177,7 @@
                 </select>
             </div>
         </div>
-        <div id="loginBulkBar" class="adm-audit-bulk-bar" style="display:none;">
+        <div id="loginBulkBar" class="adm-audit-bulk-bar adm-is-hidden">
             <span><strong id="loginBulkCount">0</strong>${msg_admin_common_selectedCount}</span>
             <button type="button" class="adm-btn adm-btn-ghost" onclick="clearLoginSelection()">${msg_admin_common_clearSelection}</button>
         </div>
@@ -384,7 +384,7 @@ function updateLoginSortIndicators() {
     const resetBtn = document.querySelector('.js-login-sort-reset');
     if (resetBtn) {
         resetBtn.textContent = ADMIN_LOGIN_MSG.dashSortReset;
-        resetBtn.style.display = loginSectionState.sortBy ? '' : 'none';
+        resetBtn.classList.toggle('adm-is-hidden', !loginSectionState.sortBy);
     }
 }
 
@@ -658,7 +658,10 @@ function updateLoginSelectionState() {
     const checked = getLoginCheckedBoxes();
     const n = checked.length;
     const bar = document.getElementById('loginBulkBar');
-    if (bar) bar.style.display = n > 0 ? 'flex' : 'none';
+    if (bar) {
+        bar.classList.toggle('adm-is-hidden', n === 0);
+        bar.classList.toggle('is-active', n > 0);
+    }
     const count = document.getElementById('loginBulkCount');
     if (count) count.textContent = n;
     const selectedBtn = document.getElementById('loginExportSelectedBtn');
