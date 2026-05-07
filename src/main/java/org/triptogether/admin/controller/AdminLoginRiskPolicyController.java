@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.service.LoginRiskPolicyService;
+import org.triptogether.auth.vo.AdminNotificationPreferenceVO;
 import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.SecurityAppealPolicyVO;
@@ -295,7 +296,12 @@ public class AdminLoginRiskPolicyController {
     @GetMapping("/notification-preferences")
     public String notificationPreferences(HttpSession session, Model model) {
         Long adminIdx = currentAdminIdx(session);
-        model.addAttribute("preferences", loginRiskPolicyService.getNotificationPreferences(adminIdx));
+        List<AdminNotificationPreferenceVO> preferences = loginRiskPolicyService.getNotificationPreferences(adminIdx);
+        long enabledPreferenceCount = preferences.stream()
+                .filter(AdminNotificationPreferenceVO::isEnabled)
+                .count();
+        model.addAttribute("preferences", preferences);
+        model.addAttribute("enabledPreferenceCount", enabledPreferenceCount);
         model.addAttribute("activeMenu", "adminNotificationPreferences");
         model.addAttribute("pageTitleCode", "security.admin.notifications.title");
         return "admin/login-risk/notification-preferences";
