@@ -7722,6 +7722,14 @@ body.sa-light .adm-report-deleted-badge {
     width: 104px;
 }
 
+.adm-community-col-source {
+    width: 160px;
+}
+
+.adm-community-col-date-small {
+    width: 94px;
+}
+
 .adm-community-id-cell {
     color: #64748b;
     font-size: 12px;
@@ -7752,6 +7760,18 @@ body.sa-light .adm-report-deleted-badge {
     color: #94a3b8;
     font-size: 12px;
     white-space: nowrap;
+}
+
+.adm-community-source-cell {
+    max-width: 160px;
+}
+
+.adm-community-kind-cell {
+    font-size: 12px;
+}
+
+.adm-community-kind-reply {
+    color: #94a3b8;
 }
 
 .adm-community-report-count.is-hot {
