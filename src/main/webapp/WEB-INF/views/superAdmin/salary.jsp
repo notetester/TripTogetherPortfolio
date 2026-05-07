@@ -110,26 +110,26 @@
 
 <%@ include file="layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content sa-salary-page">
     <div class="adm-card">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_superAdmin_salary_cardTitle}</div>
-            <div style="font-size:13px;color:#94a3b8;">${msg_superAdmin_salary_cardDescription}</div>
+            <div class="sa-card-subtitle">${msg_superAdmin_salary_cardDescription}</div>
         </div>
-        <div class="adm-card-body" style="padding:0;">
+        <div class="adm-card-body sa-table-card-body">
 
             <%-- 검색/필터 폼 (서버사이드) --%>
             <form method="get" action="${pageContext.request.contextPath}/superAdmin/salary" class="sa-salary-toolbar" id="salaryFilterForm">
                 <input type="text" name="keyword"
                        value="${fn:escapeXml(search.keyword)}"
-                       placeholder="${msg_superAdmin_salary_filter_keywordPlaceholder}" class="adm-input" style="width:220px;">
+                       placeholder="${msg_superAdmin_salary_filter_keywordPlaceholder}" class="adm-input sa-salary-keyword">
                 <input type="text" name="filterDepartment"
                        value="${fn:escapeXml(search.filterDepartment)}"
-                       placeholder="${msg_superAdmin_salary_filter_departmentPlaceholder}" class="adm-input" style="width:140px;">
+                       placeholder="${msg_superAdmin_salary_filter_departmentPlaceholder}" class="adm-input sa-salary-filter">
                 <input type="text" name="filterPermissionCode"
                        value="${fn:escapeXml(search.filterPermissionCode)}"
-                       placeholder="${msg_superAdmin_salary_filter_permissionPlaceholder}" class="adm-input" style="width:140px;">
-                <select name="filterAccountStatus" class="adm-select" style="width:130px;">
+                       placeholder="${msg_superAdmin_salary_filter_permissionPlaceholder}" class="adm-input sa-salary-filter">
+                <select name="filterAccountStatus" class="adm-select sa-salary-status">
                     <option value="">${msg_superAdmin_salary_filter_accountStatusAll}</option>
                     <option value="ACTIVE"   <c:if test="${search.filterAccountStatus == 'ACTIVE'}">selected</c:if>>${msg_admin_status_ACTIVE}</option>
                     <option value="BLOCKED"  <c:if test="${search.filterAccountStatus == 'BLOCKED'}">selected</c:if>>${msg_admin_status_BLOCKED}</option>
@@ -139,18 +139,20 @@
                 <input type="hidden" name="pageSize" value="${search.pageSize}">
                 <button type="submit" class="adm-btn adm-btn-primary">${msg_superAdmin_salary_action_search}</button>
                 <a href="${pageContext.request.contextPath}/superAdmin/salary" class="adm-btn adm-btn-ghost">${msg_superAdmin_salary_action_reset}</a>
-                <button type="button" class="adm-btn adm-btn-ghost" style="margin-left:auto;"
-                        onclick="triggerSalaryUpload()">${msg_superAdmin_salary_action_uploadExcel}</button>
-                <input type="file" id="salaryUploadInput" accept=".xlsx,.xls" style="display:none;"
-                       onchange="handleSalaryFile(event)">
-                <a href="${pageContext.request.contextPath}/superAdmin/salary/export?keyword=${fn:escapeXml(search.keyword)}&filterDepartment=${fn:escapeXml(search.filterDepartment)}&filterPermissionCode=${fn:escapeXml(search.filterPermissionCode)}&filterAccountStatus=${fn:escapeXml(search.filterAccountStatus)}"
-                   class="adm-btn adm-btn-ghost">
-                    ${msg_superAdmin_salary_action_exportExcel}
-                </a>
-                <span style="font-size:13px;color:#94a3b8;">${msg_superAdmin_salary_table_count}</span>
+                <div class="sa-salary-actions">
+                    <button type="button" class="adm-btn adm-btn-ghost"
+                            onclick="triggerSalaryUpload()">${msg_superAdmin_salary_action_uploadExcel}</button>
+                    <input type="file" id="salaryUploadInput" accept=".xlsx,.xls" class="sa-hidden-file"
+                           onchange="handleSalaryFile(event)">
+                    <a href="${pageContext.request.contextPath}/superAdmin/salary/export?keyword=${fn:escapeXml(search.keyword)}&filterDepartment=${fn:escapeXml(search.filterDepartment)}&filterPermissionCode=${fn:escapeXml(search.filterPermissionCode)}&filterAccountStatus=${fn:escapeXml(search.filterAccountStatus)}"
+                       class="adm-btn adm-btn-ghost">
+                        ${msg_superAdmin_salary_action_exportExcel}
+                    </a>
+                    <span class="sa-salary-count">${msg_superAdmin_salary_table_count}</span>
+                </div>
             </form>
 
-            <div style="overflow-x:auto;">
+            <div class="sa-table-scroll">
                 <table class="sa-salary-table" id="salaryTable">
                     <thead>
                         <tr>
@@ -223,7 +225,7 @@
             </div>
 
             <c:if test="${empty salaryList}">
-                <div style="text-align:center;padding:60px;color:#94a3b8;">${msg_superAdmin_salary_empty}</div>
+                <div class="sa-empty-cell sa-empty-cell-large">${msg_superAdmin_salary_empty}</div>
             </c:if>
 
             <%-- 페이징 --%>
@@ -242,7 +244,7 @@
 
 <%-- 급여 편집 모달 --%>
 <div class="adm-modal-overlay" id="salaryEditModal">
-    <div class="adm-modal" style="width:480px;max-width:95vw;">
+    <div class="adm-modal sa-modal-xs">
         <div class="adm-modal-head">
             <div class="adm-modal-title" id="salaryEditTitle">${msg_superAdmin_salary_modal_editTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('salaryEditModal')">✕</button>
@@ -326,22 +328,22 @@
 
 <%-- 급여/역량 업로드 미리보기 모달 --%>
 <div class="adm-modal-overlay" id="salaryUploadPreviewModal">
-    <div class="adm-modal" style="width:1100px;max-width:98vw;">
+    <div class="adm-modal sa-modal-xl">
         <div class="adm-modal-head">
             <div class="adm-modal-title">${msg_superAdmin_salary_modal_previewTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('salaryUploadPreviewModal')">✕</button>
         </div>
         <div class="adm-modal-body">
-            <div id="salaryPreviewSummary" style="display:flex;gap:16px;margin-bottom:12px;font-size:13px;"></div>
-            <div id="salaryPreviewWarn" style="display:none;margin-bottom:10px;padding:8px 12px;background:#fef3c7;color:#92400e;border-radius:6px;font-size:13px;"></div>
-            <div style="max-height:60vh;overflow:auto;border:1px solid #e5e7eb;border-radius:6px;">
-                <table class="sa-salary-table" id="salaryPreviewTable" style="font-size:12px;">
+            <div id="salaryPreviewSummary" class="sa-preview-summary"></div>
+            <div id="salaryPreviewWarn" class="sa-preview-warning"></div>
+            <div class="sa-preview-table-wrap">
+                <table class="sa-salary-table sa-preview-table" id="salaryPreviewTable">
                     <thead>
                         <tr>
-                            <th style="width:50px;">${msg_superAdmin_salary_preview_row}</th>
-                            <th style="width:90px;">${msg_superAdmin_salary_table_state}</th>
-                            <th style="width:120px;">${msg_superAdmin_salary_table_nickname}</th>
-                            <th style="width:200px;">${msg_superAdmin_salary_table_email}</th>
+                            <th class="sa-preview-row-col">${msg_superAdmin_salary_preview_row}</th>
+                            <th class="sa-preview-state-col">${msg_superAdmin_salary_table_state}</th>
+                            <th class="sa-preview-name-col">${msg_superAdmin_salary_table_nickname}</th>
+                            <th class="sa-preview-email-col">${msg_superAdmin_salary_table_email}</th>
                             <th>${msg_superAdmin_salary_table_changedContent}</th>
                         </tr>
                     </thead>
@@ -466,16 +468,16 @@ function renderSalaryPreview(preview) {
 
     document.getElementById('salaryPreviewSummary').innerHTML =
         '<span>' + SALARY_MESSAGES.total + ' <b>' + totalCnt + '</b>' + '${msg_superAdmin_salary_preview_row_js}' + '</span>' +
-        '<span style="color:#2563eb;">' + SALARY_MESSAGES.changed + ' <b>' + changeCnt + '</b></span>' +
-        '<span style="color:#64748b;">' + SALARY_MESSAGES.unchanged + ' <b>' + unchangedCnt + '</b></span>' +
-        '<span style="color:#dc2626;">' + SALARY_MESSAGES.error + ' <b>' + errorCnt + '</b></span>';
+        '<span class="sa-preview-summary-change">' + SALARY_MESSAGES.changed + ' <b>' + changeCnt + '</b></span>' +
+        '<span class="sa-preview-summary-muted">' + SALARY_MESSAGES.unchanged + ' <b>' + unchangedCnt + '</b></span>' +
+        '<span class="sa-preview-summary-error">' + SALARY_MESSAGES.error + ' <b>' + errorCnt + '</b></span>';
 
     const warnEl = document.getElementById('salaryPreviewWarn');
     if (errorCnt > 0) {
-        warnEl.style.display = 'block';
+        warnEl.classList.add('is-visible');
         warnEl.textContent = SALARY_MESSAGES.errorExcluded;
     } else {
-        warnEl.style.display = 'none';
+        warnEl.classList.remove('is-visible');
     }
 
     const tbody = document.getElementById('salaryPreviewTbody');
@@ -485,27 +487,27 @@ function renderSalaryPreview(preview) {
 
         let badge;
         if (r.status === 'CHANGE') {
-            badge = '<span style="display:inline-block;padding:2px 8px;border-radius:10px;background:#dbeafe;color:#1d4ed8;font-size:11px;">' + SALARY_MESSAGES.statusChange + '</span>';
+            badge = '<span class="sa-preview-badge is-change">' + SALARY_MESSAGES.statusChange + '</span>';
         } else if (r.status === 'ERROR') {
-            badge = '<span style="display:inline-block;padding:2px 8px;border-radius:10px;background:#fee2e2;color:#b91c1c;font-size:11px;">' + SALARY_MESSAGES.statusError + '</span>';
+            badge = '<span class="sa-preview-badge is-error">' + SALARY_MESSAGES.statusError + '</span>';
         } else {
-            badge = '<span style="display:inline-block;padding:2px 8px;border-radius:10px;background:#f1f5f9;color:#64748b;font-size:11px;">' + SALARY_MESSAGES.statusUnchanged + '</span>';
+            badge = '<span class="sa-preview-badge is-unchanged">' + SALARY_MESSAGES.statusUnchanged + '</span>';
         }
 
         let diffHtml;
         if (r.status === 'ERROR') {
-            diffHtml = '<span style="color:#b91c1c;">' + escapeHtml(r.errorMessage || SALARY_MESSAGES.genericError) + '</span>';
+            diffHtml = '<span class="sa-preview-error">' + escapeHtml(r.errorMessage || SALARY_MESSAGES.genericError) + '</span>';
         } else if (r.status === 'CHANGE' && r.newValues) {
             const parts = [];
             Object.keys(r.newValues).forEach(k => {
                 const oldV = (r.oldValues && r.oldValues[k]) || '∅';
                 const newV = r.newValues[k] || '∅';
                 const label = SALARY_MESSAGES.fieldLabels[k] || k;
-                parts.push('<div><b>' + escapeHtml(label) + '</b>: <span style="color:#64748b;text-decoration:line-through;">' + escapeHtml(oldV) + '</span> → <span style="color:#1d4ed8;">' + escapeHtml(newV) + '</span></div>');
+                parts.push('<div><b>' + escapeHtml(label) + '</b>: <span class="sa-preview-old">' + escapeHtml(oldV) + '</span> → <span class="sa-preview-new">' + escapeHtml(newV) + '</span></div>');
             });
             diffHtml = parts.join('');
         } else {
-            diffHtml = '<span style="color:#94a3b8;">' + SALARY_MESSAGES.noChanges + '</span>';
+            diffHtml = '<span class="sa-preview-muted">' + SALARY_MESSAGES.noChanges + '</span>';
         }
 
         tr.innerHTML =
@@ -513,7 +515,7 @@ function renderSalaryPreview(preview) {
             '<td>' + badge + '</td>' +
             '<td>' + escapeHtml(r.nickname || '') + '</td>' +
             '<td>' + escapeHtml(r.email || '') + '</td>' +
-            '<td style="white-space:normal;">' + diffHtml + '</td>';
+            '<td class="sa-preview-diff-cell">' + diffHtml + '</td>';
         tbody.appendChild(tr);
     });
 

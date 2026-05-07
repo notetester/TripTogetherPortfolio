@@ -26,19 +26,19 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content sa-policy-admin-page">
 
     <div class="adm-card">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_superAdmin_permissions_requests_cardTitle}</div>
-            <div style="font-size:13px;color:#94a3b8;">
+            <div class="sa-card-subtitle">
                 ${msg_superAdmin_permissions_requests_cardDescription}
             </div>
         </div>
-        <div class="adm-card-body" style="padding:0;">
+        <div class="adm-card-body sa-table-card-body">
             <c:choose>
                 <c:when test="${empty requestList}">
-                    <div style="text-align:center;padding:60px;color:#94a3b8;">
+                    <div class="sa-empty-cell sa-empty-cell-large">
                         ${msg_superAdmin_permissions_requests_empty}
                     </div>
                 </c:when>
@@ -54,10 +54,10 @@
                             <div>${msg_superAdmin_permissions_requests_requester}: ${not empty req.requestedByNickname ? fn:escapeXml(req.requestedByNickname) : '-'}</div>
                             <div><fmt:formatDate value="${req.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
                             <c:if test="${not empty req.description}">
-                                <div style="color:#64748b;margin-top:2px;">${fn:escapeXml(req.description)}</div>
+                                <div class="sa-req-desc">${fn:escapeXml(req.description)}</div>
                             </c:if>
                         </div>
-                        <div style="display:flex;gap:8px;">
+                        <div class="sa-row-actions">
                             <button class="adm-btn adm-btn-sm adm-btn-primary"
                                     data-id="${req.adminPermissionIdx}"
                                     onclick="approveRequest(this.getAttribute('data-id'), this)">${msg_superAdmin_permissions_requests_action_approve}</button>
@@ -72,7 +72,7 @@
         </div>
     </div>
 
-    <div style="margin-top:12px;font-size:13px;color:#94a3b8;padding:0 4px;">
+    <div class="sa-help-text sa-requests-hint">
         ${msg_superAdmin_permissions_requests_createHint}
     </div>
 </div>

@@ -100,7 +100,7 @@
             <div class="adm-card-head">
                 <div class="adm-card-title">${msg_superAdmin_stats_card_dormantAdmins} <span class="sa-exception-count">(${msg_superAdmin_stats_suffix_days90})</span></div>
             </div>
-            <div class="adm-card-body" style="padding:0;overflow-x:auto;">
+            <div class="adm-card-body sa-table-card-body sa-table-scroll">
                 <c:choose>
                     <c:when test="${empty dormantAdmins}">
                         <div class="sa-exception-empty">${msg_superAdmin_stats_empty}</div>
@@ -127,7 +127,7 @@
             <div class="adm-card-head">
                 <div class="adm-card-title">${msg_superAdmin_stats_card_noPermissionAdmins}</div>
             </div>
-            <div class="adm-card-body" style="padding:0;overflow-x:auto;">
+            <div class="adm-card-body sa-table-card-body sa-table-scroll">
                 <c:choose>
                     <c:when test="${empty adminsWithoutPermissions}">
                         <div class="sa-exception-empty">${msg_superAdmin_stats_empty}</div>
@@ -154,7 +154,7 @@
             <div class="adm-card-head">
                 <div class="adm-card-title">${msg_superAdmin_stats_card_withoutManagerAdmins}</div>
             </div>
-            <div class="adm-card-body" style="padding:0;overflow-x:auto;">
+            <div class="adm-card-body sa-table-card-body sa-table-scroll">
                 <c:choose>
                     <c:when test="${empty adminsWithoutManager}">
                         <div class="sa-exception-empty">${msg_superAdmin_stats_empty}</div>

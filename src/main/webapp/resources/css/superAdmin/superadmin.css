@@ -60,6 +60,7 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-modal-xs { width:460px; max-width:95vw; }
 .sa-modal-md { width:680px; max-width:95vw; }
 .sa-modal-lg { width:600px; max-width:95vw; }
+.sa-modal-xl { width:1100px; max-width:98vw; }
 .sa-modal-scroll { max-height:70vh; overflow-y:auto; }
 .sa-modal-search-row { display:flex; gap:8px; margin-bottom:16px; }
 .sa-modal-search-row .adm-input { flex:1; min-width:0; }
@@ -272,7 +273,14 @@ body.sa-light .sa-org-tree::-webkit-scrollbar-thumb:hover { background: #94a3b8;
 }
 
 /* ── 급여/역량 현황 일람표 ── */
-.sa-salary-toolbar { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid #2d3748; }
+.sa-salary-toolbar { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid #2d3748; flex-wrap:wrap; }
+.sa-salary-keyword { flex:1 1 240px; min-width:200px; }
+.sa-salary-filter { flex:0 1 150px; min-width:120px; }
+.sa-salary-status { flex:0 1 140px; min-width:120px; }
+.sa-salary-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex:1 1 320px; margin-left:auto; flex-wrap:wrap; }
+.sa-salary-count { color:#94a3b8; font-size:13px; white-space:nowrap; }
+.sa-table-scroll { overflow-x:auto; }
+.sa-hidden-file { display:none; }
 .sa-salary-table   { width:100%; border-collapse:collapse; font-size:13px; }
 .sa-salary-table thead th {
     padding:10px 14px; background:#1a2035; color:#94a3b8; font-weight:600;
@@ -290,6 +298,28 @@ body.sa-light .sa-org-tree::-webkit-scrollbar-thumb:hover { background: #94a3b8;
 .sa-badge-pos      { background:#312e81; color:#a5b4fc; }
 .sa-badge-tier     { background:#78350f; color:#fcd34d; }
 .sa-badge-perm     { background:#4c1d95; color:#c4b5fd; }
+.sa-preview-summary { display:flex; gap:16px; margin-bottom:12px; font-size:13px; flex-wrap:wrap; }
+.sa-preview-summary-change { color:#2563eb; }
+.sa-preview-summary-muted { color:#64748b; }
+.sa-preview-summary-error { color:#dc2626; }
+.sa-preview-warning { display:none; margin-bottom:10px; padding:8px 12px; background:#fef3c7; color:#92400e; border-radius:6px; font-size:13px; }
+.sa-preview-warning.is-visible { display:block; }
+.sa-preview-table-wrap { max-height:60vh; overflow:auto; border:1px solid #2d3748; border-radius:6px; }
+.sa-preview-table { font-size:12px; }
+.sa-preview-row-col { width:50px; }
+.sa-preview-state-col { width:90px; }
+.sa-preview-name-col { width:120px; }
+.sa-preview-email-col { width:200px; }
+.sa-preview-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; }
+.sa-preview-badge.is-change { background:#dbeafe; color:#1d4ed8; }
+.sa-preview-badge.is-error { background:#fee2e2; color:#b91c1c; }
+.sa-preview-badge.is-unchanged { background:#f1f5f9; color:#64748b; }
+.sa-preview-error { color:#b91c1c; }
+.sa-preview-old { color:#64748b; text-decoration:line-through; }
+.sa-preview-new { color:#1d4ed8; }
+.sa-preview-muted { color:#94a3b8; }
+.sa-preview-diff-cell { white-space:normal; }
+body.sa-light .sa-preview-table-wrap { border-color:#e5e7eb; }
 
 /* ── 통계 대시보드 ── */
 .sa-stats-summary  { display:flex; gap:16px; margin-bottom:20px; flex-wrap:wrap; }
@@ -321,6 +351,11 @@ body.sa-light .sa-org-tree::-webkit-scrollbar-thumb:hover { background: #94a3b8;
     .sa-drawer-foot { padding: 14px 16px; }
     .sa-drawer-sec-head,
     .sa-drawer-sec-body { padding-left: 16px; padding-right: 16px; }
+    .sa-salary-actions,
+    .sa-salary-toolbar .adm-btn,
+    .sa-salary-toolbar .adm-input,
+    .sa-salary-toolbar .adm-select { width:100%; }
+    .sa-salary-actions { flex-direction:column; align-items:stretch; }
 }
 
 /* ── 예외 현황 ── */
@@ -332,6 +367,8 @@ body.sa-light .sa-org-tree::-webkit-scrollbar-thumb:hover { background: #94a3b8;
 .sa-exception-table td { padding:8px 12px; border-bottom:1px solid #2d3748; color:#cbd5e1; }
 .sa-exception-table td a { color:#6366f1; text-decoration:none; }
 .sa-exception-table td a:hover { text-decoration:underline; }
+.sa-req-desc { color:#64748b; margin-top:2px; }
+.sa-requests-hint { margin-top:12px; padding:0 4px; }
 
 /* ── 편집 드로어 ── */
 .sa-drawer-overlay {
