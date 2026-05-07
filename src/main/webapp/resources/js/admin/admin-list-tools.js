@@ -21,20 +21,20 @@
         filterReset: '필터 초기화',
         pageSize: '표시',
         pageSizeAll: '전체',
-        loadMode: '처리 방식',
+        loadMode: '로드 방식',
         loadCurrent: '페이지 로드',
         loadFull: '전체 로드',
         loadFullHint: '전체 로드 시 최대 500건까지 서버에서 다시 불러옵니다.',
-        displayCurrent: '현재 화면',
-        displayAll: '전체 표시',
+        displayCurrent: '페이지 로드',
+        displayAll: '전체 로드',
         prev: '이전',
         next: '다음',
         pageInfo: '{0}건 중 {1}건 표시 · {2}/{3}쪽',
         noRows: '현재 조건에 맞는 항목이 없습니다.',
-        exportLabel: '다운로드',
-        downloadPage: '현재 페이지 다운로드',
-        downloadFiltered: '검색 결과 다운로드',
-        downloadSelected: '선택 다운로드',
+        exportLabel: '내보내기',
+        downloadPage: '현재 페이지 내보내기',
+        downloadFiltered: '검색 결과 내보내기',
+        downloadSelected: '선택 내보내기',
         clearSelection: '선택 해제',
         selectedPrefix: '선택',
         selectedSuffix: '건',
@@ -597,9 +597,19 @@
 
     function updateSortIndicators(table) {
         if (table.dataset.adminListServerSort === 'true') {
+            const state = getState(table);
+            tableHeaders(table).forEach(function (th, idx) {
+                const active = state && state.sortIndex === idx;
+                const ico = th.querySelector('.sort-ico-generic');
+                if (ico) {
+                    th.classList.toggle('sorted', active);
+                    ico.textContent = active ? (state.sortDir === 'ASC' ? '▲' : '▼') : '';
+                    ico.style.color = active ? (state.sortDir === 'ASC' ? '#ef4444' : '#3b82f6') : '';
+                }
+            });
             const toolbar = document.querySelector('.js-admin-list-tools-toolbar[data-table-id="' + table.id + '"]');
             const reset = toolbar ? toolbar.querySelector('.js-admin-list-sort-reset') : null;
-            if (reset) reset.style.display = hasSortQuery() ? '' : 'none';
+            if (reset) reset.style.display = hasSortQuery() || (state && state.sortIndex >= 0) ? '' : 'none';
             syncToolbarOverflow(toolbar);
             return;
         }
@@ -697,13 +707,36 @@
         if (hasServerManagedSort(table)) {
             table.dataset.adminListServerSort = 'true';
             table.classList.add('adm-admin-list-server-table');
+            headers.forEach(function (th, idx) {
+                if (isSelectionHeader(th)) return;
+                if (th.querySelector('input, button, select, a')) return;
+                if (th.hasAttribute('data-sort') || th.getAttribute('onclick')) return;
+                if (th.dataset.adminListSortable === 'true') return;
+                th.dataset.adminListSortable = 'true';
+                th.style.cursor = 'pointer';
+                th.style.userSelect = 'none';
+                if (!th.querySelector('.sort-ico-generic')) {
+                    th.insertAdjacentHTML('beforeend', ' <span class="sort-ico-generic" aria-hidden="true"></span>');
+                }
+                th.addEventListener('click', function (event) {
+                    if (event.target.closest('button, a, input, select, label')) return;
+                    const state = getState(table);
+                    if (state.sortIndex === idx) {
+                        state.sortDir = state.sortDir === 'ASC' ? 'DESC' : 'ASC';
+                    } else {
+                        state.sortIndex = idx;
+                        state.sortDir = 'ASC';
+                    }
+                    state.page = 1;
+                    renderTable(table);
+                });
+            });
             updateSortIndicators(table);
             return;
         }
         headers.forEach(function (th, idx, arr) {
             if (isSelectionHeader(th)) return;
             if (th.querySelector('input, button, select, a')) return;
-            if (idx === arr.length - 1 && isActionHeader(th)) return;
             if (th.dataset.adminListSortable === 'true') return;
             th.dataset.adminListSortable = 'true';
             th.style.cursor = 'pointer';
