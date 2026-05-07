@@ -39,6 +39,7 @@
 <spring:message var="msg_admin_blocks_mode_client" code="admin.blocks.mode.client"/>
 <spring:message var="msg_admin_blocks_mode_server" code="admin.blocks.mode.server"/>
 <spring:message var="msg_admin_common_pageSize" code="admin.common.pageSize"/>
+<spring:message var="msg_admin_common_pageSizeLabel" code="admin.common.pageSizeLabel"/>
 <spring:message var="msg_admin_common_pageSize_10" code="admin.common.pageSize" arguments="10"/>
 <spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20"/>
 <spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
@@ -135,13 +136,13 @@
     </div>
 
     <div class="adm-card js-business-section-card adm-managed-section-card" data-section="businessApplications" data-enhanced="true" style="overflow:visible;">
-        <div class="adm-card-head">
+        <div class="adm-card-head adm-business-list-head">
             <div class="adm-card-title">
                 🏢 ${msg_admin_business_pageTitle}
                 <span id="businessTotalLabel" style="font-size:12px;font-weight:400;color:#475569;">총 ${total}건</span>
             </div>
-            <div style="position:relative;display:flex;align-items:center;gap:8px;">
-                <select class="adm-select" id="businessExportFormat" style="width:90px;">
+            <div class="adm-business-export-control adm-export-control">
+                <select class="adm-select adm-business-export-format" id="businessExportFormat">
                     <option value="csv">CSV</option>
                     <option value="excel">Excel</option>
                 </select>
@@ -154,28 +155,41 @@
             </div>
         </div>
 
-        <div class="adm-local-toolbar adm-managed-local-toolbar">
-            <div class="adm-local-toolbar-group adm-managed-toolbar-actions">
-                <button type="button" class="adm-dash-sort-reset js-business-sort-reset" style="display:none;" onclick="resetBusinessSort()"></button>
-                <select class="adm-select" id="businessModeSelect" title="${msg_admin_blocks_mode_label}">
-                    <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
-                    <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
-                </select>
-                <select class="adm-select" id="businessSizeSelect" style="width:90px;" onchange="changeBusinessSize(this.value)">
-                    <option value="10"  ${search.size==10  ? 'selected' : ''}>${msg_admin_common_pageSize_10}</option>
-                    <option value="20"  ${search.size==20  ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
-                    <option value="50"  ${search.size==50  ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
-                    <option value="100" ${search.size==100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
-                </select>
+        <div class="adm-business-controlbar">
+            <div id="businessBulkBar" class="adm-business-bulkbar" aria-live="polite">
+                <span class="adm-business-bulk-count"><strong id="businessBulkCount">0</strong>${msg_admin_common_selectedCount}</span>
+                <div class="adm-business-bulk-actions">
+                    <button type="button" class="adm-btn adm-btn-primary adm-business-bulk-approve" onclick="bulkApproveBusiness()">${msg_admin_business_status_approved}</button>
+                    <input class="adm-input" id="businessBulkRejectReason" maxlength="500" placeholder="${msg_admin_business_rejectReasonPlaceholder}">
+                    <button type="button" class="adm-btn adm-btn-danger adm-business-bulk-reject" onclick="bulkRejectBusiness()">${msg_admin_business_status_rejected}</button>
+                </div>
+                <button type="button" class="adm-btn adm-btn-ghost adm-business-bulk-clear" onclick="clearBusinessSelection()">${msg_admin_common_clearSelection}</button>
             </div>
-        </div>
-
-        <div id="businessBulkBar" style="display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 16px;margin:0 0 12px;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><strong id="businessBulkCount">0</strong>${msg_admin_common_selectedCount}</span>
-            <button type="button" class="adm-btn adm-btn-primary" style="font-size:12px;" onclick="bulkApproveBusiness()">${msg_admin_business_status_approved}</button>
-            <input class="adm-input" id="businessBulkRejectReason" maxlength="500" style="max-width:260px;" placeholder="${msg_admin_business_rejectReasonPlaceholder}">
-            <button type="button" class="adm-btn adm-btn-danger" style="font-size:12px;" onclick="bulkRejectBusiness()">${msg_admin_business_status_rejected}</button>
-            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;margin-left:auto;" onclick="clearBusinessSelection()">${msg_admin_common_clearSelection}</button>
+            <div class="adm-business-view-tools">
+                <div id="businessPrimaryTools" class="adm-business-primary-tools">
+                    <button type="button" class="adm-dash-sort-reset js-business-sort-reset adm-business-tool-item adm-business-sort-reset" style="display:none;" onclick="resetBusinessSort()"></button>
+                    <label class="adm-business-tool-item adm-business-tool adm-business-mode-tool">
+                        <span class="adm-business-tool-label">${msg_admin_blocks_mode_label}</span>
+                        <select class="adm-select" id="businessModeSelect" title="${msg_admin_blocks_mode_label}">
+                            <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
+                            <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
+                        </select>
+                    </label>
+                    <label class="adm-business-tool-item adm-business-tool adm-business-size-tool">
+                        <span class="adm-business-tool-label">${msg_admin_common_pageSizeLabel}</span>
+                        <select class="adm-select" id="businessSizeSelect" onchange="changeBusinessSize(this.value)">
+                            <option value="10"  ${search.size==10  ? 'selected' : ''}>${msg_admin_common_pageSize_10}</option>
+                            <option value="20"  ${search.size==20  ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
+                            <option value="50"  ${search.size==50  ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
+                            <option value="100" ${search.size==100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="adm-business-overflow-menu" id="businessOverflowMenu">
+                    <button type="button" class="adm-btn adm-btn-ghost adm-business-overflow-toggle" aria-expanded="false" aria-controls="businessOverflowPanel">옵션 ▾</button>
+                    <div id="businessOverflowPanel" class="adm-business-overflow-panel"></div>
+                </div>
+            </div>
         </div>
 
         <div class="adm-table-wrap" style="overflow:visible;">
@@ -306,6 +320,7 @@ function updateBusinessSortIndicators() {
         reset.style.display = businessSectionState.sortBy ? '' : 'none';
     }
     syncBusinessHiddenInputs();
+    syncBusinessControlOverflow();
 }
 function updateBusinessPaginationMeta(page, pages, total, current) {
     const safePage = Math.max(1, Number(page || 1));
@@ -431,11 +446,23 @@ function selectedBusinessIds() { return Array.from(document.querySelectorAll('.j
 function updateBusinessBulkBar() {
     const ids = selectedBusinessIds();
     const bar = document.getElementById('businessBulkBar');
-    if (bar) bar.style.display = ids.length ? 'flex' : 'none';
+    if (bar) {
+        bar.classList.toggle('is-active', ids.length > 0);
+        bar.setAttribute('aria-hidden', ids.length > 0 ? 'false' : 'true');
+        bar.querySelectorAll('input, button').forEach(function(control) {
+            control.disabled = ids.length === 0;
+        });
+    }
     const count = document.getElementById('businessBulkCount');
     if (count) count.textContent = ids.length;
+    const rejectReason = document.getElementById('businessBulkRejectReason');
+    if (rejectReason && ids.length === 0) rejectReason.value = '';
     const exportBtn = document.getElementById('businessExportSelectedBtn');
-    if (exportBtn) { exportBtn.disabled = ids.length === 0; exportBtn.textContent = BUSINESS_MSG.exportSelected + ' (' + ids.length + ')'; }
+    if (exportBtn) {
+        exportBtn.disabled = ids.length === 0;
+        exportBtn.style.color = ids.length > 0 ? '#e2e8f0' : '#94a3b8';
+        exportBtn.textContent = BUSINESS_MSG.exportSelected + ' (' + ids.length + ')';
+    }
     const all = document.getElementById('businessCheckAll');
     if (all) {
         const rows = document.querySelectorAll('.js-business-row-check');
@@ -614,6 +641,60 @@ function exportBusinessData(scope) {
     const dd = document.getElementById('businessExportDropdown'); if (dd) dd.classList.remove('open');
     window.location.href = BUSINESS_CTX + '/admin/business-applications/export?' + params.toString();
 }
+
+let businessControlOverflowSync = null;
+
+function isVisibleBusinessTool(tool) {
+    if (!tool) return false;
+    return !tool.classList.contains('js-business-sort-reset') || tool.style.display !== 'none';
+}
+
+function syncBusinessControlOverflow() {
+    if (typeof businessControlOverflowSync === 'function') businessControlOverflowSync();
+}
+
+function initBusinessControlOverflow() {
+    const primary = document.getElementById('businessPrimaryTools');
+    const menu = document.getElementById('businessOverflowMenu');
+    const panel = document.getElementById('businessOverflowPanel');
+    const toggle = menu ? menu.querySelector('.adm-business-overflow-toggle') : null;
+    if (!primary || !menu || !panel || !toggle) return;
+
+    const tools = [
+        { node: document.querySelector('.adm-business-sort-reset'), breakpoint: 1380 },
+        { node: document.querySelector('.adm-business-mode-tool'), breakpoint: 1180 },
+        { node: document.querySelector('.adm-business-size-tool'), breakpoint: 980 }
+    ].filter(function(item) { return !!item.node; });
+
+    businessControlOverflowSync = function() {
+        const width = window.innerWidth || document.documentElement.clientWidth || 1600;
+        tools.forEach(function(item) {
+            const target = width <= item.breakpoint ? panel : primary;
+            if (item.node.parentElement !== target) target.appendChild(item.node);
+        });
+        const hasItems = Array.from(panel.children).some(isVisibleBusinessTool);
+        menu.classList.toggle('has-items', hasItems);
+        if (!hasItems) {
+            menu.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+    };
+
+    toggle.addEventListener('click', function() {
+        const willOpen = !menu.classList.contains('open');
+        menu.classList.toggle('open', willOpen);
+        toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+    document.addEventListener('click', function(e) {
+        if (!menu.contains(e.target)) {
+            menu.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+    });
+    window.addEventListener('resize', syncBusinessControlOverflow, { passive: true });
+    syncBusinessControlOverflow();
+}
+
 function initBusinessSection() {
     saveBusinessMode(loadBusinessMode());
     const form = getBusinessForm();
@@ -647,6 +728,8 @@ function initBusinessSection() {
     markBusinessOriginal(Array.from(document.querySelectorAll('#businessRowsBody .js-business-row')));
     updateBusinessPaginationMeta(businessSectionState.page, Number('${paging.totalPage}' || 1), Number('${total}' || 0), document.querySelectorAll('#businessRowsBody .js-business-row').length);
     updateBusinessSortIndicators();
+    updateBusinessBulkBar();
+    initBusinessControlOverflow();
     if (businessSectionState.mode === 'CLIENT') renderBusinessByMode(1);
 }
 document.addEventListener('DOMContentLoaded', initBusinessSection);

@@ -3054,6 +3054,168 @@ body.sa-light .adm-member-section-table th.js-member-sort.sorted {
     color: #2563eb;
 }
 
+/* 기업 신청: 회원 관리 기준 목록 툴바 */
+.js-business-section-card .adm-business-list-head {
+    min-height: 64px;
+}
+
+.adm-business-export-control {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.adm-business-export-format {
+    width: 90px;
+}
+
+.js-business-section-card .adm-business-controlbar {
+    display: grid;
+    grid-template-columns: minmax(520px, 1fr) max-content;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-top: 1px solid #1e293b;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(15, 23, 42, 0.42);
+}
+
+.adm-business-bulkbar {
+    min-height: 44px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .15s ease, border-color .15s ease, background-color .15s ease;
+}
+
+.adm-business-bulkbar.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    border-color: rgba(59, 130, 246, .56);
+    background: rgba(29, 78, 137, .48);
+}
+
+.adm-business-bulk-count {
+    flex: 0 0 auto;
+    color: #93c5fd;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.adm-business-bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+#businessBulkRejectReason {
+    width: 220px;
+    max-width: 28vw;
+}
+
+.adm-business-bulk-approve,
+.adm-business-bulk-reject,
+.adm-business-bulk-clear {
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.adm-business-bulk-clear {
+    margin-left: auto;
+}
+
+.adm-business-view-tools,
+.adm-business-primary-tools {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+}
+
+.adm-business-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.adm-business-tool-label {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.adm-business-tool .adm-select {
+    min-width: 118px;
+}
+
+.adm-business-size-tool .adm-select {
+    width: 90px;
+    min-width: 90px;
+}
+
+.adm-business-overflow-menu {
+    position: relative;
+    display: none;
+    flex: 0 0 auto;
+}
+
+.adm-business-overflow-menu.has-items {
+    display: inline-flex;
+}
+
+.adm-business-overflow-toggle {
+    min-width: 76px;
+    font-size: 12px;
+}
+
+.adm-business-overflow-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 70;
+    min-width: 224px;
+    padding: 10px;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    background: #111827;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, .32);
+}
+
+.adm-business-overflow-menu.open .adm-business-overflow-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.adm-business-overflow-panel .adm-business-tool-item {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.adm-business-overflow-panel .adm-dash-sort-reset {
+    justify-content: center;
+}
+
+.adm-business-overflow-panel .adm-business-tool .adm-select {
+    min-width: 130px;
+}
+
 /* 운영 게시판 서버 섹션: 차단/회원 관리형 툴바·페이징·정렬 표시 */
 .adm-managed-section-card .adm-managed-local-toolbar {
     display: flex;
@@ -3111,10 +3273,26 @@ body.sa-light .adm-member-section-table th.js-member-sort.sorted {
     opacity: .55;
     pointer-events: none;
 }
+body.sa-light .js-business-section-card .adm-business-controlbar,
 body.sa-light .adm-managed-section-card .adm-managed-local-toolbar,
 body.sa-light .adm-managed-section-card .adm-local-pagination {
     background: #f8fafc;
     border-color: #e2e8f0;
+}
+body.sa-light .adm-business-bulkbar.is-active {
+    border-color: rgba(37, 99, 235, .34);
+    background: #eff6ff;
+}
+body.sa-light .adm-business-tool {
+    color: #475569;
+}
+body.sa-light .adm-business-tool-label {
+    color: #64748b;
+}
+body.sa-light .adm-business-overflow-panel {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, .14);
 }
 body.sa-light .adm-managed-section-card .adm-local-page-info,
 body.sa-light .adm-managed-section-card .js-business-page-state {
@@ -3123,7 +3301,31 @@ body.sa-light .adm-managed-section-card .js-business-page-state {
 body.sa-light .adm-business-section-table th.js-business-sort.sorted {
     color: #2563eb;
 }
+@media (max-width: 1100px) {
+    .js-business-section-card .adm-business-controlbar {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+    .adm-business-bulkbar:not(.is-active) {
+        display: none;
+    }
+    .adm-business-bulkbar {
+        flex-wrap: wrap;
+    }
+    .adm-business-bulk-clear {
+        margin-left: 0;
+    }
+    .adm-business-view-tools,
+    .adm-business-primary-tools {
+        justify-content: flex-start;
+    }
+    .adm-business-overflow-panel {
+        left: 0;
+        right: auto;
+    }
+}
 @media (max-width: 767px) {
+    .js-business-section-card .adm-business-controlbar,
     .adm-managed-section-card .adm-managed-local-toolbar,
     .adm-managed-section-card .adm-local-pagination {
         align-items: stretch;
@@ -3136,6 +3338,30 @@ body.sa-light .adm-business-section-table th.js-business-sort.sorted {
         justify-content: flex-end;
     }
     .adm-managed-section-card .adm-local-page-info {
+        width: 100%;
+    }
+}
+@media (max-width: 560px) {
+    .adm-business-export-control {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .adm-business-bulkbar {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .adm-business-bulk-actions,
+    .adm-business-bulk-actions .adm-input,
+    .adm-business-bulk-actions .adm-btn {
+        width: 100%;
+        max-width: none;
+    }
+    .adm-business-overflow-menu,
+    .adm-business-overflow-toggle {
+        width: 100%;
+    }
+    .adm-business-overflow-panel {
         width: 100%;
     }
 }
