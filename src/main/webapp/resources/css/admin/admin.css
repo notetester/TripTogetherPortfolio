@@ -3216,6 +3216,35 @@ body.sa-light .js-member-section-card .js-member-page-state {
     flex: 1 1 320px;
     min-width: 180px;
 }
+.adm-admin-list-controlbar .adm-admin-list-search-ico {
+    left: 12px;
+    width: 14px;
+    height: 14px;
+    color: #64748b;
+    font-size: 0;
+}
+.adm-admin-list-controlbar .adm-admin-list-search-ico::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 9px;
+    height: 9px;
+    border: 2px solid currentColor;
+    border-radius: 999px;
+}
+.adm-admin-list-controlbar .adm-admin-list-search-ico::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 1px;
+    width: 6px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transform: rotate(45deg);
+    transform-origin: center;
+}
 .adm-section-list-size {
     flex: 0 0 auto;
 }

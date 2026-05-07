@@ -243,10 +243,10 @@
             + '<option value="excel">' + TEXT.excel + '</option>'
             + '</select>'
             + '<div class="adm-export-menu">'
-            + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ ' + TEXT.exportLabel + ' ▾</button>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">' + TEXT.exportLabel + ' ▾</button>'
             + '<div class="adm-export-dropdown">'
-            + '<button type="button" class="js-admin-list-export" data-scope="page">📄 ' + TEXT.downloadPage + '</button>'
-            + '<button type="button" class="js-admin-list-export js-admin-list-export-selected" data-scope="selected" disabled>☑ ' + TEXT.downloadSelected + ' (0)</button>'
+            + '<button type="button" class="js-admin-list-export" data-scope="page">' + TEXT.downloadPage + '</button>'
+            + '<button type="button" class="js-admin-list-export js-admin-list-export-selected" data-scope="selected" disabled>' + TEXT.downloadSelected + ' (0)</button>'
             + '</div></div>';
 
         target.appendChild(tools);
@@ -327,7 +327,7 @@
             + '<div class="adm-admin-list-tool adm-section-list-filter">'
             + '<select class="adm-select js-admin-list-field" title="현재 화면 기준 필드"></select>'
             + '<div class="adm-search-box adm-section-list-search">'
-            + '<span class="adm-search-ico">🔎</span>'
+            + '<span class="adm-search-ico adm-admin-list-search-ico" aria-hidden="true"></span>'
             + '<input type="text" class="adm-input js-admin-list-keyword" placeholder="' + TEXT.currentKeyword + '">'
             + '</div>'
             + '<button type="button" class="adm-btn adm-btn-ghost js-admin-list-filter-reset">↺ ' + TEXT.filterReset + '</button>'
@@ -340,11 +340,11 @@
             + '<div class="adm-export-control adm-admin-list-export-tool">'
             + '<select class="adm-select js-admin-list-export-format"><option value="csv">' + TEXT.csv + '</option><option value="excel">' + TEXT.excel + '</option></select>'
             + '<div class="adm-export-menu">'
-            + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ ' + TEXT.exportLabel + ' ▾</button>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">' + TEXT.exportLabel + ' ▾</button>'
             + '<div class="adm-export-dropdown">'
-            + '<button type="button" class="js-admin-list-export" data-scope="page">📄 ' + TEXT.downloadPage + '</button>'
-            + '<button type="button" class="js-admin-list-export" data-scope="filtered">📋 ' + TEXT.downloadFiltered + '</button>'
-            + '<button type="button" class="js-admin-list-export js-admin-list-export-selected" data-scope="selected" disabled>☑ ' + TEXT.downloadSelected + ' (0)</button>'
+            + '<button type="button" class="js-admin-list-export" data-scope="page">' + TEXT.downloadPage + '</button>'
+            + '<button type="button" class="js-admin-list-export" data-scope="filtered">' + TEXT.downloadFiltered + '</button>'
+            + '<button type="button" class="js-admin-list-export js-admin-list-export-selected" data-scope="selected" disabled>' + TEXT.downloadSelected + ' (0)</button>'
             + '</div></div></div>'
             + '</div>'
             + '<div class="adm-admin-list-overflow-menu js-admin-list-overflow-menu">'
@@ -526,7 +526,7 @@
         if (selectedCountEl) selectedCountEl.textContent = TEXT.selectedPrefix + ' ' + selectedCount + TEXT.selectedSuffix;
         if (selectedExport) {
             selectedExport.disabled = selectedCount === 0;
-            selectedExport.textContent = '☑ ' + TEXT.downloadSelected + ' (' + selectedCount + ')';
+            selectedExport.textContent = TEXT.downloadSelected + ' (' + selectedCount + ')';
         }
     }
 
