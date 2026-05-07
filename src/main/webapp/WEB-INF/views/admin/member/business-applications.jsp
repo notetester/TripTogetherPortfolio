@@ -308,9 +308,9 @@ function updateBusinessSortIndicators() {
         if (businessSectionState.sortBy && th.dataset.sort === businessSectionState.sortBy) {
             th.classList.add('sorted');
             const ico = document.createElement('span');
-            ico.className = 'sort-ico';
-            ico.textContent = businessSectionState.sortDir === 'ASC' ? '▲' : '▼';
-            ico.style.color = businessSectionState.sortDir === 'ASC' ? '#ef4444' : '#3b82f6';
+            const asc = businessSectionState.sortDir === 'ASC';
+            ico.className = 'sort-ico ' + (asc ? 'asc' : 'desc');
+            ico.textContent = asc ? '▲' : '▼';
             th.appendChild(ico);
         }
     });

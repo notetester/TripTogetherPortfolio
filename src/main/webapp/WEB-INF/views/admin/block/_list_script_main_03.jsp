@@ -130,11 +130,11 @@ function sortDashboardTable(table, cellIndex) {
             if (!ico) {
                 ico = document.createElement('span');
                 ico.className = 'sort-ico';
-                ico.style.cssText = 'font-size:10px;margin-left:4px;';
                 th.appendChild(ico);
             }
-            ico.textContent = nextDir === 'ASC' ? '▲' : '▼';
-            ico.style.color = nextDir === 'ASC' ? '#ef4444' : '#3b82f6';
+            const asc = nextDir === 'ASC';
+            ico.className = 'sort-ico ' + (asc ? 'asc' : 'desc');
+            ico.textContent = asc ? '▲' : '▼';
         } else {
             if (ico) ico.remove();
         }

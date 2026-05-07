@@ -312,8 +312,10 @@ document.querySelectorAll('th[data-sort]').forEach(function(th) {
     th.classList.add('sorted');
     var ico = th.querySelector('.sort-ico');
     if (ico) {
-      ico.textContent = curSortDir === 'ASC' ? '▲' : '▼';
-      ico.style.color = curSortDir === 'ASC' ? '#ef4444' : '#3b82f6';
+      var asc = curSortDir === 'ASC';
+      ico.textContent = asc ? '▲' : '▼';
+      ico.classList.toggle('asc', asc);
+      ico.classList.toggle('desc', !asc);
     }
   }
 });

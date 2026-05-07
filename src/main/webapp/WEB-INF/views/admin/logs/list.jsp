@@ -372,11 +372,11 @@ function updateLoginSortIndicators() {
             if (!ico) {
                 ico = document.createElement('span');
                 ico.className = 'sort-ico';
-                ico.style.cssText = 'font-size:10px;margin-left:4px;font-weight:900;';
                 th.appendChild(ico);
             }
-            ico.textContent = loginSectionState.sortDir === 'DESC' ? '▼' : '▲';
-            ico.style.color = loginSectionState.sortDir === 'DESC' ? '#3b82f6' : '#ef4444';
+            const desc = loginSectionState.sortDir === 'DESC';
+            ico.className = 'sort-ico ' + (desc ? 'desc' : 'asc');
+            ico.textContent = desc ? '▼' : '▲';
         } else if (ico) {
             ico.remove();
         }

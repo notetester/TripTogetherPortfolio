@@ -333,11 +333,11 @@ function updateSecuritySortIndicators() {
             if (!ico) {
                 ico = document.createElement('span');
                 ico.className = 'sort-ico';
-                ico.style.cssText = 'font-size:10px;margin-left:4px;font-weight:900;';
                 th.appendChild(ico);
             }
-            ico.textContent = securitySectionState.sortDir === 'ASC' ? '▲' : '▼';
-            ico.style.color = securitySectionState.sortDir === 'ASC' ? '#ef4444' : '#3b82f6';
+            const asc = securitySectionState.sortDir === 'ASC';
+            ico.className = 'sort-ico ' + (asc ? 'asc' : 'desc');
+            ico.textContent = asc ? '▲' : '▼';
         } else if (ico) {
             ico.remove();
         }

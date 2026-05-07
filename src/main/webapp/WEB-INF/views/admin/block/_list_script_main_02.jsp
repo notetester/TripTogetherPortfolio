@@ -159,11 +159,11 @@ function updateLocalSortIndicators(section) {
             if (!ico) {
                 ico = document.createElement('span');
                 ico.className = 'sort-ico';
-                ico.style.cssText = 'font-size:10px;margin-left:4px;';
                 th.appendChild(ico);
             }
-            ico.textContent = state.sortDir === 'DESC' ? '▼' : '▲';
-            ico.style.color = state.sortDir === 'DESC' ? '#3b82f6' : '#ef4444';
+            const desc = state.sortDir === 'DESC';
+            ico.className = 'sort-ico ' + (desc ? 'desc' : 'asc');
+            ico.textContent = desc ? '▼' : '▲';
         } else {
             if (ico) ico.remove();
         }

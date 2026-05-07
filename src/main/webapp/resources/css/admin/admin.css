@@ -506,6 +506,14 @@ body.adm-nav-lock { overflow: hidden; }
     font-size: 10px;
     font-weight: 900;
 }
+.adm-table th .sort-ico.asc,
+.adm-table th .sort-ico-generic.asc {
+    color: #ef4444;
+}
+.adm-table th .sort-ico.desc,
+.adm-table th .sort-ico-generic.desc {
+    color: #3b82f6;
+}
 .adm-table th.sorted .sort-ico,
 .adm-table th.sorted .sort-ico-generic {
     opacity: 1;
