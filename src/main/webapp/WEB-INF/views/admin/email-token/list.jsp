@@ -21,7 +21,7 @@
 <spring:message var="msg_admin_context_unused" code="admin.context.unused"/>
 <spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
-<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
+<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount" arguments="${total}"/>
 <spring:message var="msg_admin_emailTokens_createdAt" code="admin.emailTokens.createdAt"/>
 <spring:message var="msg_admin_common_member" code="admin.common.member"/>
 <spring:message var="msg_admin_context_targetEmail" code="admin.context.targetEmail"/>
@@ -35,7 +35,7 @@
 <spring:message var="msg_admin_common_trace" code="admin.common.trace"/>
 <spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
 <spring:message var="msg_admin_common_noResults" code="admin.common.noResults"/>
-<spring:message var="msg_admin_common_pageStatus" code="admin.common.pageStatus"/>
+<spring:message var="msg_admin_common_pageStatus" code="admin.common.pageStatus" arguments="${paging.currentPage},${paging.totalPage}"/>
 <c:set var="activeMenu" value="emailTokens"/>
 
 
@@ -77,13 +77,16 @@
       </form>
     </div>
   </div>
-  <div class="adm-card">
+  <div class="adm-card js-email-token-section-card" style="overflow:visible;">
     <div class="adm-card-head">
       <div class="adm-card-title">${msg_admin_emailTokens_historyTitle}</div>
       <div style="font-size:12px;color:#64748b;">${msg_admin_common_totalCount}</div>
     </div>
     <div class="adm-table-wrap">
-      <table class="adm-table">
+      <table id="emailVerificationTokenTable"
+             class="adm-table adm-section-table-fixed adm-email-token-table"
+             data-admin-list-server-sort="true"
+             data-section="emailVerificationTokens">
         <thead><tr>
           <th data-sort="time" onclick="sortBy('time')">${msg_admin_emailTokens_createdAt}<span class="sort-ico" aria-hidden="true"></span></th>
           <th data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}<span class="sort-ico" aria-hidden="true"></span></th>
