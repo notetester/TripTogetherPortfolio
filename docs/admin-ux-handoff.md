@@ -213,9 +213,18 @@ git commit -m "짧은 한국어 요약"
 
 ```text
 D:\dev\TripTogether / branch LEE-JEONG-GUCK에서 관리자 UI/UX 전면 정리 작업을 이어가자.
-docs/admin-ux-handoff.md를 먼저 읽고, 왼쪽 관리자 메뉴 순서대로 하나씩 계속 진행해.
+docs/admin-ux-handoff.md를 먼저 읽고, 필요하면 docs/codex-session-recovery의 JSONL도 참고해.
+왼쪽 관리자 메뉴 순서대로 하나씩 계속 진행해.
 브랜치는 바꾸지 말고, 사용자 확인 없이 구현하고, 기능 단위로 자주 git add . 후 커밋해.
 기준 UX는 회원 관리와 차단 관리다.
 다음 시작점은 src/main/webapp/WEB-INF/views/admin/community/detail.jsp 커뮤니티 상세 화면이다.
 완료 후 git diff --check와 ./mvnw test를 실행하고 커밋해.
 ```
+
+## 원본 대화 로그 복사본
+
+현재 Codex 대화 원본 JSONL은 다음 위치에 복사해 두었습니다.
+
+- `docs/codex-session-recovery/rollout-2026-05-07T15-29-39-019e0120-afcf-77d2-96e0-67969d5c0e3b.jsonl`
+
+이 파일은 인증 파일이나 `.codex` 전체 복사본이 아닙니다. 새 환경에서 대화 UI 복원을 실험하거나, 현재 세션의 자세한 맥락을 사람이 직접 확인해야 할 때만 참고합니다.
