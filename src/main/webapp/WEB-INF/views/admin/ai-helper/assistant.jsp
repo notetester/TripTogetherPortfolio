@@ -180,33 +180,28 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-ai-page adm-ai-assistant-page">
 
     <%-- ── 도우미 내부 sub-tab ── --%>
-    <div class="aih-tabs" style="display:flex;gap:4px;border-bottom:1px solid #e5e7eb;margin:20px 0;">
+    <div class="adm-ai-tabs">
         <a href="${pageContext.request.contextPath}/admin/ai-helper?tab=dashboard"
-           class="aih-tab ${tab == 'dashboard' ? 'active' : ''}"
-           style="padding:10px 16px;text-decoration:none;font-size:13px;font-weight:${tab == 'dashboard' ? '700' : '500'};color:${tab == 'dashboard' ? '#1d4ed8' : '#64748b'};border-bottom:2px solid ${tab == 'dashboard' ? '#1d4ed8' : 'transparent'};margin-bottom:-1px;">
+           class="adm-ai-tab ${tab == 'dashboard' ? 'active' : ''}">
             ${msg_admin_aiHelper_assistant_tab_dashboard}
         </a>
         <a href="${pageContext.request.contextPath}/admin/ai-helper?tab=messages"
-           class="aih-tab ${tab == 'messages' ? 'active' : ''}"
-           style="padding:10px 16px;text-decoration:none;font-size:13px;font-weight:${tab == 'messages' ? '700' : '500'};color:${tab == 'messages' ? '#1d4ed8' : '#64748b'};border-bottom:2px solid ${tab == 'messages' ? '#1d4ed8' : 'transparent'};margin-bottom:-1px;">
+           class="adm-ai-tab ${tab == 'messages' ? 'active' : ''}">
             ${msg_admin_aiHelper_assistant_tab_messages}
         </a>
         <a href="${pageContext.request.contextPath}/admin/ai-helper?tab=inappropriate"
-           class="aih-tab ${tab == 'inappropriate' ? 'active' : ''}"
-           style="padding:10px 16px;text-decoration:none;font-size:13px;font-weight:${tab == 'inappropriate' ? '700' : '500'};color:${tab == 'inappropriate' ? '#1d4ed8' : '#64748b'};border-bottom:2px solid ${tab == 'inappropriate' ? '#1d4ed8' : 'transparent'};margin-bottom:-1px;">
+           class="adm-ai-tab ${tab == 'inappropriate' ? 'active' : ''}">
             부적절 메시지
         </a>
         <a href="${pageContext.request.contextPath}/admin/ai-helper?tab=blocks"
-           class="aih-tab ${tab == 'blocks' ? 'active' : ''}"
-           style="padding:10px 16px;text-decoration:none;font-size:13px;font-weight:${tab == 'blocks' ? '700' : '500'};color:${tab == 'blocks' ? '#1d4ed8' : '#64748b'};border-bottom:2px solid ${tab == 'blocks' ? '#1d4ed8' : 'transparent'};margin-bottom:-1px;">
+           class="adm-ai-tab ${tab == 'blocks' ? 'active' : ''}">
             차단 관리
         </a>
         <a href="${pageContext.request.contextPath}/admin/ai-helper?tab=quotas"
-           class="aih-tab ${tab == 'quotas' ? 'active' : ''}"
-           style="padding:10px 16px;text-decoration:none;font-size:13px;font-weight:${tab == 'quotas' ? '700' : '500'};color:${tab == 'quotas' ? '#1d4ed8' : '#64748b'};border-bottom:2px solid ${tab == 'quotas' ? '#1d4ed8' : 'transparent'};margin-bottom:-1px;">
+           class="adm-ai-tab ${tab == 'quotas' ? 'active' : ''}">
             한도 정책
         </a>
     </div>
@@ -215,42 +210,52 @@
          대시보드 탭
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'dashboard'}">
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px;">
-            <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">🧭 ${msg_admin_aiHelper_assistant_kpi_totalSessions}</div>
-                <div style="font-size:24px;font-weight:700;color:#38bdf8;">${stats.totalSessions}</div>
+        <div class="adm-ai-kpi-grid">
+            <div class="adm-card adm-ai-kpi-card">
+                <div class="adm-ai-kpi-label">🧭 ${msg_admin_aiHelper_assistant_kpi_totalSessions}</div>
+                <div class="adm-ai-kpi-value is-sky">${stats.totalSessions}</div>
             </div>
-            <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">💬 ${msg_admin_aiHelper_assistant_kpi_totalMessages}</div>
-                <div style="font-size:24px;font-weight:700;color:#0ea5e9;">${stats.totalMessages}</div>
+            <div class="adm-card adm-ai-kpi-card">
+                <div class="adm-ai-kpi-label">💬 ${msg_admin_aiHelper_assistant_kpi_totalMessages}</div>
+                <div class="adm-ai-kpi-value is-blue">${stats.totalMessages}</div>
             </div>
-            <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">📅 ${msg_admin_aiHelper_assistant_kpi_todaySessions}</div>
-                <div style="font-size:24px;font-weight:700;color:#10b981;">${stats.todaySessions}</div>
+            <div class="adm-card adm-ai-kpi-card">
+                <div class="adm-ai-kpi-label">📅 ${msg_admin_aiHelper_assistant_kpi_todaySessions}</div>
+                <div class="adm-ai-kpi-value is-green">${stats.todaySessions}</div>
             </div>
-            <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">👤 ${msg_admin_aiHelper_assistant_kpi_uniqueUsers}</div>
-                <div style="font-size:24px;font-weight:700;color:#8b5cf6;">${stats.uniqueUsers}</div>
+            <div class="adm-card adm-ai-kpi-card">
+                <div class="adm-ai-kpi-label">👤 ${msg_admin_aiHelper_assistant_kpi_uniqueUsers}</div>
+                <div class="adm-ai-kpi-value is-purple">${stats.uniqueUsers}</div>
             </div>
         </div>
 
         <%-- ── 대화 세션 목록 (대시보드 내 통합) ── --%>
-        <div style="font-size:14px;font-weight:700;margin:8px 0 12px;">${msg_admin_aiHelper_assistant_section_sessions}</div>
+        <div class="adm-ai-section-title">${msg_admin_aiHelper_assistant_section_sessions}</div>
 
-        <div class="adm-card" style="padding:16px;margin-bottom:16px;">
-            <form method="get" action="${pageContext.request.contextPath}/admin/ai-helper" style="display:flex;gap:8px;">
+        <div class="adm-card adm-ai-filter-card">
+            <form method="get" action="${pageContext.request.contextPath}/admin/ai-helper" class="adm-ai-search-form">
                 <input type="hidden" name="tab" value="dashboard"/>
-                <input type="text" name="keyword" value="${keyword}" placeholder="${msg_admin_aiHelper_assistant_searchPlaceholder}" class="adm-input" style="flex:1;"/>
-                <button type="submit" class="adm-btn">${msg_admin_common_search}</button>
+                <input type="text" name="keyword" value="${keyword}" placeholder="${msg_admin_aiHelper_assistant_searchPlaceholder}" class="adm-input adm-ai-search-input"/>
+                <button type="submit" class="adm-btn adm-btn-primary">${msg_admin_common_search}</button>
                 <c:if test="${not empty keyword}">
                     <a href="${pageContext.request.contextPath}/admin/ai-helper" class="adm-btn adm-btn-ghost">${msg_admin_common_reset}</a>
                 </c:if>
             </form>
-            <div style="font-size:12px;color:#64748b;margin-top:8px;">${msg_admin_common_totalCountFormat}</div>
+            <div class="adm-ai-total">${msg_admin_common_totalCountFormat}</div>
         </div>
 
-        <div class="adm-card" style="padding:0;overflow-x:auto;">
-            <table class="adm-table" style="width:100%;">
+        <div class="adm-card adm-ai-table-card">
+            <div class="adm-table-wrap">
+            <table class="adm-table adm-ai-table adm-ai-sessions-table">
+                <colgroup>
+                    <col class="adm-ai-col-id"/>
+                    <col class="adm-ai-col-title"/>
+                    <col class="adm-ai-col-user"/>
+                    <col class="adm-ai-col-count"/>
+                    <col class="adm-ai-col-date"/>
+                    <col class="adm-ai-col-date"/>
+                    <col class="adm-ai-col-actions"/>
+                </colgroup>
                 <thead>
                     <tr>
                         <th>${msg_admin_aiHelper_assistant_table_sessionId}</th>
@@ -259,18 +264,13 @@
                         <th>${msg_admin_aiHelper_assistant_table_messageCount}</th>
                         <th>${msg_admin_aiHelper_assistant_table_createdAt}</th>
                         <th>${msg_admin_aiHelper_assistant_table_lastActive}</th>
-                        <th style="width:130px;">
-                            <div style="display:flex;gap:4px;justify-content:flex-end;">
-                                <span style="font-size:11px;padding:3px 8px;">${msg_admin_aiHelper_assistant_table_actions}</span>
-                                <span style="font-size:11px;padding:3px 8px;visibility:hidden;">${msg_admin_aiHelper_assistant_action_delete}</span>
-                            </div>
-                        </th>
+                        <th>${msg_admin_aiHelper_assistant_table_actions}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:choose>
                         <c:when test="${empty sessions}">
-                            <tr><td colspan="7" style="text-align:center;padding:40px;color:#94a3b8;">${msg_admin_aiHelper_assistant_empty_sessions}</td></tr>
+                            <tr><td colspan="7" class="adm-local-empty-cell">${msg_admin_aiHelper_assistant_empty_sessions}</td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="s" items="${sessions}">
@@ -281,7 +281,7 @@
                                                 data-session-id="${s.chatPostIdx}"
                                                 onclick="viewAssistantMessages(this.dataset.sessionId)">#${s.chatPostIdx}</button>
                                     </td>
-                                    <td style="max-width:300px;word-break:break-all;">
+                                    <td class="adm-ai-break-cell">
                                         <button type="button"
                                                 class="adm-cell-link adm-cell-link--inline"
                                                 data-session-id="${s.chatPostIdx}"
@@ -293,11 +293,11 @@
                                                 <button type="button"
                                                         class="adm-inline-link js-open-member-context"
                                                         data-user-idx="${s.userIdx}">
-                                                    ${s.nickname} <span style="color:#94a3b8;">(#${s.userIdx})</span>
+                                                    ${s.nickname} <span class="adm-ai-muted">(#${s.userIdx})</span>
                                                 </button>
                                             </c:when>
                                             <c:otherwise>
-                                                <span style="color:#94a3b8;">${msg_admin_aiHelper_assistant_userPrefix} #${s.userIdx} (${msg_admin_aiHelper_assistant_userDeleted})</span>
+                                                <span class="adm-ai-muted">${msg_admin_aiHelper_assistant_userPrefix} #${s.userIdx} (${msg_admin_aiHelper_assistant_userDeleted})</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
@@ -321,10 +321,10 @@
                                                         data-session-id="${s.chatPostIdx}"
                                                         onclick="viewAssistantMessages(this.dataset.sessionId)"><fmt:formatDate value="${s.lastMessageAt}" pattern="yyyy-MM-dd HH:mm"/></button>
                                             </c:when>
-                                            <c:otherwise><span style="color:#94a3b8;">-</span></c:otherwise>
+                                            <c:otherwise><span class="adm-ai-muted">-</span></c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td style="text-align:right;">
+                                    <td class="adm-ai-action-cell">
                                         <div class="adm-row-actions">
                                             <button type="button"
                                                     class="adm-row-btn detail"
@@ -349,13 +349,14 @@
                     </c:choose>
                 </tbody>
             </table>
+            </div>
         </div>
 
         <c:if test="${totalPages > 1}">
-            <div style="display:flex;justify-content:center;gap:4px;margin-top:16px;">
+            <div class="adm-ai-pagination">
                 <c:forEach begin="1" end="${totalPages}" var="p">
                     <a href="${pageContext.request.contextPath}/admin/ai-helper?tab=dashboard&page=${p}&keyword=${keyword}"
-                       class="adm-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}" style="min-width:32px;">${p}</a>
+                       class="adm-btn adm-ai-page-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}">${p}</a>
                 </c:forEach>
             </div>
         </c:if>
@@ -366,15 +367,25 @@
          메시지 탭
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'messages'}">
-        <div class="adm-card" style="padding:16px;margin-bottom:16px;">
-            <div style="font-size:13px;color:#475569;line-height:1.6;">
+        <div class="adm-card adm-ai-info-card">
+            <div class="adm-ai-description">
                 ${msg_admin_aiHelper_assistant_messagesDescription}
             </div>
-            <div style="font-size:12px;color:#64748b;margin-top:8px;">${msg_admin_common_totalCountFormat}</div>
+            <div class="adm-ai-total">${msg_admin_common_totalCountFormat}</div>
         </div>
 
-        <div class="adm-card" style="padding:0;overflow-x:auto;">
-            <table class="adm-table" style="width:100%;">
+        <div class="adm-card adm-ai-table-card">
+            <div class="adm-table-wrap">
+            <table class="adm-table adm-ai-table adm-ai-messages-table">
+                <colgroup>
+                    <col class="adm-ai-col-id"/>
+                    <col class="adm-ai-col-session"/>
+                    <col class="adm-ai-col-role"/>
+                    <col class="adm-ai-col-user"/>
+                    <col class="adm-ai-col-content"/>
+                    <col class="adm-ai-col-date"/>
+                    <col class="adm-ai-col-actions"/>
+                </colgroup>
                 <thead>
                     <tr>
                         <th>${msg_admin_aiHelper_assistant_table_id}</th>
@@ -383,17 +394,13 @@
                         <th>${msg_admin_aiHelper_assistant_table_user}</th>
                         <th>${msg_admin_aiHelper_assistant_table_content}</th>
                         <th>${msg_admin_common_time}</th>
-                        <th style="width:100px;">
-                            <div style="display:flex;gap:4px;justify-content:flex-end;">
-                                <span style="font-size:11px;padding:3px 8px;">${msg_admin_aiHelper_assistant_table_actions}</span>
-                            </div>
-                        </th>
+                        <th>${msg_admin_aiHelper_assistant_table_actions}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:choose>
                         <c:when test="${empty messages}">
-                            <tr><td colspan="7" style="text-align:center;padding:40px;color:#94a3b8;">${msg_admin_aiHelper_assistant_empty_messages}</td></tr>
+                            <tr><td colspan="7" class="adm-local-empty-cell">${msg_admin_aiHelper_assistant_empty_messages}</td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="m" items="${messages}">
@@ -410,16 +417,16 @@
                                                 data-session-id="${m.chatPostIdx}"
                                                 onclick="viewAssistantMessages(this.dataset.sessionId)">
                                             <span>#${m.chatPostIdx}</span>
-                                            <span style="font-size:11px;color:#94a3b8;">${fn:escapeXml(m.sessionTitle)}</span>
+                                            <span class="adm-ai-subtext">${fn:escapeXml(m.sessionTitle)}</span>
                                         </button>
                                     </td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${m.commentRole == 'USER'}">
-                                                <span style="padding:2px 8px;border-radius:4px;background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:600;">${msg_admin_aiHelper_assistant_role_user}</span>
+                                                <span class="adm-ai-role-badge is-user">${msg_admin_aiHelper_assistant_role_user}</span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span style="padding:2px 8px;border-radius:4px;background:#ccfbf1;color:#0f766e;font-size:11px;font-weight:600;">${msg_admin_aiHelper_assistant_role_ai}</span>
+                                                <span class="adm-ai-role-badge is-ai">${msg_admin_aiHelper_assistant_role_ai}</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
@@ -432,10 +439,10 @@
                                                     ${m.nickname}
                                                 </button>
                                             </c:when>
-                                            <c:otherwise><span style="color:#94a3b8;">${msg_admin_aiHelper_assistant_userPrefix} #${m.userIdx}</span></c:otherwise>
+                                            <c:otherwise><span class="adm-ai-muted">${msg_admin_aiHelper_assistant_userPrefix} #${m.userIdx}</span></c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td style="max-width:500px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">
+                                    <td class="adm-ai-ellipsis-cell">
                                         <button type="button"
                                                 class="adm-cell-link adm-cell-link--inline"
                                                 data-session-id="${m.chatPostIdx}"
@@ -454,7 +461,7 @@
                                                 data-session-id="${m.chatPostIdx}"
                                                 onclick="viewAssistantMessages(this.dataset.sessionId)"><fmt:formatDate value="${m.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></button>
                                     </td>
-                                    <td style="text-align:right;">
+                                    <td class="adm-ai-action-cell">
                                         <div class="adm-row-actions is-single">
                                             <button type="button"
                                                     class="adm-row-btn detail"
@@ -468,13 +475,14 @@
                     </c:choose>
                 </tbody>
             </table>
+            </div>
         </div>
 
         <c:if test="${totalPages > 1}">
-            <div style="display:flex;justify-content:center;gap:4px;margin-top:16px;">
+            <div class="adm-ai-pagination">
                 <c:forEach begin="1" end="${totalPages}" var="p">
                     <a href="${pageContext.request.contextPath}/admin/ai-helper?tab=messages&page=${p}"
-                       class="adm-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}" style="min-width:32px;">${p}</a>
+                       class="adm-btn adm-ai-page-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}">${p}</a>
                 </c:forEach>
             </div>
         </c:if>
@@ -485,8 +493,18 @@
          스케줄러가 5분 주기로 Perspective API 호출하여 저장한 결과를 표시
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'inappropriate'}">
-        <div class="adm-card" style="padding:0;overflow-x:auto;">
-            <table class="adm-table" style="width:100%;">
+        <div class="adm-card adm-ai-table-card">
+            <div class="adm-table-wrap">
+            <table class="adm-table adm-ai-table adm-ai-moderation-table">
+                <colgroup>
+                    <col class="adm-ai-col-id"/>
+                    <col class="adm-ai-col-session"/>
+                    <col class="adm-ai-col-user"/>
+                    <col class="adm-ai-col-content"/>
+                    <col class="adm-ai-col-score"/>
+                    <col class="adm-ai-col-date"/>
+                    <col class="adm-ai-col-actions"/>
+                </colgroup>
                 <thead>
                     <tr>
                         <th>판정 ID</th>
@@ -495,17 +513,13 @@
                         <th>내용</th>
                         <th>점수</th>
                         <th>판정시각</th>
-                        <th style="width:100px;">
-                            <div style="display:flex;gap:4px;justify-content:flex-end;">
-                                <span style="font-size:11px;padding:3px 8px;">액션</span>
-                            </div>
-                        </th>
+                        <th>액션</th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:choose>
                         <c:when test="${empty messages}">
-                            <tr><td colspan="7" style="text-align:center;padding:40px;color:#94a3b8;">부적절 판정된 메시지가 없습니다.</td></tr>
+                            <tr><td colspan="7" class="adm-local-empty-cell">부적절 판정된 메시지가 없습니다.</td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="m" items="${messages}">
@@ -514,11 +528,11 @@
                                     <td>#${m.chatPostIdx}</td>
                                     <td>
                                         <c:choose>
-                                            <c:when test="${m.nickname != null}">${m.nickname} <span style="color:#94a3b8;">(#${m.userIdx})</span></c:when>
-                                            <c:otherwise><span style="color:#94a3b8;">#${m.userIdx}</span></c:otherwise>
+                                            <c:when test="${m.nickname != null}">${m.nickname} <span class="adm-ai-muted">(#${m.userIdx})</span></c:when>
+                                            <c:otherwise><span class="adm-ai-muted">#${m.userIdx}</span></c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td style="max-width:500px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">
+                                    <td class="adm-ai-ellipsis-cell">
                                         <c:choose>
                                             <c:when test="${fn:length(m.content) > 200}">${fn:escapeXml(fn:substring(m.content, 0, 200))}…</c:when>
                                             <c:otherwise>${fn:escapeXml(m.content)}</c:otherwise>
@@ -527,15 +541,15 @@
                                     <td>
                                         <c:choose>
                                             <c:when test="${m.toxicityScore != null}">
-                                                <span style="color:#dc2626;font-weight:600;">${m.toxicityScore}</span>
+                                                <span class="adm-ai-score">${m.toxicityScore}</span>
                                             </c:when>
-                                            <c:otherwise><span style="color:#94a3b8;">-</span></c:otherwise>
+                                            <c:otherwise><span class="adm-ai-muted">-</span></c:otherwise>
                                         </c:choose>
                                     </td>
                                     <td><fmt:formatDate value="${m.checkedAt}" pattern="yyyy-MM-dd HH:mm"/></td>
-                                    <td style="text-align:right;">
-                                        <div style="display:flex;gap:4px;justify-content:flex-end;">
-                                            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;" data-session-id="${m.chatPostIdx}" onclick="viewAssistantMessages(this.dataset.sessionId)">세션 보기</button>
+                                    <td class="adm-ai-action-cell">
+                                        <div class="adm-row-actions is-single">
+                                            <button type="button" class="adm-row-btn detail" data-session-id="${m.chatPostIdx}" onclick="viewAssistantMessages(this.dataset.sessionId)">세션 보기</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -544,13 +558,14 @@
                     </c:choose>
                 </tbody>
             </table>
+            </div>
         </div>
 
         <c:if test="${totalPages > 1}">
-            <div style="display:flex;justify-content:center;gap:4px;margin-top:16px;">
+            <div class="adm-ai-pagination">
                 <c:forEach begin="1" end="${totalPages}" var="p">
                     <a href="${pageContext.request.contextPath}/admin/ai-helper?tab=inappropriate&page=${p}"
-                       class="adm-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}" style="min-width:32px;">${p}</a>
+                       class="adm-btn adm-ai-page-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}">${p}</a>
                 </c:forEach>
             </div>
         </c:if>
@@ -561,34 +576,47 @@
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'blocks'}">
         <%-- 차단 등록 폼 --%>
-        <div class="adm-card" style="padding:16px;margin-bottom:16px;">
-            <div style="font-size:14px;font-weight:700;margin-bottom:10px;">차단 등록</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
-                <div>
-                    <label style="font-size:11px;color:#64748b;display:block;">유형</label>
-                    <select id="blkType" class="adm-input" style="width:90px;">
+        <div class="adm-card adm-ai-form-card">
+            <div class="adm-ai-section-title">차단 등록</div>
+            <div class="adm-ai-block-form">
+                <div class="adm-ai-form-field is-type">
+                    <label class="adm-filter-label" for="blkType">유형</label>
+                    <select id="blkType" class="adm-select">
                         <option value="USER">USER</option>
                         <option value="IP">IP</option>
                     </select>
                 </div>
-                <div style="flex:1;min-width:160px;">
-                    <label style="font-size:11px;color:#64748b;display:block;">값 (user_idx 또는 IP)</label>
+                <div class="adm-ai-form-field">
+                    <label class="adm-filter-label" for="blkValue">값 (user_idx 또는 IP)</label>
                     <input type="text" id="blkValue" class="adm-input" placeholder="예: 6 / 192.168.0.1">
                 </div>
-                <div style="flex:2;min-width:200px;">
-                    <label style="font-size:11px;color:#64748b;display:block;">사유</label>
+                <div class="adm-ai-form-field is-wide">
+                    <label class="adm-filter-label" for="blkReason">사유</label>
                     <input type="text" id="blkReason" class="adm-input" placeholder="선택">
                 </div>
-                <div>
-                    <label style="font-size:11px;color:#64748b;display:block;">만료(선택, YYYY-MM-DD HH:mm)</label>
-                    <input type="text" id="blkExpires" class="adm-input" placeholder="비우면 영구" style="width:180px;">
+                <div class="adm-ai-form-field">
+                    <label class="adm-filter-label" for="blkExpires">만료(선택, YYYY-MM-DD HH:mm)</label>
+                    <input type="text" id="blkExpires" class="adm-input" placeholder="비우면 영구">
                 </div>
                 <button type="button" class="adm-btn adm-btn-primary" onclick="createAssistantBlock()">등록</button>
             </div>
         </div>
 
-        <div class="adm-card" style="padding:0;overflow-x:auto;">
-            <table class="adm-table" style="width:100%;">
+        <div class="adm-card adm-ai-table-card">
+            <div class="adm-table-wrap">
+            <table class="adm-table adm-ai-table adm-ai-blocks-table">
+                <colgroup>
+                    <col class="adm-ai-col-id"/>
+                    <col class="adm-ai-col-type"/>
+                    <col class="adm-ai-col-value"/>
+                    <col class="adm-ai-col-user"/>
+                    <col class="adm-ai-col-reason"/>
+                    <col class="adm-ai-col-date"/>
+                    <col class="adm-ai-col-date"/>
+                    <col class="adm-ai-col-status"/>
+                    <col class="adm-ai-col-user"/>
+                    <col class="adm-ai-col-actions-narrow"/>
+                </colgroup>
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -600,45 +628,41 @@
                         <th>만료</th>
                         <th>상태</th>
                         <th>처리자</th>
-                        <th style="width:80px;">
-                            <div style="display:flex;gap:4px;justify-content:flex-end;">
-                                <span style="font-size:11px;padding:3px 8px;">액션</span>
-                            </div>
-                        </th>
+                        <th>액션</th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:choose>
                         <c:when test="${empty blocks}">
-                            <tr><td colspan="10" style="text-align:center;padding:40px;color:#94a3b8;">차단 기록이 없습니다.</td></tr>
+                            <tr><td colspan="10" class="adm-local-empty-cell">차단 기록이 없습니다.</td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="b" items="${blocks}">
                                 <tr>
                                     <td>${b.blockId}</td>
                                     <td>
-                                        <span style="padding:2px 8px;border-radius:4px;background:${b.blockType == 'USER' ? '#dbeafe' : '#fee2e2'};color:${b.blockType == 'USER' ? '#1d4ed8' : '#b91c1c'};font-size:11px;font-weight:600;">${b.blockType}</span>
+                                        <span class="adm-ai-type-badge ${b.blockType == 'USER' ? 'is-user' : 'is-ip'}">${b.blockType}</span>
                                     </td>
                                     <td>${b.blockValue}</td>
                                     <td><c:if test="${b.targetNickname != null}">${b.targetNickname}</c:if></td>
-                                    <td style="max-width:260px;word-break:break-all;font-size:12px;">${fn:escapeXml(b.reason)}</td>
+                                    <td class="adm-ai-break-cell">${fn:escapeXml(b.reason)}</td>
                                     <td><fmt:formatDate value="${b.blockedAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${b.expiresAt != null}"><fmt:formatDate value="${b.expiresAtDate}" pattern="yyyy-MM-dd HH:mm"/></c:when>
-                                            <c:otherwise><span style="color:#94a3b8;">영구</span></c:otherwise>
+                                            <c:otherwise><span class="adm-ai-muted">영구</span></c:otherwise>
                                         </c:choose>
                                     </td>
                                     <td>
                                         <c:choose>
-                                            <c:when test="${b.isActive}"><span style="color:#16a34a;font-weight:600;">활성</span></c:when>
-                                            <c:otherwise><span style="color:#94a3b8;">해제</span></c:otherwise>
+                                            <c:when test="${b.isActive}"><span class="adm-ai-state is-active">활성</span></c:when>
+                                            <c:otherwise><span class="adm-ai-muted">해제</span></c:otherwise>
                                         </c:choose>
                                     </td>
                                     <td><c:if test="${b.blockedByNickname != null}">${b.blockedByNickname}</c:if></td>
-                                    <td style="text-align:right;">
+                                    <td class="adm-ai-action-cell">
                                         <c:if test="${b.isActive}">
-                                            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;color:#ef4444;" data-block-id="${b.blockId}" onclick="deactivateAssistantBlock(this.dataset.blockId)">해제</button>
+                                            <button type="button" class="adm-row-btn danger" data-block-id="${b.blockId}" onclick="deactivateAssistantBlock(this.dataset.blockId)">해제</button>
                                         </c:if>
                                     </td>
                                 </tr>
@@ -647,6 +671,7 @@
                     </c:choose>
                 </tbody>
             </table>
+            </div>
         </div>
     </c:if>
 
@@ -654,19 +679,25 @@
          한도 정책 탭
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'quotas'}">
-        <style>
-            tr[data-quota-id].is-dirty td:first-child { box-shadow: inset 3px 0 0 0 #2563eb; }
-            tr[data-quota-id].is-dirty td { background: rgba(37, 99, 235, .04); }
-        </style>
-        <div class="adm-card" style="padding:16px;margin-bottom:16px;">
-            <div style="font-size:13px;color:#475569;line-height:1.6;">
+        <div class="adm-card adm-ai-info-card">
+            <div class="adm-ai-description">
                 등급별 AI 도우미 이용 한도를 설정합니다. GUEST는 비로그인 유저용이며 가장 제한적입니다.<br>
                 ADMIN/SUPERADMIN은 한도 체크에서 자동 제외됩니다.
             </div>
         </div>
 
-        <div class="adm-card" style="padding:0;overflow-x:auto;">
-            <table class="adm-table" style="width:100%;">
+        <div class="adm-card adm-ai-table-card">
+            <div class="adm-table-wrap">
+            <table class="adm-table adm-ai-table adm-ai-quotas-table">
+                <colgroup>
+                    <col class="adm-ai-col-grade"/>
+                    <col class="adm-ai-col-quota"/>
+                    <col class="adm-ai-col-quota"/>
+                    <col class="adm-ai-col-period"/>
+                    <col class="adm-ai-col-reset"/>
+                    <col class="adm-ai-col-refund"/>
+                    <col class="adm-ai-col-user"/>
+                </colgroup>
                 <thead>
                     <tr>
                         <th>등급</th>
@@ -681,40 +712,42 @@
                 <tbody>
                     <c:choose>
                         <c:when test="${empty quotas}">
-                            <tr><td colspan="7" style="text-align:center;padding:40px;color:#94a3b8;">등급이 없습니다.</td></tr>
+                            <tr><td colspan="7" class="adm-local-empty-cell">등급이 없습니다.</td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="q" items="${quotas}">
                                 <tr data-quota-id="${q.quotaId}" data-grade="${q.grade}">
                                     <td><strong>${q.grade}</strong></td>
-                                    <td><input type="number" class="adm-input q-sessions" value="${q.maxSessions}" data-original="${q.maxSessions}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
-                                    <td><input type="number" class="adm-input q-msg" value="${q.maxMessagesPerPeriod}" data-original="${q.maxMessagesPerPeriod}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
+                                    <td><input type="number" class="adm-input adm-ai-quota-input q-sessions" value="${q.maxSessions}" data-original="${q.maxSessions}"/></td>
+                                    <td><input type="number" class="adm-input adm-ai-quota-input q-msg" value="${q.maxMessagesPerPeriod}" data-original="${q.maxMessagesPerPeriod}"/></td>
                                     <td>
-                                        <select class="adm-input q-period" data-original="${q.periodDays}" style="width:72px;padding:6px 10px;font-size:13px;">
+                                        <select class="adm-select adm-ai-quota-select q-period" data-original="${q.periodDays}">
                                             <c:forEach var="d" items="1,2,3,4,5,7,14,30">
                                                 <option value="${d}" ${q.periodDays == d ? 'selected' : ''}>${d}일</option>
                                             </c:forEach>
                                         </select>
                                     </td>
                                     <td>
-                                        <select class="adm-input q-reset-h" data-original="${q.resetHour}" style="width:64px;padding:6px 8px;font-size:13px;">
-                                            <c:forEach var="h" begin="0" end="23">
-                                                <option value="${h}" ${q.resetHour == h ? 'selected' : ''}>
-                                                    <fmt:formatNumber value="${h}" minIntegerDigits="2"/>
-                                                </option>
-                                            </c:forEach>
-                                        </select>
-                                        <span style="padding:0 2px;">:</span>
-                                        <select class="adm-input q-reset-m" data-original="${q.resetMinute}" style="width:64px;padding:6px 8px;font-size:13px;">
-                                            <c:forEach var="m" begin="0" end="59">
-                                                <option value="${m}" ${q.resetMinute == m ? 'selected' : ''}>
-                                                    <fmt:formatNumber value="${m}" minIntegerDigits="2"/>
-                                                </option>
-                                            </c:forEach>
-                                        </select>
+                                        <div class="adm-ai-time-controls">
+                                            <select class="adm-select adm-ai-time-select q-reset-h" data-original="${q.resetHour}">
+                                                <c:forEach var="h" begin="0" end="23">
+                                                    <option value="${h}" ${q.resetHour == h ? 'selected' : ''}>
+                                                        <fmt:formatNumber value="${h}" minIntegerDigits="2"/>
+                                                    </option>
+                                                </c:forEach>
+                                            </select>
+                                            <span class="adm-ai-time-separator">:</span>
+                                            <select class="adm-select adm-ai-time-select q-reset-m" data-original="${q.resetMinute}">
+                                                <c:forEach var="m" begin="0" end="59">
+                                                    <option value="${m}" ${q.resetMinute == m ? 'selected' : ''}>
+                                                        <fmt:formatNumber value="${m}" minIntegerDigits="2"/>
+                                                    </option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
                                     </td>
-                                    <td style="text-align:center;">
-                                        <input type="checkbox" class="q-refund" ${q.quotaRefundEnabled ? 'checked' : ''} data-original="${q.quotaRefundEnabled ? 'true' : 'false'}" style="width:18px;height:18px;cursor:pointer;"/>
+                                    <td class="adm-ai-check-cell">
+                                        <input type="checkbox" class="adm-ai-checkbox q-refund" ${q.quotaRefundEnabled ? 'checked' : ''} data-original="${q.quotaRefundEnabled ? 'true' : 'false'}"/>
                                     </td>
                                     <td>
                                         <c:choose>
@@ -722,7 +755,6 @@
                                                 <a class="quota-updater"
                                                    href="javascript:void(0);"
                                                    onclick="openDetail('${q.updatedBy}'); return false;"
-                                                   style="color:#1d4ed8;text-decoration:none;font-weight:500;cursor:pointer;"
                                                    title="회원 상세 보기">
                                                     <c:choose>
                                                         <c:when test="${not empty q.updaterNickname}">${q.updaterNickname}</c:when>
@@ -730,7 +762,7 @@
                                                     </c:choose>
                                                 </a>
                                             </c:when>
-                                            <c:otherwise><span style="color:#94a3b8;">-</span></c:otherwise>
+                                            <c:otherwise><span class="adm-ai-muted">-</span></c:otherwise>
                                         </c:choose>
                                     </td>
                                 </tr>
@@ -739,11 +771,12 @@
                     </c:choose>
                 </tbody>
             </table>
+            </div>
         </div>
 
         <%-- 전체 저장 / 기본값 복원 (원본으로 되돌리기) --%>
-        <div style="margin-top:16px;display:flex;justify-content:flex-end;gap:8px;align-items:center;">
-            <span id="quotaDirtyHint" style="font-size:12px;color:#64748b;"></span>
+        <div class="adm-ai-footer-actions">
+            <span id="quotaDirtyHint" class="adm-ai-dirty-hint"></span>
             <button type="button" class="adm-btn adm-btn-ghost" onclick="resetAssistantQuotasToOriginal()"
                     title="불러온 DB 값으로 모두 되돌립니다">기본값 복원</button>
             <button type="button" class="adm-btn adm-btn-primary" onclick="saveAllAssistantQuotas()">전체 저장</button>
@@ -753,13 +786,13 @@
 </div>
 
 <%-- 세션 메시지 조회 모달 --%>
-<div id="asstMsgModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:#fff;width:720px;max-width:90vw;max-height:80vh;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
-        <div style="padding:16px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
-            <h3 id="asstMsgModalTitle" style="margin:0;font-size:16px;">${msg_admin_aiHelper_assistant_modal_title}</h3>
-            <button type="button" class="adm-btn adm-btn-ghost" onclick="document.getElementById('asstMsgModal').style.display='none'">${msg_admin_common_close}</button>
+<div id="asstMsgModal" class="adm-ai-message-modal" hidden>
+    <div class="adm-ai-message-dialog">
+        <div class="adm-ai-message-head">
+            <h3 id="asstMsgModalTitle" class="adm-ai-message-title">${msg_admin_aiHelper_assistant_modal_title}</h3>
+            <button type="button" class="adm-btn adm-btn-ghost" onclick="document.getElementById('asstMsgModal').hidden = true">${msg_admin_common_close}</button>
         </div>
-        <div id="asstMsgModalBody" style="padding:16px;overflow-y:auto;flex:1;"></div>
+        <div id="asstMsgModalBody" class="adm-ai-message-body"></div>
     </div>
 </div>
 
@@ -790,16 +823,15 @@
             const html = (data.messages || []).map(function (m) {
                 const isUser = m.commentRole === 'USER';
                 const roleLabel = isUser ? assistantMessages.roleUser : assistantMessages.roleAi;
-                const color    = isUser ? '#1d4ed8' : '#0f766e';
-                const bg       = isUser ? '#eff6ff' : '#f0fdfa';
+                const roleClass = isUser ? 'is-user' : 'is-ai';
                 const content  = (m.content || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                return '<div style="margin-bottom:12px;padding:10px;border-left:3px solid ' + color + ';background:' + bg + ';">' +
-                       '<div style="font-size:11px;color:' + color + ';font-weight:600;">#' + m.commentOrder + ' ' + roleLabel + '</div>' +
-                       '<div style="font-size:13px;margin-top:4px;white-space:pre-wrap;">' + content + '</div>' +
+                return '<div class="adm-ai-message-item ' + roleClass + '">' +
+                       '<div class="adm-ai-message-meta">#' + m.commentOrder + ' ' + roleLabel + '</div>' +
+                       '<div class="adm-ai-message-content">' + content + '</div>' +
                        '</div>';
             }).join('');
-            document.getElementById('asstMsgModalBody').innerHTML = html || '<div style="color:#94a3b8;text-align:center;padding:40px;">' + assistantMessages.empty + '</div>';
-            document.getElementById('asstMsgModal').style.display = 'flex';
+            document.getElementById('asstMsgModalBody').innerHTML = html || '<div class="adm-local-empty-cell">' + assistantMessages.empty + '</div>';
+            document.getElementById('asstMsgModal').hidden = false;
         } catch (e) {
             alert(assistantMessages.viewError);
         }
