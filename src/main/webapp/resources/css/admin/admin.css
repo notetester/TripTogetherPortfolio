@@ -3134,9 +3134,10 @@ body.sa-light .js-member-section-card .js-member-page-state {
 
 /* 공통 관리자 섹션 목록 도구 — 차단 관리 로컬 섹션 UX 확장 */
 .adm-section-list-toolbar {
-    display: grid;
-    grid-template-columns: minmax(260px, .42fr) minmax(0, 1fr);
+    display: flex;
     align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 12px;
     border-top: 1px solid rgba(30, 41, 59, .86);
     border-bottom: 1px solid rgba(30, 41, 59, .86);
@@ -3146,7 +3147,7 @@ body.sa-light .js-member-section-card .js-member-page-state {
 .adm-admin-list-bulkbar {
     min-height: 44px;
     min-width: 0;
-    display: flex;
+    display: none;
     align-items: center;
     gap: 8px;
     padding: 6px 10px;
@@ -3158,6 +3159,8 @@ body.sa-light .js-member-section-card .js-member-page-state {
     transition: opacity .15s ease, border-color .15s ease, background-color .15s ease;
 }
 .adm-admin-list-bulkbar.is-active {
+    display: flex;
+    flex: 1 1 100%;
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -3177,6 +3180,13 @@ body.sa-light .js-member-section-card .js-member-page-state {
     justify-content: flex-end;
     gap: 8px;
     min-width: 0;
+}
+.adm-admin-list-toolcluster {
+    flex: 1 1 auto;
+}
+.adm-admin-list-primary-tools {
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
 }
 .adm-admin-list-tool {
     display: inline-flex;
@@ -3214,6 +3224,8 @@ body.sa-light .js-member-section-card .js-member-page-state {
     min-width: 86px;
 }
 .adm-section-list-page-tools {
+    display: flex;
+    align-items: center;
     gap: 6px;
 }
 .adm-section-list-page-info {
@@ -3223,6 +3235,19 @@ body.sa-light .js-member-section-card .js-member-page-state {
 }
 .adm-admin-list-export-tool {
     flex: 0 0 auto;
+}
+.adm-section-list-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px 12px;
+    border-top: 1px solid rgba(30, 41, 59, .78);
+    background: rgba(15, 23, 42, .14);
+}
+.adm-section-list-footer .adm-section-list-page-tools {
+    flex: 0 0 auto;
+    justify-content: flex-end;
 }
 .adm-admin-list-overflow-menu {
     position: relative;
@@ -3274,6 +3299,10 @@ body.sa-light .adm-section-list-toolbar {
     background: #f8fafc;
     border-color: #e2e8f0;
 }
+body.sa-light .adm-section-list-footer {
+    background: #ffffff;
+    border-color: #e2e8f0;
+}
 body.sa-light .adm-admin-list-bulkbar.is-active {
     background: #eff6ff;
     border-color: rgba(37,99,235,.34);
@@ -3310,15 +3339,13 @@ body.sa-light .adm-admin-list-overflow-panel {
 }
 @media (max-width: 900px) {
     .adm-section-list-toolbar {
-        grid-template-columns: 1fr;
         align-items: stretch;
-    }
-    .adm-admin-list-bulkbar:not(.is-active) {
-        display: none;
+        justify-content: flex-start;
     }
     .adm-admin-list-toolcluster,
     .adm-admin-list-primary-tools {
         justify-content: flex-start;
+        flex-wrap: wrap;
     }
     .adm-section-list-filter {
         width: 100%;
@@ -3327,6 +3354,13 @@ body.sa-light .adm-admin-list-overflow-panel {
     .adm-admin-list-overflow-panel {
         left: 0;
         right: auto;
+    }
+    .adm-section-list-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .adm-section-list-footer .adm-section-list-page-tools {
+        justify-content: flex-start;
     }
 }
 @media (max-width: 560px) {
@@ -4065,8 +4099,8 @@ body.sa-light .adm-fin-guide { color: #475569; }
 }
 
 .adm-finance-page {
-    max-width: 1540px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
 
 .adm-fin-tabs {
@@ -5309,8 +5343,8 @@ body.sa-light .adm-audit-bulk-bar {
     --adm-radius-md: 14px;
     --adm-gap: 16px;
     width: 100%;
-    max-width: 1540px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
 
 .adm-governance-page .adm-page-head {
@@ -5467,6 +5501,11 @@ body.sa-light .adm-audit-bulk-bar {
 
 .adm-governance-page .adm-input::placeholder {
     color: #64748b;
+}
+
+.adm-governance-page .adm-search-box .adm-input,
+.adm-admin-list-controlbar .adm-section-list-search .adm-input {
+    padding-left: 34px;
 }
 
 .adm-governance-page .adm-check,
@@ -5993,7 +6032,7 @@ body.sa-light .adm-governance-page .waf-detail-value {
 .adm-governance-page {
     --adm-radius-lg: 10px;
     --adm-radius-md: 8px;
-    max-width: min(100%, 1680px);
+    max-width: none;
     padding-left: clamp(18px, 2vw, 28px);
     padding-right: clamp(18px, 2vw, 28px);
 }
@@ -6431,7 +6470,7 @@ body.sa-light .adm-governance-page .adm-provider-health-provider {
 
 /* Admin notification preferences */
 .adm-governance-page.adm-notification-page {
-    max-width: min(100%, 1320px);
+    max-width: none;
 }
 
 .adm-governance-page .adm-notification-page-actions {
@@ -7244,7 +7283,7 @@ body.sa-light .adm-moderation-actions {
 
 /* Login risk policy settings */
 .adm-governance-page.adm-login-policy-page {
-    max-width: min(100%, 1500px);
+    max-width: none;
 }
 
 .adm-governance-page .adm-login-policy-page-actions {
@@ -7449,7 +7488,7 @@ body.sa-light .adm-governance-page .adm-login-policy-toggle span {
 
 /* Login risk review list */
 .adm-governance-page.adm-login-review-page {
-    max-width: min(100%, 1600px);
+    max-width: none;
 }
 
 .adm-governance-page .adm-login-review-page-actions .adm-btn {
@@ -7577,7 +7616,7 @@ body.sa-light .adm-governance-page .adm-login-review-summary span {
 
 /* General security review list */
 .adm-governance-page.adm-security-review-page {
-    max-width: min(100%, 1600px);
+    max-width: none;
 }
 
 .adm-governance-page .adm-security-review-page-actions .adm-btn {
@@ -7710,7 +7749,7 @@ body.sa-light .adm-governance-page .adm-security-review-summary span {
 
 /* External risk assessment list */
 .adm-governance-page.adm-external-assessment-page {
-    max-width: min(100%, 1600px);
+    max-width: none;
 }
 
 .adm-governance-page .adm-external-assessment-page-actions .adm-btn {
@@ -7803,7 +7842,7 @@ body.sa-light .adm-governance-page .adm-external-assessment-primary {
 
 /* Security risk assessment list */
 .adm-governance-page.adm-security-assessment-page {
-    max-width: min(100%, 1680px);
+    max-width: none;
 }
 
 .adm-governance-page .adm-security-assessment-page-actions .adm-btn {
@@ -7914,7 +7953,7 @@ body.sa-light .adm-governance-page .adm-security-assessment-primary {
 
 /* Security appeal policy */
 .adm-governance-page.adm-appeal-policy-page {
-    max-width: min(100%, 1500px);
+    max-width: none;
 }
 
 .adm-governance-page .adm-appeal-policy-page-actions .adm-btn {
@@ -8063,7 +8102,7 @@ body.sa-light .adm-governance-page .adm-appeal-policy-section-title {
 
 /* Security appeal list */
 .adm-governance-page.adm-appeal-page {
-    max-width: min(100%, 1680px);
+    max-width: none;
 }
 
 .adm-governance-page .adm-appeal-page-actions .adm-btn {
@@ -8309,7 +8348,7 @@ body.sa-light .adm-governance-page .appeal-modal-value {
 
 /* WAF sync queue */
 .adm-governance-page.adm-waf-page {
-    max-width: min(100%, 1680px);
+    max-width: none;
 }
 
 .adm-governance-page .adm-waf-page-actions .adm-btn {
@@ -8704,8 +8743,8 @@ body.sa-light .adm-audit-row-detail-value {
 
 /* Inquiry admin */
 .adm-inquiry-page {
-    max-width: 1540px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
 
 .adm-inquiry-filter-card {
@@ -8966,8 +9005,8 @@ body.sa-light .adm-inquiry-blocked-note {
 
 /* Report admin */
 .adm-report-page {
-    max-width: 1540px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
 
 .adm-report-filter-card {
@@ -9272,8 +9311,8 @@ body.sa-light .adm-report-deleted-badge {
 
 /* Community admin */
 .adm-community-page {
-    max-width: 1540px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
 
 .adm-community-filter-card {
@@ -9761,8 +9800,8 @@ body.sa-light .adm-community-side-mono .adm-inline-link {
 
 /* Explore admin */
 .adm-explore-page {
-    max-width: 1540px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
 
 .adm-explore-filter-card {
@@ -10183,8 +10222,8 @@ body.sa-light .adm-explore-rating-value {
 
 /* Package admin */
 .adm-package-page {
-    max-width: 1540px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
 
 .adm-package-filter-card,
@@ -10389,8 +10428,8 @@ body.sa-light .adm-package-requested-line {
 
 /* Courses admin */
 .adm-courses-page {
-    max-width: 1540px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
 
 .adm-courses-filter-card {
@@ -10753,8 +10792,8 @@ body.sa-light .adm-courses-spot-order {
 
 /* Ads admin */
 .adm-ad-page {
-    max-width: 1540px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
 
 .adm-ad-alert {
@@ -11377,8 +11416,8 @@ body.sa-light .adm-ad-note-box {
 
 /* AI admin */
 .adm-ai-page {
-    max-width: 1540px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
 
 .adm-ai-tabs {

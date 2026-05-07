@@ -6,6 +6,8 @@
  *
  * /admin/blocks and /admin/members are intentionally excluded because they own
  * richer domain-specific server/AJAX section logic and mutation endpoints.
+ * Legacy data-admin-list-ignore="true" is no longer treated as a hard skip:
+ * older admin pages used it too broadly and lost row selection/export controls.
  */
 (function () {
     'use strict';
@@ -70,7 +72,7 @@
     }
 
     function isEnhanceableTable(table) {
-        if (!table || table.dataset.adminListIgnore === 'true') return false;
+        if (!table || table.dataset.adminListIgnore === 'hard') return false;
         if (table.dataset.adminListToolsEnhanced === 'true') return false;
         if (isModalTable(table)) return false;
         if (table.classList.contains('history-table') || table.classList.contains('sa-audit-table')) return false;
@@ -289,11 +291,6 @@
             + '<select class="adm-select js-admin-list-page-size">'
             + '<option value="10">10</option><option value="20" selected>20</option><option value="50">50</option><option value="100">100</option><option value="all">' + TEXT.pageSizeAll + '</option>'
             + '</select></label>'
-            + '<div class="adm-admin-list-tool adm-section-list-page-tools">'
-            + '<span class="adm-section-list-page-info js-admin-list-page-info"></span>'
-            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev">' + TEXT.prev + '</button>'
-            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-list-next">' + TEXT.next + '</button>'
-            + '</div>'
             + '<button type="button" class="adm-btn adm-btn-ghost js-admin-list-sort-reset" style="display:none;">↺ ' + TEXT.sortReset + '</button>'
             + '<div class="adm-export-control adm-admin-list-export-tool">'
             + '<select class="adm-select js-admin-list-export-format"><option value="csv">' + TEXT.csv + '</option><option value="excel">' + TEXT.excel + '</option></select>'
@@ -311,7 +308,19 @@
             + '</div>'
             + '</div>';
 
+        const footer = document.createElement('div');
+        footer.className = 'adm-section-list-footer js-admin-list-tools-footer';
+        footer.dataset.tableId = table.id;
+        footer.innerHTML =
+            '<span class="adm-section-list-page-info js-admin-list-page-info"></span>'
+            + '<div class="adm-section-list-page-tools">'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev">' + TEXT.prev + '</button>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-list-next">' + TEXT.next + '</button>'
+            + '</div>';
+
         parent.insertBefore(toolbar, wrap);
+        if (wrap.nextSibling) parent.insertBefore(footer, wrap.nextSibling);
+        else parent.appendChild(footer);
         return toolbar;
     }
 
@@ -368,8 +377,7 @@
             { node: toolbar.querySelector('.js-admin-list-sort-reset'), breakpoint: 1560 },
             { node: toolbar.querySelector('.adm-section-list-filter'), breakpoint: 1380 },
             { node: toolbar.querySelector('.adm-section-list-mode'), breakpoint: 1180 },
-            { node: toolbar.querySelector('.adm-section-list-size'), breakpoint: 1040 },
-            { node: toolbar.querySelector('.adm-section-list-page-tools'), breakpoint: 900 }
+            { node: toolbar.querySelector('.adm-section-list-size'), breakpoint: 1040 }
         ].filter(function (item) { return !!item.node; });
 
         toolbar.__adminListOverflowSync = function () {
@@ -613,6 +621,7 @@
     function renderTable(table) {
         const state = getState(table);
         const toolbar = document.querySelector('.js-admin-list-tools-toolbar[data-table-id="' + table.id + '"]');
+        const footer = document.querySelector('.js-admin-list-tools-footer[data-table-id="' + table.id + '"]');
         const tbody = table.querySelector('tbody');
         if (!state || !toolbar || !tbody) return;
 
@@ -671,9 +680,9 @@
             tbody.appendChild(tr);
         }
 
-        const pageInfo = toolbar.querySelector('.js-admin-list-page-info');
-        const prev = toolbar.querySelector('.js-admin-list-prev');
-        const next = toolbar.querySelector('.js-admin-list-next');
+        const pageInfo = (footer || toolbar).querySelector('.js-admin-list-page-info');
+        const prev = (footer || toolbar).querySelector('.js-admin-list-prev');
+        const next = (footer || toolbar).querySelector('.js-admin-list-next');
         if (pageInfo) pageInfo.textContent = format(TEXT.pageInfo, total, state.visibleRows.length, state.page, totalPages);
         if (prev) prev.disabled = state.page <= 1;
         if (next) next.disabled = state.page >= totalPages;
@@ -727,7 +736,8 @@
     }
 
     function bindToolbar(table, toolbar) {
-        toolbar.addEventListener('click', function (event) {
+        const footer = document.querySelector('.js-admin-list-tools-footer[data-table-id="' + table.id + '"]');
+        const handleClick = function (event) {
             const exportBtn = event.target.closest('.js-admin-list-export');
             if (exportBtn) {
                 exportTable(table, exportBtn.dataset.scope || 'page');
@@ -770,7 +780,10 @@
                     renderTable(table);
                 }
             }
-        });
+        };
+
+        toolbar.addEventListener('click', handleClick);
+        if (footer) footer.addEventListener('click', handleClick);
 
         toolbar.addEventListener('change', function (event) {
             if (event.target.matches('.js-admin-list-mode')) {
