@@ -203,33 +203,28 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-ai-page adm-ai-chatbot-page">
 
     <%-- ── 챗봇 내부 sub-tab ── --%>
-    <div class="aih-tabs" style="display:flex;gap:4px;border-bottom:1px solid #e5e7eb;margin:20px 0;">
+    <div class="adm-ai-tabs">
         <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=dashboard"
-           class="aih-tab ${tab == 'dashboard' ? 'active' : ''}"
-           style="padding:10px 16px;text-decoration:none;font-size:13px;font-weight:${tab == 'dashboard' ? '700' : '500'};color:${tab == 'dashboard' ? '#1d4ed8' : '#64748b'};border-bottom:2px solid ${tab == 'dashboard' ? '#1d4ed8' : 'transparent'};margin-bottom:-1px;">
+           class="adm-ai-tab ${tab == 'dashboard' ? 'active' : ''}">
             ${msg_admin_aiHelper_chatbot_tab_dashboard}
         </a>
         <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=links"
-           class="aih-tab ${tab == 'links' ? 'active' : ''}"
-           style="padding:10px 16px;text-decoration:none;font-size:13px;font-weight:${tab == 'links' ? '700' : '500'};color:${tab == 'links' ? '#1d4ed8' : '#64748b'};border-bottom:2px solid ${tab == 'links' ? '#1d4ed8' : 'transparent'};margin-bottom:-1px;">
+           class="adm-ai-tab ${tab == 'links' ? 'active' : ''}">
             링크 클릭
         </a>
         <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=inappropriate"
-           class="aih-tab ${tab == 'inappropriate' ? 'active' : ''}"
-           style="padding:10px 16px;text-decoration:none;font-size:13px;font-weight:${tab == 'inappropriate' ? '700' : '500'};color:${tab == 'inappropriate' ? '#1d4ed8' : '#64748b'};border-bottom:2px solid ${tab == 'inappropriate' ? '#1d4ed8' : 'transparent'};margin-bottom:-1px;">
+           class="adm-ai-tab ${tab == 'inappropriate' ? 'active' : ''}">
             ${msg_admin_aiHelper_chatbot_tab_inappropriate}
         </a>
         <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=blocks"
-           class="aih-tab ${tab == 'blocks' ? 'active' : ''}"
-           style="padding:10px 16px;text-decoration:none;font-size:13px;font-weight:${tab == 'blocks' ? '700' : '500'};color:${tab == 'blocks' ? '#1d4ed8' : '#64748b'};border-bottom:2px solid ${tab == 'blocks' ? '#1d4ed8' : 'transparent'};margin-bottom:-1px;">
+           class="adm-ai-tab ${tab == 'blocks' ? 'active' : ''}">
             ${msg_admin_aiHelper_chatbot_tab_blocks}
         </a>
         <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=quotas"
-           class="aih-tab ${tab == 'quotas' ? 'active' : ''}"
-           style="padding:10px 16px;text-decoration:none;font-size:13px;font-weight:${tab == 'quotas' ? '700' : '500'};color:${tab == 'quotas' ? '#1d4ed8' : '#64748b'};border-bottom:2px solid ${tab == 'quotas' ? '#1d4ed8' : 'transparent'};margin-bottom:-1px;">
+           class="adm-ai-tab ${tab == 'quotas' ? 'active' : ''}">
             ${msg_admin_aiHelper_chatbot_tab_quotas}
         </a>
     </div>
@@ -238,42 +233,53 @@
          대시보드 탭
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'dashboard'}">
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;">
-            <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">💬 ${msg_admin_aiHelper_chatbot_kpi_totalConversations}</div>
-                <div style="font-size:24px;font-weight:700;color:#38bdf8;">${totalConversations}</div>
+        <div class="adm-ai-kpi-grid">
+            <div class="adm-card adm-ai-kpi-card">
+                <div class="adm-ai-kpi-label">💬 ${msg_admin_aiHelper_chatbot_kpi_totalConversations}</div>
+                <div class="adm-ai-kpi-value is-sky">${totalConversations}</div>
             </div>
-            <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">📅 ${msg_admin_aiHelper_chatbot_kpi_todayConversations}</div>
-                <div style="font-size:24px;font-weight:700;color:#10b981;">${todayConversations}</div>
+            <div class="adm-card adm-ai-kpi-card">
+                <div class="adm-ai-kpi-label">📅 ${msg_admin_aiHelper_chatbot_kpi_todayConversations}</div>
+                <div class="adm-ai-kpi-value is-green">${todayConversations}</div>
             </div>
-            <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">⚠️ ${msg_admin_aiHelper_chatbot_kpi_inappropriate}</div>
-                <div style="font-size:24px;font-weight:700;color:#fb923c;">${inappropriateCount}</div>
+            <div class="adm-card adm-ai-kpi-card">
+                <div class="adm-ai-kpi-label">⚠️ ${msg_admin_aiHelper_chatbot_kpi_inappropriate}</div>
+                <div class="adm-ai-kpi-value is-orange">${inappropriateCount}</div>
             </div>
-            <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">⛔ ${msg_admin_aiHelper_chatbot_kpi_activeBlocks}</div>
-                <div style="font-size:24px;font-weight:700;color:#ef4444;">${activeBlockCount}</div>
+            <div class="adm-card adm-ai-kpi-card">
+                <div class="adm-ai-kpi-label">⛔ ${msg_admin_aiHelper_chatbot_kpi_activeBlocks}</div>
+                <div class="adm-ai-kpi-value is-red">${activeBlockCount}</div>
             </div>
         </div>
 
         <%-- ── 대화 세션 목록 (대시보드 내 통합) ── --%>
-        <div style="font-size:14px;font-weight:700;margin:8px 0 12px;">${msg_admin_aiHelper_assistant_section_sessions}</div>
+        <div class="adm-ai-section-title">${msg_admin_aiHelper_assistant_section_sessions}</div>
 
-        <div class="adm-card" style="padding:16px;margin-bottom:16px;">
-            <form method="get" action="${pageContext.request.contextPath}/admin/ai-helper/chatbot" style="display:flex;gap:8px;">
+        <div class="adm-card adm-ai-filter-card">
+            <form method="get" action="${pageContext.request.contextPath}/admin/ai-helper/chatbot" class="adm-ai-search-form">
                 <input type="hidden" name="tab" value="dashboard"/>
-                <input type="text" name="keyword" value="${keyword}" placeholder="${msg_admin_aiHelper_chatbot_searchPlaceholder}" class="adm-input" style="flex:1;"/>
-                <button type="submit" class="adm-btn">${msg_admin_common_search}</button>
+                <input type="text" name="keyword" value="${keyword}" placeholder="${msg_admin_aiHelper_chatbot_searchPlaceholder}" class="adm-input adm-ai-search-input"/>
+                <button type="submit" class="adm-btn adm-btn-primary">${msg_admin_common_search}</button>
                 <c:if test="${not empty keyword}">
                     <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot" class="adm-btn adm-btn-ghost">${msg_admin_common_reset}</a>
                 </c:if>
             </form>
-            <div style="font-size:12px;color:#64748b;margin-top:8px;">${msg_admin_common_totalCountFormat}</div>
+            <div class="adm-ai-total">${msg_admin_common_totalCountFormat}</div>
         </div>
 
-        <div class="adm-card" style="padding:0;overflow-x:auto;">
-            <table class="adm-table" style="width:100%;">
+        <div class="adm-card adm-ai-table-card">
+            <div class="adm-table-wrap">
+            <table class="adm-table adm-ai-table adm-ai-conversations-table">
+                <colgroup>
+                    <col class="adm-ai-col-id"/>
+                    <col class="adm-ai-col-title"/>
+                    <col class="adm-ai-col-user"/>
+                    <col class="adm-ai-col-ip"/>
+                    <col class="adm-ai-col-count"/>
+                    <col class="adm-ai-col-date"/>
+                    <col class="adm-ai-col-status"/>
+                    <col class="adm-ai-col-actions-wide"/>
+                </colgroup>
                 <thead>
                     <tr>
                         <th>${msg_admin_aiHelper_chatbot_table_id}</th>
@@ -283,19 +289,13 @@
                         <th>${msg_admin_aiHelper_chatbot_table_messageCount}</th>
                         <th>${msg_admin_aiHelper_chatbot_table_lastActive}</th>
                         <th>${msg_admin_aiHelper_chatbot_table_status}</th>
-                        <th style="width:200px;">
-                            <div style="display:flex;gap:4px;justify-content:flex-end;">
-                                <span style="font-size:11px;padding:3px 8px;">${msg_admin_aiHelper_chatbot_table_actions}</span>
-                                <span style="font-size:11px;padding:3px 8px;visibility:hidden;">${msg_admin_aiHelper_chatbot_action_blockUser}</span>
-                                <span style="font-size:11px;padding:3px 8px;visibility:hidden;">${msg_admin_aiHelper_chatbot_action_blockIp}</span>
-                            </div>
-                        </th>
+                        <th>${msg_admin_aiHelper_chatbot_table_actions}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:choose>
                         <c:when test="${empty conversations}">
-                            <tr><td colspan="8" style="text-align:center;padding:40px;color:#94a3b8;">${msg_admin_aiHelper_chatbot_empty_conversations}</td></tr>
+                            <tr><td colspan="8" class="adm-local-empty-cell">${msg_admin_aiHelper_chatbot_empty_conversations}</td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="c" items="${conversations}">
@@ -321,7 +321,7 @@
                                                     ${msg_admin_aiHelper_assistant_userPrefix} #${c.userIdx}
                                                 </button>
                                             </c:when>
-                                            <c:otherwise><span style="color:#94a3b8;">${msg_admin_aiHelper_chatbot_guest}</span></c:otherwise>
+                                            <c:otherwise><span class="adm-ai-muted">${msg_admin_aiHelper_chatbot_guest}</span></c:otherwise>
                                         </c:choose>
                                     </td>
                                     <td>
@@ -346,21 +346,19 @@
                                         <c:choose>
                                             <c:when test="${c.isDeleted}">
                                                 <button type="button"
-                                                        class="adm-cell-link adm-cell-link--inline"
+                                                        class="adm-cell-link adm-cell-link--inline adm-ai-status-link is-deleted"
                                                         data-conv-id="${c.conversationId}"
-                                                        onclick="viewMessages(this.dataset.convId)"
-                                                        style="color:#ef4444;">${msg_admin_aiHelper_chatbot_status_deleted}</button>
+                                                        onclick="viewMessages(this.dataset.convId)">${msg_admin_aiHelper_chatbot_status_deleted}</button>
                                             </c:when>
                                             <c:otherwise>
                                                 <button type="button"
-                                                        class="adm-cell-link adm-cell-link--inline"
+                                                        class="adm-cell-link adm-cell-link--inline adm-ai-status-link is-active"
                                                         data-conv-id="${c.conversationId}"
-                                                        onclick="viewMessages(this.dataset.convId)"
-                                                        style="color:#10b981;">${msg_admin_aiHelper_chatbot_status_active}</button>
+                                                        onclick="viewMessages(this.dataset.convId)">${msg_admin_aiHelper_chatbot_status_active}</button>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td style="text-align:right;">
+                                    <td class="adm-ai-action-cell">
                                         <div class="adm-row-actions">
                                             <button type="button"
                                                     class="adm-row-btn detail"
@@ -391,13 +389,14 @@
                     </c:choose>
                 </tbody>
             </table>
+            </div>
         </div>
 
         <%-- 페이징 --%>
         <c:if test="${totalPages > 1}">
-            <div style="display:flex;justify-content:center;gap:4px;margin-top:16px;">
+            <div class="adm-ai-pagination">
                 <c:forEach begin="1" end="${totalPages}" var="p">
-                    <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=dashboard&page=${p}&keyword=${keyword}" class="adm-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}" style="min-width:32px;">${p}</a>
+                    <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=dashboard&page=${p}&keyword=${keyword}" class="adm-btn adm-ai-page-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}">${p}</a>
                 </c:forEach>
             </div>
         </c:if>

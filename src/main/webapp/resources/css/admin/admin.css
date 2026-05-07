@@ -9719,6 +9719,14 @@ body.sa-light .adm-ad-note-box {
     color: #a78bfa;
 }
 
+.adm-ai-kpi-value.is-orange {
+    color: #fb923c;
+}
+
+.adm-ai-kpi-value.is-red {
+    color: #f87171;
+}
+
 .adm-ai-section-title {
     margin: 8px 0 12px;
     color: #f1f5f9;
@@ -9781,6 +9789,10 @@ body.sa-light .adm-ad-note-box {
     min-width: 1080px;
 }
 
+.adm-ai-conversations-table {
+    min-width: 1160px;
+}
+
 .adm-ai-messages-table,
 .adm-ai-moderation-table {
     min-width: 1100px;
@@ -9810,6 +9822,10 @@ body.sa-light .adm-ad-note-box {
     width: 150px;
 }
 
+.adm-ai-col-ip {
+    width: 140px;
+}
+
 .adm-ai-col-count,
 .adm-ai-col-role,
 .adm-ai-col-score,
@@ -9837,6 +9853,10 @@ body.sa-light .adm-ad-note-box {
 
 .adm-ai-col-actions {
     width: 126px;
+}
+
+.adm-ai-col-actions-wide {
+    width: 188px;
 }
 
 .adm-ai-col-actions-narrow {
@@ -9879,6 +9899,14 @@ body.sa-light .adm-ad-note-box {
 .adm-ai-score {
     color: #f87171;
     font-weight: 900;
+}
+
+.adm-ai-status-link.is-active {
+    color: #34d399;
+}
+
+.adm-ai-status-link.is-deleted {
+    color: #f87171;
 }
 
 .adm-ai-role-badge,
@@ -10326,6 +10354,14 @@ body.sa-light .adm-ai-type-badge.is-ip {
 
 body.sa-light .adm-ai-state.is-active {
     color: #15803d;
+}
+
+body.sa-light .adm-ai-status-link.is-active {
+    color: #059669;
+}
+
+body.sa-light .adm-ai-status-link.is-deleted {
+    color: #dc2626;
 }
 
 body.sa-light .quota-updater {
