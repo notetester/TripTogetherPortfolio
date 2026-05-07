@@ -89,7 +89,7 @@
 <c:set var="pageTitle" value="${msg_admin_community_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-community-page">
 
     <%-- ── 탭 바 ── --%>
     <div class="adm-tabs adm-admin-tabs">
@@ -122,10 +122,10 @@
     </div>
 
     <%-- ── 필터 바 ── --%>
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-community-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/community" id="searchForm">
-                <div class="adm-filter-bar" style="flex-wrap:wrap;gap:12px;">
+                <div class="adm-filter-bar adm-community-filterbar">
                     <div>
                         <div class="adm-filter-label">${msg_admin_community_filter_status}</div>
                         <select class="adm-select" name="status">
@@ -159,10 +159,10 @@
                             <option value="FLAGGED" ${search.flagged=='FLAGGED' ?'selected':''}>${msg_admin_community_flagged_flagged}</option>
                         </select>
                     </div>
-                    <div style="flex:1;min-width:200px;">
+                    <div class="adm-community-search-field">
                         <div class="adm-filter-label">${msg_admin_common_search}</div>
-                        <div style="display:flex;gap:6px;">
-                            <select class="adm-select" name="searchType" style="width:110px;">
+                        <div class="adm-community-search-row">
+                            <select class="adm-select adm-community-search-type" name="searchType">
                                 <option value="all"      ${search.searchType=='all'      ?'selected':''}>${msg_admin_common_all}</option>
                                 <option value="title"    ${search.searchType=='title'    ?'selected':''}>${msg_admin_community_searchType_title}</option>
                                 <option value="content"  ${search.searchType=='content'  ?'selected':''}>${msg_admin_community_searchType_content}</option>
@@ -170,10 +170,10 @@
                                 <option value="userId"   ${search.searchType=='userId'   ?'selected':''}>${msg_admin_community_searchType_userId}</option>
                             </select>
                             <input class="adm-input" type="text" name="keyword" value="${search.keyword}"
-                                   placeholder="${msg_admin_community_filter_searchPlaceholder}" style="flex:1;">
+                                   placeholder="${msg_admin_community_filter_searchPlaceholder}">
                         </div>
                     </div>
-                    <div style="display:flex;align-items:flex-end;gap:6px;">
+                    <div class="adm-community-filter-actions">
                         <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
                         <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/community">${msg_admin_common_reset}</a>
                     </div>
@@ -183,48 +183,57 @@
     </div>
 
     <%-- ── 목록 테이블 ── --%>
-    <div class="adm-card">
+    <div class="adm-card adm-community-list-card">
         <div class="adm-card-head">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div class="adm-card-title">${msg_admin_community_list_postsTitle}</div>
-                <div class="adm-muted-note">${msg_admin_common_totalCount}</div>
-            </div>
+            <div class="adm-card-title">${msg_admin_community_list_postsTitle}<span class="adm-section-total-inline">${msg_admin_common_totalCount}</span></div>
             <%-- 일괄 처리 버튼 --%>
-            <div id="bulkBar" style="display:none;gap:8px;align-items:center;">
-                <span id="bulkCount" style="font-size:12px;color:#94a3b8;"></span>
-                <button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;"
+            <div id="bulkBar" class="adm-community-bulk-bar" hidden>
+                <span id="bulkCount" class="adm-community-bulk-count"></span>
+                <button class="adm-btn adm-btn-ghost adm-community-danger-btn"
                         onclick="bulkAction('block')">${msg_admin_community_action_bulkBlock}</button>
-                <button class="adm-btn adm-btn-ghost" style="color:#64748b;"
+                <button class="adm-btn adm-btn-ghost adm-community-muted-btn"
                         onclick="bulkAction('delete')">${msg_admin_community_action_bulkDelete}</button>
             </div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table">
+            <table class="adm-table adm-community-table adm-community-post-table">
+                <colgroup>
+                    <col class="adm-community-col-check">
+                    <col class="adm-community-col-id">
+                    <col class="adm-community-col-author">
+                    <col class="adm-community-col-ip">
+                    <col>
+                    <col class="adm-community-col-type">
+                    <col class="adm-community-col-count">
+                    <col class="adm-community-col-status">
+                    <col class="adm-community-col-date">
+                    <col class="adm-community-col-action">
+                </colgroup>
                 <thead>
                 <tr>
-                    <th style="width:36px;"><input type="checkbox" id="checkAll"></th>
-                    <th style="width:60px;">${msg_admin_community_column_id}</th>
+                    <th><input type="checkbox" id="checkAll"></th>
+                    <th>${msg_admin_community_column_id}</th>
                     <th>${msg_admin_community_column_author}</th>
                     <th>${msg_admin_community_column_ip}</th>
                     <th>${msg_admin_community_column_title}</th>
-                    <th style="width:80px;">${msg_admin_community_column_type}</th>
-                    <th style="width:60px;">${msg_admin_community_column_reportCount}</th>
-                    <th style="width:80px;">${msg_admin_common_status}</th>
-                    <th style="width:130px;">${msg_admin_community_column_createdAt}</th>
-                    <th style="width:100px;">${msg_admin_common_action}</th>
+                    <th>${msg_admin_community_column_type}</th>
+                    <th>${msg_admin_community_column_reportCount}</th>
+                    <th>${msg_admin_common_status}</th>
+                    <th>${msg_admin_community_column_createdAt}</th>
+                    <th>${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="p">
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${p.postId}"></td>
-                        <td style="color:#64748b;font-size:12px;">
+                        <td class="adm-community-id-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}">#${p.postId}</a>
                         </td>
 
                         <%-- 작성자 --%>
-                        <td style="cursor:pointer;"
+                        <td class="adm-community-author-cell"
                             data-useridx="${p.userIdx}"
                             data-userid="${p.userId}"
                             data-nickname="${p.nickname}"
@@ -232,15 +241,15 @@
                             data-status="${p.accountStatus}"
                             data-resolve="${p.authorResolveCount30d}"
                             onclick="openAuthorModal(this)">
-                            <div style="font-weight:600;font-size:13px;color:#7dd3fc;">${p.nickname}</div>
-                            <div style="font-size:11px;color:#64748b;">${p.userId}</div>
+                            <div class="adm-community-author-name">${p.nickname}</div>
+                            <div class="adm-community-author-id">${p.userId}</div>
                             <c:if test="${p.accountStatus == 'BLOCKED'}">
                                 <span class="adm-inline-danger">${msg_admin_community_accountBlocked}</span>
                             </c:if>
                         </td>
 
                         <%-- IP --%>
-                        <td style="font-size:11px;color:#94a3b8;font-family:monospace;">
+                        <td class="adm-community-ip-cell">
                             <c:choose>
                                 <c:when test="${not empty p.lastIp}">
                                     <button type="button"
@@ -249,7 +258,7 @@
                                             data-default-tab="blocks"
                                             onclick="event.stopPropagation();">${p.lastIp}</button>
                                 </c:when>
-                                <c:otherwise><span style="color:#475569;">—</span></c:otherwise>
+                                <c:otherwise><span class="adm-community-muted">—</span></c:otherwise>
                             </c:choose>
                         </td>
 
@@ -271,7 +280,7 @@
                         </td>
 
                         <%-- 유형 --%>
-                        <td style="font-size:12px;color:#94a3b8;white-space:nowrap;">
+                        <td class="adm-community-type-cell">
                             <button type="button" class="adm-cell-link" data-param-name="postType" data-param-value="${p.postType}" onclick="applySelectFilter(this)">
                                 <span><c:choose>
                                     <c:when test="${p.postType == 'review'}">${msg_admin_community_postType_review}</c:when>
@@ -291,13 +300,13 @@
                                onclick="event.stopPropagation();">
                                 <c:choose>
                                     <c:when test="${p.reportCount >= reportThreshold}">
-                                        <span style="color:#f87171;font-weight:700;">🔴 ${p.reportCount}</span>
+                                        <span class="adm-community-report-count is-hot">🔴 ${p.reportCount}</span>
                                     </c:when>
                                     <c:when test="${p.reportCount > 0}">
-                                        <span style="color:#fbbf24;">${p.reportCount}</span>
+                                        <span class="adm-community-report-count is-warn">${p.reportCount}</span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span style="color:#475569;">0</span>
+                                        <span class="adm-community-muted">0</span>
                                     </c:otherwise>
                                 </c:choose>
                             </a>
@@ -317,7 +326,7 @@
                         </td>
 
                         <%-- 등록일 --%>
-                        <td style="font-size:11px;color:#64748b;white-space:nowrap;">
+                        <td class="adm-community-date-cell">
                             <a href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}"
                                class="adm-cell-link adm-cell-link--inline">
                                 <fmt:formatDate value="${p.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
@@ -364,7 +373,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;">${msg_admin_common_noResults}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="10" class="adm-local-empty-cell">${msg_admin_common_noResults}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -388,7 +397,7 @@
     </div>
 
     <%-- ── 유저 화면 바로가기 ── --%>
-    <div style="margin-top:16px;padding:0 10px;">
+    <div class="adm-community-site-link">
         <a class="adm-nav-item adm-nav-ext" href="${pageContext.request.contextPath}/community/list" target="_blank">
             <span class="adm-nav-icon">↗️</span> ${msg_admin_community_viewSite}
         </a>
@@ -431,10 +440,10 @@ function updateBulkBar() {
     var checked = document.querySelectorAll('.row-check:checked');
     var bar = document.getElementById('bulkBar');
     if (checked.length > 0) {
-        bar.style.display = 'flex';
+        bar.hidden = false;
         document.getElementById('bulkCount').textContent = COMMUNITY_POST_MSG.selectedCount.replace('__count__', checked.length);
     } else {
-        bar.style.display = 'none';
+        bar.hidden = true;
     }
 }
 
@@ -507,15 +516,15 @@ function openAuthorModal(el) {
     var resolve  = parseInt(el.getAttribute('data-resolve') || '0', 10);
 
     var statusBadge = status === 'BLOCKED'
-        ? '<span class="status-badge BLOCKED" style="font-size:12px;">' + COMMUNITY_POST_MSG.blocked + '</span>'
-        : '<span class="status-badge ACTIVE"  style="font-size:12px;">' + COMMUNITY_POST_MSG.active + '</span>';
+        ? '<span class="status-badge BLOCKED adm-community-modal-status">' + COMMUNITY_POST_MSG.blocked + '</span>'
+        : '<span class="status-badge ACTIVE adm-community-modal-status">' + COMMUNITY_POST_MSG.active + '</span>';
 
     var warnBox = resolve > 0
         ? '<div class="adm-warning-box">⚠ ' + COMMUNITY_POST_MSG.recentResolved.replace('__count__', resolve) + '</div>'
         : '';
 
     var blockBtn = status !== 'BLOCKED'
-        ? '<button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;width:100%;margin-top:4px;" data-idx="' + userIdx + '" onclick="blockUserFromModal(this)">' + COMMUNITY_POST_MSG.blockAccount + '</button>'
+        ? '<button class="adm-btn adm-btn-ghost adm-community-modal-block-btn" data-idx="' + userIdx + '" onclick="blockUserFromModal(this)">' + COMMUNITY_POST_MSG.blockAccount + '</button>'
         : '';
 
     document.getElementById('authorModalBody').innerHTML =
@@ -543,11 +552,11 @@ function openAuthorModal(el) {
       + blockBtn
       + '</div>';
 
-    document.getElementById('authorModal').style.display = 'flex';
+    document.getElementById('authorModal').hidden = false;
 }
 
 function closeAuthorModal() {
-    document.getElementById('authorModal').style.display = 'none';
+    document.getElementById('authorModal').hidden = true;
 }
 
 function blockUserFromModal(btn) {
@@ -570,9 +579,9 @@ function escHtml(str) {
 </script>
 
 <%-- ── 작성자 정보 모달 ── --%>
-    <div id="authorModal" class="adm-modal-overlay" style="display:none;"
+    <div id="authorModal" class="adm-modal-overlay" hidden
      onclick="if(event.target===this)closeAuthorModal()">
-    <div class="adm-modal" style="width:360px;">
+    <div class="adm-modal adm-community-author-modal">
         <div class="adm-modal-head">
             <span class="adm-modal-title">${msg_admin_community_authorModal_title}</span>
             <button class="adm-modal-close" onclick="closeAuthorModal()">✕</button>

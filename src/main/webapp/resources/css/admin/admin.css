@@ -7623,6 +7623,180 @@ body.sa-light .adm-report-deleted-badge {
     background: #fee2e2;
 }
 
+/* Community admin */
+.adm-community-page {
+    max-width: 1540px;
+    margin: 0 auto;
+}
+
+.adm-community-filter-card {
+    margin-bottom: 16px;
+    overflow: visible;
+}
+
+.adm-filter-bar.adm-community-filterbar {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(118px, .52fr)) minmax(340px, 1.4fr) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-community-filterbar > div,
+.adm-community-search-row {
+    min-width: 0;
+}
+
+.adm-community-filterbar .adm-select,
+.adm-community-filterbar .adm-input {
+    width: 100%;
+}
+
+.adm-community-search-row {
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr);
+    gap: 6px;
+}
+
+.adm-community-filter-actions,
+.adm-community-bulk-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.adm-community-filter-actions {
+    align-items: end;
+    justify-content: flex-end;
+}
+
+.adm-community-bulk-bar[hidden] {
+    display: none;
+}
+
+.adm-community-bulk-count {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.adm-community-danger-btn {
+    color: #f87171;
+    border-color: #f87171;
+}
+
+.adm-community-muted-btn {
+    color: #64748b;
+}
+
+.adm-community-table {
+    width: 100%;
+    min-width: 1060px;
+}
+
+.adm-community-col-check {
+    width: 36px;
+}
+
+.adm-community-col-id,
+.adm-community-col-count {
+    width: 64px;
+}
+
+.adm-community-col-author {
+    width: 150px;
+}
+
+.adm-community-col-ip {
+    width: 132px;
+}
+
+.adm-community-col-type,
+.adm-community-col-status {
+    width: 86px;
+}
+
+.adm-community-col-date {
+    width: 130px;
+}
+
+.adm-community-col-action {
+    width: 104px;
+}
+
+.adm-community-id-cell {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.adm-community-author-cell {
+    cursor: pointer;
+}
+
+.adm-community-author-name {
+    color: #7dd3fc;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.adm-community-author-id {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.adm-community-ip-cell {
+    color: #94a3b8;
+    font-family: monospace;
+    font-size: 11px;
+}
+
+.adm-community-type-cell {
+    color: #94a3b8;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.adm-community-report-count.is-hot {
+    color: #f87171;
+    font-weight: 700;
+}
+
+.adm-community-report-count.is-warn {
+    color: #fbbf24;
+}
+
+.adm-community-muted {
+    color: #64748b;
+}
+
+.adm-community-date-cell {
+    color: #64748b;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.adm-community-site-link {
+    margin-top: 16px;
+    padding: 0 10px;
+}
+
+.adm-community-modal-status {
+    font-size: 12px;
+}
+
+.adm-community-modal-block-btn {
+    width: 100%;
+    margin-top: 4px;
+    color: #f87171;
+    border-color: #f87171;
+}
+
+.adm-community-author-modal {
+    width: 360px;
+}
+
+body.sa-light .adm-community-author-name {
+    color: #2563eb;
+}
+
 @media (max-width: 1280px) {
     .adm-filter-bar.adm-inquiry-filterbar {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -7647,6 +7821,18 @@ body.sa-light .adm-report-deleted-badge {
     .adm-report-filter-actions {
         justify-content: flex-start;
     }
+
+    .adm-filter-bar.adm-community-filterbar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .adm-community-search-field {
+        grid-column: span 2;
+    }
+
+    .adm-community-filter-actions {
+        justify-content: flex-start;
+    }
 }
 
 @media (max-width: 760px) {
@@ -7665,11 +7851,21 @@ body.sa-light .adm-report-deleted-badge {
     .adm-report-search-field {
         grid-column: 1 / -1;
     }
+
+    .adm-filter-bar.adm-community-filterbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .adm-community-search-field {
+        grid-column: 1 / -1;
+    }
 }
 
 @media (max-width: 560px) {
     .adm-filter-bar.adm-inquiry-filterbar,
     .adm-filter-bar.adm-report-filterbar,
+    .adm-filter-bar.adm-community-filterbar,
+    .adm-community-search-row,
     .adm-inquiry-search-row {
         grid-template-columns: 1fr;
     }
