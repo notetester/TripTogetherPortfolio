@@ -19,7 +19,7 @@ public class AdminCommunityReportVO {
         return createdAt;
     }
 
-    public java.util.Date getResolvedAtDate() {
+    public Date getResolvedAtDate() {
         return resolvedAt;
     }
 

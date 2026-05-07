@@ -28,7 +28,11 @@ public class PlanSpotVO {
     private String region;
     private String address;
 
-    public java.util.Date getCreated_atDate() {
+    public Date getVisit_dateDate() {
+        return visit_date;
+    }
+
+    public Date getCreated_atDate() {
         return created_at;
     }
 

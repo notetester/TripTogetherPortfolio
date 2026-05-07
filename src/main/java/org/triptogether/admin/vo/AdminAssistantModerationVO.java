@@ -16,7 +16,7 @@ public class AdminAssistantModerationVO {
     private Long chatCommentIdx;       // CHAT_COMMENT FK
     private Boolean isInappropriate;   // AI 독성 판정
     private BigDecimal toxicityScore;  // Perspective TOXICITY 점수 (0.000~1.000)
-    private Date checkedAt;            // JSP fmt:formatDate 호환 위해 java.util.Date 사용
+    private Date checkedAt;            // JSP fmt:formatDate 호환 위해 Date 사용
 
     /** JOIN으로 채움 (DB 컬럼 아님) - 관리자 목록/모달 표시용 */
     private Long chatPostIdx;
@@ -28,7 +28,7 @@ public class AdminAssistantModerationVO {
         return checkedAt;
     }
 
-    public java.util.Date getMessageCreatedAtDate() {
+    public Date getMessageCreatedAtDate() {
         return messageCreatedAt;
     }
 

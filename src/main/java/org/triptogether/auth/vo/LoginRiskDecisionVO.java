@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.time.ZoneId;
 
 @Data
 @Builder
@@ -18,8 +20,8 @@ public class LoginRiskDecisionVO {
     private Integer remainingAttempts;
     private LocalDateTime blockedUntil;
 
-    public java.util.Date getBlockedUntilDate() {
-        return blockedUntil == null ? null : java.util.Date.from(blockedUntil.atZone(java.time.ZoneId.systemDefault()).toInstant());
+    public Date getBlockedUntilDate() {
+        return blockedUntil == null ? null : Date.from(blockedUntil.atZone(ZoneId.systemDefault()).toInstant());
     }
 
 }

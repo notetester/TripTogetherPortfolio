@@ -20,7 +20,7 @@ public class SpotViewLogVO {
     private String tagsConcat;   // GROUP_CONCAT 으로 받아 Service에서 split
     private int    visitCount;   // 동일 spot 방문 횟수 집계용
 
-    public java.util.Date getViewedAtDate() {
+    public Date getViewedAtDate() {
         return viewedAt;
     }
 

@@ -19,7 +19,7 @@ public class AdminAssistantQuotaVO {
     private Integer resetMinute;           // 리셋 시각 분 (0-59)
     private Boolean quotaRefundEnabled;    // 세션 삭제 시 사용량 환급 허용 여부
     private Long updatedBy;
-    private Date updatedAt;  // JSP fmt:formatDate 호환 위해 java.util.Date 사용
+    private Date updatedAt;  // JSP fmt:formatDate 호환 위해 Date 사용
 
     /** JOIN으로 채움 (DB 컬럼 아님) - 마지막 수정자 표시용 */
     private String updaterNickname;

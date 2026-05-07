@@ -11,7 +11,7 @@ public class ViewHistoryVO {
     private Long   contentId;
     private Date   viewedAt;
 
-    public java.util.Date getViewedAtDate() {
+    public Date getViewedAtDate() {
         return viewedAt;
     }
 

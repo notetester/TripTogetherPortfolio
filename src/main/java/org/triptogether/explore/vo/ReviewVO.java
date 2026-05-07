@@ -15,7 +15,7 @@ public class ReviewVO {
     private Long   spotIdx;
     private int    rating;      // 1~5
     private String content;
-    private Date   createdAt;   // java.util.Date (JSP fmt:formatDate 호환)
+    private Date   createdAt;   // Date (JSP fmt:formatDate 호환)
     private int    reviewBlock; // 0: 정상, 1: 차단
 
     private Integer likeCount;

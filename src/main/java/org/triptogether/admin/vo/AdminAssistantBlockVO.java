@@ -16,7 +16,7 @@ public class AdminAssistantBlockVO {
     private String blockValue;         // user_idx(문자) 또는 IP
     private String reason;
     private Long blockedBy;            // 처리 관리자 user_idx
-    private Date blockedAt;            // JSP fmt:formatDate 호환 위해 java.util.Date 사용
+    private Date blockedAt;            // JSP fmt:formatDate 호환 위해 Date 사용
     private Date expiresAt;            // NULL = 영구 차단
     private Boolean isActive;
 

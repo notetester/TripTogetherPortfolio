@@ -36,6 +36,14 @@ public class TravelPlanVO {
 
     private String nickname;
 
+    public Date getStart_dateDate() {
+        return start_date;
+    }
+
+    public Date getEnd_dateDate() {
+        return end_date;
+    }
+
     private Date fromLocalDateTime(LocalDateTime value) {
         if (value == null) {
             return null;

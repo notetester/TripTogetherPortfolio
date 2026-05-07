@@ -30,7 +30,7 @@ public class AdminAssistantSessionVO {
         return createdAt;
     }
 
-    public java.util.Date getLastMessageAtDate() {
+    public Date getLastMessageAtDate() {
         return lastMessageAt;
     }
 

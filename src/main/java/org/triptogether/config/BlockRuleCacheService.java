@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.Date;
+import java.time.ZoneId;
 
 /**
  * 애플리케이션 레벨 차단 규칙 캐시.
@@ -138,8 +140,8 @@ public class BlockRuleCacheService {
             return (ipRules == null || ipRules.isEmpty()) && (userRules == null || userRules.isEmpty());
         }
 
-        public java.util.Date getLoadedAtDate() {
-            return loadedAt == null ? null : java.util.Date.from(loadedAt.atZone(java.time.ZoneId.systemDefault()).toInstant());
+        public Date getLoadedAtDate() {
+            return loadedAt == null ? null : Date.from(loadedAt.atZone(ZoneId.systemDefault()).toInstant());
         }
     }
 
