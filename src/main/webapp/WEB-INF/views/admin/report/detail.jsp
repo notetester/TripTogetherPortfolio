@@ -23,7 +23,7 @@
 <spring:message var="msg_admin_reports_detail_confirmDeleteReview" code="admin.reports.detail.confirmDeleteReview"/>
 <spring:message var="msg_admin_reports_detail_confirmRevert" code="admin.reports.detail.confirmRevert"/>
 <spring:message var="msg_admin_reports_detail_processFailed" code="admin.reports.detail.processFailed"/>
-<spring:message var="msg_admin_reports_detail_title" code="admin.reports.detail.title"/>
+<spring:message var="msg_admin_reports_detail_title" code="admin.reports.detail.title" arguments="${report.reportId}"/>
 <spring:message var="msg_admin_reports_status_inReview" code="admin.reports.status.inReview"/>
 <spring:message var="msg_admin_reports_status_resolved" code="admin.reports.status.resolved"/>
 <spring:message var="msg_admin_reports_status_dismissed" code="admin.reports.status.dismissed"/>
@@ -89,7 +89,7 @@
 
         <%-- ── 왼쪽: 신고 내용 ── --%>
         <div>
-            <div class="adm-card">
+            <div class="adm-card adm-report-detail-card">
                 <div class="adm-card-head">
                     <div class="adm-card-title">${msg_admin_reports_detail_title}</div>
                     <div class="adm-report-detail-head-actions">
@@ -311,7 +311,7 @@
 
         <%-- ── 오른쪽: 신고자 정보 + 처리 버튼 ── --%>
         <div>
-            <div class="adm-card adm-side-sticky">
+            <div class="adm-card adm-side-sticky adm-report-side-card">
                 <div class="adm-card-head">
                     <div class="adm-card-title">${msg_admin_reports_detail_reporterInfoTitle}</div>
                 </div>
@@ -367,42 +367,44 @@
                             <div class="adm-report-side-label is-spaced">${msg_admin_reports_detail_processingTitle}</div>
                             <div class="adm-report-action-stack">
 
-                                <%-- post / comment / review 공통 버튼 --%>
-                                <c:if test="${report.targetType eq 'post' or report.targetType eq 'comment' or report.targetType eq 'review'}">
-                                    <button class="adm-btn adm-btn-ghost adm-report-action-btn is-muted"
-                                            onclick="resolve('REJECTED')">${msg_admin_reports_detail_rejectKeepContent}</button>
-                                    <%-- 이미 삭제/차단된 콘텐츠면 삭제 계열 버튼 숨김 --%>
-                                    <c:if test="${report.targetStatus ne 'DELETED'}">
-                                        <button class="adm-btn adm-btn-ghost adm-report-action-btn is-warning"
-                                                onclick="resolve('DELETE_CONTENT')">
-                                                <c:choose>
-                                                    <c:when test="${report.targetType eq 'review'}">${msg_admin_reports_detail_blockReview}</c:when>
-                                                    <c:otherwise>${msg_admin_reports_detail_deleteContent}</c:otherwise>
-                                                </c:choose>
-                                            </button>
-                                        </c:if>
-                                    <c:if test="${report.targetUserRole ne 'SYSTEM'}">
-                                        <button class="adm-btn adm-btn-ghost adm-report-action-btn is-danger"
-                                                onclick="resolve('BLOCK_AUTHOR')">${msg_admin_reports_detail_blockAuthor}</button>
+                                <c:if test="${report.status eq 'IN_REVIEW'}">
+                                    <%-- post / comment / review 공통 버튼 --%>
+                                    <c:if test="${report.targetType eq 'post' or report.targetType eq 'comment' or report.targetType eq 'review'}">
+                                        <button class="adm-btn adm-btn-ghost adm-report-action-btn is-muted"
+                                                onclick="resolve('REJECTED')">${msg_admin_reports_detail_rejectKeepContent}</button>
+                                        <%-- 이미 삭제/차단된 콘텐츠면 삭제 계열 버튼 숨김 --%>
                                         <c:if test="${report.targetStatus ne 'DELETED'}">
-                                            <button class="adm-btn adm-btn-ghost adm-report-action-btn is-critical"
-                                                    onclick="resolve('DELETE_AND_BLOCK')">
-                                                <c:choose>
-                                                    <c:when test="${report.targetType eq 'review'}">${msg_admin_reports_detail_blockReviewAndAuthor}</c:when>
-                                                    <c:otherwise>${msg_admin_reports_detail_deleteAndBlockAuthor}</c:otherwise>
-                                                </c:choose>
-                                            </button>
+                                            <button class="adm-btn adm-btn-ghost adm-report-action-btn is-warning"
+                                                    onclick="resolve('DELETE_CONTENT')">
+                                                    <c:choose>
+                                                        <c:when test="${report.targetType eq 'review'}">${msg_admin_reports_detail_blockReview}</c:when>
+                                                        <c:otherwise>${msg_admin_reports_detail_deleteContent}</c:otherwise>
+                                                    </c:choose>
+                                                </button>
+                                            </c:if>
+                                        <c:if test="${report.targetUserRole ne 'SYSTEM'}">
+                                            <button class="adm-btn adm-btn-ghost adm-report-action-btn is-danger"
+                                                    onclick="resolve('BLOCK_AUTHOR')">${msg_admin_reports_detail_blockAuthor}</button>
+                                            <c:if test="${report.targetStatus ne 'DELETED'}">
+                                                <button class="adm-btn adm-btn-ghost adm-report-action-btn is-critical"
+                                                        onclick="resolve('DELETE_AND_BLOCK')">
+                                                    <c:choose>
+                                                        <c:when test="${report.targetType eq 'review'}">${msg_admin_reports_detail_blockReviewAndAuthor}</c:when>
+                                                        <c:otherwise>${msg_admin_reports_detail_deleteAndBlockAuthor}</c:otherwise>
+                                                    </c:choose>
+                                                </button>
+                                            </c:if>
                                         </c:if>
                                     </c:if>
-                                </c:if>
 
-                                <%-- user 대상 버튼 --%>
-                                <c:if test="${report.targetType eq 'user'}">
-                                    <button class="adm-btn adm-btn-ghost adm-report-action-btn is-muted"
-                                            onclick="resolve('REJECTED')">${msg_admin_reports_detail_rejectKeepUser}</button>
-                                    <c:if test="${report.targetUserRole ne 'SYSTEM'}">
-                                        <button class="adm-btn adm-btn-ghost adm-report-action-btn is-danger"
-                                                onclick="resolve('BLOCK_USER')">${msg_admin_reports_detail_blockUser}</button>
+                                    <%-- user 대상 버튼 --%>
+                                    <c:if test="${report.targetType eq 'user'}">
+                                        <button class="adm-btn adm-btn-ghost adm-report-action-btn is-muted"
+                                                onclick="resolve('REJECTED')">${msg_admin_reports_detail_rejectKeepUser}</button>
+                                        <c:if test="${report.targetUserRole ne 'SYSTEM'}">
+                                            <button class="adm-btn adm-btn-ghost adm-report-action-btn is-danger"
+                                                    onclick="resolve('BLOCK_USER')">${msg_admin_reports_detail_blockUser}</button>
+                                        </c:if>
                                     </c:if>
                                 </c:if>
 
@@ -457,11 +459,13 @@ var REPORT_DETAIL_MSG = {
 function goBackToList() {
     var params = new URLSearchParams(window.location.search);
     var page       = params.get('page')       || '1';
+    var pageSize   = params.get('pageSize')   || '';
     var status     = params.get('status')     || '';
     var targetType = params.get('targetType') || '';
     var reason     = params.get('reason')     || '';
     var keyword    = params.get('keyword')    || '';
     var url = ctx + '/admin/reports?page=' + page;
+    if (pageSize)   url += '&pageSize='   + encodeURIComponent(pageSize);
     if (status)     url += '&status='     + encodeURIComponent(status);
     if (targetType) url += '&targetType=' + encodeURIComponent(targetType);
     if (reason)     url += '&reason='     + encodeURIComponent(reason);
@@ -470,8 +474,12 @@ function goBackToList() {
 }
 
 function openReportFilter(button) {
+    var current = new URLSearchParams(window.location.search);
     var params = new URLSearchParams();
     params.set('page', '1');
+    if (current.get('pageSize')) {
+        params.set('pageSize', current.get('pageSize'));
+    }
     if (button.dataset.keyword) {
         params.set('keyword', button.dataset.keyword);
     }

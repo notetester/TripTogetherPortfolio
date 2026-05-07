@@ -9040,7 +9040,8 @@ body.sa-light .adm-inquiry-blocked-note {
     padding: 0 10px;
 }
 
-.adm-report-back-row {
+.adm-report-back-row,
+.adm-report-detail-card {
     margin-bottom: 16px;
 }
 
