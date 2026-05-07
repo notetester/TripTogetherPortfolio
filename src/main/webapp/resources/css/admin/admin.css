@@ -7461,6 +7461,14 @@ body.sa-light .adm-governance-page .adm-login-review-summary span {
 }
 
 /* General security review list */
+.adm-governance-page.adm-security-review-page {
+    max-width: min(100%, 1600px);
+}
+
+.adm-governance-page .adm-security-review-page-actions .adm-btn {
+    white-space: nowrap;
+}
+
 .adm-governance-page .adm-security-review-filter-card,
 .adm-governance-page .adm-security-review-list-card {
     overflow: visible;
@@ -7487,6 +7495,15 @@ body.sa-light .adm-governance-page .adm-login-review-summary span {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.adm-governance-page .adm-security-review-filter-actions .adm-btn {
+    white-space: nowrap;
+}
+
+.adm-governance-page .adm-security-review-table {
+    min-width: 1140px;
 }
 
 .adm-governance-page .adm-security-review-table td {

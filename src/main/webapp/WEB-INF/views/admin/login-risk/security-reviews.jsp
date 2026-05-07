@@ -78,15 +78,15 @@
     });
 </script>
 
-<div class="adm-content adm-governance-page">
+<div class="adm-content adm-governance-page adm-security-review-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_security_admin_securityReviews_title}</h1>
             <p class="adm-page-desc">${msg_security_admin_securityReviews_desc}</p>
         </div>
-        <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">${msg_security_admin_nav_providerConfigs}</a>
+        <div class="adm-actions adm-security-review-page-actions">
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">${msg_security_admin_nav_providerConfigs}</a>
         </div>
     </div>
 
@@ -94,11 +94,11 @@
         <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
-    <form method="get" class="adm-card adm-security-review-filter-card">
+    <form method="get" class="adm-card adm-security-review-filter-card adm-overflow-visible">
         <div class="adm-card-body">
             <div class="adm-security-review-filterbar">
                 <label>${msg_security_admin_common_status}
-                    <select class="adm-input" name="status">
+                    <select class="adm-select" name="status">
                         <option value="">${msg_security_admin_common_all}</option>
                         <option value="PENDING" ${status == 'PENDING' ? 'selected' : ''}>PENDING</option>
                         <option value="HOLD" ${status == 'HOLD' ? 'selected' : ''}>HOLD</option>
@@ -107,7 +107,7 @@
                     </select>
                 </label>
                 <label>${msg_security_admin_common_severity}
-                    <select class="adm-input" name="severity">
+                    <select class="adm-select" name="severity">
                         <option value="">${msg_security_admin_common_all}</option>
                         <option value="CRITICAL" ${severity == 'CRITICAL' ? 'selected' : ''}>CRITICAL</option>
                         <option value="HIGH" ${severity == 'HIGH' ? 'selected' : ''}>HIGH</option>
@@ -122,14 +122,14 @@
                     <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${msg_security_admin_placeholder_accountIpSummary}">
                 </label>
                 <div class="adm-security-review-filter-actions">
-                    <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
-                    <a class="adm-btn ghost" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">${msg_admin_common_reset}</a>
+                    <button class="adm-btn adm-btn-primary" type="submit">${msg_security_admin_common_search}</button>
+                    <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">${msg_admin_common_reset}</a>
                 </div>
             </div>
         </div>
     </form>
 
-    <div class="adm-card adm-security-review-list-card">
+    <div class="adm-card adm-security-review-list-card adm-overflow-visible">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_security_admin_securityReviews_title}</div>
             <div class="adm-page-muted">${msg_admin_common_totalCount}</div>
@@ -174,21 +174,21 @@
                         <td><fmt:formatDate value="${r.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                         <td>
                             <div class="adm-security-review-row-actions">
-                                <button class="adm-btn js-security-review-detail-open" type="button" data-target="securityReviewDetail${r.reviewIdx}">
+                                <button class="adm-btn adm-btn-ghost js-security-review-detail-open" type="button" data-target="securityReviewDetail${r.reviewIdx}">
                                     ${msg_security_admin_common_detail}
                                 </button>
                                 <c:if test="${r.reviewStatus == 'PENDING' || r.reviewStatus == 'HOLD'}">
                                     <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-reviews/${r.reviewIdx}/approve">
                                         <input type="hidden" name="comment" value="${fn:escapeXml(msg_security_admin_comment_approved)}">
-                                        <button class="adm-btn primary" type="submit">${msg_security_admin_common_approve}</button>
+                                        <button class="adm-btn adm-btn-primary" type="submit">${msg_security_admin_common_approve}</button>
                                     </form>
                                     <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-reviews/${r.reviewIdx}/hold">
                                         <input type="hidden" name="comment" value="${fn:escapeXml(msg_security_admin_comment_needMoreCheck)}">
-                                        <button class="adm-btn" type="submit">${msg_security_admin_common_hold}</button>
+                                        <button class="adm-btn adm-btn-ghost" type="submit">${msg_security_admin_common_hold}</button>
                                     </form>
                                     <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-reviews/${r.reviewIdx}/reject">
                                         <input type="hidden" name="comment" value="${fn:escapeXml(msg_security_admin_comment_noAction)}">
-                                        <button class="adm-btn danger" type="submit">${msg_security_admin_common_reject}</button>
+                                        <button class="adm-btn adm-btn-danger" type="submit">${msg_security_admin_common_reject}</button>
                                     </form>
                                 </c:if>
                                 <c:if test="${r.reviewStatus != 'PENDING' && r.reviewStatus != 'HOLD'}">
@@ -199,7 +199,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty reviews}">
-                    <tr><td colspan="7" class="adm-empty">${msg_security_admin_empty_reviews}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="7" class="adm-local-empty-cell">${msg_security_admin_empty_reviews}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -260,3 +260,5 @@
         </c:forEach>
     </div>
 </div>
+
+<%@ include file="../layout-close.jsp" %>
