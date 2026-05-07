@@ -3689,6 +3689,25 @@ body.sa-light .adm-fin-guide { color: #475569; }
     overflow: visible;
 }
 
+.adm-finance-alert {
+    margin-bottom: 12px;
+    padding: 12px 16px;
+}
+
+.adm-finance-alert.is-success {
+    border-left: 4px solid #22c55e;
+}
+
+.adm-finance-alert.is-error {
+    border-left: 4px solid #ef4444;
+}
+
+.adm-finance-guide-card {
+    margin-bottom: 16px;
+    padding: 14px 18px;
+    font-size: 13px;
+}
+
 .adm-finance-user-filterbar {
     display: grid;
     grid-template-columns: minmax(260px, 1.15fr) minmax(140px, .55fr) minmax(150px, .6fr) auto minmax(150px, .55fr);
@@ -3696,8 +3715,16 @@ body.sa-light .adm-fin-guide { color: #475569; }
     align-items: center;
 }
 
+.adm-finance-refund-filterbar {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) auto minmax(180px, .45fr);
+    gap: 8px;
+    align-items: center;
+}
+
 .adm-finance-user-filterbar .adm-input,
-.adm-finance-user-filterbar .adm-select {
+.adm-finance-user-filterbar .adm-select,
+.adm-finance-refund-filterbar .adm-input {
     width: 100%;
 }
 
@@ -3722,17 +3749,45 @@ body.sa-light .adm-fin-guide { color: #475569; }
     width: 80px;
 }
 
+.adm-finance-col-index {
+    width: 60px;
+}
+
+.adm-finance-col-user {
+    width: 120px;
+}
+
 .adm-finance-col-grade,
 .adm-finance-col-action {
     width: 104px;
+}
+
+.adm-finance-col-action-wide {
+    width: 130px;
 }
 
 .adm-finance-col-amount {
     width: 130px;
 }
 
+.adm-finance-col-method {
+    width: 110px;
+}
+
 .adm-finance-col-status {
     width: 96px;
+}
+
+.adm-finance-col-status-wide {
+    width: 120px;
+}
+
+.adm-finance-col-time {
+    width: 160px;
+}
+
+.adm-finance-col-admin {
+    width: 140px;
 }
 
 .adm-finance-email-cell {
@@ -3761,6 +3816,96 @@ body.sa-light .adm-fin-guide { color: #475569; }
     min-height: 28px;
     padding: 4px 10px;
     font-size: 12px;
+}
+
+.adm-finance-refund-table-card {
+    margin-bottom: 24px;
+}
+
+.adm-finance-refund-table,
+.adm-finance-refund-log-table {
+    width: 100%;
+    min-width: 900px;
+}
+
+.adm-finance-amount-strong {
+    font-weight: 600;
+}
+
+.adm-finance-time-cell,
+.adm-finance-reason-cell {
+    font-size: 12px;
+}
+
+.adm-finance-time-cell {
+    color: #94a3b8;
+}
+
+.adm-finance-refund-btn {
+    min-height: 30px;
+    padding: 5px 12px;
+    font-size: 12px;
+}
+
+.adm-finance-refund-backdrop[hidden],
+.adm-finance-refund-modal[hidden] {
+    display: none;
+}
+
+.adm-finance-refund-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(0,0,0,.5);
+}
+
+.adm-finance-refund-modal {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    z-index: 1000;
+    width: min(480px, calc(100vw - 32px));
+    padding: 20px 22px;
+    transform: translate(-50%, -30%);
+    box-shadow: 0 8px 32px rgba(0,0,0,.5);
+}
+
+.adm-finance-refund-modal-title {
+    margin: 0 0 12px;
+    font-size: 16px;
+    letter-spacing: 0;
+}
+
+.adm-finance-refund-modal-info {
+    margin-bottom: 12px;
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.adm-finance-refund-reason-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+
+.adm-finance-required {
+    color: #ef4444;
+}
+
+.adm-finance-refund-reason {
+    width: 100%;
+    min-height: 96px;
+    padding: 10px;
+    font-size: 13px;
+    resize: vertical;
+}
+
+.adm-finance-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 14px;
 }
 
 .adm-finance-paging {
@@ -3801,6 +3946,10 @@ body.sa-light .adm-finance-mini-time {
     color: #475569;
 }
 
+body.sa-light .adm-finance-time-cell {
+    color: #64748b;
+}
+
 body.sa-light .adm-finance-grade-pill {
     color: #475569;
     background: #f1f5f9;
@@ -3824,6 +3973,10 @@ body.sa-light .adm-finance-status-blocked {
         grid-template-columns: minmax(240px, 1.2fr) repeat(2, minmax(140px, .7fr)) auto;
     }
 
+    .adm-finance-refund-filterbar {
+        grid-template-columns: minmax(240px, 1fr) auto;
+    }
+
     .adm-finance-filter-total {
         grid-column: 1 / -1;
         justify-self: start;
@@ -3837,6 +3990,10 @@ body.sa-light .adm-finance-status-blocked {
     }
 
     .adm-finance-user-filterbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .adm-finance-refund-filterbar {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -3857,11 +4014,13 @@ body.sa-light .adm-finance-status-blocked {
     .adm-finance-balance-grid,
     .adm-finance-summary-grid,
     .adm-finance-policy-mini-grid,
-    .adm-finance-user-filterbar {
+    .adm-finance-user-filterbar,
+    .adm-finance-refund-filterbar {
         grid-template-columns: 1fr;
     }
 
     .adm-finance-user-filterbar .adm-btn,
+    .adm-finance-refund-filterbar .adm-btn,
     .adm-finance-filter-total {
         justify-self: start;
     }

@@ -36,61 +36,68 @@
 <%@ include file="../layout.jsp" %>
 
 
-<div class="adm-content">
+<div class="adm-content adm-finance-page">
 
     <%-- 공통 탭바 --%>
     <%@ include file="_tabs.jsp" %>
 
     <c:if test="${not empty refundMessage}">
-        <div class="adm-card" style="padding:12px 16px;margin-bottom:12px;border-left:4px solid #22c55e;">
+        <div class="adm-card adm-finance-alert is-success">
             <c:out value="${refundMessage}"/>
         </div>
     </c:if>
     <c:if test="${not empty refundError}">
-        <div class="adm-card" style="padding:12px 16px;margin-bottom:12px;border-left:4px solid #ef4444;">
+        <div class="adm-card adm-finance-alert is-error">
             <c:out value="${refundError}"/>
         </div>
     </c:if>
 
-    <div class="adm-card adm-fin-guide" style="padding:14px 18px;margin-bottom:16px;font-size:13px;">
+    <div class="adm-card adm-fin-guide adm-finance-guide-card">
         ${msg_admin_finance_refund_guide}
     </div>
 
     <%-- 검색 --%>
-    <div class="adm-card" style="padding:14px 16px;margin-bottom:16px;">
+    <div class="adm-card adm-finance-filter-card adm-finance-refund-filter-card">
         <form method="get" action="${pageContext.request.contextPath}/admin/finance/refund"
-              style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              class="adm-finance-refund-filterbar">
             <input type="text" name="keyword" value="${fn:escapeXml(keyword)}"
                    class="adm-input"
-                   placeholder="${msg_admin_finance_refund_searchPlaceholder}"
-                   style="padding:8px 12px;font-size:13px;width:300px;"/>
-            <button type="submit" class="adm-btn adm-btn-ghost">${msg_admin_finance_refund_applyFilter}</button>
-            <span style="margin-left:auto;font-size:12px;color:#94a3b8;">
-                <spring:message var="msg_admin_finance_refund_candidatesCount_args_fn_size" code="admin.finance.refund.candidatesCount" arguments="${fn_size}"/>${msg_admin_finance_refund_candidatesCount_args_fn_size}
+                   placeholder="${msg_admin_finance_refund_searchPlaceholder}"/>
+            <button type="submit" class="adm-btn adm-btn-primary">${msg_admin_finance_refund_applyFilter}</button>
+            <span class="adm-finance-filter-total">
                 <c:set var="fn_size" value="${candidates != null ? candidates.size() : 0}"/>
-                <c:out value="${fn_size}"/>
+                <spring:message var="msg_admin_finance_refund_candidatesCount_args_fn_size" code="admin.finance.refund.candidatesCount" arguments="${fn_size}"/>${msg_admin_finance_refund_candidatesCount_args_fn_size}
             </span>
         </form>
     </div>
 
     <%-- 환불 후보 테이블 --%>
-    <div class="adm-card" style="padding:0;overflow-x:auto;margin-bottom:24px;">
-        <table class="adm-table" style="width:100%;">
+    <div class="adm-card adm-finance-table-card adm-finance-refund-table-card">
+        <table class="adm-table adm-finance-refund-table">
+            <colgroup>
+                <col class="adm-finance-col-id">
+                <col class="adm-finance-col-user">
+                <col>
+                <col class="adm-finance-col-amount">
+                <col class="adm-finance-col-method">
+                <col class="adm-finance-col-time">
+                <col class="adm-finance-col-action-wide">
+            </colgroup>
             <thead>
             <tr>
-                <th style="width:80px;">ID</th>
+                <th>ID</th>
                 <th>${msg_admin_finance_refund_col_user}</th>
                 <th>${msg_admin_finance_refund_col_order}</th>
-                <th style="width:130px;text-align:right;">${msg_admin_finance_refund_col_amount}</th>
-                <th style="width:110px;">${msg_admin_finance_refund_col_method}</th>
-                <th style="width:160px;">${msg_admin_finance_refund_col_paidAt}</th>
-                <th style="width:130px;">${msg_admin_finance_refund_col_action}</th>
+                <th class="adm-align-right">${msg_admin_finance_refund_col_amount}</th>
+                <th>${msg_admin_finance_refund_col_method}</th>
+                <th>${msg_admin_finance_refund_col_paidAt}</th>
+                <th>${msg_admin_finance_refund_col_action}</th>
             </tr>
             </thead>
             <tbody>
             <c:choose>
                 <c:when test="${empty candidates}">
-                    <tr><td colspan="7" style="text-align:center;padding:48px;color:#94a3b8;">
+                    <tr class="adm-local-empty"><td colspan="7" class="adm-local-empty-cell">
                         ${msg_admin_finance_refund_empty}
                     </td></tr>
                 </c:when>
@@ -100,12 +107,11 @@
                             <td>${p.paymentIdx}</td>
                             <td>${p.userIdx}</td>
                             <td><c:out value="${p.orderName}"/></td>
-                            <td style="text-align:right;font-weight:600;"><fmt:formatNumber value="${p.finalAmount}" pattern="#,###"/></td>
+                            <td class="adm-align-right adm-finance-amount-strong"><fmt:formatNumber value="${p.finalAmount}" pattern="#,###"/></td>
                             <td>${p.paymentMethod}</td>
-                            <td style="font-size:12px;color:#94a3b8;"><fmt:formatDate value="${p.paidAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
+                            <td class="adm-finance-time-cell"><fmt:formatDate value="${p.paidAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                             <td>
-                                <button type="button" class="adm-btn adm-btn-primary adm-fin-refund-btn"
-                                        style="padding:5px 12px;font-size:12px;"
+                                <button type="button" class="adm-btn adm-btn-primary adm-fin-refund-btn adm-finance-refund-btn"
                                         data-payment-idx="${p.paymentIdx}"
                                         data-amount="${p.finalAmount}"
                                         data-order="${fn:escapeXml(p.orderName)}">
@@ -121,26 +127,37 @@
     </div>
 
     <%-- 최근 환불 audit 로그 --%>
-    <h3 style="font-size:15px;margin:8px 0 10px 0;">${msg_admin_finance_refund_recentLogs}</h3>
-    <div class="adm-card" style="padding:0;overflow-x:auto;">
-        <table class="adm-table" style="width:100%;">
+    <h3 class="adm-finance-section-title">${msg_admin_finance_refund_recentLogs}</h3>
+    <div class="adm-card adm-finance-table-card">
+        <table class="adm-table adm-finance-refund-log-table">
+            <colgroup>
+                <col class="adm-finance-col-index">
+                <col class="adm-finance-col-id">
+                <col class="adm-finance-col-user">
+                <col>
+                <col class="adm-finance-col-amount">
+                <col>
+                <col class="adm-finance-col-status-wide">
+                <col class="adm-finance-col-time">
+                <col class="adm-finance-col-admin">
+            </colgroup>
             <thead>
             <tr>
-                <th style="width:60px;">#</th>
-                <th style="width:80px;">${msg_admin_finance_refund_col_paymentId}</th>
+                <th>#</th>
+                <th>${msg_admin_finance_refund_col_paymentId}</th>
                 <th>${msg_admin_finance_refund_col_userNick}</th>
                 <th>${msg_admin_finance_refund_col_order}</th>
-                <th style="width:130px;text-align:right;">${msg_admin_finance_refund_col_amount}</th>
+                <th class="adm-align-right">${msg_admin_finance_refund_col_amount}</th>
                 <th>${msg_admin_finance_refund_col_reason}</th>
-                <th style="width:120px;">${msg_admin_finance_refund_col_tossStatus}</th>
-                <th style="width:160px;">${msg_admin_finance_refund_col_refundedAt}</th>
-                <th style="width:140px;">${msg_admin_finance_refund_col_admin}</th>
+                <th>${msg_admin_finance_refund_col_tossStatus}</th>
+                <th>${msg_admin_finance_refund_col_refundedAt}</th>
+                <th>${msg_admin_finance_refund_col_admin}</th>
             </tr>
             </thead>
             <tbody>
             <c:choose>
                 <c:when test="${empty recentLogs}">
-                    <tr><td colspan="9" style="text-align:center;padding:36px;color:#94a3b8;">
+                    <tr class="adm-local-empty"><td colspan="9" class="adm-local-empty-cell">
                         ${msg_admin_finance_refund_logsEmpty}
                     </td></tr>
                 </c:when>
@@ -151,10 +168,10 @@
                             <td>${log.paymentIdx}</td>
                             <td><c:out value="${log.userNickname}"/></td>
                             <td><c:out value="${log.orderName}"/></td>
-                            <td style="text-align:right;"><fmt:formatNumber value="${log.refundAmount}" pattern="#,###"/></td>
-                            <td style="font-size:12px;"><c:out value="${log.refundReason}"/></td>
+                            <td class="adm-align-right"><fmt:formatNumber value="${log.refundAmount}" pattern="#,###"/></td>
+                            <td class="adm-finance-reason-cell"><c:out value="${log.refundReason}"/></td>
                             <td><span class="adm-badge">${log.tossCancelStatus}</span></td>
-                            <td style="font-size:12px;color:#94a3b8;"><fmt:formatDate value="${log.refundedAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
+                            <td class="adm-finance-time-cell"><fmt:formatDate value="${log.refundedAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                             <td><c:out value="${log.adminNickname}"/></td>
                         </tr>
                     </c:forEach>
@@ -167,20 +184,18 @@
 </div>
 
 <%-- 환불 모달 (간단 inline form) --%>
-<div id="adm-fin-refund-modal" class="adm-card"
-     style="display:none;position:fixed;z-index:1000;left:50%;top:30%;transform:translate(-50%,-30%);
-            width:480px;padding:20px 22px;box-shadow:0 8px 32px rgba(0,0,0,.5);">
-    <h3 style="margin:0 0 12px 0;font-size:16px;">${msg_admin_finance_refund_modal_title}</h3>
-    <div id="adm-fin-refund-info" style="font-size:13px;margin-bottom:12px;line-height:1.6;color:#94a3b8;"></div>
+<div id="adm-fin-refund-modal" class="adm-card adm-finance-refund-modal" hidden>
+    <h3 class="adm-finance-refund-modal-title">${msg_admin_finance_refund_modal_title}</h3>
+    <div id="adm-fin-refund-info" class="adm-finance-refund-modal-info"></div>
     <form id="adm-fin-refund-form" method="post">
-        <label style="display:block;font-size:12px;margin-bottom:6px;">
+        <label class="adm-finance-refund-reason-label">
             ${msg_admin_finance_refund_modal_reasonLabel}
-            <span style="color:#ef4444;">*</span>
+            <span class="adm-finance-required">*</span>
         </label>
         <textarea name="reason" required minlength="3" maxlength="500"
-                  style="width:100%;min-height:96px;padding:10px;font-size:13px;border:1px solid #334155;border-radius:6px;background:transparent;color:inherit;"
+                  class="adm-input adm-finance-refund-reason"
                   placeholder="${msg_admin_finance_refund_modal_reasonPlaceholder}"></textarea>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">
+        <div class="adm-finance-modal-actions">
             <button type="button" class="adm-btn adm-btn-ghost" onclick="admFinRefundClose()">
                 ${msg_admin_finance_refund_modal_cancel}
             </button>
@@ -190,8 +205,7 @@
         </div>
     </form>
 </div>
-<div id="adm-fin-refund-backdrop"
-     style="display:none;position:fixed;z-index:999;inset:0;background:rgba(0,0,0,.5);"
+<div id="adm-fin-refund-backdrop" class="adm-finance-refund-backdrop" hidden
      onclick="admFinRefundClose()"></div>
 
 <script>
@@ -209,13 +223,13 @@
                 '<strong>' + fmt(amt) + '</strong>원';
             var form = document.getElementById('adm-fin-refund-form');
             form.action = ctxPath + '/admin/finance/refund/' + idx;
-            document.getElementById('adm-fin-refund-modal').style.display = 'block';
-            document.getElementById('adm-fin-refund-backdrop').style.display = 'block';
+            document.getElementById('adm-fin-refund-modal').hidden = false;
+            document.getElementById('adm-fin-refund-backdrop').hidden = false;
         });
     });
     window.admFinRefundClose = function(){
-        document.getElementById('adm-fin-refund-modal').style.display = 'none';
-        document.getElementById('adm-fin-refund-backdrop').style.display = 'none';
+        document.getElementById('adm-fin-refund-modal').hidden = true;
+        document.getElementById('adm-fin-refund-backdrop').hidden = true;
     };
 })();
 </script>
