@@ -38,7 +38,7 @@
 <%@ include file="layout.jsp" %>
 
 
-<div class="adm-content adm-governance-page">
+<div class="adm-content adm-governance-page adm-policy-history-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_admin_policyHistory_title}</h1>
@@ -53,10 +53,10 @@
         </div>
     </div>
 
-    <form method="get" class="adm-card" style="margin-bottom:16px;">
-        <div class="adm-form-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
-            <label>${msg_admin_policyHistory_sourceType}
-                <select class="adm-input" name="sourceType">
+    <form method="get" class="adm-card adm-policy-history-filter-card">
+        <div class="adm-policy-history-filter-grid">
+            <label class="adm-policy-history-field">${msg_admin_policyHistory_sourceType}
+                <select class="adm-select" name="sourceType">
                     <option value="">${msg_admin_common_all}</option>
                     <option value="SYSTEM_POLICY" ${sourceType == 'SYSTEM_POLICY' ? 'selected' : ''}>SYSTEM_POLICY</option>
                     <option value="LOGIN_RISK_POLICY" ${sourceType == 'LOGIN_RISK_POLICY' ? 'selected' : ''}>LOGIN_RISK_POLICY</option>
@@ -65,14 +65,14 @@
                     <option value="PROVIDER_CONFIG" ${sourceType == 'PROVIDER_CONFIG' ? 'selected' : ''}>PROVIDER_CONFIG</option>
                 </select>
             </label>
-            <label>${msg_admin_policyHistory_keyword}
+            <label class="adm-policy-history-field adm-policy-history-keyword-field">${msg_admin_policyHistory_keyword}
                 <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${msg_admin_policyHistory_placeholder_keyword}">
             </label>
-            <label>${msg_admin_policyHistory_limit}
+            <label class="adm-policy-history-field">${msg_admin_policyHistory_limit}
                 <input class="adm-input" type="number" min="20" max="500" name="limit" value="${limit}">
             </label>
-            <div style="align-self:end;">
-                <button class="adm-btn primary" type="submit">${msg_admin_common_search}</button>
+            <div class="adm-policy-history-actions">
+                <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_search}</button>
             </div>
         </div>
     </form>
@@ -86,7 +86,7 @@
         </div>
         <div class="adm-card-body">
             <div class="adm-table-wrap">
-                <table class="adm-table">
+                <table class="adm-table adm-policy-history-table">
                     <thead>
                     <tr>
                         <th>${msg_admin_policyHistory_changedAt}</th>
@@ -106,21 +106,21 @@
                             <td><c:out value="${h.changeType}"/></td>
                             <td><c:out value="${h.actorUserIdx}" default="-"/></td>
                             <td>
-                                <details>
+                                <details class="adm-policy-history-details">
                                     <summary>${msg_admin_policyHistory_showSnapshot}</summary>
-                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+                                    <div class="adm-policy-snapshot-grid">
                                         <div>
                                             <div class="adm-muted">${msg_admin_policyHistory_before}</div>
-                                            <pre class="js-policy-before" style="white-space:pre-wrap;max-height:220px;overflow:auto;"><c:out value="${h.beforeConfigJson}"/></pre>
+                                            <pre class="js-policy-before adm-policy-snapshot-pre"><c:out value="${h.beforeConfigJson}"/></pre>
                                         </div>
                                         <div>
                                             <div class="adm-muted">${msg_admin_policyHistory_after}</div>
-                                            <pre class="js-policy-after" style="white-space:pre-wrap;max-height:220px;overflow:auto;"><c:out value="${h.afterConfigJson}"/></pre>
+                                            <pre class="js-policy-after adm-policy-snapshot-pre"><c:out value="${h.afterConfigJson}"/></pre>
                                         </div>
                                     </div>
-                                    <div style="margin-top:10px;">
-                                        <button type="button" class="adm-btn js-policy-diff-run">${msg_admin_policyHistory_diff}</button>
-                                        <pre class="js-policy-diff" style="white-space:pre-wrap;max-height:220px;overflow:auto;margin-top:8px;"></pre>
+                                    <div class="adm-policy-diff-block">
+                                        <button type="button" class="adm-btn adm-btn-ghost js-policy-diff-run">${msg_admin_policyHistory_diff}</button>
+                                        <pre class="js-policy-diff adm-policy-snapshot-pre adm-policy-diff-output"></pre>
                                     </div>
                                 </details>
                             </td>
