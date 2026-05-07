@@ -1,12 +1,22 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="ads"/>
 <c:set var="pageTitle" value="광고 관리"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content adm-ad-page">
+    <spring:message var="msg_admin_ad_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(adList)}"/>
+    <c:url var="adCreateUrl" value="/admin/ads/new">
+        <c:if test="${not empty slotCodeFilter}">
+            <c:param name="returnSlotCode" value="${slotCodeFilter}"/>
+        </c:if>
+        <c:if test="${activeOnly}">
+            <c:param name="returnActiveOnly" value="true"/>
+        </c:if>
+    </c:url>
 
     <c:if test="${not empty adMessage}">
         <div class="adm-alert adm-alert-success adm-ad-alert">
@@ -40,14 +50,20 @@
                     <a href="${pageContext.request.contextPath}/admin/ads" class="adm-btn adm-btn-ghost">초기화</a>
                 </div>
             </form>
-            <a href="${pageContext.request.contextPath}/admin/ads/new" class="adm-btn adm-btn-primary adm-ad-create-btn">＋ 광고 등록</a>
+            <a href="${adCreateUrl}" class="adm-btn adm-btn-primary adm-ad-create-btn">＋ 광고 등록</a>
         </div>
     </div>
 
     <%-- 목록 테이블 --%>
     <div class="adm-card adm-ad-list-card">
+        <div class="adm-card-head adm-ad-list-head">
+            <div class="adm-card-title">
+                광고 목록
+                <span class="adm-section-total-inline">${msg_admin_ad_totalCountDisplay}</span>
+            </div>
+        </div>
         <div class="adm-table-wrap">
-            <table class="adm-table adm-ad-table">
+            <table class="adm-table adm-ad-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-ad-col-image"/>
                     <col class="adm-ad-col-title"/>
@@ -79,6 +95,14 @@
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="ad" items="${adList}">
+                                <c:url var="adEditUrl" value="/admin/ads/${ad.adId}/edit">
+                                    <c:if test="${not empty slotCodeFilter}">
+                                        <c:param name="returnSlotCode" value="${slotCodeFilter}"/>
+                                    </c:if>
+                                    <c:if test="${activeOnly}">
+                                        <c:param name="returnActiveOnly" value="true"/>
+                                    </c:if>
+                                </c:url>
                                 <tr data-ad-id="${ad.adId}">
                                     <td>
                                         <c:choose>
@@ -146,9 +170,13 @@
                                     </td>
                                     <td>
                                         <div class="adm-row-actions adm-ad-row-actions">
-                                            <a href="${pageContext.request.contextPath}/admin/ads/${ad.adId}/edit" class="adm-row-btn detail">수정</a>
+                                            <a href="${adEditUrl}" class="adm-row-btn detail">수정</a>
                                             <form method="post" action="${pageContext.request.contextPath}/admin/ads/${ad.adId}/delete"
                                                   onsubmit="return confirm('이 광고를 삭제할까요?');" class="adm-ad-inline-form">
+                                                <c:if test="${not empty slotCodeFilter}">
+                                                    <input type="hidden" name="slotCode" value="${slotCodeFilter}"/>
+                                                </c:if>
+                                                <input type="hidden" name="activeOnly" value="${activeOnly}"/>
                                                 <button type="submit" class="adm-row-btn danger">삭제</button>
                                             </form>
                                         </div>

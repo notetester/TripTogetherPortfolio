@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.triptogether.admin.service.AdCampaignService;
 import org.triptogether.admin.vo.AdCampaignVO;
 import org.triptogether.auth.vo.UsersVO;
@@ -80,6 +81,8 @@ public class AdminAdController {
     public String create(@ModelAttribute AdCampaignVO form,
                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") Date startAtInput,
                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") Date endAtInput,
+                         @RequestParam(required = false) String returnSlotCode,
+                         @RequestParam(required = false, defaultValue = "false") boolean returnActiveOnly,
                          HttpSession session,
                          RedirectAttributes redirectAttributes) {
         UsersVO user = (UsersVO) session.getAttribute("loginUser");
@@ -95,7 +98,7 @@ public class AdminAdController {
             log.error("광고 등록 오류", e);
             redirectAttributes.addFlashAttribute("adError", "등록 중 오류가 발생했습니다.");
         }
-        return "redirect:/admin/ads";
+        return redirectAdList(returnSlotCode, returnActiveOnly);
     }
 
     /** 수정 폼 */
@@ -162,6 +165,8 @@ public class AdminAdController {
                          @ModelAttribute AdCampaignVO form,
                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") Date startAtInput,
                          @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") Date endAtInput,
+                         @RequestParam(required = false) String returnSlotCode,
+                         @RequestParam(required = false, defaultValue = "false") boolean returnActiveOnly,
                          RedirectAttributes redirectAttributes) {
         form.setAdId(adId);
         form.setStartAt(startAtInput);
@@ -175,7 +180,7 @@ public class AdminAdController {
             log.error("광고 수정 오류", e);
             redirectAttributes.addFlashAttribute("adError", "수정 중 오류가 발생했습니다.");
         }
-        return "redirect:/admin/ads";
+        return redirectAdList(returnSlotCode, returnActiveOnly);
     }
 
     /** 활성 토글 (AJAX) */
@@ -196,7 +201,10 @@ public class AdminAdController {
 
     /** 삭제 */
     @PostMapping("/{adId}/delete")
-    public String delete(@PathVariable Long adId, RedirectAttributes redirectAttributes) {
+    public String delete(@PathVariable Long adId,
+                         @RequestParam(required = false) String slotCode,
+                         @RequestParam(required = false, defaultValue = "false") boolean activeOnly,
+                         RedirectAttributes redirectAttributes) {
         try {
             adCampaignService.delete(adId);
             redirectAttributes.addFlashAttribute("adMessage", "광고가 삭제되었습니다.");
@@ -204,7 +212,18 @@ public class AdminAdController {
             log.error("광고 삭제 오류", e);
             redirectAttributes.addFlashAttribute("adError", "삭제 중 오류가 발생했습니다.");
         }
-        return "redirect:/admin/ads";
+        return redirectAdList(slotCode, activeOnly);
+    }
+
+    private String redirectAdList(String slotCode, boolean activeOnly) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/admin/ads");
+        if (slotCode != null && !slotCode.isBlank()) {
+            builder.queryParam("slotCode", slotCode);
+        }
+        if (activeOnly) {
+            builder.queryParam("activeOnly", "true");
+        }
+        return "redirect:" + builder.toUriString();
     }
 
     /** 이미지 업로드 (Cloudinary) */

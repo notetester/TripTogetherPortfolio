@@ -10762,6 +10762,10 @@ body.sa-light .adm-courses-spot-order {
     overflow: visible;
 }
 
+.adm-ad-list-head {
+    align-items: center;
+}
+
 .adm-ad-table {
     width: 100%;
     min-width: 1160px;
@@ -10993,6 +10997,10 @@ body.sa-light .adm-courses-spot-order {
 
 .adm-ad-form {
     margin: 0;
+}
+
+.adm-ad-form-backrow {
+    margin-bottom: 14px;
 }
 
 .adm-ad-form-card {

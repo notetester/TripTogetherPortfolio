@@ -8,13 +8,32 @@
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content adm-ad-form-page">
+    <c:set var="returnSlotCode" value="${param.returnSlotCode}"/>
+    <c:set var="returnActiveOnly" value="${param.returnActiveOnly eq 'true'}"/>
+    <c:url var="adBackUrl" value="/admin/ads">
+        <c:if test="${not empty returnSlotCode}">
+            <c:param name="slotCode" value="${returnSlotCode}"/>
+        </c:if>
+        <c:if test="${returnActiveOnly}">
+            <c:param name="activeOnly" value="true"/>
+        </c:if>
+    </c:url>
+    <c:choose>
+        <c:when test="${isEdit}">
+            <c:url var="formAction" value="/admin/ads/${ad.adId}/update"/>
+        </c:when>
+        <c:otherwise>
+            <c:url var="formAction" value="/admin/ads"/>
+        </c:otherwise>
+    </c:choose>
 
-    <c:set var="formAction"
-           value="${isEdit
-                ? pageContext.request.contextPath.concat('/admin/ads/').concat(ad.adId).concat('/update')
-                : pageContext.request.contextPath.concat('/admin/ads')}"/>
+    <div class="adm-ad-form-backrow">
+        <a href="${adBackUrl}" class="adm-back-link">광고 목록으로</a>
+    </div>
 
     <form method="post" action="${formAction}" id="adForm" class="adm-ad-form">
+        <input type="hidden" name="returnSlotCode" value="${returnSlotCode}"/>
+        <input type="hidden" name="returnActiveOnly" value="${returnActiveOnly}"/>
         <div class="adm-card adm-ad-form-card">
             <div class="adm-ad-form-grid">
                 <div class="adm-ad-field adm-ad-field-wide">
@@ -202,7 +221,7 @@
             </div>
 
             <div class="adm-ad-form-actions">
-                <a href="${pageContext.request.contextPath}/admin/ads" class="adm-btn adm-btn-ghost">취소</a>
+                <a href="${adBackUrl}" class="adm-btn adm-btn-ghost">취소</a>
                 <button type="submit" class="adm-btn adm-btn-primary">${isEdit ? '수정 저장' : '등록'}</button>
             </div>
         </div>
