@@ -38,20 +38,6 @@
 
 <%@ include file="../layout.jsp" %>
 
-<style>
-    .provider-detail-modal[hidden] { display:none; }
-    .provider-detail-modal { position:fixed; inset:0; z-index:2000; background:rgba(15,23,42,.55); display:flex; align-items:center; justify-content:center; padding:24px; }
-    .provider-detail-card { width:min(900px,96vw); max-height:88vh; overflow:auto; background:#fff; border-radius:20px; box-shadow:0 24px 70px rgba(15,23,42,.28); border:1px solid #e2e8f0; }
-    .provider-detail-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; padding:20px 22px; border-bottom:1px solid #e2e8f0; }
-    .provider-detail-body { padding:20px 22px; }
-    .provider-detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-    .provider-detail-item { border:1px solid #e2e8f0; border-radius:14px; padding:12px; background:#f8fafc; }
-    .provider-detail-label { font-size:12px; color:#64748b; font-weight:700; margin-bottom:6px; }
-    .provider-detail-value { white-space:pre-wrap; word-break:break-word; color:#0f172a; }
-    .provider-detail-close { border:0; background:#e2e8f0; border-radius:10px; padding:8px 12px; cursor:pointer; font-weight:800; }
-    @media (max-width:720px) { .provider-detail-grid { grid-template-columns:1fr; } }
-</style>
-
 <div class="adm-content adm-governance-page">
     <div class="adm-page-head">
         <div>
@@ -70,21 +56,37 @@
     </c:if>
 
     <c:forEach var="p" items="${providers}">
-        <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/provider-configs/${p.providerIdx}" class="adm-card" style="margin-bottom:16px;">
-            <div class="adm-card-header">
-                <div>
+        <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/provider-configs/${p.providerIdx}" class="adm-card adm-provider-config-card">
+            <div class="adm-card-header adm-provider-card-head">
+                <div class="adm-provider-card-titleblock">
                     <div class="adm-card-title"><c:out value="${p.providerName}"/></div>
                     <div class="adm-muted"><c:out value="${p.providerKind}"/> · <c:out value="${p.providerCode}"/> · ${msg_security_admin_common_status} <c:out value="${p.status}"/></div>
                 </div>
-                <label class="adm-check">
-                    <input type="checkbox" name="enabled" ${p.enabled ? 'checked' : ''}>
-                    ${msg_security_admin_common_enabled}
-                </label>
+                <div class="adm-provider-card-controls">
+                    <label class="adm-check adm-provider-enabled">
+                        <input type="checkbox" name="enabled" ${p.enabled ? 'checked' : ''}>
+                        ${msg_security_admin_common_enabled}
+                    </label>
+                    <div class="adm-provider-card-actions">
+                        <button class="adm-btn primary" type="submit">${msg_security_admin_common_save}</button>
+                        <button class="adm-btn" type="submit"
+                                formmethod="post"
+                                formaction="${pageContext.request.contextPath}/admin/login-risk/provider-configs/${p.providerIdx}/check">
+                            ${msg_security_admin_provider_checkNow}
+                        </button>
+                        <button class="adm-btn js-provider-modal-open" type="button" data-modal-id="provider-detail-${p.providerIdx}">
+                            ${msg_security_admin_common_detail}
+                        </button>
+                        <a class="adm-btn" href="${pageContext.request.contextPath}/admin/policy-history?sourceType=PROVIDER_CONFIG&keyword=${fn:escapeXml(p.providerCode)}">
+                            ${msg_security_admin_provider_history}
+                        </a>
+                    </div>
+                </div>
             </div>
             <div class="adm-card-body">
                 <input type="hidden" name="providerCode" value="${fn:escapeXml(p.providerCode)}">
                 <input type="hidden" name="providerKind" value="${fn:escapeXml(p.providerKind)}">
-                <div class="adm-form-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;">
+                <div class="adm-form-grid adm-provider-form-grid">
                     <label>${msg_security_admin_provider_displayName}
                         <input class="adm-input" type="text" name="providerName" value="${fn:escapeXml(p.providerName)}">
                     </label>
@@ -107,27 +109,12 @@
                         </select>
                     </label>
                 </div>
-                <label style="display:block;margin-top:12px;">${msg_security_admin_common_description}
+                <label class="adm-provider-description-field">${msg_security_admin_common_description}
                     <textarea class="adm-input" name="description" rows="2"><c:out value="${p.description}"/></textarea>
                 </label>
-                <div class="adm-muted" style="margin-top:8px;line-height:1.7;">
-                    ${msg_security_admin_provider_externalCallNotice}<br>
-                    ${msg_security_admin_provider_lastCheckedAt}:
-                    <fmt:formatDate value="${p.lastCheckedAtDate}" pattern="yyyy-MM-dd HH:mm"/>
-                </div>
-                <div class="adm-actions" style="margin-top:12px;">
-                    <button class="adm-btn primary" type="submit">${msg_security_admin_common_save}</button>
-                    <button class="adm-btn" type="submit"
-                            formmethod="post"
-                            formaction="${pageContext.request.contextPath}/admin/login-risk/provider-configs/${p.providerIdx}/check">
-                        ${msg_security_admin_provider_checkNow}
-                    </button>
-                    <button class="adm-btn js-provider-modal-open" type="button" data-modal-id="provider-detail-${p.providerIdx}">
-                        ${msg_security_admin_common_detail}
-                    </button>
-                    <a class="adm-btn" href="${pageContext.request.contextPath}/admin/policy-history?sourceType=PROVIDER_CONFIG&keyword=${fn:escapeXml(p.providerCode)}">
-                        ${msg_security_admin_provider_history}
-                    </a>
+                <div class="adm-provider-card-foot adm-muted">
+                    <span>${msg_security_admin_provider_externalCallNotice}</span>
+                    <span>${msg_security_admin_provider_lastCheckedAt}: <fmt:formatDate value="${p.lastCheckedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
                 </div>
             </div>
         </form>
@@ -136,7 +123,7 @@
             <div class="provider-detail-card" role="dialog" aria-modal="true" aria-labelledby="provider-detail-title-${p.providerIdx}">
                 <div class="provider-detail-head">
                     <div>
-                        <h2 id="provider-detail-title-${p.providerIdx}" style="margin:0;">${msg_security_admin_provider_detailTitle}</h2>
+                        <h2 id="provider-detail-title-${p.providerIdx}" class="provider-detail-title">${msg_security_admin_provider_detailTitle}</h2>
                         <div class="adm-muted"><c:out value="${p.providerKind}"/> · <c:out value="${p.providerCode}"/></div>
                     </div>
                     <button class="provider-detail-close js-provider-modal-close" type="button">${msg_security_admin_common_close}</button>
@@ -176,7 +163,7 @@
                             <div class="provider-detail-value"><fmt:formatDate value="${p.lastCheckedAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
                         </div>
                     </div>
-                    <div class="provider-detail-item" style="margin-top:12px;">
+                    <div class="provider-detail-item provider-detail-description">
                         <div class="provider-detail-label">${msg_security_admin_common_description}</div>
                         <div class="provider-detail-value"><c:out value="${p.description}" default="-"/></div>
                     </div>
