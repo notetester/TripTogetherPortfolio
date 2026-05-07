@@ -64,8 +64,44 @@
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content adm-explore-page adm-explore-detail-page">
+    <c:choose>
+        <c:when test="${param.source == 'reviews'}">
+            <c:url var="exploreBackUrl" value="/admin/explore/reviews">
+                <c:if test="${not empty param.page}"><c:param name="page" value="${param.page}"/></c:if>
+                <c:if test="${not empty param.size}"><c:param name="size" value="${param.size}"/></c:if>
+                <c:if test="${not empty param.reviewStatus}"><c:param name="reviewStatus" value="${param.reviewStatus}"/></c:if>
+                <c:if test="${not empty param.searchType}"><c:param name="searchType" value="${param.searchType}"/></c:if>
+                <c:if test="${not empty param.keyword}"><c:param name="keyword" value="${param.keyword}"/></c:if>
+            </c:url>
+        </c:when>
+        <c:otherwise>
+            <c:url var="exploreBackUrl" value="/admin/explore">
+                <c:if test="${not empty param.page}"><c:param name="page" value="${param.page}"/></c:if>
+                <c:if test="${not empty param.size}"><c:param name="size" value="${param.size}"/></c:if>
+                <c:if test="${not empty param.status}"><c:param name="status" value="${param.status}"/></c:if>
+                <c:if test="${not empty param.sortBy}"><c:param name="sortBy" value="${param.sortBy}"/></c:if>
+                <c:if test="${not empty param.searchType}"><c:param name="searchType" value="${param.searchType}"/></c:if>
+                <c:if test="${not empty param.keyword}"><c:param name="keyword" value="${param.keyword}"/></c:if>
+            </c:url>
+        </c:otherwise>
+    </c:choose>
+    <c:url var="spotUpdateUrl" value="/admin/explore/spots/${spot.spotIdx}/update">
+        <c:if test="${not empty param.source}"><c:param name="source" value="${param.source}"/></c:if>
+        <c:if test="${not empty param.page}"><c:param name="page" value="${param.page}"/></c:if>
+        <c:if test="${not empty param.size}"><c:param name="size" value="${param.size}"/></c:if>
+        <c:if test="${not empty param.status}"><c:param name="status" value="${param.status}"/></c:if>
+        <c:if test="${not empty param.reviewStatus}"><c:param name="reviewStatus" value="${param.reviewStatus}"/></c:if>
+        <c:if test="${not empty param.sortBy}"><c:param name="sortBy" value="${param.sortBy}"/></c:if>
+        <c:if test="${not empty param.searchType}"><c:param name="searchType" value="${param.searchType}"/></c:if>
+        <c:if test="${not empty param.keyword}"><c:param name="keyword" value="${param.keyword}"/></c:if>
+    </c:url>
+    <c:url var="detailReviewsManageUrl" value="/admin/explore/reviews">
+        <c:if test="${not empty param.size}"><c:param name="size" value="${param.size}"/></c:if>
+        <c:param name="searchType" value="name"/>
+        <c:param name="keyword" value="${spot.name}"/>
+    </c:url>
     <div class="adm-explore-detail-backrow">
-        <a class="adm-back-link" href="${pageContext.request.contextPath}/admin/explore">
+        <a class="adm-back-link" href="${exploreBackUrl}">
             ${msg_admin_explore_detail_backToList}
         </a>
     </div>
@@ -167,7 +203,7 @@
         </div>
     </div>
 
-    <div class="adm-card adm-explore-detail-card">
+    <div class="adm-card adm-explore-detail-card" id="spotEditCard" hidden>
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_admin_explore_detail_editTitle}</div>
             <div class="adm-muted-inline">${msg_admin_explore_detail_editSub}</div>
@@ -186,10 +222,9 @@
 
             <form id="spotEditForm"
                   method="post"
-                  action="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}/update"
+                  action="${spotUpdateUrl}"
                   enctype="multipart/form-data"
-                  class="adm-explore-edit-form"
-                  hidden>
+                  class="adm-explore-edit-form">
                 <div class="adm-explore-edit-grid">
                     <div>
                         <label for="spotName" class="adm-filter-label">${msg_admin_explore_detail_spotName}</label>
@@ -247,10 +282,10 @@
     <div class="adm-card">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_admin_explore_detail_reviewsTitle}</div>
-            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/explore/reviews?searchType=name&keyword=${spot.name}">${msg_admin_explore_detail_reviewsManageAll}</a>
+            <a class="adm-btn adm-btn-ghost" href="${detailReviewsManageUrl}">${msg_admin_explore_detail_reviewsManageAll}</a>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table adm-explore-table adm-explore-detail-reviews-table">
+            <table class="adm-table adm-explore-table adm-explore-detail-reviews-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-explore-col-id">
                     <col class="adm-explore-col-author">
@@ -312,9 +347,14 @@
                         </td>
                         <td class="adm-muted-inline"><fmt:formatDate value="${review.createdAtDate}" type="date" dateStyle="short"/></td>
                         <td>
-                            <c:if test="${review.displayStatus != 'BLOCKED'}">
-                                <button class="adm-row-btn danger" type="button" data-id="${review.reviewIdx}" onclick="blockReview(this)">${msg_admin_explore_reviews_action_block}</button>
-                            </c:if>
+                            <c:choose>
+                                <c:when test="${review.displayStatus != 'BLOCKED'}">
+                                    <button class="adm-row-btn danger" type="button" data-id="${review.reviewIdx}" onclick="blockReview(this)">${msg_admin_explore_reviews_action_block}</button>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="adm-muted-inline">-</span>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                     </tr>
                 </c:forEach>
@@ -337,22 +377,26 @@ var EXPLORE_DETAIL_MSG = {
     confirmBlockReview: '${msg_admin_explore_detail_confirmBlockReview_js}',
     requestFailed: '${msg_admin_explore_detail_error_requestFailed_js}'
 };
+var spotEditCard = document.getElementById('spotEditCard');
 var spotEditForm = document.getElementById('spotEditForm');
 var hasEditMessage = ${not empty adminEditError or not empty adminEditSuccess ? 'true' : 'false'};
 var shouldOpenEditForm = ${openEditForm ? 'true' : 'false'};
 
-if (spotEditForm && (hasEditMessage || shouldOpenEditForm)) {
-    spotEditForm.hidden = false;
+if (spotEditCard && (hasEditMessage || shouldOpenEditForm)) {
+    spotEditCard.hidden = false;
 }
 
 function toggleEditForm() {
-    if (!spotEditForm) return;
-    spotEditForm.hidden = !spotEditForm.hidden;
+    if (!spotEditCard) return;
+    spotEditCard.hidden = !spotEditCard.hidden;
+    if (!spotEditCard.hidden) {
+        spotEditCard.scrollIntoView({behavior: 'smooth', block: 'start'});
+    }
 }
 
 function closeEditForm() {
-    if (!spotEditForm) return;
-    spotEditForm.hidden = true;
+    if (!spotEditCard) return;
+    spotEditCard.hidden = true;
 }
 
 if (spotEditForm) {

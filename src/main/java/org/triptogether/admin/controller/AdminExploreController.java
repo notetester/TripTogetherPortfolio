@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -61,20 +62,21 @@ public class AdminExploreController {
     @PostMapping("/spots/{spotIdx}/update")
     public String updateSpot(@PathVariable Long spotIdx,
                              @ModelAttribute("adminEditForm") ExploreCreateDto adminEditForm,
+                             @RequestParam Map<String, String> requestParams,
                              HttpSession session,
                              RedirectAttributes redirectAttributes) {
 
         UsersVO loginUser = getLoginUser(session);
         if (loginUser == null || !loginUser.hasAdminRole()) {
             redirectAttributes.addFlashAttribute("adminEditError", "관리자만 여행지를 수정할 수 있습니다.");
-            return "redirect:/admin/explore/spots/" + spotIdx;
+            return buildSpotRedirect(spotIdx, requestParams);
         }
 
         String validationError = validateSpotForm(adminEditForm);
         if (validationError != null) {
             redirectAttributes.addFlashAttribute("adminEditError", validationError);
             redirectAttributes.addFlashAttribute("adminEditForm", adminEditForm);
-            return "redirect:/admin/explore/spots/" + spotIdx;
+            return buildSpotRedirect(spotIdx, requestParams);
         }
 
         try {
@@ -88,7 +90,7 @@ public class AdminExploreController {
             redirectAttributes.addFlashAttribute("adminEditForm", adminEditForm);
         }
 
-        return "redirect:/admin/explore/spots/" + spotIdx;
+        return buildSpotRedirect(spotIdx, requestParams);
     }
 
     @GetMapping("/reviews")
@@ -201,6 +203,26 @@ public class AdminExploreController {
             return usersVO;
         }
         return null;
+    }
+
+    private String buildSpotRedirect(Long spotIdx, Map<String, String> requestParams) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/admin/explore/spots/{spotIdx}");
+        appendQueryParam(builder, requestParams, "source");
+        appendQueryParam(builder, requestParams, "page");
+        appendQueryParam(builder, requestParams, "size");
+        appendQueryParam(builder, requestParams, "status");
+        appendQueryParam(builder, requestParams, "reviewStatus");
+        appendQueryParam(builder, requestParams, "sortBy");
+        appendQueryParam(builder, requestParams, "searchType");
+        appendQueryParam(builder, requestParams, "keyword");
+        return "redirect:" + builder.buildAndExpand(spotIdx).toUriString();
+    }
+
+    private void appendQueryParam(UriComponentsBuilder builder, Map<String, String> params, String key) {
+        String value = params.get(key);
+        if (value != null && !value.isBlank()) {
+            builder.queryParam(key, value);
+        }
     }
 
     /**
