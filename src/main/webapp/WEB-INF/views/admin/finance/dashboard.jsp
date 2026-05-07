@@ -49,6 +49,12 @@
 <spring:message var="msg_admin_finance_users_status_active" code="admin.finance.users.status.active"/>
 <spring:message var="msg_admin_finance_users_status_blocked" code="admin.finance.users.status.blocked"/>
 <spring:message var="msg_admin_finance_users_detailButton" code="admin.finance.users.detailButton"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
+<spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100"/>
+<spring:message var="msg_admin_finance_users_currentCountDisplay" code="admin.common.currentCountFormat" arguments="${fn:length(userList)}"/>
 <c:set var="activeMenu" value="finance"/>
 <c:set var="pageTitle">${msg_admin_finance_dashboard_title}</c:set>
 <%@ include file="../layout.jsp" %>
@@ -212,6 +218,11 @@
                 <option value="mileage" ${search.sort eq 'mileage' ? 'selected' : ''}>${msg_admin_finance_users_sort_mileage}</option>
                 <option value="grade"  ${search.sort eq 'grade'  ? 'selected' : ''}>${msg_admin_finance_users_sort_grade}</option>
             </select>
+            <select name="pageSize" class="adm-select adm-finance-page-size-select" onchange="admFinanceChangePageSize(this.value)">
+                <option value="20" ${search.pageSize == 20 ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
+                <option value="50" ${search.pageSize == 50 ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
+                <option value="100" ${search.pageSize == 100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
+            </select>
             <button type="submit" class="adm-btn adm-btn-primary">${msg_admin_finance_users_applyFilter}</button>
             <span class="adm-finance-filter-total">
                 <spring:message var="msg_admin_finance_users_totalCount_args_totalCount" code="admin.finance.users.totalCount" arguments="${totalCount}"/>${msg_admin_finance_users_totalCount_args_totalCount}
@@ -220,8 +231,17 @@
     </div>
 
     <%-- 사용자 테이블 --%>
-    <div class="adm-card adm-finance-table-card">
-        <table class="adm-table adm-finance-user-table">
+    <div class="adm-card adm-finance-table-card adm-finance-managed-card adm-overflow-visible">
+        <div class="adm-card-head">
+            <div class="adm-card-title">
+                ${msg_admin_finance_users_sectionTitle}
+                <span class="adm-section-total-inline">
+                    <spring:message var="msg_admin_finance_users_totalCount_args_totalCount_card" code="admin.finance.users.totalCount" arguments="${totalCount}"/>${msg_admin_finance_users_totalCount_args_totalCount_card}
+                </span>
+            </div>
+        </div>
+        <div class="adm-table-wrap">
+        <table class="adm-table adm-finance-user-table" data-admin-list-ignore="true">
             <colgroup>
                 <col class="adm-finance-col-id">
                 <col>
@@ -292,18 +312,35 @@
                 </c:choose>
             </tbody>
         </table>
+        </div>
+        <c:set var="financeTotalPage" value="${totalPage < 1 ? 1 : totalPage}"/>
+        <div class="adm-local-pagination adm-finance-local-pagination">
+            <div class="adm-local-page-info">
+                <spring:message var="msg_admin_finance_users_totalCount_args_totalCount_page" code="admin.finance.users.totalCount" arguments="${totalCount}"/>${msg_admin_finance_users_totalCount_args_totalCount_page}
+                / ${msg_admin_finance_users_currentCountDisplay}
+            </div>
+            <div class="adm-local-page-actions">
+                <button type="button" class="adm-btn adm-btn-ghost" ${search.page <= 1 ? 'disabled' : ''} onclick="admFinanceGoPage(${search.page - 1})">${msg_admin_common_prev}</button>
+                <span class="js-finance-page-state">${search.page} / ${financeTotalPage}</span>
+                <button type="button" class="adm-btn adm-btn-ghost" ${search.page >= financeTotalPage ? 'disabled' : ''} onclick="admFinanceGoPage(${search.page + 1})">${msg_admin_common_next}</button>
+            </div>
+        </div>
     </div>
 
-    <%-- 페이지네이션 --%>
-    <c:if test="${totalPage > 1}">
-        <div class="adm-finance-paging">
-            <c:forEach var="p" begin="1" end="${totalPage}">
-                <a href="?keyword=${search.keyword}&memberGrade=${search.memberGrade}&sort=${search.sort}&page=${p}"
-                   class="adm-btn adm-finance-page-btn ${search.page == p ? 'adm-btn-primary' : 'adm-btn-ghost'}">${p}</a>
-            </c:forEach>
-        </div>
-    </c:if>
-
 </div>
+
+<script>
+function admFinanceGoPage(page) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('page', page);
+    location.href = '${pageContext.request.contextPath}/admin/finance?' + params.toString();
+}
+function admFinanceChangePageSize(pageSize) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('pageSize', pageSize);
+    params.set('page', '1');
+    location.href = '${pageContext.request.contextPath}/admin/finance?' + params.toString();
+}
+</script>
 
 <%@ include file="../layout-close.jsp" %>

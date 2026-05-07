@@ -4416,7 +4416,7 @@ body.sa-light .adm-fin-guide { color: #475569; }
 
 .adm-finance-user-filterbar {
     display: grid;
-    grid-template-columns: minmax(260px, 1.15fr) minmax(140px, .55fr) minmax(150px, .6fr) auto minmax(150px, .55fr);
+    grid-template-columns: minmax(260px, 1.15fr) minmax(140px, .55fr) minmax(150px, .6fr) minmax(108px, .42fr) auto minmax(150px, .55fr);
     gap: 8px;
     align-items: center;
 }
@@ -4444,6 +4444,30 @@ body.sa-light .adm-fin-guide { color: #475569; }
 .adm-finance-table-card {
     padding: 0;
     overflow-x: auto;
+}
+
+.adm-finance-managed-card {
+    overflow: visible;
+}
+
+.adm-finance-managed-card .adm-card-head {
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(148, 163, 184, .14);
+}
+
+.adm-finance-managed-card .adm-table-wrap {
+    overflow-x: auto;
+}
+
+.adm-finance-local-pagination {
+    border-top: 1px solid rgba(148, 163, 184, .14);
+}
+
+.js-finance-page-state {
+    min-width: 48px;
+    text-align: center;
+    color: #cbd5e1;
+    font-size: 13px;
 }
 
 .adm-finance-user-table {
@@ -4742,6 +4766,10 @@ body.sa-light .adm-finance-signed-amount.is-negative {
     color: #b91c1c;
 }
 
+body.sa-light .js-finance-page-state {
+    color: #475569;
+}
+
 @media (max-width: 1280px) {
     .adm-finance-summary-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -4752,7 +4780,7 @@ body.sa-light .adm-finance-signed-amount.is-negative {
     }
 
     .adm-finance-user-filterbar {
-        grid-template-columns: minmax(240px, 1.2fr) repeat(2, minmax(140px, .7fr)) auto;
+        grid-template-columns: minmax(240px, 1.2fr) repeat(3, minmax(126px, .7fr)) auto;
     }
 
     .adm-finance-refund-filterbar {
