@@ -5679,3 +5679,116 @@ body.sa-light .adm-governance-page .adm-security-assessment-primary {
         width: auto;
     }
 }
+
+/* Security appeal policy */
+.adm-governance-page .adm-appeal-policy-card,
+.adm-governance-page .adm-appeal-policy-history-card {
+    overflow: visible;
+    border-radius: 8px;
+}
+
+.adm-governance-page .adm-appeal-policy-history-card {
+    margin-top: 12px;
+}
+
+.adm-governance-page .adm-appeal-policy-head {
+    align-items: center;
+}
+
+.adm-governance-page .adm-appeal-policy-body {
+    display: grid;
+    gap: 16px;
+}
+
+.adm-governance-page .adm-appeal-policy-section {
+    display: grid;
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(148,163,184,.14);
+}
+
+.adm-governance-page .adm-appeal-policy-section:first-of-type {
+    padding-top: 0;
+    border-top: 0;
+}
+
+.adm-governance-page .adm-appeal-policy-section-title {
+    margin: 0;
+    color: #e5e7eb;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0;
+}
+
+.adm-governance-page .adm-appeal-policy-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    align-items: end;
+}
+
+.adm-governance-page .adm-appeal-policy-grid-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.adm-governance-page .adm-appeal-policy-grid label,
+.adm-governance-page .adm-appeal-policy-description {
+    min-width: 0;
+}
+
+.adm-governance-page .adm-appeal-policy-check {
+    min-height: 38px;
+    align-items: center;
+}
+
+.adm-governance-page .adm-appeal-policy-note {
+    margin: 0;
+}
+
+.adm-governance-page .adm-appeal-policy-description {
+    display: grid;
+    gap: 8px;
+}
+
+.adm-governance-page .adm-appeal-policy-actions {
+    justify-content: flex-end;
+}
+
+.adm-governance-page .adm-appeal-policy-snapshot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.adm-governance-page .adm-appeal-policy-snapshot {
+    max-height: 220px;
+    overflow: auto;
+    white-space: pre-wrap;
+}
+
+body.sa-light .adm-governance-page .adm-appeal-policy-section-title {
+    color: #0f172a;
+}
+
+@media (max-width: 1180px) {
+    .adm-governance-page .adm-appeal-policy-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .adm-governance-page .adm-appeal-policy-head {
+        align-items: stretch;
+    }
+
+    .adm-governance-page .adm-appeal-policy-grid,
+    .adm-governance-page .adm-appeal-policy-grid-compact,
+    .adm-governance-page .adm-appeal-policy-snapshot-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-governance-page .adm-appeal-policy-actions {
+        justify-content: flex-start;
+    }
+}

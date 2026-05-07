@@ -69,8 +69,8 @@
         <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
-    <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeal-policy" class="adm-card">
-        <div class="adm-card-header">
+    <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeal-policy" class="adm-card adm-appeal-policy-card">
+        <div class="adm-card-header adm-appeal-policy-head">
             <div>
                 <div class="adm-card-title">${msg_security_admin_appealPolicy_cardTitle}</div>
                 <div class="adm-muted"><c:out value="${policy.policyCode}" default="DEFAULT"/></div>
@@ -81,96 +81,106 @@
             </label>
         </div>
 
-        <div class="adm-card-body">
+        <div class="adm-card-body adm-appeal-policy-body">
             <input type="hidden" name="policyIdx" value="${policy.policyIdx}">
             <input type="hidden" name="policyCode" value="${fn:escapeXml(policy.policyCode)}">
 
-            <h3 style="margin:4px 0 10px;">${msg_security_admin_appealPolicy_section_channel}</h3>
-            <div class="adm-form-grid" style="grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px;">
-                <label class="adm-check" style="align-self:end;">
-                    <input type="checkbox" name="allowMultipleOpenAppeals" ${policy.allowMultipleOpenAppeals ? 'checked' : ''}>
-                    ${msg_security_admin_appealPolicy_allowMultipleOpenAppeals}
-                </label>
-                <label>${msg_security_admin_appealPolicy_maxOpenAppealsPerCase}
-                    <input class="adm-input" type="number" min="1" name="maxOpenAppealsPerCase" value="${policy.maxOpenAppealsPerCase}">
-                </label>
-                <label class="adm-check" style="align-self:end;">
-                    <input type="checkbox" name="closedBlocksNewAppeals" ${policy.closedBlocksNewAppeals ? 'checked' : ''}>
-                    ${msg_security_admin_appealPolicy_closedBlocksNewAppeals}
-                </label>
-            </div>
+            <section class="adm-appeal-policy-section">
+                <h3 class="adm-appeal-policy-section-title">${msg_security_admin_appealPolicy_section_channel}</h3>
+                <div class="adm-appeal-policy-grid">
+                    <label class="adm-check adm-appeal-policy-check">
+                        <input type="checkbox" name="allowMultipleOpenAppeals" ${policy.allowMultipleOpenAppeals ? 'checked' : ''}>
+                        ${msg_security_admin_appealPolicy_allowMultipleOpenAppeals}
+                    </label>
+                    <label>${msg_security_admin_appealPolicy_maxOpenAppealsPerCase}
+                        <input class="adm-input" type="number" min="1" name="maxOpenAppealsPerCase" value="${policy.maxOpenAppealsPerCase}">
+                    </label>
+                    <label class="adm-check adm-appeal-policy-check">
+                        <input type="checkbox" name="closedBlocksNewAppeals" ${policy.closedBlocksNewAppeals ? 'checked' : ''}>
+                        ${msg_security_admin_appealPolicy_closedBlocksNewAppeals}
+                    </label>
+                </div>
+            </section>
 
-            <h3 style="margin:22px 0 10px;">${msg_security_admin_appealPolicy_section_cooldown}</h3>
-            <div class="adm-form-grid" style="grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px;">
-                <label>${msg_security_admin_appealPolicy_rejectedCooldownMinutes}
-                    <input class="adm-input" type="number" min="0" name="rejectedCooldownMinutes" value="${policy.rejectedCooldownMinutes}">
-                </label>
-                <label>${msg_security_admin_appealPolicy_maxRejectedCount}
-                    <input class="adm-input" type="number" min="1" name="maxRejectedCount" value="${policy.maxRejectedCount}">
-                </label>
-                <label>${msg_security_admin_appealPolicy_ipDailyAppealLimit}
-                    <input class="adm-input" type="number" min="1" name="ipDailyAppealLimit" value="${policy.ipDailyAppealLimit}">
-                </label>
-            </div>
+            <section class="adm-appeal-policy-section">
+                <h3 class="adm-appeal-policy-section-title">${msg_security_admin_appealPolicy_section_cooldown}</h3>
+                <div class="adm-appeal-policy-grid">
+                    <label>${msg_security_admin_appealPolicy_rejectedCooldownMinutes}
+                        <input class="adm-input" type="number" min="0" name="rejectedCooldownMinutes" value="${policy.rejectedCooldownMinutes}">
+                    </label>
+                    <label>${msg_security_admin_appealPolicy_maxRejectedCount}
+                        <input class="adm-input" type="number" min="1" name="maxRejectedCount" value="${policy.maxRejectedCount}">
+                    </label>
+                    <label>${msg_security_admin_appealPolicy_ipDailyAppealLimit}
+                        <input class="adm-input" type="number" min="1" name="ipDailyAppealLimit" value="${policy.ipDailyAppealLimit}">
+                    </label>
+                </div>
+            </section>
 
-            <h3 style="margin:22px 0 10px;">${msg_security_admin_appealPolicy_section_email}</h3>
-            <div class="adm-form-grid" style="grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px;">
-                <label>${msg_security_admin_appealPolicy_verificationWindowMinutes}
-                    <input class="adm-input" type="number" min="1" name="verificationWindowMinutes" value="${policy.verificationWindowMinutes}">
-                </label>
-                <label>${msg_security_admin_appealPolicy_maxVerificationEmails}
-                    <input class="adm-input" type="number" min="1" name="maxVerificationEmails" value="${policy.maxVerificationEmails}">
-                </label>
-                <label>${msg_security_admin_appealPolicy_verificationTokenTtlMinutes}
-                    <input class="adm-input" type="number" min="1" name="verificationTokenTtlMinutes" value="${policy.verificationTokenTtlMinutes}">
-                </label>
-                <label>${msg_security_admin_appealPolicy_protectedAppealTokenTtlDays}
-                    <input class="adm-input" type="number" min="1" name="protectedAppealTokenTtlDays" value="${policy.protectedAppealTokenTtlDays}">
-                </label>
-                <label>${msg_security_admin_appealPolicy_allowedEmailDomains}
-                    <input class="adm-input" type="text" name="allowedEmailDomains" value="${fn:escapeXml(policy.allowedEmailDomains)}" placeholder="example.com,*.example.org">
-                </label>
-                <label>${msg_security_admin_appealPolicy_blockedEmailDomains}
-                    <input class="adm-input" type="text" name="blockedEmailDomains" value="${fn:escapeXml(policy.blockedEmailDomains)}" placeholder="spam.example.com">
-                </label>
-            </div>
+            <section class="adm-appeal-policy-section">
+                <h3 class="adm-appeal-policy-section-title">${msg_security_admin_appealPolicy_section_email}</h3>
+                <div class="adm-appeal-policy-grid">
+                    <label>${msg_security_admin_appealPolicy_verificationWindowMinutes}
+                        <input class="adm-input" type="number" min="1" name="verificationWindowMinutes" value="${policy.verificationWindowMinutes}">
+                    </label>
+                    <label>${msg_security_admin_appealPolicy_maxVerificationEmails}
+                        <input class="adm-input" type="number" min="1" name="maxVerificationEmails" value="${policy.maxVerificationEmails}">
+                    </label>
+                    <label>${msg_security_admin_appealPolicy_verificationTokenTtlMinutes}
+                        <input class="adm-input" type="number" min="1" name="verificationTokenTtlMinutes" value="${policy.verificationTokenTtlMinutes}">
+                    </label>
+                    <label>${msg_security_admin_appealPolicy_protectedAppealTokenTtlDays}
+                        <input class="adm-input" type="number" min="1" name="protectedAppealTokenTtlDays" value="${policy.protectedAppealTokenTtlDays}">
+                    </label>
+                    <label>${msg_security_admin_appealPolicy_allowedEmailDomains}
+                        <input class="adm-input" type="text" name="allowedEmailDomains" value="${fn:escapeXml(policy.allowedEmailDomains)}" placeholder="example.com,*.example.org">
+                    </label>
+                    <label>${msg_security_admin_appealPolicy_blockedEmailDomains}
+                        <input class="adm-input" type="text" name="blockedEmailDomains" value="${fn:escapeXml(policy.blockedEmailDomains)}" placeholder="spam.example.com">
+                    </label>
+                </div>
+            </section>
 
-            <h3 style="margin:22px 0 10px;">${msg_security_admin_appealPolicy_section_result}</h3>
-            <div class="adm-form-grid" style="grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px;">
-                <label>${msg_security_admin_appealPolicy_resultLookupWindowMinutes}
-                    <input class="adm-input" type="number" min="1" name="resultLookupWindowMinutes" value="${policy.resultLookupWindowMinutes}">
-                </label>
-                <label>${msg_security_admin_appealPolicy_maxResultLookupFailures}
-                    <input class="adm-input" type="number" min="1" name="maxResultLookupFailures" value="${policy.maxResultLookupFailures}">
-                </label>
-                <label>${msg_security_admin_appealPolicy_resultLookupRetentionDays}
-                    <input class="adm-input" type="number" min="0" name="resultLookupRetentionDays" value="${policy.resultLookupRetentionDays}">
-                </label>
-            </div>
+            <section class="adm-appeal-policy-section">
+                <h3 class="adm-appeal-policy-section-title">${msg_security_admin_appealPolicy_section_result}</h3>
+                <div class="adm-appeal-policy-grid">
+                    <label>${msg_security_admin_appealPolicy_resultLookupWindowMinutes}
+                        <input class="adm-input" type="number" min="1" name="resultLookupWindowMinutes" value="${policy.resultLookupWindowMinutes}">
+                    </label>
+                    <label>${msg_security_admin_appealPolicy_maxResultLookupFailures}
+                        <input class="adm-input" type="number" min="1" name="maxResultLookupFailures" value="${policy.maxResultLookupFailures}">
+                    </label>
+                    <label>${msg_security_admin_appealPolicy_resultLookupRetentionDays}
+                        <input class="adm-input" type="number" min="0" name="resultLookupRetentionDays" value="${policy.resultLookupRetentionDays}">
+                    </label>
+                </div>
+            </section>
 
-            <h3 style="margin:22px 0 10px;">${msg_security_admin_appealPolicy_section_captcha}</h3>
-            <div class="adm-form-grid" style="grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;">
-                <label class="adm-check" style="align-self:end;">
-                    <input type="checkbox" name="captchaEnabled" ${policy.captchaEnabled ? 'checked' : ''}>
-                    ${msg_security_admin_appealPolicy_captchaEnabled}
-                </label>
-                <label>${msg_security_admin_appealPolicy_captchaProviderCode}
-                    <input class="adm-input" type="text" name="captchaProviderCode" value="${fn:escapeXml(policy.captchaProviderCode)}" placeholder="MOCK_TURNSTILE">
-                </label>
-            </div>
-            <p class="adm-muted" style="margin-top:8px;">${msg_security_admin_appealPolicy_captchaNote}</p>
+            <section class="adm-appeal-policy-section">
+                <h3 class="adm-appeal-policy-section-title">${msg_security_admin_appealPolicy_section_captcha}</h3>
+                <div class="adm-appeal-policy-grid adm-appeal-policy-grid-compact">
+                    <label class="adm-check adm-appeal-policy-check">
+                        <input type="checkbox" name="captchaEnabled" ${policy.captchaEnabled ? 'checked' : ''}>
+                        ${msg_security_admin_appealPolicy_captchaEnabled}
+                    </label>
+                    <label>${msg_security_admin_appealPolicy_captchaProviderCode}
+                        <input class="adm-input" type="text" name="captchaProviderCode" value="${fn:escapeXml(policy.captchaProviderCode)}" placeholder="MOCK_TURNSTILE">
+                    </label>
+                </div>
+                <p class="adm-muted adm-appeal-policy-note">${msg_security_admin_appealPolicy_captchaNote}</p>
+            </section>
 
-            <label style="display:block;margin-top:16px;">${msg_security_admin_common_description}
+            <label class="adm-appeal-policy-description">${msg_security_admin_common_description}
                 <textarea class="adm-input" name="description" rows="3"><c:out value="${policy.description}"/></textarea>
             </label>
 
-            <div class="adm-actions" style="margin-top:16px;">
+            <div class="adm-actions adm-appeal-policy-actions">
                 <button type="submit" class="adm-btn primary">${msg_security_admin_common_save}</button>
             </div>
         </div>
     </form>
 
-    <div class="adm-card" style="margin-top:16px;">
+    <div class="adm-card adm-appeal-policy-history-card">
         <div class="adm-card-header">
             <div>
                 <div class="adm-card-title">${msg_security_admin_appealPolicy_history_title}</div>
@@ -199,14 +209,14 @@
                             <td>
                                 <details>
                                     <summary>${msg_security_admin_appealPolicy_history_showSnapshot}</summary>
-                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+                                    <div class="adm-appeal-policy-snapshot-grid">
                                         <div>
                                             <div class="adm-muted">${msg_security_admin_appealPolicy_history_before}</div>
-                                            <pre style="white-space:pre-wrap;max-height:220px;overflow:auto;"><c:out value="${h.beforeConfigJson}"/></pre>
+                                            <pre class="adm-appeal-policy-snapshot"><c:out value="${h.beforeConfigJson}"/></pre>
                                         </div>
                                         <div>
                                             <div class="adm-muted">${msg_security_admin_appealPolicy_history_after}</div>
-                                            <pre style="white-space:pre-wrap;max-height:220px;overflow:auto;"><c:out value="${h.afterConfigJson}"/></pre>
+                                            <pre class="adm-appeal-policy-snapshot"><c:out value="${h.afterConfigJson}"/></pre>
                                         </div>
                                     </div>
                                 </details>
