@@ -113,12 +113,17 @@
           <button type="button" class="adm-export-item" onclick="exportEmailTokens('all')">${msg_admin_common_exportAll}</button>
           <button type="button" class="adm-export-item" onclick="exportEmailTokens('search')">${msg_admin_common_exportFiltered}</button>
           <button type="button" class="adm-export-item" onclick="exportEmailTokens('page')">현재 화면 내보내기</button>
+          <button type="button" class="adm-export-item js-email-token-selected-export" onclick="exportEmailTokens('selected')" disabled>선택 내보내기 (0)</button>
         </div>
       </div>
     </div>
 
     <div class="adm-email-controlbar">
-      <div></div>
+      <div class="adm-email-selection-bar" id="emailTokenSelectionBar" aria-live="polite">
+        <span class="adm-email-selected-count" id="emailTokenSelectedCount">0건 선택</span>
+        <button type="button" class="adm-btn adm-btn-ghost" onclick="clearEmailTokenSelection()">선택 해제</button>
+        <button type="button" class="adm-btn adm-btn-primary js-email-token-selected-export" onclick="exportEmailTokens('selected')" disabled>선택 내보내기</button>
+      </div>
       <div class="adm-email-view-tools">
         <div id="emailTokenPrimaryTools" class="adm-email-primary-tools">
           <button type="button" class="adm-dash-sort-reset js-email-token-sort-reset adm-email-tool-item adm-email-sort-reset ${empty search.sortField ? 'adm-is-hidden' : ''}" onclick="resetEmailTokenSort()"></button>
@@ -149,9 +154,12 @@
     <div class="adm-table-wrap adm-overflow-visible">
       <table id="emailVerificationTokenTable"
              class="adm-table adm-section-table-fixed adm-email-token-table adm-email-section-table"
-             data-admin-list-ignore="true"
+             data-admin-list-ignore="hard"
              data-section="emailVerificationTokens">
         <thead><tr>
+          <th class="adm-email-check-cell">
+            <input type="checkbox" class="adm-check" id="emailTokenCheckAll" aria-label="현재 화면 전체 선택">
+          </th>
           <th class="js-email-token-sort" data-sort="time" onclick="sortBy('time')">${msg_admin_emailTokens_createdAt}</th>
           <th class="js-email-token-sort" data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}</th>
           <th class="js-email-token-sort" data-sort="purpose" onclick="sortBy('purpose')">${msg_admin_emailRequests_purpose}</th>
@@ -171,6 +179,7 @@
           <fmt:formatDate var="itemExpiredAtDisplay" value="${item.expiredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
           <fmt:formatDate var="itemExpiredAtDateFilter" value="${item.expiredAtDate}" pattern="yyyy-MM-dd"/>
           <tr class="js-email-token-row"
+              data-row-id="${item.verifyIdx}"
               data-created-at="${item.createdAt}"
               data-member="${fn:escapeXml(item.nickname)} ${fn:escapeXml(item.userId)}"
               data-purpose="${fn:escapeXml(item.purpose)}"
@@ -180,6 +189,9 @@
               data-expires-at="${item.expiredAt}"
               data-request-id="${fn:escapeXml(item.requestId)}"
               data-original-index="${st.index}">
+            <td class="adm-email-check-cell">
+              <input type="checkbox" class="adm-check js-email-token-row-check" value="${item.verifyIdx}" aria-label="행 선택">
+            </td>
             <td>
               <button type="button" class="adm-cell-link"
                       data-date="${itemDateFilter}"
@@ -280,7 +292,7 @@
             </td>
           </tr>
         </c:forEach>
-        <c:if test="${empty list}"><tr class="adm-local-empty"><td colspan="9" class="adm-local-empty-cell">${msg_admin_common_noResults}</td></tr></c:if>
+        <c:if test="${empty list}"><tr class="adm-local-empty"><td colspan="10" class="adm-local-empty-cell">${msg_admin_common_noResults}</td></tr></c:if>
       </tbody></table>
     </div>
     <div class="adm-local-pagination adm-email-pagination" data-section="emailVerificationTokens" id="emailTokenPaging">
@@ -323,6 +335,49 @@ var emailTokenState = {
 function getEmailTokenForm() { return document.getElementById('emailTokenSearchForm'); }
 function getEmailTokenTbody() { return document.getElementById('emailTokenRowsBody'); }
 function emailTokenRows() { return Array.from(document.querySelectorAll('#emailTokenRowsBody .js-email-token-row')); }
+function emailTokenVisibleRows() {
+  return emailTokenRows().filter(function(row) { return !row.classList.contains('adm-is-hidden'); });
+}
+function emailTokenSelectedRows() {
+  return emailTokenRows().filter(function(row) {
+    var check = row.querySelector('.js-email-token-row-check');
+    return check && check.checked;
+  });
+}
+function updateEmailTokenSelection() {
+  var selected = emailTokenSelectedRows();
+  var visible = emailTokenVisibleRows();
+  var visibleChecks = visible.map(function(row) { return row.querySelector('.js-email-token-row-check'); }).filter(Boolean);
+  var checkAll = document.getElementById('emailTokenCheckAll');
+  if (checkAll) {
+    checkAll.checked = visibleChecks.length > 0 && visibleChecks.every(function(check) { return check.checked; });
+    checkAll.indeterminate = visibleChecks.some(function(check) { return check.checked; }) && !checkAll.checked;
+  }
+  var count = document.getElementById('emailTokenSelectedCount');
+  if (count) count.textContent = selected.length + '건 선택';
+  var bar = document.getElementById('emailTokenSelectionBar');
+  if (bar) bar.classList.toggle('is-active', selected.length > 0);
+  document.querySelectorAll('.js-email-token-selected-export').forEach(function(button) {
+    button.disabled = selected.length === 0;
+    if (button.classList.contains('adm-export-item')) {
+      button.textContent = '선택 내보내기 (' + selected.length + ')';
+    }
+  });
+}
+function clearEmailTokenSelection() {
+  emailTokenRows().forEach(function(row) {
+    var check = row.querySelector('.js-email-token-row-check');
+    if (check) check.checked = false;
+  });
+  updateEmailTokenSelection();
+}
+function toggleEmailTokenVisibleSelection(checked) {
+  emailTokenVisibleRows().forEach(function(row) {
+    var check = row.querySelector('.js-email-token-row-check');
+    if (check) check.checked = checked;
+  });
+  updateEmailTokenSelection();
+}
 function syncEmailTokenHiddenInputs() {
   var form = getEmailTokenForm();
   if (!form) return;
@@ -437,6 +492,7 @@ function renderEmailTokenClientPage(pageOverride) {
   });
   updateEmailTokenPaginationMeta(page, pages, total, Math.min(pageSize, Math.max(0, total - start)));
   updateEmailTokenSortIndicators();
+  updateEmailTokenSelection();
   replaceEmailTokenUrl();
 }
 
@@ -497,6 +553,10 @@ function openRelatedHistory(path, button) {
   location.href = '${pageContext.request.contextPath}/admin/' + path + '?' + params.toString();
 }
 function exportEmailTokens(scope) {
+  if (scope === 'selected') {
+    exportSelectedEmailTokens();
+    return;
+  }
   var format = document.getElementById('emailTokenExportFormat').value;
   var params = buildEmailTokenParams(emailTokenState.page);
   params.set('scope', scope);
@@ -505,6 +565,65 @@ function exportEmailTokens(scope) {
   var dropdown = document.getElementById('emailTokenExportDropdown');
   if (dropdown) dropdown.classList.remove('open');
   window.location.href = BASE_URL + '/export?' + params.toString();
+}
+function emailTokenCleanExportText(cell) {
+  var clone = cell.cloneNode(true);
+  clone.querySelectorAll('.adm-cell-link-note, input, .adm-row-btn').forEach(function(node) { node.remove(); });
+  return (clone.textContent || '').replace(/\s+/g, ' ').trim();
+}
+function emailTokenCsvEscape(value) {
+  return '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
+}
+function emailTokenXmlEscape(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+function downloadEmailTokenExport(content, filename, type) {
+  var blob = new Blob([content], { type: type });
+  var url = URL.createObjectURL(blob);
+  var link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+}
+function exportSelectedEmailTokens() {
+  var selected = emailTokenSelectedRows();
+  if (!selected.length) {
+    if (window.adm_toast) adm_toast('선택된 항목이 없습니다.', 'error');
+    else alert('선택된 항목이 없습니다.');
+    return;
+  }
+  var table = document.getElementById('emailVerificationTokenTable');
+  var headers = Array.from(table.querySelectorAll('thead th')).slice(1, -1)
+    .map(function(th) { return (th.textContent || '').replace(/[▲▼]/g, '').replace(/\s+/g, ' ').trim(); });
+  var rows = selected.map(function(row) {
+    return Array.from(row.children).slice(1, -1).map(emailTokenCleanExportText);
+  });
+  var format = document.getElementById('emailTokenExportFormat').value;
+  if (format === 'excel') {
+    var xmlRows = [headers].concat(rows).map(function(row, index) {
+      return '<Row>' + row.map(function(value) {
+        var style = index === 0 ? ' ss:StyleID="header"' : '';
+        return '<Cell' + style + '><Data ss:Type="String">' + emailTokenXmlEscape(value) + '</Data></Cell>';
+      }).join('') + '</Row>';
+    }).join('');
+    var xls = '<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?>'
+      + '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">'
+      + '<Styles><Style ss:ID="header"><Font ss:Bold="1"/><Interior ss:Color="#D9EAF7" ss:Pattern="Solid"/></Style></Styles>'
+      + '<Worksheet ss:Name="selected_tokens"><Table>' + xmlRows + '</Table></Worksheet></Workbook>';
+    downloadEmailTokenExport('\ufeff' + xls, 'email-verification-tokens-selected.xls', 'application/vnd.ms-excel;charset=utf-8');
+  } else {
+    var csv = [headers].concat(rows).map(function(row) { return row.map(emailTokenCsvEscape).join(','); }).join('\n');
+    downloadEmailTokenExport('\ufeff' + csv, 'email-verification-tokens-selected.csv', 'text/csv;charset=utf-8');
+  }
+  var dropdown = document.getElementById('emailTokenExportDropdown');
+  if (dropdown) dropdown.classList.remove('open');
 }
 function openTokenDetail(btn) {
   var d = btn.dataset;
@@ -596,6 +715,12 @@ function initEmailTokenSection() {
   if (modeSelect) modeSelect.value = emailTokenState.mode;
   var form = getEmailTokenForm();
   if (form) form.addEventListener('submit', function() { emailTokenState.page = 1; syncEmailTokenHiddenInputs(); });
+  var checkAll = document.getElementById('emailTokenCheckAll');
+  if (checkAll) checkAll.addEventListener('change', function() { toggleEmailTokenVisibleSelection(checkAll.checked); });
+  emailTokenRows().forEach(function(row) {
+    var check = row.querySelector('.js-email-token-row-check');
+    if (check) check.addEventListener('change', updateEmailTokenSelection);
+  });
   var exportToggle = document.querySelector('.js-email-token-export-toggle');
   var exportDropdown = document.getElementById('emailTokenExportDropdown');
   if (exportToggle && exportDropdown) {
@@ -610,6 +735,7 @@ function initEmailTokenSection() {
   } else {
     updateEmailTokenSortIndicators();
     updateEmailTokenPaginationMeta(emailTokenState.page, Number('${paging.totalPage}' || 1), Number('${total}' || 0), emailTokenRows().length);
+    updateEmailTokenSelection();
   }
 }
 document.addEventListener('DOMContentLoaded', initEmailTokenSection);

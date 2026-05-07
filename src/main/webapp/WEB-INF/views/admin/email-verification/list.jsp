@@ -124,12 +124,17 @@
                     <button type="button" class="adm-export-item" onclick="exportEmailRequests('all')">${msg_admin_common_exportAll}</button>
                     <button type="button" class="adm-export-item" onclick="exportEmailRequests('search')">${msg_admin_common_exportFiltered}</button>
                     <button type="button" class="adm-export-item" onclick="exportEmailRequests('page')">현재 화면 내보내기</button>
+                    <button type="button" class="adm-export-item js-email-selected-export" onclick="exportEmailRequests('selected')" disabled>선택 내보내기 (0)</button>
                 </div>
             </div>
         </div>
 
         <div class="adm-email-controlbar">
-            <div></div>
+            <div class="adm-email-selection-bar" id="emailRequestSelectionBar" aria-live="polite">
+                <span class="adm-email-selected-count" id="emailRequestSelectedCount">0건 선택</span>
+                <button type="button" class="adm-btn adm-btn-ghost" onclick="clearEmailSelection()">선택 해제</button>
+                <button type="button" class="adm-btn adm-btn-primary js-email-selected-export" onclick="exportEmailRequests('selected')" disabled>선택 내보내기</button>
+            </div>
             <div class="adm-email-view-tools">
                 <div id="emailPrimaryTools" class="adm-email-primary-tools">
                     <button type="button" class="adm-dash-sort-reset js-email-sort-reset adm-email-tool-item adm-email-sort-reset ${empty search.sortField ? 'adm-is-hidden' : ''}" onclick="resetEmailSort()"></button>
@@ -160,10 +165,13 @@
         <div class="adm-table-wrap adm-overflow-visible">
             <table id="emailVerificationRequestTable"
                    class="adm-table adm-section-table-fixed adm-email-request-table adm-email-section-table"
-                   data-admin-list-ignore="true"
+                   data-admin-list-ignore="hard"
                    data-section="emailVerificationRequests">
                 <thead>
                 <tr>
+                    <th class="adm-email-check-cell">
+                        <input type="checkbox" class="adm-check" id="emailRequestCheckAll" aria-label="현재 화면 전체 선택">
+                    </th>
                     <th class="js-email-sort" data-sort="time" onclick="sortBy('time')">${msg_admin_emailRequests_requestedAt}</th>
                     <th class="js-email-sort" data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}</th>
                     <th class="js-email-sort" data-sort="purpose" onclick="sortBy('purpose')">${msg_admin_emailRequests_purpose}</th>
@@ -188,6 +196,7 @@
                     <fmt:formatDate var="itemExpiredAtDisplay" value="${item.expiredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
                     <fmt:formatDate var="itemExpiredAtFilter" value="${item.expiredAtDate}" pattern="yyyy-MM-dd"/>
                     <tr class="js-email-row"
+                        data-row-id="${item.emailVerificationRequestIdx}"
                         data-requested-at="${item.requestedAt}"
                         data-member="${fn:escapeXml(item.nickname)} ${fn:escapeXml(item.userId)}"
                         data-purpose="${fn:escapeXml(item.purpose)}"
@@ -199,6 +208,9 @@
                         data-ip="${fn:escapeXml(item.ipAddress)}"
                         data-request-id="${fn:escapeXml(item.requestId)}"
                         data-original-index="${st.index}">
+                        <td class="adm-email-check-cell">
+                            <input type="checkbox" class="adm-check js-email-row-check" value="${item.emailVerificationRequestIdx}" aria-label="행 선택">
+                        </td>
                         <td>
                             <button type="button" class="adm-cell-link"
                                     data-date="${itemDateFilter}"
@@ -343,7 +355,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr class="adm-local-empty"><td colspan="11" class="adm-local-empty-cell">${msg_admin_common_noResults}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="12" class="adm-local-empty-cell">${msg_admin_common_noResults}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -389,6 +401,50 @@ var emailRequestState = {
 function getEmailForm() { return document.getElementById('emailRequestSearchForm'); }
 function getEmailTbody() { return document.getElementById('emailRequestRowsBody'); }
 function emailRows() { return Array.from(document.querySelectorAll('#emailRequestRowsBody .js-email-row')); }
+function emailVisibleRows() {
+    return emailRows().filter(function(row) { return !row.classList.contains('adm-is-hidden'); });
+}
+function emailSelectedRows() {
+    return emailRows().filter(function(row) {
+        var check = row.querySelector('.js-email-row-check');
+        return check && check.checked;
+    });
+}
+function updateEmailSelection() {
+    var selected = emailSelectedRows();
+    var visible = emailVisibleRows();
+    var visibleChecks = visible.map(function(row) { return row.querySelector('.js-email-row-check'); }).filter(Boolean);
+    var checkAll = document.getElementById('emailRequestCheckAll');
+    if (checkAll) {
+        checkAll.checked = visibleChecks.length > 0 && visibleChecks.every(function(check) { return check.checked; });
+        checkAll.indeterminate = visibleChecks.some(function(check) { return check.checked; }) && !checkAll.checked;
+    }
+    var countText = selected.length + '건 선택';
+    var count = document.getElementById('emailRequestSelectedCount');
+    if (count) count.textContent = countText;
+    var bar = document.getElementById('emailRequestSelectionBar');
+    if (bar) bar.classList.toggle('is-active', selected.length > 0);
+    document.querySelectorAll('.js-email-selected-export').forEach(function(button) {
+        button.disabled = selected.length === 0;
+        if (button.classList.contains('adm-export-item')) {
+            button.textContent = '선택 내보내기 (' + selected.length + ')';
+        }
+    });
+}
+function clearEmailSelection() {
+    emailRows().forEach(function(row) {
+        var check = row.querySelector('.js-email-row-check');
+        if (check) check.checked = false;
+    });
+    updateEmailSelection();
+}
+function toggleEmailVisibleSelection(checked) {
+    emailVisibleRows().forEach(function(row) {
+        var check = row.querySelector('.js-email-row-check');
+        if (check) check.checked = checked;
+    });
+    updateEmailSelection();
+}
 function syncEmailHiddenInputs() {
     var form = getEmailForm();
     if (!form) return;
@@ -505,6 +561,7 @@ function renderEmailClientPage(pageOverride) {
     });
     updateEmailPaginationMeta(page, pages, total, Math.min(pageSize, Math.max(0, total - start)));
     updateEmailSortIndicators();
+    updateEmailSelection();
     replaceEmailUrl();
 }
 
@@ -577,6 +634,10 @@ function openRelatedHistory(path, button) {
     location.href = '${pageContext.request.contextPath}/admin/' + path + '?' + params.toString();
 }
 function exportEmailRequests(scope) {
+    if (scope === 'selected') {
+        exportSelectedEmailRequests();
+        return;
+    }
     var format = document.getElementById('emailExportFormat').value;
     var params = buildEmailParams(emailRequestState.page);
     params.set('scope', scope);
@@ -585,6 +646,65 @@ function exportEmailRequests(scope) {
     var dropdown = document.getElementById('emailExportDropdown');
     if (dropdown) dropdown.classList.remove('open');
     window.location.href = BASE_URL + '/export?' + params.toString();
+}
+function emailCleanExportText(cell) {
+    var clone = cell.cloneNode(true);
+    clone.querySelectorAll('.adm-cell-link-note, input, .adm-row-btn').forEach(function(node) { node.remove(); });
+    return (clone.textContent || '').replace(/\s+/g, ' ').trim();
+}
+function emailCsvEscape(value) {
+    return '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
+}
+function emailXmlEscape(value) {
+    return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+function downloadEmailExport(content, filename, type) {
+    var blob = new Blob([content], { type: type });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+}
+function exportSelectedEmailRequests() {
+    var selected = emailSelectedRows();
+    if (!selected.length) {
+        if (window.adm_toast) adm_toast('선택된 항목이 없습니다.', 'error');
+        else alert('선택된 항목이 없습니다.');
+        return;
+    }
+    var table = document.getElementById('emailVerificationRequestTable');
+    var headers = Array.from(table.querySelectorAll('thead th')).slice(1, -1)
+        .map(function(th) { return (th.textContent || '').replace(/[▲▼]/g, '').replace(/\s+/g, ' ').trim(); });
+    var rows = selected.map(function(row) {
+        return Array.from(row.children).slice(1, -1).map(emailCleanExportText);
+    });
+    var format = document.getElementById('emailExportFormat').value;
+    if (format === 'excel') {
+        var xmlRows = [headers].concat(rows).map(function(row, index) {
+            return '<Row>' + row.map(function(value) {
+                var style = index === 0 ? ' ss:StyleID="header"' : '';
+                return '<Cell' + style + '><Data ss:Type="String">' + emailXmlEscape(value) + '</Data></Cell>';
+            }).join('') + '</Row>';
+        }).join('');
+        var xls = '<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?>'
+            + '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">'
+            + '<Styles><Style ss:ID="header"><Font ss:Bold="1"/><Interior ss:Color="#D9EAF7" ss:Pattern="Solid"/></Style></Styles>'
+            + '<Worksheet ss:Name="selected_requests"><Table>' + xmlRows + '</Table></Worksheet></Workbook>';
+        downloadEmailExport('\ufeff' + xls, 'email-verification-requests-selected.xls', 'application/vnd.ms-excel;charset=utf-8');
+    } else {
+        var csv = [headers].concat(rows).map(function(row) { return row.map(emailCsvEscape).join(','); }).join('\n');
+        downloadEmailExport('\ufeff' + csv, 'email-verification-requests-selected.csv', 'text/csv;charset=utf-8');
+    }
+    var dropdown = document.getElementById('emailExportDropdown');
+    if (dropdown) dropdown.classList.remove('open');
 }
 function openVerificationDetail(btn) {
     var d = btn.dataset;
@@ -678,6 +798,12 @@ function initEmailRequestSection() {
     if (modeSelect) modeSelect.value = emailRequestState.mode;
     var form = getEmailForm();
     if (form) form.addEventListener('submit', function() { emailRequestState.page = 1; syncEmailHiddenInputs(); });
+    var checkAll = document.getElementById('emailRequestCheckAll');
+    if (checkAll) checkAll.addEventListener('change', function() { toggleEmailVisibleSelection(checkAll.checked); });
+    emailRows().forEach(function(row) {
+        var check = row.querySelector('.js-email-row-check');
+        if (check) check.addEventListener('change', updateEmailSelection);
+    });
     var exportToggle = document.querySelector('.js-email-export-toggle');
     var exportDropdown = document.getElementById('emailExportDropdown');
     if (exportToggle && exportDropdown) {
@@ -692,6 +818,7 @@ function initEmailRequestSection() {
     } else {
         updateEmailSortIndicators();
         updateEmailPaginationMeta(emailRequestState.page, Number('${paging.totalPage}' || 1), Number('${total}' || 0), emailRows().length);
+        updateEmailSelection();
     }
 }
 document.addEventListener('DOMContentLoaded', initEmailRequestSection);

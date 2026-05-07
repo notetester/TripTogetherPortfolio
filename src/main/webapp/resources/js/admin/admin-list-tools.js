@@ -76,6 +76,7 @@
         if (!table || table.dataset.adminListIgnore === 'hard') return false;
         if (table.dataset.adminListToolsEnhanced === 'true') return false;
         if (isModalTable(table)) return false;
+        if (table.closest('.adm-managed-section-card[data-enhanced="true"]')) return false;
         if (table.classList.contains('history-table') || table.classList.contains('sa-audit-table')) return false;
         if (table.id === 'salaryPreviewTable') return false;
         if (!table.querySelector('thead tr') || !table.querySelector('tbody')) return false;
