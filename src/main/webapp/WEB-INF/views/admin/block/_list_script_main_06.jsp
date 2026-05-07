@@ -121,12 +121,6 @@ document.addEventListener('click', function (e) {
         return;
     }
 
-    const blockExportBtn = e.target.closest('.js-block-export');
-    if (blockExportBtn) {
-        exportBlockSection(blockExportBtn.dataset.section, blockExportBtn.dataset.scope);
-        return;
-    }
-
     const bulkReleaseBtn = e.target.closest('.js-bulk-release-user-blocks');
     if (bulkReleaseBtn) {
         bulkReleaseSelectedUserBlocks();

@@ -175,23 +175,6 @@ function enhanceBlockLocalTables() {
         if (!card || card.dataset.enhanced === 'true') return;
         card.dataset.enhanced = 'true';
 
-        const toolbar = card.querySelector('.adm-local-toolbar');
-        if (toolbar) {
-            const group = document.createElement('div');
-            group.className = 'adm-local-toolbar-group js-local-export-group';
-            group.innerHTML =
-                '<div class="adm-export-control">'
-                + '<select class="adm-select js-block-export-format" data-section="' + section + '"><option value="csv">CSV</option><option value="excel">Excel</option></select>'
-                + '<div class="adm-export-menu">'
-                + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ ' + ADMIN_BLOCK_MSG.export + ' ▾</button>'
-                + '<div class="adm-export-dropdown">'
-                + '<button type="button" class="js-block-export" data-section="' + section + '" data-scope="all">📋 ' + ADMIN_BLOCK_MSG.exportAll + '</button>'
-                + '<button type="button" class="js-block-export" data-section="' + section + '" data-scope="search">🔍 ' + ADMIN_BLOCK_MSG.exportFiltered + '</button>'
-                + '<button type="button" class="js-block-export js-block-export-selected" data-section="' + section + '" data-scope="selected" disabled>☑ ' + ADMIN_BLOCK_MSG.exportSelected + ' (0)</button>'
-                + '</div></div></div>';
-            toolbar.appendChild(group);
-        }
-
         const table = card.querySelector('table.adm-table');
         if (!table) return;
         const headRow = table.querySelector('thead tr');
@@ -321,7 +304,7 @@ function exportBlockSection(section, scope) {
     if (scope === 'selected') {
         rows = selectedBlockChecks(section).map(cb => cb.closest('tr')).filter(Boolean);
         if (!rows.length) { adm_toast(ADMIN_BLOCK_MSG.noSelection, 'error'); return; }
-    } else if (scope === 'search') {
+    } else if (scope === 'search' || scope === 'filtered') {
         rows = sortLocalRows(section, filterLocalRows(section));
     } else {
         rows = sortLocalRows(section, getLocalRows(section));
