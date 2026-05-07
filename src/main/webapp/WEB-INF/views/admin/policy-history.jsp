@@ -45,44 +45,6 @@
             <p class="adm-page-desc">${msg_admin_policyHistory_desc}</p>
         </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const text = {
-        empty: '${msg_admin_policyHistory_diffEmpty}',
-        invalid: '${msg_admin_policyHistory_diffInvalidJson}'
-    };
-    const parseJson = function (value) {
-        if (!value || !value.trim()) return {};
-        return JSON.parse(value);
-    };
-    const stringify = function (value) {
-        if (value === undefined) return '';
-        if (value === null) return 'null';
-        if (typeof value === 'object') return JSON.stringify(value);
-        return String(value);
-    };
-    document.querySelectorAll('.js-policy-diff-run').forEach(function (button) {
-        button.addEventListener('click', function () {
-            const root = button.closest('details');
-            const output = root.querySelector('.js-policy-diff');
-            try {
-                const before = parseJson(root.querySelector('.js-policy-before').textContent);
-                const after = parseJson(root.querySelector('.js-policy-after').textContent);
-                const keys = Array.from(new Set(Object.keys(before).concat(Object.keys(after)))).sort();
-                const lines = [];
-                keys.forEach(function (key) {
-                    const b = stringify(before[key]);
-                    const a = stringify(after[key]);
-                    if (b !== a) lines.push(key + ': ' + b + ' -> ' + a);
-                });
-                output.textContent = lines.length ? lines.join('\\n') : text.empty;
-            } catch (e) {
-                output.textContent = text.invalid;
-            }
-        });
-    });
-});
-</script>
 
         <div class="adm-actions">
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/runtime-settings">${msg_admin_layout_menu_runtimeSettings}</a>
@@ -173,3 +135,43 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const text = {
+        empty: '${msg_admin_policyHistory_diffEmpty}',
+        invalid: '${msg_admin_policyHistory_diffInvalidJson}'
+    };
+    const parseJson = function (value) {
+        if (!value || !value.trim()) return {};
+        return JSON.parse(value);
+    };
+    const stringify = function (value) {
+        if (value === undefined) return '';
+        if (value === null) return 'null';
+        if (typeof value === 'object') return JSON.stringify(value);
+        return String(value);
+    };
+    document.querySelectorAll('.js-policy-diff-run').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const root = button.closest('details');
+            const output = root.querySelector('.js-policy-diff');
+            try {
+                const before = parseJson(root.querySelector('.js-policy-before').textContent);
+                const after = parseJson(root.querySelector('.js-policy-after').textContent);
+                const keys = Array.from(new Set(Object.keys(before).concat(Object.keys(after)))).sort();
+                const lines = [];
+                keys.forEach(function (key) {
+                    const b = stringify(before[key]);
+                    const a = stringify(after[key]);
+                    if (b !== a) lines.push(key + ': ' + b + ' -> ' + a);
+                });
+                output.textContent = lines.length ? lines.join('\\n') : text.empty;
+            } catch (e) {
+                output.textContent = text.invalid;
+            }
+        });
+    });
+});
+</script>
+

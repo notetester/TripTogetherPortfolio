@@ -2363,7 +2363,7 @@
         FROM (
             SELECT
                 'SYSTEM_POLICY' AS source_type,
-                h.history_idx AS source_id,
+                h.system_policy_history_idx AS source_id,
                 h.policy_code AS item_key,
                 h.change_type AS change_type,
                 h.changed_by_user_idx AS actor_user_idx,
