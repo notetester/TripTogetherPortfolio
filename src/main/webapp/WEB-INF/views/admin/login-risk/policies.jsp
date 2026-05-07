@@ -37,18 +37,18 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content adm-governance-page">
+<div class="adm-content adm-governance-page adm-login-policy-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_security_admin_policies_title}</h1>
             <p class="adm-page-desc">${msg_security_admin_policies_desc}</p>
         </div>
-        <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/appeal-policy">${msg_security_admin_nav_appealPolicy}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/reviews">${msg_security_admin_nav_reviews}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/assessments">${msg_security_admin_nav_externalAssessments}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences">${msg_security_admin_nav_notifications}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
+        <div class="adm-actions adm-login-policy-page-actions">
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/appeal-policy">${msg_security_admin_nav_appealPolicy}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/reviews">${msg_security_admin_nav_reviews}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/assessments">${msg_security_admin_nav_externalAssessments}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences">${msg_security_admin_nav_notifications}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
         </div>
     </div>
 
@@ -69,7 +69,7 @@
     </div>
 
     <c:forEach var="p" items="${policies}">
-        <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/policies/${p.policyIdx}" class="adm-card adm-login-policy-card">
+        <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/policies/${p.policyIdx}" class="adm-card adm-login-policy-card adm-overflow-visible">
             <div class="adm-card-header adm-login-policy-card-head">
                 <div class="adm-login-policy-titleblock">
                     <div class="adm-card-title"><c:out value="${p.policyName}"/></div>
@@ -80,7 +80,7 @@
                         <input type="checkbox" name="active" ${p.active ? 'checked' : ''}>
                         ${msg_security_admin_common_enabled}
                     </label>
-                    <button type="submit" class="adm-btn primary">${msg_security_admin_common_save}</button>
+                    <button type="submit" class="adm-btn adm-btn-primary">${msg_security_admin_common_save}</button>
                 </div>
             </div>
             <div class="adm-card-body">
@@ -105,7 +105,7 @@
                         <input class="adm-input" type="number" name="warningBeforeCount" value="${p.warningBeforeCount}">
                     </label>
                     <label>${msg_security_admin_common_severity}
-                        <select class="adm-input" name="reviewSeverity">
+                        <select class="adm-select" name="reviewSeverity">
                             <option value="LOW" ${p.reviewSeverity == 'LOW' ? 'selected' : ''}>LOW</option>
                             <option value="MEDIUM" ${p.reviewSeverity == 'MEDIUM' ? 'selected' : ''}>MEDIUM</option>
                             <option value="HIGH" ${p.reviewSeverity == 'HIGH' ? 'selected' : ''}>HIGH</option>
@@ -146,3 +146,5 @@
         </form>
     </c:forEach>
 </div>
+
+<%@ include file="../layout-close.jsp" %>

@@ -7128,6 +7128,18 @@ body.sa-light .adm-moderation-actions {
 }
 
 /* Login risk policy settings */
+.adm-governance-page.adm-login-policy-page {
+    max-width: min(100%, 1500px);
+}
+
+.adm-governance-page .adm-login-policy-page-actions {
+    flex-wrap: wrap;
+}
+
+.adm-governance-page .adm-login-policy-page-actions .adm-btn {
+    white-space: nowrap;
+}
+
 .adm-governance-page .adm-policy-guide-card,
 .adm-governance-page .adm-login-policy-card {
     overflow: visible;
@@ -7159,9 +7171,11 @@ body.sa-light .adm-moderation-actions {
 
 .adm-governance-page .adm-login-policy-card-head {
     gap: 12px;
+    flex-wrap: nowrap;
 }
 
 .adm-governance-page .adm-login-policy-titleblock {
+    flex: 1 1 auto;
     min-width: 0;
 }
 
@@ -7177,9 +7191,20 @@ body.sa-light .adm-moderation-actions {
     justify-content: flex-end;
     gap: 8px;
     flex: 0 0 auto;
+    flex-wrap: nowrap;
+    max-width: 100%;
+}
+
+.adm-governance-page .adm-login-policy-controls .adm-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
 }
 
 .adm-governance-page .adm-login-policy-active {
+    flex: 0 0 auto;
+    width: auto;
+    height: auto;
+    min-width: max-content;
     min-height: 34px;
     padding: 8px 10px;
     border-radius: 8px;
@@ -7209,10 +7234,25 @@ body.sa-light .adm-moderation-actions {
     border: 1px solid rgba(148,163,184,.16);
     border-radius: 8px;
     background: rgba(15,23,42,.34);
+    cursor: pointer;
+    transition: border-color .16s ease, background .16s ease;
+}
+
+.adm-governance-page .adm-login-policy-toggle:hover {
+    border-color: rgba(96,165,250,.38);
+    background: rgba(30,41,59,.46);
+}
+
+.adm-governance-page .adm-login-policy-toggle:has(input:checked) {
+    border-color: rgba(96,165,250,.46);
+    background: rgba(37,99,235,.14);
 }
 
 .adm-governance-page .adm-login-policy-toggle input {
+    width: 16px;
+    height: 16px;
     margin-top: 2px;
+    accent-color: #60a5fa;
 }
 
 .adm-governance-page .adm-login-policy-toggle span {
@@ -7245,6 +7285,16 @@ body.sa-light .adm-governance-page .adm-login-policy-toggle {
     border-color: #e2e8f0;
 }
 
+body.sa-light .adm-governance-page .adm-login-policy-toggle:hover {
+    border-color: #93c5fd;
+    background: #f1f5f9;
+}
+
+body.sa-light .adm-governance-page .adm-login-policy-toggle:has(input:checked) {
+    border-color: #93c5fd;
+    background: #eff6ff;
+}
+
 body.sa-light .adm-governance-page .adm-login-policy-toggle span {
     color: #334155;
 }
@@ -7268,13 +7318,16 @@ body.sa-light .adm-governance-page .adm-login-policy-toggle span {
 
     .adm-governance-page .adm-login-policy-card-head {
         align-items: stretch;
+        flex-direction: column;
     }
 
     .adm-governance-page .adm-login-policy-controls {
         justify-content: flex-start;
+        flex-wrap: wrap;
     }
 
     .adm-governance-page .adm-login-policy-controls .adm-btn {
+        flex: 1 1 140px;
         width: auto;
     }
 }
