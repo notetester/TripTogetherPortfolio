@@ -472,7 +472,19 @@
         window.location.href = url.toString();
     }
 
+    function hasServerManagedSort(table) {
+        return tableHeaders(table).some(function (th) {
+            return th.hasAttribute('data-sort') || !!th.getAttribute('onclick');
+        });
+    }
+
     function updateSortIndicators(table) {
+        if (table.dataset.adminListServerSort === 'true') {
+            const toolbar = document.querySelector('.js-admin-list-tools-toolbar[data-table-id="' + table.id + '"]');
+            const reset = toolbar ? toolbar.querySelector('.js-admin-list-sort-reset') : null;
+            if (reset) reset.style.display = hasSortQuery() ? '' : 'none';
+            return;
+        }
         const state = getState(table);
         tableHeaders(table).forEach(function (th, idx) {
             const active = state.sortIndex === idx;
@@ -562,8 +574,8 @@
 
     function enhanceSorting(table) {
         const headers = tableHeaders(table);
-        const hasServerSort = headers.some(function (th) { return th.hasAttribute('data-sort') || !!th.getAttribute('onclick'); });
-        if (hasServerSort) {
+        if (hasServerManagedSort(table)) {
+            table.dataset.adminListServerSort = 'true';
             updateSortIndicators(table);
             return;
         }
