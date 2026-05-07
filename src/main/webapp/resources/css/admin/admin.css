@@ -10121,6 +10121,10 @@ body.sa-light .adm-ad-note-box {
     color: #86efac;
 }
 
+.adm-ai-state.is-danger {
+    color: #f87171;
+}
+
 .adm-ai-action-cell {
     text-align: right;
 }
@@ -10150,6 +10154,10 @@ body.sa-light .adm-ad-note-box {
     grid-template-columns: 104px minmax(160px, .8fr) minmax(220px, 1.2fr) minmax(190px, .8fr) auto;
     gap: 10px;
     align-items: end;
+}
+
+.adm-ai-block-form-compact {
+    grid-template-columns: 104px minmax(180px, .8fr) minmax(260px, 1.2fr) auto;
 }
 
 .adm-ai-form-field {
@@ -10557,6 +10565,10 @@ body.sa-light .adm-ai-type-badge.is-ip {
 
 body.sa-light .adm-ai-state.is-active {
     color: #15803d;
+}
+
+body.sa-light .adm-ai-state.is-danger {
+    color: #dc2626;
 }
 
 body.sa-light .adm-ai-status-link.is-active {

@@ -515,8 +515,16 @@
          부적절 메시지 탭
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'inappropriate'}">
-        <div class="adm-card" style="padding:0;overflow-x:auto;">
-            <table class="adm-table" style="width:100%;">
+        <div class="adm-card adm-ai-table-card">
+            <div class="adm-table-wrap">
+            <table class="adm-table adm-ai-table adm-ai-moderation-table">
+                <colgroup>
+                    <col class="adm-ai-col-id"/>
+                    <col class="adm-ai-col-user"/>
+                    <col class="adm-ai-col-content"/>
+                    <col class="adm-ai-col-date"/>
+                    <col class="adm-ai-col-actions"/>
+                </colgroup>
                 <thead>
                     <tr>
                         <th>${msg_admin_aiHelper_chatbot_table_id}</th>
@@ -529,7 +537,7 @@
                 <tbody>
                     <c:choose>
                         <c:when test="${empty messages}">
-                            <tr><td colspan="5" style="text-align:center;padding:40px;color:#94a3b8;">${msg_admin_aiHelper_chatbot_empty_inappropriate}</td></tr>
+                            <tr><td colspan="5" class="adm-local-empty-cell">${msg_admin_aiHelper_chatbot_empty_inappropriate}</td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="m" items="${messages}">
@@ -538,22 +546,21 @@
                                     <td>
                                         <c:choose>
                                             <c:when test="${not empty m.authorUserIdx}">
-                                                <a href="javascript:void(0);"
-                                                   onclick="openDetail('${m.authorUserIdx}'); return false;"
-                                                   style="color:#1d4ed8;text-decoration:none;font-weight:500;cursor:pointer;"
-                                                   title="회원 상세 보기">
+                                                <button type="button"
+                                                        class="adm-inline-link js-open-member-context"
+                                                        data-user-idx="${m.authorUserIdx}">
                                                     <c:choose>
                                                         <c:when test="${not empty m.authorNickname}">${m.authorNickname}</c:when>
                                                         <c:otherwise>#${m.authorUserIdx}</c:otherwise>
                                                     </c:choose>
-                                                </a>
+                                                </button>
                                             </c:when>
-                                            <c:otherwise><span style="color:#94a3b8;">게스트</span></c:otherwise>
+                                            <c:otherwise><span class="adm-ai-muted">게스트</span></c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td style="max-width:600px;word-break:break-all;">${m.content}</td>
+                                    <td class="adm-ai-ellipsis-cell">${fn:escapeXml(m.content)}</td>
                                     <td>${fn:replace(fn:substring(m.createdAt, 0, 16), 'T', ' ')}</td>
-                                    <td>
+                                    <td class="adm-ai-action-cell">
                                         <div class="adm-row-actions is-single">
                                             <button type="button"
                                                     class="adm-row-btn detail"
@@ -567,11 +574,13 @@
                     </c:choose>
                 </tbody>
             </table>
+            </div>
         </div>
         <c:if test="${totalPages > 1}">
-            <div style="display:flex;justify-content:center;gap:4px;margin-top:16px;">
+            <div class="adm-ai-pagination">
                 <c:forEach begin="1" end="${totalPages}" var="p">
-                    <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=inappropriate&page=${p}" class="adm-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}" style="min-width:32px;">${p}</a>
+                    <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=inappropriate&page=${p}"
+                       class="adm-btn adm-ai-page-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}">${p}</a>
                 </c:forEach>
             </div>
         </c:if>
@@ -581,29 +590,42 @@
          차단 관리 탭
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'blocks'}">
-        <div class="adm-card" style="padding:16px;margin-bottom:16px;">
-            <div style="display:flex;gap:8px;align-items:end;">
-                <div style="flex:1;">
-                    <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">${msg_admin_aiHelper_chatbot_table_type}</label>
-                    <select id="newBlockType" class="adm-input">
+        <div class="adm-card adm-ai-form-card">
+            <div class="adm-ai-section-title">${msg_admin_aiHelper_chatbot_action_createBlock}</div>
+            <div class="adm-ai-block-form adm-ai-block-form-compact">
+                <div class="adm-ai-form-field is-type">
+                    <label class="adm-filter-label" for="newBlockType">${msg_admin_aiHelper_chatbot_table_type}</label>
+                    <select id="newBlockType" class="adm-select">
                         <option value="IP">${msg_admin_aiHelper_chatbot_type_ip}</option>
                         <option value="USER">${msg_admin_aiHelper_chatbot_type_user}</option>
                     </select>
                 </div>
-                <div style="flex:2;">
-                    <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">${msg_admin_aiHelper_chatbot_table_value}</label>
+                <div class="adm-ai-form-field">
+                    <label class="adm-filter-label" for="newBlockValue">${msg_admin_aiHelper_chatbot_table_value}</label>
                     <input type="text" id="newBlockValue" class="adm-input" placeholder="${msg_admin_aiHelper_chatbot_valuePlaceholder}"/>
                 </div>
-                <div style="flex:2;">
-                    <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">${msg_admin_aiHelper_chatbot_table_reason}</label>
+                <div class="adm-ai-form-field is-wide">
+                    <label class="adm-filter-label" for="newBlockReason">${msg_admin_aiHelper_chatbot_table_reason}</label>
                     <input type="text" id="newBlockReason" class="adm-input" placeholder="${msg_admin_aiHelper_chatbot_reasonPlaceholder}"/>
                 </div>
                 <button type="button" class="adm-btn adm-btn-primary" onclick="createBlock()">${msg_admin_aiHelper_chatbot_action_createBlock}</button>
             </div>
         </div>
 
-        <div class="adm-card" style="padding:0;overflow-x:auto;">
-            <table class="adm-table" style="width:100%;">
+        <div class="adm-card adm-ai-table-card">
+            <div class="adm-table-wrap">
+            <table class="adm-table adm-ai-table adm-ai-blocks-table">
+                <colgroup>
+                    <col class="adm-ai-col-id"/>
+                    <col class="adm-ai-col-type"/>
+                    <col class="adm-ai-col-value"/>
+                    <col class="adm-ai-col-reason"/>
+                    <col class="adm-ai-col-user"/>
+                    <col class="adm-ai-col-date"/>
+                    <col class="adm-ai-col-date"/>
+                    <col class="adm-ai-col-status"/>
+                    <col class="adm-ai-col-actions-narrow"/>
+                </colgroup>
                 <thead>
                     <tr>
                         <th>${msg_admin_aiHelper_chatbot_table_id}</th>
@@ -620,18 +642,15 @@
                 <tbody>
                     <c:choose>
                         <c:when test="${empty blocks}">
-                            <tr><td colspan="9" style="text-align:center;padding:40px;color:#94a3b8;">${msg_admin_aiHelper_chatbot_empty_blocks}</td></tr>
+                            <tr><td colspan="9" class="adm-local-empty-cell">${msg_admin_aiHelper_chatbot_empty_blocks}</td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="b" items="${blocks}">
                                 <tr>
+                                    <td>#${b.blockId}</td>
                                     <td>
-                                        <button type="button"
-                                                class="adm-cell-link adm-cell-link--inline"
-                                                data-block-id="${b.blockId}"
-                                                onclick="deactivateBlock(this.dataset.blockId)">#${b.blockId}</button>
+                                        <span class="adm-ai-type-badge ${b.blockType eq 'USER' ? 'is-user' : 'is-ip'}">${b.blockType}</span>
                                     </td>
-                                    <td>${b.blockType}</td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${b.blockType eq 'IP'}">
@@ -648,50 +667,31 @@
                                             <c:otherwise>${b.blockValue}</c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td>
-                                        <button type="button"
-                                                class="adm-cell-link adm-cell-link--inline"
-                                                data-block-id="${b.blockId}"
-                                                onclick="deactivateBlock(this.dataset.blockId)">${b.reason}</button>
-                                    </td>
+                                    <td class="adm-ai-break-cell">${fn:escapeXml(b.reason)}</td>
                                     <td>${b.blockedBy}</td>
+                                    <td>${fn:replace(fn:substring(b.blockedAt, 0, 16), 'T', ' ')}</td>
                                     <td>
-                                        <button type="button"
-                                                class="adm-cell-link adm-cell-link--inline"
-                                                data-block-id="${b.blockId}"
-                                                onclick="deactivateBlock(this.dataset.blockId)">${fn:replace(fn:substring(b.blockedAt, 0, 16), 'T', ' ')}</button>
-                                    </td>
-                                    <td>
-                                        <button type="button"
-                                                class="adm-cell-link adm-cell-link--inline"
-                                                data-block-id="${b.blockId}"
-                                                onclick="deactivateBlock(this.dataset.blockId)">
                                         <c:choose>
                                             <c:when test="${b.expiresAt != null}">${fn:replace(fn:substring(b.expiresAt, 0, 16), 'T', ' ')}</c:when>
-                                            <c:otherwise>${msg_admin_aiHelper_chatbot_value_permanent}</c:otherwise>
+                                            <c:otherwise><span class="adm-ai-muted">${msg_admin_aiHelper_chatbot_value_permanent}</span></c:otherwise>
                                         </c:choose>
-                                        </button>
                                     </td>
                                     <td>
-                                        <button type="button"
-                                                class="adm-cell-link adm-cell-link--inline"
-                                                data-block-id="${b.blockId}"
-                                                onclick="deactivateBlock(this.dataset.blockId)">
                                         <c:choose>
-                                            <c:when test="${b.isActive}"><span style="color:#ef4444;">${msg_admin_aiHelper_chatbot_status_active}</span></c:when>
-                                            <c:otherwise><span style="color:#94a3b8;">${msg_admin_aiHelper_chatbot_status_released}</span></c:otherwise>
+                                            <c:when test="${b.isActive}"><span class="adm-ai-state is-danger">${msg_admin_aiHelper_chatbot_status_active}</span></c:when>
+                                            <c:otherwise><span class="adm-ai-muted">${msg_admin_aiHelper_chatbot_status_released}</span></c:otherwise>
                                         </c:choose>
-                                        </button>
                                     </td>
-                                    <td>
-                                        <c:if test="${b.isActive}">
-                                            <div class="adm-row-actions is-single">
+                                    <td class="adm-ai-action-cell">
+                                        <c:choose>
+                                            <c:when test="${b.isActive}">
                                                 <button type="button"
                                                         class="adm-row-btn danger"
                                                         data-block-id="${b.blockId}"
                                                         onclick="deactivateBlock(this.dataset.blockId)">${msg_admin_aiHelper_chatbot_action_release}</button>
-                                            </div>
-                                        </c:if>
+                                            </c:when>
+                                            <c:otherwise><span class="adm-ai-muted">-</span></c:otherwise>
+                                        </c:choose>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -699,6 +699,7 @@
                     </c:choose>
                 </tbody>
             </table>
+            </div>
         </div>
     </c:if>
 
