@@ -4475,6 +4475,13 @@ body.sa-light .adm-fin-guide { color: #475569; }
     font-size: 13px;
 }
 
+.adm-local-page-state {
+    min-width: 48px;
+    text-align: center;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
 .adm-finance-user-table {
     width: 100%;
     min-width: 960px;
@@ -4772,6 +4779,10 @@ body.sa-light .adm-finance-signed-amount.is-negative {
 }
 
 body.sa-light .js-finance-page-state {
+    color: #475569;
+}
+
+body.sa-light .adm-local-page-state {
     color: #475569;
 }
 
@@ -8661,6 +8672,29 @@ body.sa-light .adm-audit-row-detail-value {
     align-items: end;
     justify-content: flex-end;
     gap: 8px;
+}
+
+.adm-inquiry-list-card {
+    overflow: visible;
+}
+
+.adm-inquiry-list-head {
+    align-items: center;
+}
+
+.adm-inquiry-list-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.adm-inquiry-size-select {
+    min-width: 112px;
+}
+
+.adm-inquiry-local-pagination {
+    border-top: 1px solid rgba(148, 163, 184, .14);
 }
 
 .adm-inquiry-table {

@@ -38,7 +38,6 @@
 <spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_inquiry_listTitle" code="admin.inquiry.listTitle"/>
-<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
 <spring:message var="msg_admin_inquiry_author" code="admin.inquiry.author"/>
 <spring:message var="msg_admin_inquiry_title" code="admin.inquiry.title"/>
 <spring:message var="msg_admin_inquiry_answer" code="admin.inquiry.answer"/>
@@ -48,8 +47,14 @@
 <spring:message var="msg_admin_common_sameCategory" code="admin.common.sameCategory"/>
 <spring:message var="msg_admin_inquiry_detail_statusChange" code="admin.inquiry.detail.statusChange"/>
 <spring:message var="msg_admin_common_noResults" code="admin.common.noResults"/>
-<spring:message var="msg_admin_common_pageStatus" code="admin.common.pageStatus"/>
 <spring:message var="msg_admin_inquiry_viewSite" code="admin.inquiry.viewSite"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
+<spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100"/>
+<spring:message var="msg_admin_inquiry_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${total}"/>
+<spring:message var="msg_admin_inquiry_currentCountDisplay" code="admin.common.currentCountFormat" arguments="${fn:length(list)}"/>
 <c:set var="activeMenu" value="inquiries"/>
 
 
@@ -81,6 +86,7 @@
     <div class="adm-card adm-inquiry-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/inquiries">
+                <input type="hidden" name="size" value="${search.size}"/>
                 <div class="adm-filter-bar adm-inquiry-filterbar">
                     <div>
                         <div class="adm-filter-label">${msg_admin_common_status}</div>
@@ -146,11 +152,21 @@
     </div>
 
     <div class="adm-card adm-inquiry-list-card">
-        <div class="adm-card-head">
-            <div class="adm-card-title">${msg_admin_inquiry_listTitle}<span class="adm-section-total-inline">${msg_admin_common_totalCount}</span></div>
+        <div class="adm-card-head adm-inquiry-list-head">
+            <div class="adm-card-title">
+                ${msg_admin_inquiry_listTitle}
+                <span class="adm-section-total-inline">${msg_admin_inquiry_totalCountDisplay}</span>
+            </div>
+            <div class="adm-inquiry-list-controls">
+                <select class="adm-select adm-inquiry-size-select" onchange="goInquiryPageSize(this.value)">
+                    <option value="20" ${search.size == 20 ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
+                    <option value="50" ${search.size == 50 ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
+                    <option value="100" ${search.size == 100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
+                </select>
+            </div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table adm-inquiry-table">
+            <table class="adm-table adm-inquiry-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-inquiry-col-id">
                     <col class="adm-inquiry-col-author">
@@ -173,7 +189,16 @@
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="item">
-                    <tr class="adm-inq-row" data-id="${item.inquiryId}">
+                    <c:url var="inquiryDetailUrl" value="/admin/inquiries/${item.inquiryId}">
+                        <c:param name="page" value="${paging.currentPage}"/>
+                        <c:param name="size" value="${search.size}"/>
+                        <c:param name="status" value="${search.status}"/>
+                        <c:param name="category" value="${search.category}"/>
+                        <c:param name="answered" value="${search.answered}"/>
+                        <c:param name="searchType" value="${search.searchType}"/>
+                        <c:param name="keyword" value="${search.keyword}"/>
+                    </c:url>
+                    <tr class="adm-inq-row" data-id="${item.inquiryId}" data-href="${inquiryDetailUrl}">
                         <td>#${item.inquiryId}</td>
                         <%-- 작성자 --%>
                         <td>
@@ -189,7 +214,7 @@
                             </button>
                         </td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/inquiries/${item.inquiryId}?${fn:escapeXml(listParams)}"
+                            <a href="${inquiryDetailUrl}"
                                class="adm-cell-link"
                                onclick="event.stopPropagation();">
                                 <span class="mem-name">${item.title}</span>
@@ -217,7 +242,7 @@
                             </button>
                         </td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/inquiries/${item.inquiryId}?${fn:escapeXml(listParams)}&jump=inquiry-status-actions"
+                            <a href="${inquiryDetailUrl}&amp;jump=inquiry-status-actions"
                                class="adm-cell-link"
                                onclick="event.stopPropagation();">
                                 <span class="status-badge ${item.status}">
@@ -237,7 +262,7 @@
                             </a>
                         </td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/inquiries/${item.inquiryId}?${fn:escapeXml(listParams)}&jump=inquiry-answer-card"
+                            <a href="${inquiryDetailUrl}&amp;jump=inquiry-answer-card"
                                class="adm-cell-link"
                                onclick="event.stopPropagation();">
                                 <c:choose>
@@ -250,7 +275,7 @@
                             </a>
                         </td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/inquiries/${item.inquiryId}?${fn:escapeXml(listParams)}"
+                            <a href="${inquiryDetailUrl}"
                                class="adm-cell-link"
                                onclick="event.stopPropagation();">
                                 <span><fmt:formatDate value="${item.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
@@ -265,16 +290,17 @@
             </table>
         </div>
 
-        <c:if test="${paging.totalPage > 1}">
-            <div class="adm-paging">
-                <c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if>
-                <c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p">
-                    <button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button>
-                </c:forEach>
-                <c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if>
-                <span class="adm-page-info">${msg_admin_common_pageStatus}</span>
+        <c:set var="inquiryTotalPage" value="${paging.totalPage < 1 ? 1 : paging.totalPage}"/>
+        <div class="adm-local-pagination adm-inquiry-local-pagination">
+            <div class="adm-local-page-info">
+                ${msg_admin_inquiry_totalCountDisplay} / ${msg_admin_inquiry_currentCountDisplay}
             </div>
-        </c:if>
+            <div class="adm-local-page-actions">
+                <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage <= 1 ? 'disabled' : ''} onclick="goPage(${paging.currentPage - 1})">${msg_admin_common_prev}</button>
+                <span class="adm-local-page-state">${paging.currentPage} / ${inquiryTotalPage}</span>
+                <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage >= inquiryTotalPage ? 'disabled' : ''} onclick="goPage(${paging.currentPage + 1})">${msg_admin_common_next}</button>
+            </div>
+        </div>
     </div>
 
     <%-- ── 유저 화면 바로가기 ── --%>
@@ -289,6 +315,13 @@
 function goPage(page) {
     const params = new URLSearchParams(window.location.search);
     params.set('page', page);
+    location.href = '${pageContext.request.contextPath}/admin/inquiries?' + params.toString();
+}
+
+function goInquiryPageSize(size) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('size', size);
+    params.set('page', '1');
     location.href = '${pageContext.request.contextPath}/admin/inquiries?' + params.toString();
 }
 
@@ -319,11 +352,10 @@ function applyInquiryFilter(button) {
 var ctx = '${pageContext.request.contextPath}';
 
 // 행 클릭 시 어드민 문의 상세 페이지 이동
-var listParams = 'page=${search.page}&status=${search.status}&category=${search.category}&answered=${search.answered}&searchType=${search.searchType}&keyword=' + encodeURIComponent('${search.keyword}');
 document.querySelectorAll('.adm-inq-row[data-id]').forEach(function (tr) {
     tr.addEventListener('click', function (e) {
         if (e.target.closest('button, a')) return;
-        location.href = '${pageContext.request.contextPath}/admin/inquiries/' + this.getAttribute('data-id') + '?' + listParams;
+        location.href = this.getAttribute('data-href');
     });
 });
 </script>
