@@ -5898,6 +5898,154 @@ body.sa-light .adm-governance-page .adm-notification-option-desc {
     }
 }
 
+/* Runtime settings admin */
+.adm-runtime-filter-card,
+.adm-runtime-create-card,
+.adm-runtime-setting-card {
+    margin-bottom: 16px;
+    overflow: visible;
+}
+
+.adm-runtime-setting-card {
+    margin-bottom: 14px;
+}
+
+.adm-runtime-filter-grid,
+.adm-runtime-form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-runtime-field {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.adm-runtime-field .adm-input,
+.adm-runtime-field .adm-select {
+    width: 100%;
+}
+
+.adm-runtime-field-wide {
+    grid-column: span 2;
+}
+
+.adm-runtime-field-full,
+.adm-runtime-check-row {
+    grid-column: 1 / -1;
+}
+
+.adm-runtime-check-field {
+    min-height: 38px;
+    align-self: end;
+}
+
+.adm-runtime-check-row,
+.adm-runtime-flag-row,
+.adm-runtime-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+}
+
+.adm-runtime-flag-row {
+    justify-content: flex-end;
+}
+
+.adm-runtime-actions {
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.adm-runtime-static-input {
+    display: flex;
+    align-items: center;
+    min-height: 38px;
+    color: #94a3b8;
+}
+
+.adm-runtime-history-table {
+    min-width: 920px;
+}
+
+.adm-runtime-snapshot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.adm-runtime-snapshot-pre {
+    max-height: 180px;
+    overflow: auto;
+    margin: 6px 0 0;
+    padding: 10px;
+    border: 1px solid rgba(148, 163, 184, .18);
+    border-radius: 8px;
+    background: #111827;
+    color: #cbd5e1;
+    font-size: 11px;
+    white-space: pre-wrap;
+}
+
+body.sa-light .adm-runtime-field {
+    color: #334155;
+}
+
+body.sa-light .adm-runtime-static-input {
+    color: #64748b;
+}
+
+body.sa-light .adm-runtime-snapshot-pre {
+    border-color: #e2e8f0;
+    background: #f8fafc;
+    color: #334155;
+}
+
+@media (max-width: 1180px) {
+    .adm-runtime-filter-grid,
+    .adm-runtime-form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .adm-runtime-field-full,
+    .adm-runtime-check-row {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 680px) {
+    .adm-runtime-filter-grid,
+    .adm-runtime-form-grid,
+    .adm-runtime-snapshot-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-runtime-field-wide,
+    .adm-runtime-field-full,
+    .adm-runtime-check-row {
+        grid-column: auto;
+    }
+
+    .adm-runtime-actions,
+    .adm-runtime-flag-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .adm-runtime-actions .adm-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 /* Login risk policy settings */
 .adm-governance-page .adm-policy-guide-card,
 .adm-governance-page .adm-login-policy-card {

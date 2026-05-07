@@ -45,7 +45,7 @@
 
 <%@ include file="layout.jsp" %>
 
-<div class="adm-content adm-governance-page">
+<div class="adm-content adm-governance-page adm-runtime-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_admin_runtimeSettings_title}</h1>
@@ -57,28 +57,28 @@
         <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
-    <form method="get" class="adm-card" style="margin-bottom:16px;">
-        <div class="adm-form-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
-            <label>${msg_admin_runtimeSettings_group}
+    <form method="get" class="adm-card adm-runtime-filter-card">
+        <div class="adm-runtime-filter-grid">
+            <label class="adm-runtime-field">${msg_admin_runtimeSettings_group}
                 <input class="adm-input" type="text" name="settingGroup" value="${fn:escapeXml(settingGroup)}" placeholder="AUTH, OAUTH, MAIL">
             </label>
-            <label>${msg_admin_runtimeSettings_keyword}
+            <label class="adm-runtime-field">${msg_admin_runtimeSettings_keyword}
                 <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${msg_admin_runtimeSettings_placeholder_keyword}">
             </label>
-            <label>${msg_admin_runtimeSettings_historyKey}
+            <label class="adm-runtime-field">${msg_admin_runtimeSettings_historyKey}
                 <input class="adm-input" type="text" name="historyKey" value="${fn:escapeXml(historyKey)}" placeholder="oauth.kakao.client-id">
             </label>
-            <label class="adm-check" style="align-self:end;">
+            <label class="adm-check adm-runtime-check-field">
                 <input type="checkbox" name="includeInactive" ${includeInactive ? 'checked' : ''}>
                 ${msg_admin_runtimeSettings_includeInactive}
             </label>
         </div>
-        <div class="adm-actions" style="margin-top:12px;">
-            <button class="adm-btn primary" type="submit">${msg_admin_common_search}</button>
+        <div class="adm-actions adm-runtime-actions">
+            <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_search}</button>
         </div>
     </form>
 
-    <div class="adm-card" style="margin-bottom:16px;">
+    <div class="adm-card adm-runtime-create-card">
         <div class="adm-card-header">
             <div>
                 <div class="adm-card-title">${msg_admin_runtimeSettings_createTitle}</div>
@@ -87,18 +87,18 @@
         </div>
         <div class="adm-card-body">
             <form method="post" action="${pageContext.request.contextPath}/admin/runtime-settings">
-                <div class="adm-form-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
-                    <label>${msg_admin_runtimeSettings_key}
+                <div class="adm-runtime-form-grid">
+                    <label class="adm-runtime-field">${msg_admin_runtimeSettings_key}
                         <input class="adm-input" type="text" name="settingKey" required>
                     </label>
-                    <label>${msg_admin_runtimeSettings_group}
+                    <label class="adm-runtime-field">${msg_admin_runtimeSettings_group}
                         <input class="adm-input" type="text" name="settingGroup" value="GENERAL">
                     </label>
-                    <label>${msg_admin_runtimeSettings_displayName}
+                    <label class="adm-runtime-field">${msg_admin_runtimeSettings_displayName}
                         <input class="adm-input" type="text" name="displayName">
                     </label>
-                    <label>${msg_admin_runtimeSettings_valueType}
-                        <select class="adm-input" name="valueType">
+                    <label class="adm-runtime-field">${msg_admin_runtimeSettings_valueType}
+                        <select class="adm-select" name="valueType">
                             <option value="STRING">STRING</option>
                             <option value="NUMBER">NUMBER</option>
                             <option value="BOOLEAN">BOOLEAN</option>
@@ -106,34 +106,36 @@
                             <option value="SECRET">SECRET</option>
                         </select>
                     </label>
-                    <label>${msg_admin_runtimeSettings_value}
+                    <label class="adm-runtime-field">${msg_admin_runtimeSettings_value}
                         <input class="adm-input" type="text" name="settingValue">
                     </label>
-                    <label>${msg_admin_runtimeSettings_fallbackValue}
+                    <label class="adm-runtime-field">${msg_admin_runtimeSettings_fallbackValue}
                         <input class="adm-input" type="text" name="fallbackValue">
                     </label>
-                    <label style="grid-column:span 2;">${msg_admin_common_description}
+                    <label class="adm-runtime-field adm-runtime-field-wide">${msg_admin_common_description}
                         <input class="adm-input" type="text" name="description">
                     </label>
-                    <label class="adm-check"><input type="checkbox" name="secret"> ${msg_admin_runtimeSettings_secret}</label>
-                    <label class="adm-check"><input type="checkbox" name="editable" checked> ${msg_admin_runtimeSettings_editable}</label>
-                    <label class="adm-check"><input type="checkbox" name="active" checked> ${msg_admin_runtimeSettings_active}</label>
+                    <div class="adm-runtime-check-row">
+                        <label class="adm-check"><input type="checkbox" name="secret"> ${msg_admin_runtimeSettings_secret}</label>
+                        <label class="adm-check"><input type="checkbox" name="editable" checked> ${msg_admin_runtimeSettings_editable}</label>
+                        <label class="adm-check"><input type="checkbox" name="active" checked> ${msg_admin_runtimeSettings_active}</label>
+                    </div>
                 </div>
-                <div class="adm-actions" style="margin-top:12px;">
-                    <button class="adm-btn primary" type="submit">${msg_admin_common_save}</button>
+                <div class="adm-actions adm-runtime-actions">
+                    <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_save}</button>
                 </div>
             </form>
         </div>
     </div>
 
     <c:forEach var="s" items="${settings}">
-        <form method="post" action="${pageContext.request.contextPath}/admin/runtime-settings/${s.settingIdx}" class="adm-card" style="margin-bottom:14px;">
+        <form method="post" action="${pageContext.request.contextPath}/admin/runtime-settings/${s.settingIdx}" class="adm-card adm-runtime-setting-card">
             <div class="adm-card-header">
                 <div>
                     <div class="adm-card-title"><c:out value="${s.displayName}"/></div>
                     <div class="adm-muted"><c:out value="${s.settingGroup}"/> · <c:out value="${s.settingKey}"/> · <c:out value="${s.valueType}"/></div>
                 </div>
-                <div class="adm-actions">
+                <div class="adm-runtime-flag-row">
                     <label class="adm-check"><input type="checkbox" name="secret" ${s.secret ? 'checked' : ''}> ${msg_admin_runtimeSettings_secret}</label>
                     <label class="adm-check"><input type="checkbox" name="editable" ${s.editable ? 'checked' : ''}> ${msg_admin_runtimeSettings_editable}</label>
                     <label class="adm-check"><input type="checkbox" name="active" ${s.active ? 'checked' : ''}> ${msg_admin_runtimeSettings_active}</label>
@@ -141,31 +143,31 @@
             </div>
             <div class="adm-card-body">
                 <input type="hidden" name="settingKey" value="${fn:escapeXml(s.settingKey)}">
-                <div class="adm-form-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
-                    <label>${msg_admin_runtimeSettings_group}
+                <div class="adm-runtime-form-grid adm-runtime-setting-grid">
+                    <label class="adm-runtime-field">${msg_admin_runtimeSettings_group}
                         <input class="adm-input" type="text" name="settingGroup" value="${fn:escapeXml(s.settingGroup)}">
                     </label>
-                    <label>${msg_admin_runtimeSettings_displayName}
+                    <label class="adm-runtime-field">${msg_admin_runtimeSettings_displayName}
                         <input class="adm-input" type="text" name="displayName" value="${fn:escapeXml(s.displayName)}">
                     </label>
-                    <label>${msg_admin_runtimeSettings_valueType}
+                    <label class="adm-runtime-field">${msg_admin_runtimeSettings_valueType}
                         <input class="adm-input" type="text" name="valueType" value="${fn:escapeXml(s.valueType)}">
                     </label>
-                    <label>${msg_admin_runtimeSettings_updatedAt}
-                        <span class="adm-input" style="display:block;min-height:38px;"><fmt:formatDate value="${s.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
+                    <label class="adm-runtime-field">${msg_admin_runtimeSettings_updatedAt}
+                        <span class="adm-input adm-runtime-static-input"><fmt:formatDate value="${s.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
                     </label>
-                    <label style="grid-column:span 2;">${msg_admin_runtimeSettings_value}
+                    <label class="adm-runtime-field adm-runtime-field-wide">${msg_admin_runtimeSettings_value}
                         <input class="adm-input" type="${s.secret ? 'password' : 'text'}" name="settingValue" value="${fn:escapeXml(s.settingValue)}">
                     </label>
-                    <label style="grid-column:span 2;">${msg_admin_runtimeSettings_fallbackValue}
+                    <label class="adm-runtime-field adm-runtime-field-wide">${msg_admin_runtimeSettings_fallbackValue}
                         <input class="adm-input" type="${s.secret ? 'password' : 'text'}" name="fallbackValue" value="${fn:escapeXml(s.fallbackValue)}">
                     </label>
-                    <label style="grid-column:span 4;">${msg_admin_common_description}
+                    <label class="adm-runtime-field adm-runtime-field-full">${msg_admin_common_description}
                         <textarea class="adm-input" name="description" rows="2"><c:out value="${s.description}"/></textarea>
                     </label>
                 </div>
-                <div class="adm-actions" style="margin-top:12px;">
-                    <button class="adm-btn primary" type="submit">${msg_admin_common_save}</button>
+                <div class="adm-actions adm-runtime-actions">
+                    <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_save}</button>
                     <a class="adm-btn" href="${pageContext.request.contextPath}/admin/runtime-settings?historyKey=${fn:escapeXml(s.settingKey)}">${msg_admin_runtimeSettings_viewHistory}</a>
                 </div>
             </div>
@@ -181,7 +183,7 @@
         </div>
         <div class="adm-card-body">
             <div class="adm-table-wrap">
-                <table class="adm-table">
+                <table class="adm-table adm-runtime-history-table">
                     <thead>
                     <tr>
                         <th>${msg_admin_runtimeSettings_version}</th>
@@ -203,14 +205,14 @@
                             <td>
                                 <details>
                                     <summary>${msg_admin_runtimeSettings_showSnapshot}</summary>
-                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+                                    <div class="adm-runtime-snapshot-grid">
                                         <div>
                                             <div class="adm-muted">${msg_admin_runtimeSettings_before}</div>
-                                            <pre style="white-space:pre-wrap;max-height:180px;overflow:auto;"><c:out value="${h.beforeConfigJson}"/></pre>
+                                            <pre class="adm-runtime-snapshot-pre"><c:out value="${h.beforeConfigJson}"/></pre>
                                         </div>
                                         <div>
                                             <div class="adm-muted">${msg_admin_runtimeSettings_after}</div>
-                                            <pre style="white-space:pre-wrap;max-height:180px;overflow:auto;"><c:out value="${h.afterConfigJson}"/></pre>
+                                            <pre class="adm-runtime-snapshot-pre"><c:out value="${h.afterConfigJson}"/></pre>
                                         </div>
                                     </div>
                                 </details>
