@@ -74,14 +74,14 @@
 <c:set var="pageTitle" value="${msg_admin_community_detail_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
-    <div style="margin-bottom:16px;">
+<div class="adm-content adm-community-page adm-community-detail-page">
+    <div class="adm-community-detail-backrow">
         <a href="${pageContext.request.contextPath}/admin/community"
            class="adm-back-link">← ${msg_admin_community_detail_backToList}</a>
     </div>
 
     <c:if test="${empty post}">
-        <div class="adm-card" style="padding:40px;text-align:center;color:#64748b;">
+        <div class="adm-card adm-community-empty-state">
             ${msg_admin_community_detail_notFound}
         </div>
     </c:if>
@@ -90,9 +90,9 @@
 
         <%-- ── 30일 경고 배너 ── --%>
         <c:if test="${post.authorResolveCount30d > 0}">
-            <div class="adm-warning-box" style="margin-bottom:16px;display:flex;align-items:center;gap:10px;">
-                <span style="font-size:18px;">⚠️</span>
-                <span style="font-size:14px;">
+            <div class="adm-warning-box adm-community-detail-warning">
+                <span class="adm-community-detail-warning-icon">⚠️</span>
+                <span class="adm-community-detail-warning-text">
                     <spring:message var="msg_admin_community_detail_warning30d_args_post_authorResolveCount30d" code="admin.community.detail.warning30d" arguments="${post.authorResolveCount30d}"/>${msg_admin_community_detail_warning30d_args_post_authorResolveCount30d}
                 </span>
             </div>
@@ -104,10 +104,10 @@
             <div>
 
                 <%-- 게시글 카드 --%>
-                <div class="adm-card" style="margin-bottom:20px;">
+                <div class="adm-card adm-community-detail-card">
                     <div class="adm-card-head">
                         <div class="adm-card-title">${msg_admin_community_detail_postTitle}</div>
-                        <div style="display:flex;gap:8px;align-items:center;">
+                        <div class="adm-community-detail-head-actions">
                             <span class="status-badge ${post.postStatus}">
                                 <c:choose>
                                     <c:when test="${post.postStatus == 'ACTIVE'}">${msg_admin_community_status_active}</c:when>
@@ -119,25 +119,22 @@
                             <c:if test="${post.postStatus != 'DELETED'}">
                                 <a href="${pageContext.request.contextPath}/community/${post.postId}"
                                    target="_blank"
-                                   class="adm-btn adm-btn-ghost"
-                                   style="font-size:12px;text-decoration:none;">${msg_admin_community_detail_viewOriginal}</a>
+                                   class="adm-btn adm-btn-ghost adm-link-button adm-community-detail-btn">${msg_admin_community_detail_viewOriginal}</a>
                             </c:if>
                             <c:if test="${post.postStatus != 'BLOCKED'}">
-                                <button class="adm-btn adm-btn-ghost"
-                                        style="font-size:12px;color:#f87171;border-color:#f87171;"
+                                <button class="adm-btn adm-btn-ghost adm-community-detail-btn adm-community-danger-btn"
                                         data-id="${post.postId}"
                                         onclick="actionPost(this.getAttribute('data-id'), 'block')">${msg_admin_community_action_block}</button>
                             </c:if>
                             <c:if test="${post.postStatus != 'DELETED'}">
-                                <button class="adm-btn adm-btn-ghost"
-                                        style="font-size:12px;color:#64748b;"
+                                <button class="adm-btn adm-btn-ghost adm-community-detail-btn adm-community-muted-btn"
                                         data-id="${post.postId}"
                                         onclick="actionPost(this.getAttribute('data-id'), 'delete')">${msg_admin_community_action_delete}</button>
                             </c:if>
                         </div>
                     </div>
                     <div class="adm-card-body">
-                        <div style="margin-bottom:8px;">
+                        <div class="adm-community-detail-tags">
                             <span class="adm-post-type-badge">
                                 <c:choose>
                                     <c:when test="${post.postType == 'review'}">${msg_admin_community_postType_review}</c:when>
@@ -147,7 +144,7 @@
                                     <c:otherwise>${post.postType}</c:otherwise>
                                 </c:choose>
                             </span>
-                            <span style="font-size:11px;color:#64748b;">${post.region}</span>
+                            <span class="adm-community-detail-region">${post.region}</span>
                         </div>
                         <h3 class="adm-detail-title">${post.title}</h3>
                         <div class="adm-tr-inline js-admin-translation-widget"
@@ -165,15 +162,14 @@
                              data-field-name="content"
                              data-default-source-lang="ko"
                              data-source-text="${fn:escapeXml(post.content)}"></div>
-                        <div style="margin-top:16px;padding-top:12px;border-top:1px solid #1e2736;
-                                    display:flex;gap:20px;font-size:12px;color:#64748b;">
-                            <span>👁 ${post.viewCount}</span>
-                            <span>❤ ${post.likeCount}</span>
-                            <span>💬 ${post.commentCount}</span>
+                        <div class="adm-community-detail-meta">
+                            <span class="adm-community-detail-count">👁 ${post.viewCount}</span>
+                            <span class="adm-community-detail-count">❤ ${post.likeCount}</span>
+                            <span class="adm-community-detail-count">💬 ${post.commentCount}</span>
                             <c:if test="${post.reportCount > 0}">
-                                <span style="color:#f87171;">🚨 ${msg_admin_community_column_reportCount} ${post.reportCount}${msg_admin_common_countSuffix}</span>
+                                <span class="adm-community-detail-count is-danger">🚨 ${msg_admin_community_column_reportCount} ${post.reportCount}${msg_admin_common_countSuffix}</span>
                             </c:if>
-                            <span>
+                            <span class="adm-community-detail-date">
                                 <fmt:formatDate value="${post.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/>
                             </span>
                         </div>
@@ -181,18 +177,18 @@
                 </div>
 
                 <%-- 신고 내역 카드 --%>
-                <div class="adm-card" style="margin-bottom:20px;">
+                <div class="adm-card adm-community-detail-card">
                     <div class="adm-card-head">
                         <div class="adm-card-title">${msg_admin_community_detail_reportHistory}</div>
-                        <div style="font-size:12px;color:#64748b;">${fn:length(reports)}${msg_admin_common_countSuffix}</div>
+                        <div class="adm-community-detail-card-count">${fn:length(reports)}${msg_admin_common_countSuffix}</div>
                     </div>
                     <c:choose>
                         <c:when test="${empty reports}">
-                            <div style="padding:24px;text-align:center;color:#475569;font-size:13px;">${msg_admin_community_detail_noReports}</div>
+                            <div class="adm-community-detail-empty">${msg_admin_community_detail_noReports}</div>
                         </c:when>
                         <c:otherwise>
                             <div class="adm-table-wrap">
-                                <table class="adm-table">
+                                <table class="adm-table adm-community-report-history-table">
                                     <thead>
                                     <tr>
                                         <th>${msg_admin_community_detail_reportId}</th>
@@ -206,7 +202,7 @@
                                     <tbody>
                                     <c:forEach items="${reports}" var="r">
                                         <tr>
-                                            <td style="color:#64748b;font-size:12px;">
+                                            <td class="adm-community-id-cell">
                                                 <a class="adm-cell-link adm-cell-link--inline"
                                                    href="${pageContext.request.contextPath}/admin/reports/${r.reportId}">#${r.reportId}</a>
                                             </td>
@@ -214,11 +210,11 @@
                                                 <button type="button"
                                                         class="adm-cell-link js-open-member-context"
                                                         data-user-idx="${r.reporterIdx}">
-                                                    <span style="font-size:13px;">${r.reporterNickname}</span>
-                                                    <span style="font-size:11px;color:#64748b;">${r.reporterUserId}</span>
+                                                    <span class="adm-community-author-name">${r.reporterNickname}</span>
+                                                    <span class="adm-community-author-id">${r.reporterUserId}</span>
                                                 </button>
                                             </td>
-                                            <td style="font-size:12px;">
+                                            <td class="adm-community-detail-reason-cell">
                                                 <a class="adm-cell-link adm-cell-link--inline"
                                                    href="${pageContext.request.contextPath}/admin/reports/${r.reportId}">
                                                 <c:choose>
@@ -231,7 +227,7 @@
                                                 </c:choose>
                                                 </a>
                                             </td>
-                                            <td style="font-size:11px;color:#64748b;">
+                                            <td class="adm-community-date-cell">
                                                 <a class="adm-cell-link adm-cell-link--inline"
                                                    href="${pageContext.request.contextPath}/admin/reports/${r.reportId}">
                                                 <fmt:formatDate value="${r.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/>
@@ -239,8 +235,7 @@
                                             </td>
                                             <td>
                                                 <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}"
-                                                   class="adm-cell-link adm-cell-link--inline status-badge ${r.status}"
-                                                   style="font-size:11px;">
+                                                   class="adm-cell-link adm-cell-link--inline status-badge ${r.status} adm-community-detail-status-badge">
                                                     <c:choose>
                                                         <c:when test="${r.status == 'RESOLVED'}">${msg_admin_reports_status_resolved}</c:when>
                                                         <c:when test="${r.status == 'DISMISSED'}">${msg_admin_reports_status_dismissed}</c:when>
@@ -248,14 +243,14 @@
                                                     </c:choose>
                                                 </a>
                                             </td>
-                                            <td style="font-size:11px;color:#64748b;">
+                                            <td class="adm-community-date-cell">
                                                 <a class="adm-cell-link adm-cell-link--inline"
                                                    href="${pageContext.request.contextPath}/admin/reports/${r.reportId}">
                                                 <c:choose>
                                                     <c:when test="${not empty r.resolvedAt}">
                                                         <fmt:formatDate value="${r.resolvedAt}" type="both" dateStyle="short" timeStyle="short"/>
                                                         <c:if test="${not empty r.resolveAction}">
-                                                            <div style="color:#475569;">${r.resolveAction}</div>
+                                                            <div class="adm-community-muted">${r.resolveAction}</div>
                                                         </c:if>
                                                     </c:when>
                                                     <c:otherwise>—</c:otherwise>
@@ -275,38 +270,34 @@
                 <div class="adm-card">
                     <div class="adm-card-head">
                         <div class="adm-card-title">${msg_admin_community_detail_commentsTitle}</div>
-                        <div style="font-size:12px;color:#64748b;">${fn:length(comments)}${msg_admin_common_countSuffix}</div>
+                        <div class="adm-community-detail-card-count">${fn:length(comments)}${msg_admin_common_countSuffix}</div>
                     </div>
                     <c:choose>
                         <c:when test="${empty comments}">
-                            <div style="padding:24px;text-align:center;color:#475569;font-size:13px;">${msg_admin_community_detail_noComments}</div>
+                            <div class="adm-community-detail-empty">${msg_admin_community_detail_noComments}</div>
                         </c:when>
                         <c:otherwise>
-                            <div style="padding:0 16px 16px;">
+                            <div class="adm-community-comments-list">
                                 <c:forEach items="${comments}" var="comment">
-                                    <div style="border-bottom:1px solid #1e2736;padding:12px 0;
-                                                ${not empty comment.parentCommentId ? 'margin-left:24px;border-left:2px solid #1e2736;padding-left:12px;' : ''}">
+                                    <div class="adm-community-comment-row ${not empty comment.parentCommentId ? 'is-reply' : ''}">
                                         <%-- 댓글 헤더 --%>
-                                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-                                            <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                                        <div class="adm-community-comment-head">
+                                            <div class="adm-community-comment-meta">
                                                 <div>
                                                     <button type="button"
                                                             class="adm-inline-link js-open-member-context"
-                                                            data-user-idx="${comment.userIdx}"
-                                                            style="font-weight:600;font-size:13px;">${comment.nickname}</button>
+                                                            data-user-idx="${comment.userIdx}">${comment.nickname}</button>
                                                     <button type="button"
-                                                            class="adm-inline-link js-open-member-context"
-                                                            data-user-idx="${comment.userIdx}"
-                                                            style="font-size:11px;color:#64748b;margin-left:6px;">${comment.userId}</button>
+                                                            class="adm-inline-link adm-community-comment-userid js-open-member-context"
+                                                            data-user-idx="${comment.userIdx}">${comment.userId}</button>
                                                 </div>
-                                                <span style="font-size:10px;color:#94a3b8;font-family:monospace;">
+                                                <span class="adm-community-comment-ip">
                                                     <c:choose>
                                                         <c:when test="${not empty comment.lastIp}">
                                                             <button type="button"
                                                                     class="adm-inline-link js-open-ip-context"
                                                                     data-ip-address="${comment.lastIp}"
-                                                                    data-default-tab="blocks"
-                                                                    style="font-size:10px;color:#94a3b8;">${comment.lastIp}</button>
+                                                                    data-default-tab="blocks">${comment.lastIp}</button>
                                                         </c:when>
                                                         <c:otherwise>${msg_admin_community_detail_noIp}</c:otherwise>
                                                     </c:choose>
@@ -319,7 +310,7 @@
                                                         ⚠ ${msg_admin_community_rowResolved30d}
                                                     </span>
                                                 </c:if>
-                                                <span class="status-badge ${comment.commentStatus}" style="font-size:10px;">
+                                                <span class="status-badge ${comment.commentStatus} adm-community-comment-status">
                                                     <c:choose>
                                                         <c:when test="${comment.commentStatus == 'ACTIVE'}">${msg_admin_community_status_active}</c:when>
                                                         <c:when test="${comment.commentStatus == 'BLOCKED'}">${msg_admin_community_status_blocked}</c:when>
@@ -327,13 +318,13 @@
                                                     </c:choose>
                                                 </span>
                                                 <c:if test="${comment.reportCount > 0}">
-                                                    <span style="font-size:10px;color:#f87171;">🚨 ${comment.reportCount}${msg_admin_common_countSuffix}</span>
+                                                    <span class="adm-community-comment-report">🚨 ${comment.reportCount}${msg_admin_common_countSuffix}</span>
                                                 </c:if>
                                             </div>
                                             <%-- 댓글 액션 --%>
                                             <c:choose>
                                                 <c:when test="${comment.commentStatus != 'BLOCKED'}">
-                                                    <div class="adm-row-actions" style="flex-shrink:0;">
+                                                    <div class="adm-row-actions adm-community-comment-actions">
                                                         <button class="adm-row-btn danger"
                                                                 type="button"
                                                                 data-id="${comment.commentId}"
@@ -352,7 +343,7 @@
                                                     </div>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <div class="adm-row-actions is-single" style="flex-shrink:0;">
+                                                    <div class="adm-row-actions is-single adm-community-comment-actions">
                                                         <button class="adm-row-btn danger"
                                                                 type="button"
                                                                 data-id="${comment.commentId}"
@@ -362,7 +353,7 @@
                                             </c:choose>
                                         </div>
                                         <%-- 댓글 내용 --%>
-                                        <div style="font-size:13px;color:#cbd5e1;line-height:1.6;">${comment.content}</div>
+                                        <div class="adm-community-comment-content">${comment.content}</div>
                                         <c:if test="${not empty comment.content}">
                                             <div class="adm-tr-inline js-admin-translation-widget"
                                                  data-label="${msg_admin_translation_label_communityCommentContent}"
@@ -372,10 +363,10 @@
                                                  data-default-source-lang="ko"
                                                  data-source-text="${fn:escapeXml(comment.content)}"></div>
                                         </c:if>
-                                        <div style="font-size:11px;color:#475569;margin-top:4px;">
+                                        <div class="adm-community-comment-date">
                                             <fmt:formatDate value="${comment.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/>
                                             <c:if test="${not empty comment.parentCommentId}">
-                                                <span style="margin-left:8px;color:#334155;">↩ ${msg_admin_community_kind_reply}</span>
+                                                <span class="adm-community-comment-reply">↩ ${msg_admin_community_kind_reply}</span>
                                             </c:if>
                                         </div>
                                     </div>
@@ -396,24 +387,22 @@
                         <div class="adm-side-section">
 
                             <div>
-                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${msg_admin_common_userId}</div>
+                                <div class="adm-community-side-label">${msg_admin_common_userId}</div>
                                 <button type="button"
                                         class="adm-inline-link js-open-member-context"
-                                        data-user-idx="${post.userIdx}"
-                                        style="font-size:14px;font-weight:600;">${post.userId}</button>
+                                        data-user-idx="${post.userIdx}">${post.userId}</button>
                             </div>
 
                             <div>
-                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${msg_admin_common_nickname}</div>
+                                <div class="adm-community-side-label">${msg_admin_common_nickname}</div>
                                 <button type="button"
                                         class="adm-inline-link js-open-member-context"
-                                        data-user-idx="${post.userIdx}"
-                                        style="font-size:14px;font-weight:600;">${post.nickname}</button>
+                                        data-user-idx="${post.userIdx}">${post.nickname}</button>
                             </div>
 
                             <div>
-                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${msg_admin_community_detail_lastIp}</div>
-                                <div style="font-size:13px;font-family:monospace;color:#94a3b8;">
+                                <div class="adm-community-side-label">${msg_admin_community_detail_lastIp}</div>
+                                <div class="adm-community-side-mono">
                                     <c:choose>
                                         <c:when test="${not empty post.lastIp}">
                                             <button type="button"
@@ -421,13 +410,13 @@
                                                     data-ip-address="${post.lastIp}"
                                                     data-default-tab="blocks">${post.lastIp}</button>
                                         </c:when>
-                                        <c:otherwise><span style="color:#475569;">${msg_admin_community_detail_noRecord}</span></c:otherwise>
+                                        <c:otherwise><span class="adm-community-muted">${msg_admin_community_detail_noRecord}</span></c:otherwise>
                                     </c:choose>
                                 </div>
                             </div>
 
                             <div>
-                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${msg_admin_community_detail_accountStatus}</div>
+                                <div class="adm-community-side-label">${msg_admin_community_detail_accountStatus}</div>
                                 <span class="status-badge ${post.accountStatus}">
                                     <c:choose>
                                         <c:when test="${post.accountStatus == 'ACTIVE'}">${msg_admin_community_detail_accountStatus_active}</c:when>
@@ -440,20 +429,19 @@
                             </div>
 
                             <c:if test="${post.authorResolveCount30d > 0}">
-                                <div class="adm-warning-box">
-                                    <div style="font-size:11px;font-weight:600;margin-bottom:4px;">⚠ ${msg_admin_community_detail_recentResolvedTitle}</div>
-                                    <div style="font-size:13px;">${msg_admin_community_detail_recentResolvedCount}</div>
+                                <div class="adm-warning-box adm-community-side-warning">
+                                    <div class="adm-community-side-warning-title">⚠ ${msg_admin_community_detail_recentResolvedTitle}</div>
+                                    <div class="adm-community-side-warning-body">${msg_admin_community_detail_recentResolvedCount}</div>
                                 </div>
                             </c:if>
 
                             <div class="adm-meta-actions adm-action-stack">
                                 <a href="${pageContext.request.contextPath}/admin/members?searchType=userId&keyword=${post.userId}"
-                                   class="adm-btn adm-btn-ghost adm-link-button" style="font-size:12px;">
+                                   class="adm-btn adm-btn-ghost adm-link-button adm-community-detail-btn">
                                     ${msg_admin_common_memberInfoView}
                                 </a>
                                 <c:if test="${post.accountStatus != 'BLOCKED'}">
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:12px;color:#f87171;border-color:#f87171;"
+                                    <button class="adm-btn adm-btn-ghost adm-community-detail-btn adm-community-danger-btn"
                                             data-useridx="${post.userIdx}"
                                             onclick="blockUser(this.getAttribute('data-useridx'))">
                                         ${msg_admin_community_detail_blockAuthorAccount}

@@ -7813,8 +7813,266 @@ body.sa-light .adm-report-deleted-badge {
     width: 360px;
 }
 
+.adm-community-detail-backrow {
+    margin-bottom: 16px;
+}
+
+.adm-community-empty-state {
+    padding: 40px;
+    text-align: center;
+    color: #64748b;
+}
+
+.adm-community-detail-warning {
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.adm-community-detail-warning-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.adm-community-detail-warning-text {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.adm-community-detail-card {
+    margin-bottom: 20px;
+}
+
+.adm-community-detail-page .adm-split-layout {
+    grid-template-columns: minmax(0, 2.1fr) minmax(286px, .78fr);
+}
+
+.adm-community-detail-head-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.adm-community-detail-btn {
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.adm-community-detail-tags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.adm-community-detail-region {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.adm-community-detail-meta {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #1e2736;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.adm-community-detail-count {
+    white-space: nowrap;
+}
+
+.adm-community-detail-count.is-danger {
+    color: #f87171;
+    font-weight: 700;
+}
+
+.adm-community-detail-date {
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+.adm-community-detail-card-count {
+    color: #64748b;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.adm-community-detail-empty {
+    padding: 24px;
+    text-align: center;
+    color: #475569;
+    font-size: 13px;
+}
+
+.adm-community-report-history-table {
+    min-width: 760px;
+}
+
+.adm-community-detail-reason-cell {
+    font-size: 12px;
+}
+
+.adm-community-detail-status-badge {
+    font-size: 11px;
+}
+
+.adm-community-comments-list {
+    padding: 0 16px 16px;
+}
+
+.adm-community-comment-row {
+    border-bottom: 1px solid #1e2736;
+    padding: 12px 0;
+}
+
+.adm-community-comment-row.is-reply {
+    margin-left: 24px;
+    padding-left: 12px;
+    border-left: 2px solid #1e2736;
+}
+
+.adm-community-comment-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.adm-community-comment-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px 12px;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.adm-community-comment-meta .adm-inline-link:first-child,
+.adm-community-side-label + .adm-inline-link {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.adm-community-comment-userid {
+    margin-left: 6px;
+    color: #64748b;
+    font-size: 11px;
+}
+
+.adm-community-comment-ip,
+.adm-community-comment-ip .adm-inline-link {
+    color: #94a3b8;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+}
+
+.adm-community-comment-status,
+.adm-community-comment-report {
+    font-size: 10px;
+}
+
+.adm-community-comment-report {
+    color: #f87171;
+    font-weight: 700;
+}
+
+.adm-community-comment-actions {
+    flex-shrink: 0;
+}
+
+.adm-community-comment-content {
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.adm-community-comment-date {
+    margin-top: 4px;
+    color: #475569;
+    font-size: 11px;
+}
+
+.adm-community-comment-reply {
+    margin-left: 8px;
+    color: #334155;
+}
+
+.adm-community-side-label {
+    margin-bottom: 2px;
+    color: #64748b;
+    font-size: 11px;
+}
+
+.adm-community-side-mono,
+.adm-community-side-mono .adm-inline-link {
+    color: #94a3b8;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+}
+
+.adm-community-side-warning {
+    margin-top: 0;
+}
+
+.adm-community-side-warning-title {
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.adm-community-side-warning-body {
+    font-size: 13px;
+}
+
 body.sa-light .adm-community-author-name {
     color: #2563eb;
+}
+
+body.sa-light .adm-community-empty-state,
+body.sa-light .adm-community-detail-card-count,
+body.sa-light .adm-community-detail-region,
+body.sa-light .adm-community-detail-meta,
+body.sa-light .adm-community-side-label {
+    color: #64748b;
+}
+
+body.sa-light .adm-community-detail-meta,
+body.sa-light .adm-community-comment-row,
+body.sa-light .adm-community-comment-row.is-reply {
+    border-color: #e2e8f0;
+}
+
+body.sa-light .adm-community-detail-empty,
+body.sa-light .adm-community-comment-date,
+body.sa-light .adm-community-muted {
+    color: #64748b;
+}
+
+body.sa-light .adm-community-comment-content {
+    color: #334155;
+}
+
+body.sa-light .adm-community-comment-reply {
+    color: #94a3b8;
+}
+
+body.sa-light .adm-community-comment-userid,
+body.sa-light .adm-community-comment-ip,
+body.sa-light .adm-community-comment-ip .adm-inline-link,
+body.sa-light .adm-community-side-mono,
+body.sa-light .adm-community-side-mono .adm-inline-link {
+    color: #475569;
 }
 
 @media (max-width: 1280px) {
@@ -7853,6 +8111,14 @@ body.sa-light .adm-community-author-name {
     .adm-community-filter-actions {
         justify-content: flex-start;
     }
+
+    .adm-community-detail-page .adm-split-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-community-detail-page .adm-side-sticky {
+        position: static;
+    }
 }
 
 @media (max-width: 760px) {
@@ -7879,6 +8145,24 @@ body.sa-light .adm-community-author-name {
     .adm-community-search-field {
         grid-column: 1 / -1;
     }
+
+    .adm-community-detail-head-actions {
+        justify-content: flex-start;
+    }
+
+    .adm-community-detail-date {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .adm-community-comment-head {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .adm-community-comment-actions {
+        align-self: flex-start;
+    }
 }
 
 @media (max-width: 560px) {
@@ -7888,6 +8172,24 @@ body.sa-light .adm-community-author-name {
     .adm-community-search-row,
     .adm-inquiry-search-row {
         grid-template-columns: 1fr;
+    }
+
+    .adm-community-detail-warning {
+        align-items: flex-start;
+    }
+
+    .adm-community-comments-list {
+        padding: 0 12px 12px;
+    }
+
+    .adm-community-comment-row.is-reply {
+        margin-left: 10px;
+    }
+
+    .adm-community-detail-head-actions .adm-btn,
+    .adm-community-detail-page .adm-action-stack .adm-btn {
+        width: 100%;
+        justify-content: center;
     }
 }
 
