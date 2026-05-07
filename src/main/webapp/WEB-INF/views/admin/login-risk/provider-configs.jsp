@@ -38,7 +38,7 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content adm-governance-page">
+<div class="adm-content adm-governance-page adm-provider-config-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_security_admin_provider_title}</h1>
@@ -103,7 +103,7 @@
                         <input class="adm-input" type="number" name="timeoutMillis" value="${fn:escapeXml(p.timeoutMillis)}">
                     </label>
                     <label>${msg_security_admin_provider_failPolicy}
-                        <select class="adm-input" name="failOpen">
+                        <select class="adm-select" name="failOpen">
                             <option value="1" ${p.failOpen == 1 ? 'selected' : ''}>${msg_security_admin_provider_failOpen}</option>
                             <option value="0" ${p.failOpen == 0 ? 'selected' : ''}>${msg_security_admin_provider_failClosed}</option>
                         </select>

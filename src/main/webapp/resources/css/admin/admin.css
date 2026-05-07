@@ -5426,6 +5426,8 @@ body.sa-light .adm-audit-bulk-bar {
     align-items: center;
     justify-content: flex-start;
     gap: 8px;
+    width: auto;
+    height: auto;
     min-height: 40px;
     color: #cbd5e1;
     font-size: 13px;
@@ -6084,6 +6086,9 @@ body.sa-light .adm-governance-page .adm-card-body > label.adm-check {
 
 .adm-governance-page .adm-provider-enabled {
     flex: 0 0 auto;
+    width: auto;
+    height: auto;
+    min-width: max-content;
     min-height: 34px;
     padding: 8px 10px;
     border-radius: 8px;
