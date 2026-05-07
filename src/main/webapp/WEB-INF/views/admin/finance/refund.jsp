@@ -11,6 +11,7 @@
 <spring:message var="msg_admin_finance_refund_modal_reasonPlaceholder" code="admin.finance.refund.modal.reasonPlaceholder"/>
 <spring:message var="msg_admin_finance_refund_guide" code="admin.finance.refund.guide"/>
 <spring:message var="msg_admin_finance_refund_applyFilter" code="admin.finance.refund.applyFilter"/>
+<spring:message var="msg_admin_finance_refund_candidatesTitle" code="admin.finance.refund.candidatesTitle"/>
 <spring:message var="msg_admin_finance_refund_col_user" code="admin.finance.refund.col.user"/>
 <spring:message var="msg_admin_finance_refund_col_order" code="admin.finance.refund.col.order"/>
 <spring:message var="msg_admin_finance_refund_col_amount" code="admin.finance.refund.col.amount"/>
@@ -31,6 +32,8 @@
 <spring:message var="msg_admin_finance_refund_modal_reasonLabel" code="admin.finance.refund.modal.reasonLabel"/>
 <spring:message var="msg_admin_finance_refund_modal_cancel" code="admin.finance.refund.modal.cancel"/>
 <spring:message var="msg_admin_finance_refund_modal_confirm" code="admin.finance.refund.modal.confirm"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
+<spring:message var="msg_admin_finance_refund_logsCountDisplay" code="admin.common.currentCountFormat" arguments="${fn:length(recentLogs)}"/>
 <c:set var="activeMenu" value="finance"/>
 <c:set var="pageTitle">${msg_admin_finance_refund_title}</c:set>
 <%@ include file="../layout.jsp" %>
@@ -57,13 +60,14 @@
     </div>
 
     <%-- 검색 --%>
-    <div class="adm-card adm-finance-filter-card adm-finance-refund-filter-card">
+    <div class="adm-card adm-finance-filter-card adm-finance-refund-filter-card adm-overflow-visible">
         <form method="get" action="${pageContext.request.contextPath}/admin/finance/refund"
               class="adm-finance-refund-filterbar">
             <input type="text" name="keyword" value="${fn:escapeXml(keyword)}"
                    class="adm-input"
                    placeholder="${msg_admin_finance_refund_searchPlaceholder}"/>
             <button type="submit" class="adm-btn adm-btn-primary">${msg_admin_finance_refund_applyFilter}</button>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/finance/refund">${msg_admin_common_reset}</a>
             <span class="adm-finance-filter-total">
                 <c:set var="fn_size" value="${candidates != null ? candidates.size() : 0}"/>
                 <spring:message var="msg_admin_finance_refund_candidatesCount_args_fn_size" code="admin.finance.refund.candidatesCount" arguments="${fn_size}"/>${msg_admin_finance_refund_candidatesCount_args_fn_size}
@@ -72,8 +76,15 @@
     </div>
 
     <%-- 환불 후보 테이블 --%>
-    <div class="adm-card adm-finance-table-card adm-finance-refund-table-card">
-        <table class="adm-table adm-finance-refund-table">
+    <div class="adm-card adm-finance-table-card adm-finance-refund-table-card adm-finance-managed-card adm-overflow-visible">
+        <div class="adm-card-head">
+            <div class="adm-card-title">
+                ${msg_admin_finance_refund_candidatesTitle}
+                <span class="adm-section-total-inline">${msg_admin_finance_refund_candidatesCount_args_fn_size}</span>
+            </div>
+        </div>
+        <div class="adm-table-wrap">
+        <table class="adm-table adm-finance-refund-table" data-admin-list-ignore="true">
             <colgroup>
                 <col class="adm-finance-col-id">
                 <col class="adm-finance-col-user">
@@ -124,12 +135,19 @@
             </c:choose>
             </tbody>
         </table>
+        </div>
     </div>
 
     <%-- 최근 환불 audit 로그 --%>
-    <h3 class="adm-finance-section-title">${msg_admin_finance_refund_recentLogs}</h3>
-    <div class="adm-card adm-finance-table-card">
-        <table class="adm-table adm-finance-refund-log-table">
+    <div class="adm-card adm-finance-table-card adm-finance-managed-card adm-overflow-visible">
+        <div class="adm-card-head">
+            <div class="adm-card-title">
+                ${msg_admin_finance_refund_recentLogs}
+                <span class="adm-section-total-inline">${msg_admin_finance_refund_logsCountDisplay}</span>
+            </div>
+        </div>
+        <div class="adm-table-wrap">
+        <table class="adm-table adm-finance-refund-log-table" data-admin-list-ignore="true">
             <colgroup>
                 <col class="adm-finance-col-index">
                 <col class="adm-finance-col-id">
@@ -179,6 +197,7 @@
             </c:choose>
             </tbody>
         </table>
+        </div>
     </div>
 
 </div>

@@ -4423,7 +4423,7 @@ body.sa-light .adm-fin-guide { color: #475569; }
 
 .adm-finance-refund-filterbar {
     display: grid;
-    grid-template-columns: minmax(280px, 1fr) auto minmax(180px, .45fr);
+    grid-template-columns: minmax(280px, 1fr) auto auto minmax(180px, .45fr);
     gap: 8px;
     align-items: center;
 }
@@ -4784,7 +4784,7 @@ body.sa-light .js-finance-page-state {
     }
 
     .adm-finance-refund-filterbar {
-        grid-template-columns: minmax(240px, 1fr) auto;
+        grid-template-columns: minmax(240px, 1fr) auto auto;
     }
 
     .adm-finance-reward-form {
