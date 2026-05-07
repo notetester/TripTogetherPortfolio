@@ -4346,6 +4346,10 @@ body.sa-light .adm-fin-guide { color: #475569; }
     padding: 16px 18px;
 }
 
+.adm-finance-reward-form-card.adm-finance-managed-card {
+    padding: 0;
+}
+
 .adm-finance-reward-form-title {
     margin: 0 0 12px;
     font-size: 14px;
@@ -4357,6 +4361,7 @@ body.sa-light .adm-fin-guide { color: #475569; }
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 10px;
     align-items: end;
+    padding: 16px 18px;
 }
 
 .adm-finance-field-label {

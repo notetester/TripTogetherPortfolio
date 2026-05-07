@@ -62,7 +62,7 @@
     </c:if>
 
     <%-- 탭 (한도 / 적립률) --%>
-    <div class="adm-card adm-finance-policy-tabs-card">
+    <div class="adm-card adm-finance-policy-tabs-card adm-overflow-visible">
         <div class="adm-finance-policy-tabs">
             <button type="button" class="adm-finance-policy-tab"
                     id="adm-fin-tab-limit"
@@ -84,8 +84,12 @@
             ${msg_admin_finance_policy_limit_guide}
         </div>
 
-        <div class="adm-card adm-finance-table-card adm-finance-policy-table-card">
-            <table class="adm-table adm-finance-policy-limit-table">
+        <div class="adm-card adm-finance-table-card adm-finance-policy-table-card adm-finance-managed-card adm-overflow-visible">
+            <div class="adm-card-head">
+                <div class="adm-card-title">${msg_admin_finance_policy_tab_limit}</div>
+            </div>
+            <div class="adm-table-wrap">
+            <table class="adm-table adm-finance-policy-limit-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-finance-col-grade-wide">
                     <col class="adm-finance-col-policy-number">
@@ -151,6 +155,7 @@
                 </c:forEach>
                 </tbody>
             </table>
+            </div>
         </div>
 
         <div class="adm-finance-policy-note">
@@ -168,8 +173,12 @@
             ${msg_admin_finance_policy_reward_guide}
         </div>
 
-        <div class="adm-card adm-finance-table-card adm-finance-policy-reward-table-card">
-            <table class="adm-table adm-finance-policy-reward-table">
+        <div class="adm-card adm-finance-table-card adm-finance-policy-reward-table-card adm-finance-managed-card adm-overflow-visible">
+            <div class="adm-card-head">
+                <div class="adm-card-title">${msg_admin_finance_policy_tab_reward}</div>
+            </div>
+            <div class="adm-table-wrap">
+            <table class="adm-table adm-finance-policy-reward-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-finance-col-event">
                     <col class="adm-finance-col-grade">
@@ -227,11 +236,14 @@
                 </c:choose>
                 </tbody>
             </table>
+            </div>
         </div>
 
         <%-- 신규 등록 / 갱신 폼 --%>
-        <div class="adm-card adm-finance-reward-form-card">
-            <h4 class="adm-finance-reward-form-title">${msg_admin_finance_policy_reward_upsert_title}</h4>
+        <div class="adm-card adm-finance-reward-form-card adm-finance-managed-card adm-overflow-visible">
+            <div class="adm-card-head">
+                <div class="adm-card-title">${msg_admin_finance_policy_reward_upsert_title}</div>
+            </div>
             <form method="post" action="${pageContext.request.contextPath}/admin/finance/policy/reward"
                   class="adm-finance-reward-form">
                 <div>
