@@ -5792,3 +5792,232 @@ body.sa-light .adm-governance-page .adm-appeal-policy-section-title {
         justify-content: flex-start;
     }
 }
+
+/* Security appeal list */
+.adm-governance-page .adm-appeal-filter-card,
+.adm-governance-page .adm-appeal-list-card {
+    overflow: visible;
+    border-radius: 8px;
+}
+
+.adm-governance-page .adm-appeal-filter-card {
+    margin-bottom: 12px;
+}
+
+.adm-governance-page .adm-appeal-filterbar {
+    display: grid;
+    grid-template-columns: minmax(130px, .7fr) minmax(180px, .95fr) minmax(300px, 1.45fr) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-governance-page .adm-appeal-filterbar label,
+.adm-governance-page .adm-appeal-keyword-field {
+    min-width: 0;
+}
+
+.adm-governance-page .adm-appeal-filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.adm-governance-page .adm-appeal-table td {
+    vertical-align: top;
+}
+
+.adm-governance-page .adm-appeal-primary {
+    font-weight: 800;
+    color: #dbeafe;
+}
+
+.adm-governance-page .adm-appeal-summary {
+    display: flex;
+    min-width: 0;
+    max-width: 580px;
+    flex-direction: column;
+    gap: 4px;
+    line-height: 1.45;
+}
+
+.adm-governance-page .adm-appeal-summary strong {
+    color: #e5e7eb;
+}
+
+.adm-governance-page .adm-appeal-summary span,
+.adm-governance-page .adm-appeal-meta-grid {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.adm-governance-page .adm-appeal-summary span,
+.adm-governance-page .adm-appeal-meta-grid span {
+    overflow-wrap: anywhere;
+}
+
+.adm-governance-page .adm-appeal-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 12px;
+    margin-top: 8px;
+    line-height: 1.45;
+}
+
+.adm-governance-page .adm-appeal-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-width: 300px;
+}
+
+.adm-governance-page .adm-appeal-row-actions form {
+    margin: 0;
+}
+
+.adm-governance-page .adm-appeal-row-actions .adm-btn {
+    min-height: 30px;
+    padding: 6px 9px;
+    white-space: nowrap;
+}
+
+.adm-governance-page .appeal-modal-backdrop[hidden] {
+    display: none;
+}
+
+.adm-governance-page .appeal-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(2,6,23,.62);
+    backdrop-filter: blur(4px);
+}
+
+.adm-governance-page .appeal-modal-card {
+    width: min(920px, calc(100vw - 48px));
+    max-height: calc(100vh - 80px);
+    overflow: auto;
+    color: #e2e8f0;
+    border: 1px solid rgba(148,163,184,.22);
+    border-radius: 8px;
+    background: #111827;
+    box-shadow: 0 24px 80px rgba(2,6,23,.42);
+}
+
+.adm-governance-page .appeal-modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(148,163,184,.18);
+}
+
+.adm-governance-page .appeal-modal-title {
+    margin: 0;
+    font-size: 20px;
+    letter-spacing: 0;
+}
+
+.adm-governance-page .appeal-modal-body {
+    display: grid;
+    gap: 12px;
+    padding: 18px 20px;
+}
+
+.adm-governance-page .appeal-modal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.adm-governance-page .appeal-modal-stack {
+    display: grid;
+    gap: 12px;
+}
+
+.adm-governance-page .appeal-modal-item {
+    padding: 12px;
+    border: 1px solid rgba(148,163,184,.18);
+    border-radius: 8px;
+    background: rgba(15,23,42,.65);
+}
+
+.adm-governance-page .appeal-modal-label {
+    margin-bottom: 6px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.adm-governance-page .appeal-modal-value {
+    color: #e2e8f0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.adm-governance-page .appeal-modal-value span {
+    display: block;
+    margin-top: 6px;
+}
+
+body.sa-light .adm-governance-page .adm-appeal-primary,
+body.sa-light .adm-governance-page .adm-appeal-summary strong,
+body.sa-light .adm-governance-page .appeal-modal-title {
+    color: #0f172a;
+}
+
+body.sa-light .adm-governance-page .adm-appeal-summary span,
+body.sa-light .adm-governance-page .adm-appeal-meta-grid,
+body.sa-light .adm-governance-page .appeal-modal-label {
+    color: #64748b;
+}
+
+body.sa-light .adm-governance-page .appeal-modal-card,
+body.sa-light .adm-governance-page .appeal-modal-item {
+    color: #0f172a;
+    border-color: #e2e8f0;
+    background: #ffffff;
+}
+
+body.sa-light .adm-governance-page .appeal-modal-value {
+    color: #0f172a;
+}
+
+@media (max-width: 1240px) {
+    .adm-governance-page .adm-appeal-filterbar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .adm-governance-page .adm-appeal-keyword-field {
+        grid-column: span 2;
+    }
+
+    .adm-governance-page .adm-appeal-filter-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+    .adm-governance-page .adm-appeal-filterbar,
+    .adm-governance-page .adm-appeal-meta-grid,
+    .adm-governance-page .appeal-modal-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-governance-page .adm-appeal-keyword-field {
+        grid-column: auto;
+    }
+
+    .adm-governance-page .adm-appeal-filter-actions .adm-btn {
+        width: auto;
+    }
+
+    .adm-governance-page .adm-appeal-row-actions {
+        min-width: 220px;
+    }
+}
