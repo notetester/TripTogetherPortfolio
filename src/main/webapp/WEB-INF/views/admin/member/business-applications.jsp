@@ -72,21 +72,21 @@
         <div class="adm-alert adm-alert-danger">${fn:escapeXml(businessApplicationError)}</div>
     </c:if>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-business-filter-card">
         <div class="adm-card-body">
             <form id="businessSearchForm" method="get" action="${pageContext.request.contextPath}/admin/business-applications">
                 <div class="adm-filter-bar">
-                    <div style="flex:1;min-width:240px;">
+                    <div class="adm-business-keyword-field">
                         <div class="adm-filter-label">${msg_admin_common_search}</div>
-                        <div style="display:flex;gap:6px;">
-                            <select class="adm-select" name="searchType" style="width:132px;">
+                        <div class="adm-business-search-row">
+                            <select class="adm-select adm-business-search-type" name="searchType">
                                 <option value="all" ${search.searchType eq 'all' ? 'selected' : ''}>${msg_admin_common_all}</option>
                                 <option value="applicant" ${search.searchType eq 'applicant' ? 'selected' : ''}>${msg_admin_business_column_applicant}</option>
                                 <option value="company" ${search.searchType eq 'company' ? 'selected' : ''}>${msg_admin_business_column_companyInfo}</option>
                                 <option value="manager" ${search.searchType eq 'manager' ? 'selected' : ''}>${msg_admin_business_managerSearch}</option>
                                 <option value="businessNumber" ${search.searchType eq 'businessNumber' ? 'selected' : ''}>${msg_admin_business_businessNumberSearch}</option>
                             </select>
-                            <div class="adm-search-box" style="flex:1;">
+                            <div class="adm-search-box adm-business-search-box">
                                 <span class="adm-search-ico">🔍</span>
                                 <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}" placeholder="${msg_admin_common_search}">
                             </div>
@@ -114,14 +114,14 @@
 
                     <div>
                         <div class="adm-filter-label">${msg_admin_business_column_appliedAt}</div>
-                        <div style="display:flex;gap:4px;align-items:center;">
-                            <input class="adm-input" type="date" name="dateFrom" value="${search.dateFrom}" style="width:130px;">
-                            <span style="color:#475569;font-size:12px;">~</span>
-                            <input class="adm-input" type="date" name="dateTo" value="${search.dateTo}" style="width:130px;">
+                        <div class="adm-business-date-row">
+                            <input class="adm-input adm-business-date-input" type="date" name="dateFrom" value="${search.dateFrom}">
+                            <span class="adm-business-date-sep">~</span>
+                            <input class="adm-input adm-business-date-input" type="date" name="dateTo" value="${search.dateTo}">
                         </div>
                     </div>
 
-                    <div style="display:flex;gap:6px;align-items:flex-end;">
+                    <div class="adm-business-filter-actions">
                         <button type="submit" class="adm-btn adm-btn-primary">🔍 ${msg_admin_common_searchButton}</button>
                         <button type="button" class="adm-btn adm-btn-ghost" onclick="resetBusinessFilters()">${msg_admin_common_reset}</button>
                     </div>
@@ -135,11 +135,11 @@
         </div>
     </div>
 
-    <div class="adm-card js-business-section-card adm-managed-section-card" data-section="businessApplications" data-enhanced="true" style="overflow:visible;">
+    <div class="adm-card js-business-section-card adm-managed-section-card adm-overflow-visible" data-section="businessApplications" data-enhanced="true">
         <div class="adm-card-head adm-business-list-head">
             <div class="adm-card-title">
                 🏢 ${msg_admin_business_pageTitle}
-                <span id="businessTotalLabel" style="font-size:12px;font-weight:400;color:#475569;">총 ${total}건</span>
+                <span id="businessTotalLabel" class="adm-business-total-label">총 ${total}건</span>
             </div>
             <div class="adm-business-export-control adm-export-control">
                 <select class="adm-select adm-business-export-format" id="businessExportFormat">
@@ -167,7 +167,7 @@
             </div>
             <div class="adm-business-view-tools">
                 <div id="businessPrimaryTools" class="adm-business-primary-tools">
-                    <button type="button" class="adm-dash-sort-reset js-business-sort-reset adm-business-tool-item adm-business-sort-reset" style="display:none;" onclick="resetBusinessSort()"></button>
+                    <button type="button" class="adm-dash-sort-reset js-business-sort-reset adm-business-tool-item adm-business-sort-reset adm-is-hidden" onclick="resetBusinessSort()"></button>
                     <label class="adm-business-tool-item adm-business-tool adm-business-mode-tool">
                         <span class="adm-business-tool-label">${msg_admin_blocks_mode_label}</span>
                         <select class="adm-select" id="businessModeSelect" title="${msg_admin_blocks_mode_label}">
@@ -192,16 +192,16 @@
             </div>
         </div>
 
-        <div class="adm-table-wrap" style="overflow:visible;">
+        <div class="adm-table-wrap adm-overflow-visible">
             <table class="adm-table adm-section-table-fixed adm-business-section-table" data-admin-list-ignore="true" data-section="businessApplications">
                 <thead>
                 <tr>
-                    <th style="width:40px;text-align:center;"><input type="checkbox" id="businessCheckAll" class="adm-check" onchange="toggleAllBusiness(this)"></th>
-                    <th class="js-business-sort" data-sort="applicant" onclick="businessSortBy('applicant')" style="cursor:pointer;user-select:none;">${msg_admin_business_column_applicant}</th>
-                    <th class="js-business-sort" data-sort="requestedRole" onclick="businessSortBy('requestedRole')" style="cursor:pointer;user-select:none;">${msg_admin_business_column_requestedRole}</th>
-                    <th class="js-business-sort" data-sort="company" onclick="businessSortBy('company')" style="cursor:pointer;user-select:none;">${msg_admin_business_column_companyInfo}</th>
-                    <th class="js-business-sort" data-sort="status" onclick="businessSortBy('status')" style="cursor:pointer;user-select:none;">${msg_admin_common_status}</th>
-                    <th class="js-business-sort" data-sort="createdAt" onclick="businessSortBy('createdAt')" style="cursor:pointer;user-select:none;">${msg_admin_business_column_appliedAt}</th>
+                    <th class="adm-business-check-head"><input type="checkbox" id="businessCheckAll" class="adm-check" onchange="toggleAllBusiness(this)"></th>
+                    <th class="js-business-sort" data-sort="applicant" onclick="businessSortBy('applicant')">${msg_admin_business_column_applicant}</th>
+                    <th class="js-business-sort" data-sort="requestedRole" onclick="businessSortBy('requestedRole')">${msg_admin_business_column_requestedRole}</th>
+                    <th class="js-business-sort" data-sort="company" onclick="businessSortBy('company')">${msg_admin_business_column_companyInfo}</th>
+                    <th class="js-business-sort" data-sort="status" onclick="businessSortBy('status')">${msg_admin_common_status}</th>
+                    <th class="js-business-sort" data-sort="createdAt" onclick="businessSortBy('createdAt')">${msg_admin_business_column_appliedAt}</th>
                     <th>${msg_admin_business_column_review}</th>
                 </tr>
                 </thead>
@@ -229,8 +229,8 @@
             <div class="adm-modal-title" id="businessApplicationDetailTitle">기업 신청 상세</div>
             <button class="adm-modal-close" type="button" onclick="closeBusinessApplicationDetailModal()">✕</button>
         </div>
-        <div class="adm-modal-body" id="businessApplicationDetailBody" style="padding:20px 24px;max-height:72vh;overflow-y:auto;"></div>
-        <div class="adm-modal-foot" style="gap:8px;justify-content:flex-end;">
+        <div class="adm-modal-body adm-business-detail-body" id="businessApplicationDetailBody"></div>
+        <div class="adm-modal-foot adm-business-detail-foot">
             <button class="adm-btn adm-btn-ghost" type="button" id="businessApplicationDetailMemberBtn">회원 설정</button>
             <button class="adm-btn adm-btn-primary" type="button" id="businessApplicationDetailReviewBtn">검토 위치로 이동</button>
             <button class="adm-btn adm-btn-ghost" type="button" onclick="closeBusinessApplicationDetailModal()">${msg_admin_common_close}</button>
@@ -317,7 +317,7 @@ function updateBusinessSortIndicators() {
     const reset = document.querySelector('.js-business-sort-reset');
     if (reset) {
         reset.textContent = BUSINESS_MSG.sortReset || '↺ 초기화';
-        reset.style.display = businessSectionState.sortBy ? '' : 'none';
+        reset.classList.toggle('adm-is-hidden', !businessSectionState.sortBy);
     }
     syncBusinessHiddenInputs();
     syncBusinessControlOverflow();
@@ -363,7 +363,7 @@ function compareBusinessRows(a, b) {
         : String(av).localeCompare(String(bv), BUSINESS_LOCALE || undefined, {numeric:true, sensitivity:'base'});
     return cmp * (businessSectionState.sortDir === 'DESC' ? -1 : 1);
 }
-function businessEmptyRow() { return '<tr class="adm-local-empty"><td colspan="7" style="text-align:center;color:#64748b;padding:32px;">' + BUSINESS_MSG.noResults + '</td></tr>'; }
+function businessEmptyRow() { return '<tr class="adm-local-empty"><td colspan="7" class="adm-local-empty-cell">' + BUSINESS_MSG.noResults + '</td></tr>'; }
 async function renderServerBusiness(pageOverride) {
     businessSectionState.mode = 'SERVER';
     const params = buildBusinessParams(pageOverride, {includeSort:true});
@@ -460,7 +460,7 @@ function updateBusinessBulkBar() {
     const exportBtn = document.getElementById('businessExportSelectedBtn');
     if (exportBtn) {
         exportBtn.disabled = ids.length === 0;
-        exportBtn.style.color = ids.length > 0 ? '#e2e8f0' : '#94a3b8';
+        exportBtn.classList.toggle('has-selection', ids.length > 0);
         exportBtn.textContent = BUSINESS_MSG.exportSelected + ' (' + ids.length + ')';
     }
     const all = document.getElementById('businessCheckAll');
@@ -646,7 +646,7 @@ let businessControlOverflowSync = null;
 
 function isVisibleBusinessTool(tool) {
     if (!tool) return false;
-    return !tool.classList.contains('js-business-sort-reset') || tool.style.display !== 'none';
+    return !tool.classList.contains('js-business-sort-reset') || !tool.classList.contains('adm-is-hidden');
 }
 
 function syncBusinessControlOverflow() {

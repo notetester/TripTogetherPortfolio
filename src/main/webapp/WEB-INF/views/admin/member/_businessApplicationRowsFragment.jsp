@@ -48,7 +48,7 @@
         data-reviewed-at="${app.reviewedAt}"
         data-reviewed-at-display="${appReviewedAtDisplay}"
         data-original-index="${st.index}">
-        <td style="width:40px;text-align:center;">
+        <td class="adm-business-check-cell">
             <input type="checkbox" class="adm-check js-business-row-check" value="${app.applicationIdx}" onchange="updateBusinessBulkBar()">
         </td>
         <td>
@@ -84,8 +84,8 @@
             <button type="button"
                     class="adm-cell-link js-open-business-detail"
                     data-default-focus="company">
-                <span style="font-weight:700;color:#e2e8f0;">${fn:escapeXml(app.companyName)}</span>
-                <span class="adm-cell-link-note" style="margin-top:3px;">
+                <span class="adm-business-company-name">${fn:escapeXml(app.companyName)}</span>
+                <span class="adm-cell-link-note adm-business-company-number">
                     ${msg_admin_business_businessNumber}
                     <c:choose>
                         <c:when test="${not empty app.businessNumber}">${fn:escapeXml(app.businessNumber)}</c:when>
@@ -98,7 +98,7 @@
                 <span class="adm-cell-link-note">${msg_admin_common_viewDetail}</span>
             </button>
             <c:if test="${not empty app.description}">
-                <div style="font-size:12px;color:#cbd5e1;margin-top:6px;max-width:420px;white-space:pre-wrap;">${fn:escapeXml(app.description)}</div>
+                <div class="adm-business-description-cell">${fn:escapeXml(app.description)}</div>
                 <div class="adm-tr-inline js-admin-translation-widget"
                      data-label="${msg_admin_translation_label_businessAppDescription}"
                      data-source-type="BUSINESS_APPLICATION"
@@ -122,7 +122,7 @@
                     </c:choose>
                 </span>
                 <c:if test="${not empty app.rejectReason}">
-                    <span class="adm-cell-link-note" style="color:#fca5a5;">${fn:escapeXml(app.rejectReason)}</span>
+                    <span class="adm-cell-link-note adm-business-reject-note">${fn:escapeXml(app.rejectReason)}</span>
                 </c:if>
                 <c:if test="${not empty app.reviewerNickname}">
                     <span class="adm-cell-link-note">${msg_admin_business_reviewer}</span>
@@ -163,7 +163,7 @@
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <span style="color:#64748b;font-size:12px;">${msg_admin_business_reviewDone}</span>
+                    <span class="adm-business-review-done">${msg_admin_business_reviewDone}</span>
                 </c:otherwise>
             </c:choose>
         </td>
@@ -172,7 +172,7 @@
 
 <c:if test="${empty applicationList}">
     <tr class="adm-local-empty">
-        <td colspan="7" style="text-align:center;padding:40px;color:#64748b;">
+        <td colspan="7" class="adm-local-empty-cell">
             ${msg_admin_business_noResults}
         </td>
     </tr>

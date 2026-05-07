@@ -3378,6 +3378,93 @@ body.sa-light .adm-member-section-table th.js-member-sort.sorted {
 }
 
 /* 기업 신청: 회원 관리 기준 목록 툴바 */
+.adm-business-filter-card {
+    margin-bottom: 20px;
+}
+
+.adm-business-keyword-field {
+    flex: 1;
+    min-width: 240px;
+}
+
+.adm-business-search-row,
+.adm-business-date-row,
+.adm-business-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.adm-business-search-type {
+    width: 132px;
+}
+
+.adm-business-search-box {
+    flex: 1;
+}
+
+.adm-business-date-input {
+    width: 130px;
+}
+
+.adm-business-date-sep,
+.adm-business-total-label,
+.adm-business-review-done {
+    color: #475569;
+}
+
+.adm-business-date-sep,
+.adm-business-review-done,
+.adm-business-total-label {
+    font-size: 12px;
+}
+
+.adm-business-total-label {
+    font-weight: 400;
+}
+
+.adm-business-filter-actions {
+    align-items: flex-end;
+}
+
+.adm-business-check-head,
+.adm-business-check-cell {
+    width: 40px;
+    text-align: center;
+}
+
+.adm-business-company-name {
+    color: #e2e8f0;
+    font-weight: 700;
+}
+
+.adm-business-company-number {
+    margin-top: 3px;
+}
+
+.adm-business-description-cell {
+    max-width: 420px;
+    margin-top: 6px;
+    color: #cbd5e1;
+    font-size: 12px;
+    white-space: pre-wrap;
+}
+
+.adm-business-reject-note {
+    color: #fca5a5;
+}
+
+.adm-business-detail-body {
+    max-height: 72vh;
+    overflow-y: auto;
+    padding: 20px 24px;
+}
+
+.adm-business-detail-foot {
+    justify-content: flex-end;
+    gap: 8px;
+}
+
 .js-business-section-card .adm-business-list-head {
     min-height: 64px;
 }
@@ -3612,6 +3699,15 @@ body.sa-light .adm-business-tool {
 body.sa-light .adm-business-tool-label {
     color: #64748b;
 }
+body.sa-light .adm-business-company-name {
+    color: #0f172a;
+}
+body.sa-light .adm-business-description-cell {
+    color: #475569;
+}
+body.sa-light .adm-business-reject-note {
+    color: #dc2626;
+}
 body.sa-light .adm-business-overflow-panel {
     background: #ffffff;
     border-color: #e2e8f0;
@@ -3648,6 +3744,17 @@ body.sa-light .adm-business-section-table th.js-business-sort.sorted {
     }
 }
 @media (max-width: 767px) {
+    .adm-business-search-row,
+    .adm-business-date-row,
+    .adm-business-filter-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .adm-business-search-type,
+    .adm-business-date-input,
+    .adm-business-filter-actions .adm-btn {
+        width: 100%;
+    }
     .js-business-section-card .adm-business-controlbar,
     .adm-managed-section-card .adm-managed-local-toolbar,
     .adm-managed-section-card .adm-local-pagination {
