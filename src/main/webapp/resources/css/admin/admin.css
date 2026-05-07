@@ -3236,6 +3236,17 @@ body.sa-light .js-member-section-card .js-member-page-state {
 .adm-admin-list-export-tool {
     flex: 0 0 auto;
 }
+.adm-admin-list-compact-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    margin-left: 8px;
+}
+.adm-admin-list-compact-export .js-admin-list-export-format {
+    width: 90px;
+    min-width: 90px;
+}
 .adm-section-list-footer {
     display: flex;
     align-items: center;
@@ -3373,6 +3384,9 @@ body.sa-light .adm-admin-list-overflow-panel {
     .adm-section-list-filter,
     .adm-section-list-filter .adm-select,
     .adm-section-list-search,
+    .adm-admin-list-compact-export,
+    .adm-admin-list-compact-export .adm-export-menu,
+    .adm-admin-list-compact-export .js-export-toggle,
     .adm-admin-list-bulkbar .adm-btn,
     .adm-admin-list-overflow-menu,
     .adm-admin-list-overflow-toggle,

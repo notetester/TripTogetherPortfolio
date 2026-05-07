@@ -210,6 +210,49 @@
         });
     }
 
+    function hasPageOwnedSelectionControls(table) {
+        const card = closestCard(table);
+        if (!card) return false;
+        return !!card.querySelector('#bulkBar, [class*="bulk-bar"], [class*="bulkbar"]');
+    }
+
+    function insertCompactManualTools(table) {
+        const card = closestCard(table);
+        if (!card) return null;
+
+        const existing = card.querySelector('.js-admin-list-tools-toolbar[data-table-id="' + table.id + '"]');
+        if (existing) return existing;
+
+        const target = card.querySelector('.adm-card-head [class*="list-controls"], .adm-card-head [class*="controls"], .adm-card-head') || card;
+        const bulkBar = card.querySelector('#bulkBar, [class*="bulk-bar"], [class*="bulkbar"]');
+
+        if (bulkBar && !bulkBar.querySelector('.js-admin-list-clear-selection')) {
+            const clear = document.createElement('button');
+            clear.type = 'button';
+            clear.className = 'adm-btn adm-btn-ghost js-admin-list-clear-selection';
+            clear.textContent = TEXT.clearSelection;
+            bulkBar.appendChild(clear);
+        }
+
+        const tools = document.createElement('div');
+        tools.className = 'adm-export-control adm-admin-list-compact-export js-admin-list-tools-toolbar';
+        tools.dataset.tableId = table.id;
+        tools.innerHTML =
+            '<select class="adm-select js-admin-list-export-format" aria-label="' + TEXT.exportLabel + ' 형식">'
+            + '<option value="csv">' + TEXT.csv + '</option>'
+            + '<option value="excel">' + TEXT.excel + '</option>'
+            + '</select>'
+            + '<div class="adm-export-menu">'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ ' + TEXT.exportLabel + ' ▾</button>'
+            + '<div class="adm-export-dropdown">'
+            + '<button type="button" class="js-admin-list-export" data-scope="page">📄 ' + TEXT.downloadPage + '</button>'
+            + '<button type="button" class="js-admin-list-export js-admin-list-export-selected" data-scope="selected" disabled>☑ ' + TEXT.downloadSelected + ' (0)</button>'
+            + '</div></div>';
+
+        target.appendChild(tools);
+        return tools;
+    }
+
     function rowSelectionCheckbox(row) {
         return row ? row.querySelector('input.js-admin-list-row-check[data-admin-list-select="true"]') : null;
     }
@@ -761,12 +804,19 @@
     }
 
     function clearSelection(table) {
-        allSelectionCheckboxes(table).forEach(function (cb) { cb.checked = false; });
+        const changed = [];
+        allSelectionCheckboxes(table).forEach(function (cb) {
+            if (cb.checked) changed.push(cb);
+            cb.checked = false;
+        });
         const all = table.querySelector('.js-admin-list-check-all[data-table-id="' + table.id + '"][data-admin-list-select-all="true"]');
         if (all) {
             all.checked = false;
             all.indeterminate = false;
         }
+        changed.forEach(function (cb) {
+            cb.dispatchEvent(new Event('change', { bubbles: true }));
+        });
         updateSelectionUi(table);
     }
 
@@ -819,6 +869,14 @@
 
         toolbar.addEventListener('click', handleClick);
         if (footer) footer.addEventListener('click', handleClick);
+        if (toolbar.classList.contains('adm-admin-list-compact-export')) {
+            const card = closestCard(table);
+            if (card) {
+                card.querySelectorAll('#bulkBar, [class*="bulk-bar"], [class*="bulkbar"]').forEach(function (bar) {
+                    bar.addEventListener('click', handleClick);
+                });
+            }
+        }
 
         toolbar.addEventListener('change', function (event) {
             if (event.target.matches('.js-admin-list-mode')) {
@@ -872,6 +930,16 @@
         table.classList.add('adm-admin-list-table');
 
         captureState(table);
+        if (getState(table).hasManualSelection && table.dataset.adminListIgnore === 'true' && hasPageOwnedSelectionControls(table)) {
+            const compactToolbar = insertCompactManualTools(table);
+            if (!compactToolbar) return;
+            normalizeManualSelection(table);
+            bindToolbar(table, compactToolbar);
+            bindSelection(table);
+            updateSelectionUi(table);
+            return;
+        }
+
         const toolbar = insertToolbar(table);
         if (!toolbar) return;
 
