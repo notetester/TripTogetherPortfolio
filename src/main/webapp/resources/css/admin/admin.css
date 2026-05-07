@@ -2153,6 +2153,111 @@ body.sa-light .adm-nav-group-caret      { color: #64748b; }
     .adm-chart-grid { grid-template-columns: 1fr; }
 }
 
+/* Main admin dashboard */
+.adm-dashboard-page .stat-grid {
+    margin-bottom: 20px;
+}
+
+.adm-dashboard-page .stat-card .adm-inline-actions,
+.adm-dashboard-page .adm-social-summary-card .adm-inline-actions {
+    margin-top: 12px;
+}
+
+.adm-dashboard-card {
+    margin-bottom: 20px;
+}
+
+.adm-dashboard-card-head {
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.adm-dashboard-card-subtitle {
+    margin-top: 6px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.adm-dashboard-sales-stack {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+.adm-dashboard-sales-amount {
+    height: 300px;
+}
+
+.adm-dashboard-sales-count {
+    height: 240px;
+}
+
+.adm-dashboard-sales-summary {
+    margin-top: 16px;
+}
+
+.adm-dashboard-service-grid {
+    margin-bottom: 0;
+}
+
+.adm-dashboard-quicklinks,
+.adm-sales-modal-filter {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.adm-sales-modal {
+    max-width: 920px;
+}
+
+.adm-sales-modal-filter {
+    align-items: flex-end;
+    margin-bottom: 12px;
+}
+
+.adm-sales-modal-field {
+    flex: 0 0 180px;
+    max-width: 180px;
+    min-width: 0;
+}
+
+.adm-sales-modal-label {
+    display: block;
+    margin-bottom: 6px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.adm-sales-modal-field .adm-input {
+    width: 100%;
+}
+
+.adm-sales-modal-status {
+    margin-bottom: 12px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+@media (max-width: 640px) {
+    .adm-dashboard-card-head,
+    .adm-sales-modal-filter {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .adm-dashboard-quicklinks .adm-btn,
+    .adm-sales-modal-filter .adm-btn,
+    .adm-sales-modal-field {
+        width: 100%;
+        max-width: none;
+    }
+}
+
 /* admin translation */
 .adm-tr-inline { margin-top:10px; }
 .adm-tr-widget-box { margin-top:10px; padding:12px; border:1px dashed rgba(148,163,184,.35); border-radius:12px; background:rgba(15,23,42,.35); }

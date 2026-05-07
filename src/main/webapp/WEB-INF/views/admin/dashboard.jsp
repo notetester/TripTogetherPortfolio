@@ -76,13 +76,13 @@
 
 <%@ include file="layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-dashboard-page">
     <div class="stat-grid">
         <div class="stat-card blue">
             <div class="stat-label">${msg_admin_dashboard_totalMembers}</div>
             <div class="stat-value"><fmt:formatNumber value="${stats.totalMembers}" pattern="#,###"/></div>
             <div class="stat-sub">${msg_admin_dashboard_todayNewMembers}</div>
-            <div class="adm-inline-actions" style="margin-top:12px;">
+            <div class="adm-inline-actions">
                 <a href="${pageContext.request.contextPath}/admin/members" class="adm-inline-chip">${msg_admin_layout_menu_members}</a>
             </div>
             <div class="stat-icon">👥</div>
@@ -103,7 +103,7 @@
             <div class="stat-label">${msg_admin_dashboard_todayFailedLogins}</div>
             <div class="stat-value"><fmt:formatNumber value="${stats.todayFailedLogins}" pattern="#,###"/></div>
             <div class="stat-sub">${msg_admin_dashboard_loginLogoutSummary}</div>
-            <div class="adm-inline-actions" style="margin-top:12px;">
+            <div class="adm-inline-actions">
                 <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGIN&amp;success=FAIL" class="adm-inline-chip">${msg_admin_dashboard_viewFailedLogins}</a>
             </div>
             <div class="stat-icon">🚨</div>
@@ -112,7 +112,7 @@
             <div class="stat-label">${msg_admin_dashboard_socialLinked}</div>
             <div class="stat-value"><fmt:formatNumber value="${stats.kakaoLinked + stats.naverLinked + stats.googleLinked}" pattern="#,###"/></div>
             <div class="stat-sub">${msg_admin_dashboard_socialLinkedSub}</div>
-            <div class="adm-inline-actions" style="margin-top:12px;">
+            <div class="adm-inline-actions">
                 <a href="${pageContext.request.contextPath}/admin/members" class="adm-inline-chip">${msg_admin_layout_menu_members}</a>
             </div>
             <div class="stat-icon">🔗</div>
@@ -121,7 +121,7 @@
             <div class="stat-label">${msg_admin_dashboard_pendingInquiries}</div>
             <div class="stat-value"><fmt:formatNumber value="${stats.pendingInquiries}" pattern="#,###"/></div>
             <div class="stat-sub">${msg_admin_dashboard_totalInquiries}</div>
-            <div class="adm-inline-actions" style="margin-top:12px;">
+            <div class="adm-inline-actions">
                 <a href="${pageContext.request.contextPath}/admin/inquiries?status=PENDING" class="adm-inline-chip">${msg_admin_dashboard_viewPendingInquiries}</a>
             </div>
             <div class="stat-icon">📩</div>
@@ -147,11 +147,11 @@
         </div>
     </div>
 
-    <div class="adm-card" style="margin-bottom:20px;">
-        <div class="adm-card-head" style="justify-content:space-between;gap:12px;align-items:flex-start;">
+    <div class="adm-card adm-dashboard-card adm-dashboard-sales-card">
+        <div class="adm-card-head adm-dashboard-card-head">
             <div>
                 <div class="adm-card-title">${msg_admin_dashboard_sales_title}</div>
-                <div style="margin-top:6px;font-size:12px;color:#64748b;">
+                <div class="adm-dashboard-card-subtitle">
                     ${msg_admin_dashboard_sales_sub_args_30}
                 </div>
             </div>
@@ -162,29 +162,29 @@
             </div>
         </div>
         <div class="adm-card-body">
-            <div style="display:grid;grid-template-columns:1fr;gap:18px;">
-                <div class="adm-chart-box" style="height:300px;">
+            <div class="adm-dashboard-sales-stack">
+                <div class="adm-chart-box adm-dashboard-sales-amount">
                     <canvas id="salesAmountChart"></canvas>
                 </div>
-                <div class="adm-chart-box" style="height:240px;">
+                <div class="adm-chart-box adm-dashboard-sales-count">
                     <canvas id="salesCountChart"></canvas>
                 </div>
             </div>
-            <div class="adm-summary-grid" id="salesSummaryGrid" style="margin-top:16px;"></div>
+            <div class="adm-summary-grid adm-dashboard-sales-summary" id="salesSummaryGrid"></div>
         </div>
     </div>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-dashboard-card">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_admin_dashboard_serviceOverview}</div>
         </div>
         <div class="adm-card-body">
-            <div class="stat-grid" style="margin-bottom:0;">
+            <div class="stat-grid adm-dashboard-service-grid">
                 <div class="stat-card">
                     <div class="stat-label">${msg_admin_dashboard_communityPosts}</div>
                     <div class="stat-value"><fmt:formatNumber value="${stats.totalCommunityPosts}" pattern="#,###"/></div>
                     <div class="stat-sub">${msg_admin_dashboard_activePosts}</div>
-                    <div class="adm-inline-actions" style="margin-top:12px;">
+                    <div class="adm-inline-actions">
                         <a href="${pageContext.request.contextPath}/admin/community" class="adm-inline-chip">${msg_admin_layout_menu_community}</a>
                     </div>
                 </div>
@@ -192,7 +192,7 @@
                     <div class="stat-label">${msg_admin_dashboard_activeReports}</div>
                     <div class="stat-value"><fmt:formatNumber value="${stats.activeReports}" pattern="#,###"/></div>
                     <div class="stat-sub">${msg_admin_dashboard_activeReportsSub}</div>
-                    <div class="adm-inline-actions" style="margin-top:12px;">
+                    <div class="adm-inline-actions">
                         <a href="${pageContext.request.contextPath}/admin/reports?status=IN_REVIEW" class="adm-inline-chip">${msg_admin_layout_menu_reports}</a>
                     </div>
                 </div>
@@ -200,7 +200,7 @@
                     <div class="stat-label">${msg_admin_dashboard_completedInquiries}</div>
                     <div class="stat-value"><fmt:formatNumber value="${stats.completedInquiries}" pattern="#,###"/></div>
                     <div class="stat-sub">${msg_admin_dashboard_completedInquiriesSub}</div>
-                    <div class="adm-inline-actions" style="margin-top:12px;">
+                    <div class="adm-inline-actions">
                         <a href="${pageContext.request.contextPath}/admin/inquiries?status=COMPLETED" class="adm-inline-chip">${msg_admin_layout_menu_inquiries}</a>
                     </div>
                 </div>
@@ -208,7 +208,7 @@
                     <div class="stat-label">${msg_admin_dashboard_todayLogouts}</div>
                     <div class="stat-value"><fmt:formatNumber value="${stats.todayLogouts}" pattern="#,###"/></div>
                     <div class="stat-sub">${msg_admin_dashboard_logoutProviderSummary}</div>
-                    <div class="adm-inline-actions" style="margin-top:12px;">
+                    <div class="adm-inline-actions">
                         <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGOUT" class="adm-inline-chip">${msg_admin_dashboard_viewLogoutHistory}</a>
                     </div>
                 </div>
@@ -216,7 +216,7 @@
         </div>
     </div>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-dashboard-card">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_admin_dashboard_socialOverview}</div>
         </div>
@@ -228,7 +228,7 @@
                         <span class="adm-social-summary-label">${msg_admin_logs_provider_kakao}</span>
                     </div>
                     <div class="social-card-value adm-social-summary-value"><fmt:formatNumber value="${stats.kakaoLinked}" pattern="#,###"/></div>
-                    <div class="adm-inline-actions" style="margin-top:12px;">
+                    <div class="adm-inline-actions">
                         <a href="${pageContext.request.contextPath}/admin/members?provider=KAKAO" class="adm-inline-chip">${msg_admin_layout_menu_members}</a>
                     </div>
                 </div>
@@ -238,7 +238,7 @@
                         <span class="adm-social-summary-label">${msg_admin_logs_provider_naver}</span>
                     </div>
                     <div class="social-card-value adm-social-summary-value"><fmt:formatNumber value="${stats.naverLinked}" pattern="#,###"/></div>
-                    <div class="adm-inline-actions" style="margin-top:12px;">
+                    <div class="adm-inline-actions">
                         <a href="${pageContext.request.contextPath}/admin/members?provider=NAVER" class="adm-inline-chip">${msg_admin_layout_menu_members}</a>
                     </div>
                 </div>
@@ -255,7 +255,7 @@
                         <span class="adm-social-summary-label">${msg_admin_logs_provider_google}</span>
                     </div>
                     <div class="social-card-value adm-social-summary-value"><fmt:formatNumber value="${stats.googleLinked}" pattern="#,###"/></div>
-                    <div class="adm-inline-actions" style="margin-top:12px;">
+                    <div class="adm-inline-actions">
                         <a href="${pageContext.request.contextPath}/admin/members?provider=GOOGLE" class="adm-inline-chip">${msg_admin_layout_menu_members}</a>
                     </div>
                 </div>
@@ -267,7 +267,7 @@
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_admin_dashboard_quickLinks}</div>
         </div>
-        <div class="adm-card-body" style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div class="adm-card-body adm-dashboard-quicklinks">
             <a href="${pageContext.request.contextPath}/admin/members" class="adm-btn adm-btn-primary">👥 ${msg_admin_layout_menu_members}</a>
             <a href="${pageContext.request.contextPath}/admin/policies" class="adm-btn adm-btn-ghost">⚙️ ${msg_admin_layout_menu_policies}</a>
             <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGIN&amp;success=FAIL" class="adm-btn adm-btn-ghost">🔐 ${msg_admin_dashboard_viewFailedLogins}</a>
@@ -278,24 +278,24 @@
 </div>
 
 <div class="adm-modal-overlay" id="salesDetailModal">
-    <div class="adm-modal" style="max-width:920px;">
+    <div class="adm-modal adm-sales-modal">
         <div class="adm-modal-head">
             <div class="adm-modal-title">${msg_admin_dashboard_sales_pageTitle}</div>
             <button class="adm-modal-close" type="button" onclick="closeSalesDetailModal()">✕</button>
         </div>
         <div class="adm-modal-body">
-            <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px;">
-                <div style="flex:0 0 180px;max-width:180px;">
-                    <label for="salesDaysInput" style="display:block;margin-bottom:6px;font-size:12px;color:#64748b;">
+            <div class="adm-sales-modal-filter">
+                <div class="adm-sales-modal-field">
+                    <label for="salesDaysInput" class="adm-sales-modal-label">
                         ${msg_admin_dashboard_sales_daysLabel}
                     </label>
-                    <input type="number" id="salesDaysInput" class="adm-input" min="1" max="365" value="30" style="width:100%;">
+                    <input type="number" id="salesDaysInput" class="adm-input" min="1" max="365" value="30">
                 </div>
                 <button type="button" class="adm-btn adm-btn-primary" onclick="loadSalesStats()">
                     ${msg_admin_common_searchButton}
                 </button>
             </div>
-            <div id="salesDetailStatus" style="font-size:12px;color:#64748b;margin-bottom:12px;">
+            <div id="salesDetailStatus" class="adm-sales-modal-status">
                 ${msg_admin_dashboard_sales_sub_args_30}
             </div>
         </div>
