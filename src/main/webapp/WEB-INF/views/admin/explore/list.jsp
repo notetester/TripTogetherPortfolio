@@ -67,47 +67,47 @@
 <c:set var="pageTitle" value="${msg_admin_explore_list_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-explore-page">
     <div class="adm-admin-tabs">
-        <a class="adm-tab active" href="${pageContext.request.contextPath}/admin/explore">
+        <a class="adm-tab adm-tab-link active" href="${pageContext.request.contextPath}/admin/explore">
             ${msg_admin_explore_tabs_spots}
         </a>
-        <a class="adm-tab" href="${pageContext.request.contextPath}/admin/explore/reviews">
+        <a class="adm-tab adm-tab-link" href="${pageContext.request.contextPath}/admin/explore/reviews">
             ${msg_admin_explore_tabs_reviews}
         </a>
     </div>
 
     <div class="adm-summary-grid">
-        <div class="adm-summary-card">
+        <div class="adm-card adm-summary-card">
             <div class="adm-summary-label">${msg_admin_explore_kpi_totalSpots}</div>
-            <div class="adm-summary-value">${stats.totalSpots}</div>
+            <div class="adm-summary-value is-primary">${stats.totalSpots}</div>
             <div class="adm-summary-sub">
                 <spring:message var="msg_admin_explore_kpi_activeSpots_args_stats_activeSpots" code="admin.explore.kpi.activeSpots" arguments="${stats.activeSpots}"/>${msg_admin_explore_kpi_activeSpots_args_stats_activeSpots}
             </div>
         </div>
-        <div class="adm-summary-card">
+        <div class="adm-card adm-summary-card">
             <div class="adm-summary-label">${msg_admin_explore_kpi_deletedSpots}</div>
-            <div class="adm-summary-value">${stats.deletedSpots}</div>
+            <div class="adm-summary-value is-danger">${stats.deletedSpots}</div>
             <div class="adm-summary-sub">${msg_admin_explore_kpi_deletedSpotsSub}</div>
         </div>
-        <div class="adm-summary-card">
+        <div class="adm-card adm-summary-card">
             <div class="adm-summary-label">${msg_admin_explore_kpi_totalReviews}</div>
-            <div class="adm-summary-value">${stats.totalReviews}</div>
+            <div class="adm-summary-value is-success">${stats.totalReviews}</div>
             <div class="adm-summary-sub">
                 <spring:message var="msg_admin_explore_kpi_activeReviews_args_stats_activeReviews" code="admin.explore.kpi.activeReviews" arguments="${stats.activeReviews}"/>${msg_admin_explore_kpi_activeReviews_args_stats_activeReviews}
             </div>
         </div>
-        <div class="adm-summary-card">
+        <div class="adm-card adm-summary-card">
             <div class="adm-summary-label">${msg_admin_explore_kpi_blockedReviews}</div>
-            <div class="adm-summary-value">${stats.blockedReviews}</div>
+            <div class="adm-summary-value is-warning">${stats.blockedReviews}</div>
             <div class="adm-summary-sub">${msg_admin_explore_kpi_blockedReviewsSub}</div>
         </div>
     </div>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-explore-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/explore">
-                <div class="adm-filter-bar" style="flex-wrap:wrap;gap:12px;">
+                <div class="adm-filter-bar adm-explore-filterbar">
                     <div>
                         <div class="adm-filter-label">${msg_admin_explore_filter_status}</div>
                         <select class="adm-select" name="status">
@@ -125,10 +125,10 @@
                             <option value="ratingAvg" ${search.sortBy=='ratingAvg'?'selected':''}>${msg_admin_explore_sort_ratingAvg}</option>
                         </select>
                     </div>
-                    <div style="flex:1;min-width:220px;">
+                    <div class="adm-explore-search-field">
                         <div class="adm-filter-label">${msg_admin_explore_filter_search}</div>
-                        <div style="display:flex;gap:6px;">
-                            <select class="adm-select" name="searchType" style="width:120px;">
+                        <div class="adm-explore-search-row">
+                            <select class="adm-select adm-explore-search-type" name="searchType">
                                 <option value="all" ${search.searchType=='all'?'selected':''}>${msg_admin_common_all}</option>
                                 <option value="name" ${search.searchType=='name'?'selected':''}>${msg_admin_explore_searchType_name}</option>
                                 <option value="region" ${search.searchType=='region'?'selected':''}>${msg_admin_explore_searchType_region}</option>
@@ -137,10 +137,10 @@
                                 <option value="nickname" ${search.searchType=='nickname'?'selected':''}>${msg_admin_explore_searchType_nickname}</option>
                                 <option value="userId" ${search.searchType=='userId'?'selected':''}>${msg_admin_explore_searchType_userId}</option>
                             </select>
-                            <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_explore_filter_searchPlaceholder}" style="flex:1;">
+                            <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_explore_filter_searchPlaceholder}">
                         </div>
                     </div>
-                    <div style="display:flex;align-items:flex-end;gap:6px;">
+                    <div class="adm-explore-filter-actions">
                         <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
                         <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/explore">${msg_admin_common_reset}</a>
                     </div>
@@ -149,32 +149,45 @@
         </div>
     </div>
 
-    <div class="adm-card">
+    <div class="adm-card adm-explore-list-card">
         <div class="adm-card-head">
-            <div style="display:flex;align-items:center;gap:12px;">
+            <div class="adm-explore-list-title">
                 <div class="adm-card-title">${msg_admin_explore_list_title}</div>
                 <div class="adm-muted-inline">${msg_admin_common_totalCount}</div>
             </div>
-            <div id="bulkBar" style="display:none;gap:8px;align-items:center;">
+            <div id="bulkBar" class="adm-explore-bulk-bar" hidden>
                 <span id="bulkCount" class="adm-muted-inline"></span>
-                <button class="adm-btn adm-btn-ghost" type="button" onclick="bulkAction('delete')">${msg_admin_explore_action_bulkDelete}</button>
+                <button class="adm-btn adm-btn-ghost adm-explore-danger-btn" type="button" onclick="bulkAction('delete')">${msg_admin_explore_action_bulkDelete}</button>
             </div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table">
+            <table class="adm-table adm-explore-table adm-explore-spots-table">
+                <colgroup>
+                    <col class="adm-explore-col-check">
+                    <col class="adm-explore-col-id">
+                    <col class="adm-explore-col-image">
+                    <col>
+                    <col class="adm-explore-col-author">
+                    <col class="adm-explore-col-region">
+                    <col class="adm-explore-col-rating">
+                    <col class="adm-explore-col-count">
+                    <col class="adm-explore-col-count">
+                    <col class="adm-explore-col-status">
+                    <col class="adm-explore-col-action">
+                </colgroup>
                 <thead>
                 <tr>
-                    <th style="width:36px;"><input type="checkbox" id="checkAll"></th>
-                    <th style="width:70px;">${msg_admin_common_id}</th>
-                    <th style="width:84px;">${msg_admin_explore_table_image}</th>
+                    <th><input type="checkbox" id="checkAll"></th>
+                    <th>${msg_admin_common_id}</th>
+                    <th>${msg_admin_explore_table_image}</th>
                     <th>${msg_admin_explore_table_spot}</th>
-                    <th style="width:120px;">${msg_admin_explore_table_author}</th>
-                    <th style="width:130px;">${msg_admin_explore_table_region}</th>
-                    <th style="width:80px;">${msg_admin_explore_table_rating}</th>
-                    <th style="width:70px;">${msg_admin_explore_table_reviews}</th>
-                    <th style="width:70px;">${msg_admin_explore_table_likes}</th>
-                    <th style="width:80px;">${msg_admin_common_status}</th>
-                    <th style="width:140px;">${msg_admin_common_action}</th>
+                    <th>${msg_admin_explore_table_author}</th>
+                    <th>${msg_admin_explore_table_region}</th>
+                    <th>${msg_admin_explore_table_rating}</th>
+                    <th>${msg_admin_explore_table_reviews}</th>
+                    <th>${msg_admin_explore_table_likes}</th>
+                    <th>${msg_admin_common_status}</th>
+                    <th>${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -188,10 +201,10 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty spot.thumbUrl}">
-                                    <img src="${spot.thumbUrl}" alt="${fn:escapeXml(spot.name)}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid #cbd5e1;">
+                                    <img class="adm-explore-thumb" src="${spot.thumbUrl}" alt="${fn:escapeXml(spot.name)}">
                                 </c:when>
                                 <c:otherwise>
-                                    <div class="adm-image-placeholder" style="width:56px;height:56px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                                    <div class="adm-image-placeholder adm-explore-thumb adm-explore-thumb-empty">
                                         ${msg_admin_explore_noImage}
                                     </div>
                                 </c:otherwise>
@@ -202,10 +215,10 @@
                                 <c:param name="searchType" value="name"/>
                                 <c:param name="keyword" value="${spot.name}"/>
                             </c:url>
-                            <a href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}" class="adm-link-title" style="font-weight:600;">${fn:escapeXml(spot.name)}</a>
+                            <a href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}" class="adm-link-title adm-explore-spot-title">${fn:escapeXml(spot.name)}</a>
                             <a class="adm-cell-link adm-cell-link--inline adm-cell-ellipsis"
                                href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}"
-                               style="font-size:11px;color:#64748b;margin-top:4px;max-width:260px;">${fn:escapeXml(spot.address)}</a>
+                               title="${fn:escapeXml(spot.address)}">${fn:escapeXml(spot.address)}</a>
                             <div class="adm-inline-actions">
                                 <a href="${pageContext.request.contextPath}/detail/${spot.spotIdx}" target="_blank" class="adm-inline-chip">${msg_admin_explore_detail_userView}</a>
                                 <a href="${pageContext.request.contextPath}${spotReviewsManageUrl}" class="adm-inline-chip">${msg_admin_explore_detail_reviewsManageAll}</a>
@@ -213,16 +226,14 @@
                         </td>
                         <td>
                             <button type="button"
-                                    class="adm-inline-link js-open-member-context"
-                                    data-user-idx="${spot.userIdx}"
-                                    style="font-size:13px;font-weight:700;color:#93c5fd;">
+                                    class="adm-inline-link adm-explore-author-name js-open-member-context"
+                                    data-user-idx="${spot.userIdx}">
                                 ${fn:escapeXml(spot.nickname)}
                             </button>
                             <div class="adm-muted-inline">
                                 <button type="button"
-                                        class="adm-inline-link js-open-member-context"
-                                        data-user-idx="${spot.userIdx}"
-                                        style="font-size:12px;color:#94a3b8;">
+                                        class="adm-inline-link adm-explore-author-id js-open-member-context"
+                                        data-user-idx="${spot.userIdx}">
                                     ${fn:escapeXml(spot.userId)}
                                 </button>
                             </div>
@@ -235,7 +246,7 @@
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}${spotRegionSearchUrl}">${fn:escapeXml(spot.region)}</a>
                         </td>
-                        <td style="font-size:12px;color:#d97706;font-weight:700;">
+                        <td class="adm-explore-rating-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}${spotReviewsManageUrl}"><fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/></a>
                         </td>
@@ -277,8 +288,8 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr>
-                        <td colspan="11" style="text-align:center;padding:40px;color:#475569;">${msg_admin_explore_list_empty}</td>
+                    <tr class="adm-local-empty">
+                        <td colspan="11" class="adm-local-empty-cell">${msg_admin_explore_list_empty}</td>
                     </tr>
                 </c:if>
                 </tbody>
@@ -326,10 +337,10 @@ function updateBulkBar() {
     var checked = document.querySelectorAll('.row-check:checked');
     var bar = document.getElementById('bulkBar');
     if (checked.length > 0) {
-        bar.style.display = 'flex';
+        bar.hidden = false;
         document.getElementById('bulkCount').textContent = EXPLORE_LIST_MSG.bulkSelectedTemplate.replace('__COUNT__', checked.length);
     } else {
-        bar.style.display = 'none';
+        bar.hidden = true;
     }
 }
 

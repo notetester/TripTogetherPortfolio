@@ -8075,6 +8075,170 @@ body.sa-light .adm-community-side-mono .adm-inline-link {
     color: #475569;
 }
 
+/* Explore admin */
+.adm-explore-page {
+    max-width: 1540px;
+    margin: 0 auto;
+}
+
+.adm-explore-filter-card {
+    margin-bottom: 16px;
+    overflow: visible;
+}
+
+.adm-filter-bar.adm-explore-filterbar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(128px, .5fr)) minmax(360px, 1.5fr) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-explore-filterbar > div,
+.adm-explore-search-row {
+    min-width: 0;
+}
+
+.adm-explore-filterbar .adm-select,
+.adm-explore-filterbar .adm-input {
+    width: 100%;
+}
+
+.adm-explore-search-row {
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr);
+    gap: 6px;
+}
+
+.adm-explore-filter-actions,
+.adm-explore-bulk-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.adm-explore-filter-actions {
+    justify-content: flex-end;
+}
+
+.adm-explore-bulk-bar[hidden] {
+    display: none;
+}
+
+.adm-explore-list-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.adm-explore-danger-btn {
+    color: #f87171;
+    border-color: #f87171;
+}
+
+.adm-explore-table {
+    width: 100%;
+    min-width: 1120px;
+}
+
+.adm-explore-col-check {
+    width: 36px;
+}
+
+.adm-explore-col-id {
+    width: 70px;
+}
+
+.adm-explore-col-image {
+    width: 84px;
+}
+
+.adm-explore-col-author {
+    width: 120px;
+}
+
+.adm-explore-col-region {
+    width: 130px;
+}
+
+.adm-explore-col-rating,
+.adm-explore-col-status {
+    width: 80px;
+}
+
+.adm-explore-col-count {
+    width: 70px;
+}
+
+.adm-explore-col-action {
+    width: 140px;
+}
+
+.adm-explore-thumb {
+    width: 56px;
+    height: 56px;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.adm-explore-thumb-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.adm-explore-spot-title {
+    font-weight: 700;
+}
+
+.adm-explore-spots-table .adm-cell-ellipsis {
+    max-width: 260px;
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 11px;
+}
+
+.adm-explore-author-name {
+    color: #93c5fd;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.adm-explore-author-id {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.adm-explore-rating-cell,
+.adm-explore-rating-cell .adm-cell-link {
+    color: #d97706;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+body.sa-light .adm-explore-thumb {
+    border-color: #cbd5e1;
+}
+
+body.sa-light .adm-explore-spots-table .adm-cell-ellipsis,
+body.sa-light .adm-explore-author-id {
+    color: #64748b;
+}
+
+body.sa-light .adm-explore-author-name {
+    color: #2563eb;
+}
+
+body.sa-light .adm-explore-rating-cell,
+body.sa-light .adm-explore-rating-cell .adm-cell-link {
+    color: #b45309;
+}
+
 @media (max-width: 1280px) {
     .adm-filter-bar.adm-inquiry-filterbar {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -8118,6 +8282,18 @@ body.sa-light .adm-community-side-mono .adm-inline-link {
 
     .adm-community-detail-page .adm-side-sticky {
         position: static;
+    }
+
+    .adm-filter-bar.adm-explore-filterbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .adm-explore-search-field {
+        grid-column: 1 / -1;
+    }
+
+    .adm-explore-filter-actions {
+        justify-content: flex-start;
     }
 }
 
@@ -8163,6 +8339,10 @@ body.sa-light .adm-community-side-mono .adm-inline-link {
     .adm-community-comment-actions {
         align-self: flex-start;
     }
+
+    .adm-filter-bar.adm-explore-filterbar {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 560px) {
@@ -8190,6 +8370,20 @@ body.sa-light .adm-community-side-mono .adm-inline-link {
     .adm-community-detail-page .adm-action-stack .adm-btn {
         width: 100%;
         justify-content: center;
+    }
+
+    .adm-explore-search-row {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-explore-filter-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .adm-explore-filter-actions .adm-btn {
+        justify-content: center;
+        width: 100%;
     }
 }
 
