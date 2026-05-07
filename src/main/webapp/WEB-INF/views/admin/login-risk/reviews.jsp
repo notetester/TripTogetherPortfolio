@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
 <%-- i18n message declarations: var names are derived from message codes. --%>
@@ -30,6 +31,8 @@
 <spring:message var="msg_security_admin_common_hold" code="security.admin.common.hold"/>
 <spring:message var="msg_security_admin_common_reject" code="security.admin.common.reject"/>
 <spring:message var="msg_security_admin_empty_reviews" code="security.admin.empty.reviews"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
+<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount" arguments="${fn:length(reviews)}"/>
 <c:set var="pageTitle" value="${msg_security_admin_loginReviews_title}"/>
 <c:set var="activeMenu" value="loginRiskReviews"/>
 
@@ -46,102 +49,120 @@
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies">${msg_security_admin_nav_policies}</a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/assessments">${msg_security_admin_nav_externalAssessments}</a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences">${msg_security_admin_nav_notifications}</a>
-                    <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
         </div>
     </div>
 
     <c:if test="${not empty message}">
-        <div class="adm-alert success">${message}</div>
+        <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
-    <form method="get" class="adm-card" style="margin-bottom:16px;">
-        <div class="adm-form-grid" style="grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;">
-            <label>${msg_security_admin_common_status}
-                <select class="adm-input" name="status">
-                    <option value="">${msg_security_admin_common_all}</option>
-                    <option value="PENDING" ${status == 'PENDING' ? 'selected' : ''}>PENDING</option>
-                    <option value="HOLD" ${status == 'HOLD' ? 'selected' : ''}>HOLD</option>
-                    <option value="APPROVED" ${status == 'APPROVED' ? 'selected' : ''}>APPROVED</option>
-                    <option value="REJECTED" ${status == 'REJECTED' ? 'selected' : ''}>REJECTED</option>
-                </select>
-            </label>
-            <label>${msg_security_admin_common_severity}
-                <select class="adm-input" name="severity">
-                    <option value="">${msg_security_admin_common_all}</option>
-                    <option value="CRITICAL" ${severity == 'CRITICAL' ? 'selected' : ''}>CRITICAL</option>
-                    <option value="HIGH" ${severity == 'HIGH' ? 'selected' : ''}>HIGH</option>
-                    <option value="MEDIUM" ${severity == 'MEDIUM' ? 'selected' : ''}>MEDIUM</option>
-                    <option value="LOW" ${severity == 'LOW' ? 'selected' : ''}>LOW</option>
-                </select>
-            </label>
-            <label>${msg_security_admin_common_type}
-                <input class="adm-input" type="text" name="reviewType" value="${reviewType}" placeholder="IP_LOGIN_RISK">
-            </label>
-            <label>${msg_security_admin_common_search}
-                <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="${msg_security_admin_placeholder_accountIpSummary}">
-            </label>
-            <div style="align-self:end;">
-                <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
+    <form method="get" class="adm-card adm-login-review-filter-card">
+        <div class="adm-card-body">
+            <div class="adm-login-review-filterbar">
+                <label>${msg_security_admin_common_status}
+                    <select class="adm-input" name="status">
+                        <option value="">${msg_security_admin_common_all}</option>
+                        <option value="PENDING" ${status == 'PENDING' ? 'selected' : ''}>PENDING</option>
+                        <option value="HOLD" ${status == 'HOLD' ? 'selected' : ''}>HOLD</option>
+                        <option value="APPROVED" ${status == 'APPROVED' ? 'selected' : ''}>APPROVED</option>
+                        <option value="REJECTED" ${status == 'REJECTED' ? 'selected' : ''}>REJECTED</option>
+                    </select>
+                </label>
+                <label>${msg_security_admin_common_severity}
+                    <select class="adm-input" name="severity">
+                        <option value="">${msg_security_admin_common_all}</option>
+                        <option value="CRITICAL" ${severity == 'CRITICAL' ? 'selected' : ''}>CRITICAL</option>
+                        <option value="HIGH" ${severity == 'HIGH' ? 'selected' : ''}>HIGH</option>
+                        <option value="MEDIUM" ${severity == 'MEDIUM' ? 'selected' : ''}>MEDIUM</option>
+                        <option value="LOW" ${severity == 'LOW' ? 'selected' : ''}>LOW</option>
+                    </select>
+                </label>
+                <label>${msg_security_admin_common_type}
+                    <input class="adm-input" type="text" name="reviewType" value="${fn:escapeXml(reviewType)}" placeholder="IP_LOGIN_RISK">
+                </label>
+                <label class="adm-login-review-keyword-field">${msg_security_admin_common_search}
+                    <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${msg_security_admin_placeholder_accountIpSummary}">
+                </label>
+                <div class="adm-login-review-filter-actions">
+                    <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
+                    <a class="adm-btn ghost" href="${pageContext.request.contextPath}/admin/login-risk/reviews">${msg_admin_common_reset}</a>
+                </div>
             </div>
         </div>
     </form>
 
-    <div class="adm-table-wrap">
-        <table class="adm-table">
-            <thead>
-            <tr>
-                <th>${msg_security_admin_common_status}</th>
-                <th>${msg_security_admin_common_severity}</th>
-                <th>${msg_security_admin_common_reviewType}</th>
-                <th>${msg_security_admin_common_target}</th>
-                <th>${msg_security_admin_common_summary}</th>
-                <th>${msg_security_admin_common_createdAt}</th>
-                <th>${msg_security_admin_common_action}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <c:forEach var="r" items="${reviews}">
+    <div class="adm-card adm-login-review-list-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">${msg_security_admin_loginReviews_title}</div>
+            <div class="adm-page-muted">${msg_admin_common_totalCount}</div>
+        </div>
+        <div class="adm-table-wrap">
+            <table id="loginRiskReviewTable"
+                   class="adm-table adm-section-table-fixed adm-login-review-table"
+                   data-section="loginRiskReviews">
+                <thead>
                 <tr>
-                    <td><span class="adm-badge">${r.reviewStatus}</span></td>
-                    <td>${r.severity}</td>
-                    <td>${r.reviewType}<br><small>${r.policyCode}</small></td>
-                    <td>
-                        ${r.subjectType}: ${r.subjectKey}<br>
-                        <c:if test="${not empty r.userId}"><small>${r.userId} / ${r.nickname}</small></c:if>
-                    </td>
-                    <td>
-                        <strong>${r.summary}</strong><br>
-                        <small>${r.detailMessage}</small>
-                        <c:if test="${not empty r.reviewComment}">
-                            <br><small>${msg_security_admin_common_reviewComment}: ${r.reviewComment}</small>
-                        </c:if>
-                    </td>
-                    <td><fmt:formatDate value="${r.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
-                    <td>
-                        <c:if test="${r.reviewStatus == 'PENDING' || r.reviewStatus == 'HOLD'}">
-                            <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/reviews/${r.reviewIdx}/approve" style="display:inline;">
-                                <input type="hidden" name="comment" value="${msg_security_admin_comment_approved}">
-                                <button class="adm-btn primary" type="submit">${msg_security_admin_common_approve}</button>
-                            </form>
-                            <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/reviews/${r.reviewIdx}/hold" style="display:inline;">
-                                <input type="hidden" name="comment" value="${msg_security_admin_comment_needMoreCheck}">
-                                <button class="adm-btn" type="submit">${msg_security_admin_common_hold}</button>
-                            </form>
-                            <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/reviews/${r.reviewIdx}/reject" style="display:inline;">
-                                <input type="hidden" name="comment" value="${msg_security_admin_comment_notBlocked}">
-                                <button class="adm-btn danger" type="submit">${msg_security_admin_common_reject}</button>
-                            </form>
-                        </c:if>
-                        <c:if test="${r.reviewStatus != 'PENDING' && r.reviewStatus != 'HOLD'}">
-                            <small>${r.reviewedByUserId} / <fmt:formatDate value="${r.reviewedAtDate}" pattern="yyyy-MM-dd HH:mm"/></small>
-                        </c:if>
-                    </td>
+                    <th>${msg_security_admin_common_status}</th>
+                    <th>${msg_security_admin_common_severity}</th>
+                    <th>${msg_security_admin_common_reviewType}</th>
+                    <th>${msg_security_admin_common_target}</th>
+                    <th>${msg_security_admin_common_summary}</th>
+                    <th>${msg_security_admin_common_createdAt}</th>
+                    <th>${msg_security_admin_common_action}</th>
                 </tr>
-            </c:forEach>
-            <c:if test="${empty reviews}">
-                <tr><td colspan="7" class="adm-empty">${msg_security_admin_empty_reviews}</td></tr>
-            </c:if>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <c:forEach var="r" items="${reviews}">
+                    <tr>
+                        <td><span class="adm-badge"><c:out value="${r.reviewStatus}"/></span></td>
+                        <td><c:out value="${r.severity}"/></td>
+                        <td>
+                            <div class="adm-login-review-type"><c:out value="${r.reviewType}"/></div>
+                            <div class="adm-page-muted"><c:out value="${r.policyCode}"/></div>
+                        </td>
+                        <td>
+                            <div><c:out value="${r.subjectType}"/>: <c:out value="${r.subjectKey}"/></div>
+                            <c:if test="${not empty r.userId}"><div class="adm-page-muted"><c:out value="${r.userId}"/> / <c:out value="${r.nickname}"/></div></c:if>
+                        </td>
+                        <td>
+                            <div class="adm-login-review-summary">
+                                <strong><c:out value="${r.summary}"/></strong>
+                                <span><c:out value="${r.detailMessage}"/></span>
+                                <c:if test="${not empty r.reviewComment}">
+                                    <span>${msg_security_admin_common_reviewComment}: <c:out value="${r.reviewComment}"/></span>
+                                </c:if>
+                            </div>
+                        </td>
+                        <td><fmt:formatDate value="${r.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
+                        <td>
+                            <c:if test="${r.reviewStatus == 'PENDING' || r.reviewStatus == 'HOLD'}">
+                                <div class="adm-login-review-row-actions">
+                                    <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/reviews/${r.reviewIdx}/approve">
+                                        <input type="hidden" name="comment" value="${msg_security_admin_comment_approved}">
+                                        <button class="adm-btn primary" type="submit">${msg_security_admin_common_approve}</button>
+                                    </form>
+                                    <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/reviews/${r.reviewIdx}/hold">
+                                        <input type="hidden" name="comment" value="${msg_security_admin_comment_needMoreCheck}">
+                                        <button class="adm-btn" type="submit">${msg_security_admin_common_hold}</button>
+                                    </form>
+                                    <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/reviews/${r.reviewIdx}/reject">
+                                        <input type="hidden" name="comment" value="${msg_security_admin_comment_notBlocked}">
+                                        <button class="adm-btn danger" type="submit">${msg_security_admin_common_reject}</button>
+                                    </form>
+                                </div>
+                            </c:if>
+                            <c:if test="${r.reviewStatus != 'PENDING' && r.reviewStatus != 'HOLD'}">
+                                <div class="adm-page-muted"><c:out value="${r.reviewedByUserId}"/> / <fmt:formatDate value="${r.reviewedAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
+                            </c:if>
+                        </td>
+                    </tr>
+                </c:forEach>
+                <c:if test="${empty reviews}">
+                    <tr><td colspan="7" class="adm-empty">${msg_security_admin_empty_reviews}</td></tr>
+                </c:if>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

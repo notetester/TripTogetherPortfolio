@@ -5221,3 +5221,114 @@ body.sa-light .adm-governance-page .adm-login-policy-toggle span {
         width: auto;
     }
 }
+
+/* Login risk review list */
+.adm-governance-page .adm-login-review-filter-card,
+.adm-governance-page .adm-login-review-list-card {
+    overflow: visible;
+    border-radius: 8px;
+}
+
+.adm-governance-page .adm-login-review-filter-card {
+    margin-bottom: 12px;
+}
+
+.adm-governance-page .adm-login-review-filterbar {
+    display: grid;
+    grid-template-columns: minmax(130px, .7fr) minmax(130px, .7fr) minmax(170px, .9fr) minmax(260px, 1.4fr) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-governance-page .adm-login-review-filterbar label,
+.adm-governance-page .adm-login-review-keyword-field {
+    min-width: 0;
+}
+
+.adm-governance-page .adm-login-review-filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.adm-governance-page .adm-login-review-table td {
+    vertical-align: top;
+}
+
+.adm-governance-page .adm-login-review-type {
+    font-weight: 800;
+    color: #dbeafe;
+}
+
+.adm-governance-page .adm-login-review-summary {
+    display: flex;
+    min-width: 0;
+    max-width: 520px;
+    flex-direction: column;
+    gap: 4px;
+    line-height: 1.45;
+}
+
+.adm-governance-page .adm-login-review-summary strong {
+    color: #e5e7eb;
+}
+
+.adm-governance-page .adm-login-review-summary span {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.adm-governance-page .adm-login-review-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-width: 170px;
+}
+
+.adm-governance-page .adm-login-review-row-actions form {
+    margin: 0;
+}
+
+.adm-governance-page .adm-login-review-row-actions .adm-btn {
+    min-height: 30px;
+    padding: 6px 9px;
+    white-space: nowrap;
+}
+
+body.sa-light .adm-governance-page .adm-login-review-type,
+body.sa-light .adm-governance-page .adm-login-review-summary strong {
+    color: #0f172a;
+}
+
+body.sa-light .adm-governance-page .adm-login-review-summary span {
+    color: #64748b;
+}
+
+@media (max-width: 1240px) {
+    .adm-governance-page .adm-login-review-filterbar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .adm-governance-page .adm-login-review-keyword-field {
+        grid-column: span 2;
+    }
+
+    .adm-governance-page .adm-login-review-filter-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+    .adm-governance-page .adm-login-review-filterbar {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-governance-page .adm-login-review-keyword-field {
+        grid-column: auto;
+    }
+
+    .adm-governance-page .adm-login-review-filter-actions .adm-btn {
+        width: auto;
+    }
+}
