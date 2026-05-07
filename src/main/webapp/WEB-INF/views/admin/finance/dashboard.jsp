@@ -54,97 +54,97 @@
 <%@ include file="../layout.jsp" %>
 
 
-<div class="adm-content">
+<div class="adm-content adm-finance-page">
 
     <%-- 공통 탭바 --%>
     <%@ include file="_tabs.jsp" %>
 
     <%-- 자산 집계 카드 --%>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;">
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
+    <div class="adm-finance-balance-grid">
+        <div class="adm-card adm-finance-stat-card adm-finance-stat-card-main">
+            <div class="adm-finance-stat-label">
                 💰 ${msg_admin_finance_stats_totalCash}
             </div>
-            <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
+            <div class="adm-fin-num adm-finance-stat-value">
                 <fmt:formatNumber value="${stats.totalCashBalance}" pattern="#,###"/> ${msg_admin_finance_unit_krw}
             </div>
         </div>
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
+        <div class="adm-card adm-finance-stat-card adm-finance-stat-card-main">
+            <div class="adm-finance-stat-label">
                 ✈️ ${msg_admin_finance_stats_totalMileage}
             </div>
-            <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
+            <div class="adm-fin-num adm-finance-stat-value">
                 <fmt:formatNumber value="${stats.totalMileageBalance}" pattern="#,###"/> ${msg_admin_finance_unit_mileage}
             </div>
         </div>
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
+        <div class="adm-card adm-finance-stat-card adm-finance-stat-card-main">
+            <div class="adm-finance-stat-label">
                 ⭐ ${msg_admin_finance_stats_totalPoint}
             </div>
-            <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
+            <div class="adm-fin-num adm-finance-stat-value">
                 <fmt:formatNumber value="${stats.totalPointBalance}" pattern="#,###"/> ${msg_admin_finance_unit_point}
             </div>
         </div>
     </div>
 
     <%-- 회원 수 / 충전 통계 --%>
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;">
-        <div class="adm-card" style="padding:16px;">
-            <div style="font-size:12px;color:#94a3b8;">${msg_admin_finance_stats_totalUsers}</div>
-            <div style="font-size:18px;font-weight:700;"><fmt:formatNumber value="${stats.totalUsers}" pattern="#,###"/></div>
+    <div class="adm-finance-summary-grid">
+        <div class="adm-card adm-finance-stat-card">
+            <div class="adm-finance-stat-label">${msg_admin_finance_stats_totalUsers}</div>
+            <div class="adm-finance-summary-value"><fmt:formatNumber value="${stats.totalUsers}" pattern="#,###"/></div>
         </div>
-        <div class="adm-card" style="padding:16px;">
-            <div style="font-size:12px;color:#94a3b8;">${msg_admin_finance_stats_activeUsers}</div>
-            <div style="font-size:18px;font-weight:700;color:#15803d;"><fmt:formatNumber value="${stats.activeUsers}" pattern="#,###"/></div>
+        <div class="adm-card adm-finance-stat-card">
+            <div class="adm-finance-stat-label">${msg_admin_finance_stats_activeUsers}</div>
+            <div class="adm-finance-summary-value is-positive"><fmt:formatNumber value="${stats.activeUsers}" pattern="#,###"/></div>
         </div>
-        <div class="adm-card" style="padding:16px;">
-            <div style="font-size:12px;color:#94a3b8;">${msg_admin_finance_stats_blockedUsers}</div>
-            <div style="font-size:18px;font-weight:700;color:#b91c1c;"><fmt:formatNumber value="${stats.blockedUsers}" pattern="#,###"/></div>
+        <div class="adm-card adm-finance-stat-card">
+            <div class="adm-finance-stat-label">${msg_admin_finance_stats_blockedUsers}</div>
+            <div class="adm-finance-summary-value is-danger"><fmt:formatNumber value="${stats.blockedUsers}" pattern="#,###"/></div>
         </div>
-        <div class="adm-card" style="padding:16px;">
-            <div style="font-size:12px;color:#94a3b8;">${msg_admin_finance_stats_todayCharge}</div>
-            <div style="font-size:18px;font-weight:700;"><fmt:formatNumber value="${stats.todayChargeTotal}" pattern="#,###"/></div>
+        <div class="adm-card adm-finance-stat-card">
+            <div class="adm-finance-stat-label">${msg_admin_finance_stats_todayCharge}</div>
+            <div class="adm-finance-summary-value"><fmt:formatNumber value="${stats.todayChargeTotal}" pattern="#,###"/></div>
         </div>
-        <div class="adm-card" style="padding:16px;">
-            <div style="font-size:12px;color:#94a3b8;">${msg_admin_finance_stats_lastMonthCharge}</div>
-            <div style="font-size:18px;font-weight:700;"><fmt:formatNumber value="${stats.lastMonthChargeTotal}" pattern="#,###"/></div>
+        <div class="adm-card adm-finance-stat-card">
+            <div class="adm-finance-stat-label">${msg_admin_finance_stats_lastMonthCharge}</div>
+            <div class="adm-finance-summary-value"><fmt:formatNumber value="${stats.lastMonthChargeTotal}" pattern="#,###"/></div>
         </div>
     </div>
 
     <%-- 권한별 위젯 (환불 / 정책) --%>
     <c:if test="${hasFinanceOperator or hasFinancePolicyAdmin}">
-        <div style="display:grid;grid-template-columns:repeat(${(hasFinanceOperator and hasFinancePolicyAdmin) ? 2 : 1},1fr);gap:16px;margin-bottom:20px;">
+        <div class="adm-finance-widget-grid ${(hasFinanceOperator and hasFinancePolicyAdmin) ? 'is-split' : 'is-single'}">
 
             <%-- 최근 환불 위젯 --%>
             <c:if test="${hasFinanceOperator}">
-                <div class="adm-card" style="padding:18px;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                        <strong style="font-size:14px;">↩️ ${msg_admin_finance_widget_recentRefund_title}</strong>
-                        <a href="${pageContext.request.contextPath}/admin/finance/refund" style="font-size:12px;color:#60a5fa;text-decoration:none;">
+                <div class="adm-card adm-finance-widget-card">
+                    <div class="adm-finance-widget-head">
+                        <strong class="adm-finance-widget-title">↩️ ${msg_admin_finance_widget_recentRefund_title}</strong>
+                        <a href="${pageContext.request.contextPath}/admin/finance/refund" class="adm-finance-widget-link">
                             ${msg_admin_finance_widget_viewAll} →
                         </a>
                     </div>
                     <c:choose>
                         <c:when test="${empty recentRefunds}">
-                            <div style="font-size:12px;color:#94a3b8;text-align:center;padding:18px 0;">
+                            <div class="adm-finance-widget-empty">
                                 ${msg_admin_finance_widget_recentRefund_empty}
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <table style="width:100%;font-size:12px;border-collapse:collapse;">
+                            <table class="adm-finance-mini-table">
                                 <thead>
-                                <tr style="color:#94a3b8;">
-                                    <th style="text-align:left;padding:6px 4px;border-bottom:1px solid rgba(148,163,184,.2);">${msg_admin_finance_widget_col_time}</th>
-                                    <th style="text-align:left;padding:6px 4px;border-bottom:1px solid rgba(148,163,184,.2);">${msg_admin_finance_widget_col_user}</th>
-                                    <th style="text-align:right;padding:6px 4px;border-bottom:1px solid rgba(148,163,184,.2);">${msg_admin_finance_widget_col_amount}</th>
+                                <tr>
+                                    <th>${msg_admin_finance_widget_col_time}</th>
+                                    <th>${msg_admin_finance_widget_col_user}</th>
+                                    <th class="adm-align-right">${msg_admin_finance_widget_col_amount}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <c:forEach var="r" items="${recentRefunds}">
                                     <tr>
-                                        <td style="padding:6px 4px;color:#cbd5e1;"><fmt:formatDate value="${r.refundedAtDate}" pattern="MM/dd HH:mm"/></td>
-                                        <td style="padding:6px 4px;"><c:out value="${r.userNickname}"/></td>
-                                        <td style="padding:6px 4px;text-align:right;font-weight:600;"><fmt:formatNumber value="${r.refundAmount}" pattern="#,###"/></td>
+                                        <td class="adm-finance-mini-time"><fmt:formatDate value="${r.refundedAtDate}" pattern="MM/dd HH:mm"/></td>
+                                        <td><c:out value="${r.userNickname}"/></td>
+                                        <td class="adm-align-right adm-finance-mini-amount"><fmt:formatNumber value="${r.refundAmount}" pattern="#,###"/></td>
                                     </tr>
                                 </c:forEach>
                                 </tbody>
@@ -156,31 +156,31 @@
 
             <%-- 정책 요약 위젯 --%>
             <c:if test="${hasFinancePolicyAdmin}">
-                <div class="adm-card" style="padding:18px;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                        <strong style="font-size:14px;">⚙️ ${msg_admin_finance_widget_policy_title}</strong>
-                        <a href="${pageContext.request.contextPath}/admin/finance/policy" style="font-size:12px;color:#60a5fa;text-decoration:none;">
+                <div class="adm-card adm-finance-widget-card">
+                    <div class="adm-finance-widget-head">
+                        <strong class="adm-finance-widget-title">⚙️ ${msg_admin_finance_widget_policy_title}</strong>
+                        <a href="${pageContext.request.contextPath}/admin/finance/policy" class="adm-finance-widget-link">
                             ${msg_admin_finance_widget_manage} →
                         </a>
                     </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:12px;">
+                    <div class="adm-finance-policy-mini-grid">
                         <div>
-                            <div style="color:#94a3b8;margin-bottom:4px;">🔒 ${msg_admin_finance_widget_policy_limit}</div>
-                            <div style="font-size:18px;font-weight:700;">
+                            <div class="adm-finance-policy-mini-label">🔒 ${msg_admin_finance_widget_policy_limit}</div>
+                            <div class="adm-finance-policy-mini-value">
                                 <c:set var="limitActive" value="0"/>
                                 <c:forEach var="p" items="${limitPolicies}"><c:if test="${p.isActive}"><c:set var="limitActive" value="${limitActive + 1}"/></c:if></c:forEach>
-                                ${limitActive}<span style="font-size:11px;font-weight:400;color:#94a3b8;"> / ${limitPolicies != null ? limitPolicies.size() : 0}</span>
+                                ${limitActive}<span class="adm-finance-policy-mini-total"> / ${limitPolicies != null ? limitPolicies.size() : 0}</span>
                             </div>
-                            <div style="font-size:11px;color:#94a3b8;">${msg_admin_finance_widget_policy_activeCount}</div>
+                            <div class="adm-finance-policy-mini-note">${msg_admin_finance_widget_policy_activeCount}</div>
                         </div>
                         <div>
-                            <div style="color:#94a3b8;margin-bottom:4px;">✨ ${msg_admin_finance_widget_policy_reward}</div>
-                            <div style="font-size:18px;font-weight:700;">
+                            <div class="adm-finance-policy-mini-label">✨ ${msg_admin_finance_widget_policy_reward}</div>
+                            <div class="adm-finance-policy-mini-value">
                                 <c:set var="rewardActive" value="0"/>
                                 <c:forEach var="p" items="${rewardPolicies}"><c:if test="${p.isActive}"><c:set var="rewardActive" value="${rewardActive + 1}"/></c:if></c:forEach>
-                                ${rewardActive}<span style="font-size:11px;font-weight:400;color:#94a3b8;"> / ${rewardPolicies != null ? rewardPolicies.size() : 0}</span>
+                                ${rewardActive}<span class="adm-finance-policy-mini-total"> / ${rewardPolicies != null ? rewardPolicies.size() : 0}</span>
                             </div>
-                            <div style="font-size:11px;color:#94a3b8;">${msg_admin_finance_widget_policy_activeCount}</div>
+                            <div class="adm-finance-policy-mini-note">${msg_admin_finance_widget_policy_activeCount}</div>
                         </div>
                     </div>
                 </div>
@@ -189,56 +189,67 @@
     </c:if>
 
     <%-- 사용자 목록 (검색 + 페이지네이션 통합) --%>
-    <h3 style="font-size:15px;margin:24px 0 10px 0;">
+    <h3 class="adm-finance-section-title">
         👥 ${msg_admin_finance_users_sectionTitle}
     </h3>
 
     <%-- 검색 폼 --%>
-    <div class="adm-card" style="padding:16px;margin-bottom:16px;">
+    <div class="adm-card adm-finance-filter-card">
         <form method="get" action="${pageContext.request.contextPath}/admin/finance"
-              style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              class="adm-finance-user-filterbar">
             <input type="text" name="keyword" value="${fn:escapeXml(search.keyword)}"
                    class="adm-input" placeholder="${msg_admin_finance_users_searchPlaceholder}"
-                   style="padding:8px 12px;font-size:13px;width:240px;">
-            <select name="memberGrade" class="adm-input" style="padding:8px 12px;font-size:13px;">
+                   >
+            <select name="memberGrade" class="adm-select">
                 <option value="">${msg_admin_finance_users_allGrades}</option>
                 <c:forEach var="g" items="${['BRONZE','SILVER','GOLD','DIAMOND','PLATINUM']}">
                     <option value="${g}" ${search.memberGrade eq g ? 'selected' : ''}><spring:message var="msg_admin_finance_grade_g" code="admin.finance.grade.${g}"/>${msg_admin_finance_grade_g}</option>
                 </c:forEach>
             </select>
-            <select name="sort" class="adm-input" style="padding:8px 12px;font-size:13px;">
+            <select name="sort" class="adm-select">
                 <option value="latest" ${search.sort eq 'latest' ? 'selected' : ''}>${msg_admin_finance_users_sort_latest}</option>
                 <option value="cash"   ${search.sort eq 'cash'   ? 'selected' : ''}>${msg_admin_finance_users_sort_cash}</option>
                 <option value="mileage" ${search.sort eq 'mileage' ? 'selected' : ''}>${msg_admin_finance_users_sort_mileage}</option>
                 <option value="grade"  ${search.sort eq 'grade'  ? 'selected' : ''}>${msg_admin_finance_users_sort_grade}</option>
             </select>
-            <button type="submit" class="adm-btn adm-btn-ghost">${msg_admin_finance_users_applyFilter}</button>
-            <span style="margin-left:auto;font-size:13px;color:#64748b;">
+            <button type="submit" class="adm-btn adm-btn-primary">${msg_admin_finance_users_applyFilter}</button>
+            <span class="adm-finance-filter-total">
                 <spring:message var="msg_admin_finance_users_totalCount_args_totalCount" code="admin.finance.users.totalCount" arguments="${totalCount}"/>${msg_admin_finance_users_totalCount_args_totalCount}
             </span>
         </form>
     </div>
 
     <%-- 사용자 테이블 --%>
-    <div class="adm-card" style="padding:0;overflow-x:auto;">
-        <table class="adm-table" style="width:100%;">
+    <div class="adm-card adm-finance-table-card">
+        <table class="adm-table adm-finance-user-table">
+            <colgroup>
+                <col class="adm-finance-col-id">
+                <col>
+                <col>
+                <col class="adm-finance-col-grade">
+                <col class="adm-finance-col-amount">
+                <col class="adm-finance-col-amount">
+                <col class="adm-finance-col-amount">
+                <col class="adm-finance-col-status">
+                <col class="adm-finance-col-action">
+            </colgroup>
             <thead>
                 <tr>
-                    <th style="width:80px;">ID</th>
+                    <th>ID</th>
                     <th>${msg_admin_finance_users_col_nickname}</th>
                     <th>${msg_admin_finance_users_col_email}</th>
-                    <th style="width:100px;">${msg_admin_finance_users_col_grade}</th>
-                    <th style="width:130px;text-align:right;">${msg_admin_finance_users_col_cash}</th>
-                    <th style="width:130px;text-align:right;">${msg_admin_finance_users_col_mileage}</th>
-                    <th style="width:130px;text-align:right;">${msg_admin_finance_users_col_point}</th>
-                    <th style="width:90px;">${msg_admin_finance_users_col_status}</th>
-                    <th style="width:100px;">${msg_admin_finance_users_col_action}</th>
+                    <th>${msg_admin_finance_users_col_grade}</th>
+                    <th class="adm-align-right">${msg_admin_finance_users_col_cash}</th>
+                    <th class="adm-align-right">${msg_admin_finance_users_col_mileage}</th>
+                    <th class="adm-align-right">${msg_admin_finance_users_col_point}</th>
+                    <th>${msg_admin_finance_users_col_status}</th>
+                    <th>${msg_admin_finance_users_col_action}</th>
                 </tr>
             </thead>
             <tbody>
                 <c:choose>
                     <c:when test="${empty userList}">
-                        <tr><td colspan="9" style="text-align:center;padding:48px;color:#94a3b8;">
+                        <tr class="adm-local-empty"><td colspan="9" class="adm-local-empty-cell">
                             ${msg_admin_finance_users_empty}
                         </td></tr>
                     </c:when>
@@ -247,22 +258,22 @@
                             <tr>
                                 <td>${u.userIdx}</td>
                                 <td><c:out value="${u.nickname}"/></td>
-                                <td style="font-size:12px;color:#475569;"><c:out value="${u.userEmail}"/></td>
+                                <td class="adm-finance-email-cell"><c:out value="${u.userEmail}"/></td>
                                 <td>
-                                    <span style="font-size:11px;padding:2px 8px;border-radius:999px;background:#f1f5f9;color:#475569;">
+                                    <span class="adm-finance-grade-pill">
                                         <spring:message var="msg_admin_finance_grade_u_memberGrade_text_u_memberGrade" code="admin.finance.grade.${u.memberGrade}" text="${u.memberGrade}"/>${msg_admin_finance_grade_u_memberGrade_text_u_memberGrade}
                                     </span>
                                 </td>
-                                <td style="text-align:right;"><fmt:formatNumber value="${u.cashBalance}" pattern="#,###"/></td>
-                                <td style="text-align:right;"><fmt:formatNumber value="${u.mileageBalance}" pattern="#,###"/></td>
-                                <td style="text-align:right;"><fmt:formatNumber value="${u.pointBalance}" pattern="#,###"/></td>
+                                <td class="adm-align-right"><fmt:formatNumber value="${u.cashBalance}" pattern="#,###"/></td>
+                                <td class="adm-align-right"><fmt:formatNumber value="${u.mileageBalance}" pattern="#,###"/></td>
+                                <td class="adm-align-right"><fmt:formatNumber value="${u.pointBalance}" pattern="#,###"/></td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${u.accountStatus eq 'ACTIVE'}">
                                             <span class="adm-badge adm-badge-green">${msg_admin_finance_users_status_active}</span>
                                         </c:when>
                                         <c:when test="${u.accountStatus eq 'BLOCKED'}">
-                                            <span class="adm-badge" style="background:#fee2e2;color:#b91c1c;">${msg_admin_finance_users_status_blocked}</span>
+                                            <span class="adm-badge adm-finance-status-blocked">${msg_admin_finance_users_status_blocked}</span>
                                         </c:when>
                                         <c:otherwise>
                                             <span class="adm-badge">${u.accountStatus}</span>
@@ -271,7 +282,7 @@
                                 </td>
                                 <td>
                                     <a href="${pageContext.request.contextPath}/admin/finance/users/${u.userIdx}"
-                                       class="adm-btn adm-btn-ghost" style="padding:4px 10px;font-size:12px;">
+                                       class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         ${msg_admin_finance_users_detailButton}
                                     </a>
                                 </td>
@@ -285,11 +296,10 @@
 
     <%-- 페이지네이션 --%>
     <c:if test="${totalPage > 1}">
-        <div style="display:flex;justify-content:center;gap:6px;margin-top:16px;">
+        <div class="adm-finance-paging">
             <c:forEach var="p" begin="1" end="${totalPage}">
                 <a href="?keyword=${search.keyword}&memberGrade=${search.memberGrade}&sort=${search.sort}&page=${p}"
-                   class="adm-btn ${search.page == p ? 'adm-btn-primary' : 'adm-btn-ghost'}"
-                   style="padding:6px 12px;font-size:13px;">${p}</a>
+                   class="adm-btn adm-finance-page-btn ${search.page == p ? 'adm-btn-primary' : 'adm-btn-ghost'}">${p}</a>
             </c:forEach>
         </div>
     </c:if>
