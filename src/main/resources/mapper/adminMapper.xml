@@ -468,7 +468,9 @@
                 ${sortDir}
             </otherwise>
         </choose>, u.user_idx DESC
-        LIMIT #{size} OFFSET #{offset}
+        <if test="paged">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
     </select>
 
     <select id="countMembers" resultType="int">
@@ -1871,7 +1873,9 @@
             <when test="sortField == 'ip'">r.ip_address ${sortDir}, r.requested_at DESC</when>
             <otherwise>r.requested_at DESC, r.email_verification_request_idx DESC</otherwise>
         </choose>
-        LIMIT #{size} OFFSET #{offset}
+        <if test="paged">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
     </select>
 
     <select id="countEmailVerificationRequests" resultType="int">

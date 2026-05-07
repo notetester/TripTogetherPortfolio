@@ -65,6 +65,7 @@ public interface AdminService {
 
     // ===== 이메일 액션 요청 이력 =====
     Map<String, Object> getEmailVerificationRequestList(AdminEmailVerificationRequestSearchVO search);
+    List<AdminEmailVerificationRequestVO> getEmailVerificationRequestsForExport(AdminEmailVerificationRequestSearchVO search);
 
     // ===== 이메일 액션 토큰 이력 =====
     Map<String, Object> getEmailVerificationList(AdminEmailVerificationSearchVO search);

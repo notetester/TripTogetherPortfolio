@@ -509,6 +509,61 @@ public class AdminController {
             .collect(Collectors.toList());
     }
 
+    private byte[] buildEmailVerificationRequestCsv(List<AdminEmailVerificationRequestVO> data) {
+        StringBuilder sb = new StringBuilder("﻿");
+        sb.append("요청번호,요청시각,회원번호,닉네임,아이디,목적,요청이메일,상태,인증시각,반영시각,만료시각,취소시각,IP,요청ID,흐름추적ID,User-Agent\n");
+        for (AdminEmailVerificationRequestVO request : data) {
+            sb.append(csvVal(request.getEmailVerificationRequestIdx())).append(',')
+              .append(csvVal(formatBusinessDate(request.getRequestedAt()))).append(',')
+              .append(csvVal(request.getUserIdx())).append(',')
+              .append(csvVal(request.getNickname())).append(',')
+              .append(csvVal(request.getUserId())).append(',')
+              .append(csvVal(request.getPurpose())).append(',')
+              .append(csvVal(request.getPendingEmail())).append(',')
+              .append(csvVal(request.getStatus())).append(',')
+              .append(csvVal(formatBusinessDate(request.getVerifiedAt()))).append(',')
+              .append(csvVal(formatBusinessDate(request.getAppliedAt()))).append(',')
+              .append(csvVal(formatBusinessDate(request.getExpiredAt()))).append(',')
+              .append(csvVal(formatBusinessDate(request.getCancelledAt()))).append(',')
+              .append(csvVal(request.getIpAddress())).append(',')
+              .append(csvVal(request.getRequestId())).append(',')
+              .append(csvVal(request.getFlowTraceId())).append(',')
+              .append(csvVal(request.getUserAgent())).append('\n');
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private byte[] buildEmailVerificationRequestExcel(List<AdminEmailVerificationRequestVO> data) throws Exception {
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            var sheet = wb.createSheet("이메일요청");
+            String[] headers = {"요청번호","요청시각","회원번호","닉네임","아이디","목적","요청이메일","상태","인증시각","반영시각","만료시각","취소시각","IP","요청ID","흐름추적ID","User-Agent"};
+            var hRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) hRow.createCell(i).setCellValue(headers[i]);
+            int r = 1;
+            for (AdminEmailVerificationRequestVO request : data) {
+                var row = sheet.createRow(r++);
+                row.createCell(0).setCellValue(request.getEmailVerificationRequestIdx() != null ? request.getEmailVerificationRequestIdx() : 0);
+                row.createCell(1).setCellValue(formatBusinessDate(request.getRequestedAt()));
+                row.createCell(2).setCellValue(request.getUserIdx() != null ? request.getUserIdx() : 0);
+                row.createCell(3).setCellValue(safe(request.getNickname()));
+                row.createCell(4).setCellValue(safe(request.getUserId()));
+                row.createCell(5).setCellValue(safe(request.getPurpose()));
+                row.createCell(6).setCellValue(safe(request.getPendingEmail()));
+                row.createCell(7).setCellValue(safe(request.getStatus()));
+                row.createCell(8).setCellValue(formatBusinessDate(request.getVerifiedAt()));
+                row.createCell(9).setCellValue(formatBusinessDate(request.getAppliedAt()));
+                row.createCell(10).setCellValue(formatBusinessDate(request.getExpiredAt()));
+                row.createCell(11).setCellValue(formatBusinessDate(request.getCancelledAt()));
+                row.createCell(12).setCellValue(safe(request.getIpAddress()));
+                row.createCell(13).setCellValue(safe(request.getRequestId()));
+                row.createCell(14).setCellValue(safe(request.getFlowTraceId()));
+                row.createCell(15).setCellValue(safe(request.getUserAgent()));
+            }
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
     private byte[] buildBusinessApplicationCsv(List<BusinessAccountApplicationVO> data) {
         StringBuilder sb = new StringBuilder("﻿");
         sb.append("신청번호,회원번호,신청자,아이디,이메일,현재권한,요청권한,회사명,사업자번호,담당자,담당자연락처,상태,반려사유,검토자,신청일,검토일\n");
@@ -1071,6 +1126,40 @@ public class AdminController {
         model.addAllAttributes(adminService.getEmailVerificationRequestList(search));
         model.addAttribute("activeMenu", "emailVerifications");
         return "admin/email-verification/list";
+    }
+
+    @SuppressWarnings("unchecked")
+    @GetMapping("/email-verifications/export")
+    public ResponseEntity<byte[]> exportEmailVerificationRequests(AdminEmailVerificationRequestSearchVO search,
+                                                                  @RequestParam(defaultValue = "search") String scope,
+                                                                  @RequestParam(defaultValue = "csv") String format) {
+        try {
+            List<AdminEmailVerificationRequestVO> data;
+            if ("all".equals(scope)) {
+                data = adminService.getEmailVerificationRequestsForExport(new AdminEmailVerificationRequestSearchVO());
+            } else if ("page".equals(scope)) {
+                data = (List<AdminEmailVerificationRequestVO>) adminService.getEmailVerificationRequestList(search)
+                    .getOrDefault("list", Collections.emptyList());
+            } else {
+                data = adminService.getEmailVerificationRequestsForExport(search);
+            }
+
+            if ("excel".equals(format)) {
+                byte[] bytes = buildEmailVerificationRequestExcel(data);
+                return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"email-verification-requests.xlsx\"")
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(bytes);
+            }
+            byte[] bytes = buildEmailVerificationRequestCsv(data);
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"email-verification-requests.csv\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(bytes);
+        } catch (Exception e) {
+            log.error("이메일 액션 요청 내보내기 실패", e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/email-tokens")

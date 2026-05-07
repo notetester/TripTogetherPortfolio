@@ -1066,16 +1066,43 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Map<String, Object> getEmailVerificationRequestList(AdminEmailVerificationRequestSearchVO search) {
-        List<AdminEmailVerificationRequestVO> list = adminMapper.findEmailVerificationRequests(search);
-        int total = adminMapper.countEmailVerificationRequests(search);
-        AdminPageVO paging = AdminPageVO.of(total, search.getPage(), search.getSize(), 10);
+        AdminEmailVerificationRequestSearchVO normalized = normalizeEmailVerificationRequestSearch(search);
+        int total = adminMapper.countEmailVerificationRequests(normalized);
+        AdminPageVO paging = AdminPageVO.of(total, normalized.getPage(), normalized.getSize(), 10);
+        normalized.setPage(paging.getCurrentPage());
+        normalized.setPaged(!"CLIENT".equals(normalized.getMode()));
+
+        List<AdminEmailVerificationRequestVO> list = adminMapper.findEmailVerificationRequests(normalized);
 
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
         result.put("paging", paging);
         result.put("total", total);
-        result.put("search", search);
+        result.put("search", normalized);
         return result;
+    }
+
+    @Override
+    public List<AdminEmailVerificationRequestVO> getEmailVerificationRequestsForExport(AdminEmailVerificationRequestSearchVO search) {
+        AdminEmailVerificationRequestSearchVO normalized = normalizeEmailVerificationRequestSearch(search);
+        normalized.setPage(1);
+        normalized.setPaged(false);
+        return adminMapper.findEmailVerificationRequests(normalized);
+    }
+
+    private AdminEmailVerificationRequestSearchVO normalizeEmailVerificationRequestSearch(AdminEmailVerificationRequestSearchVO source) {
+        AdminEmailVerificationRequestSearchVO search = source != null ? source : new AdminEmailVerificationRequestSearchVO();
+        search.setKeyword(trimToNull(search.getKeyword()));
+        search.setStatus(search.getStatus());
+        search.setPurpose(search.getPurpose());
+        search.setDateFilter(search.getDateFilter());
+        search.setSortField(search.getSortField());
+        search.setSortDir(search.getSortDir());
+        search.setMode(search.getMode());
+        search.setPage(search.getPage());
+        search.setSize(search.getSize());
+        search.setPaged(!"CLIENT".equals(search.getMode()));
+        return search;
     }
 
     // ===== 이메일 액션 토큰 이력 =====
