@@ -53,15 +53,15 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content adm-governance-page">
+<div class="adm-content adm-governance-page adm-appeal-policy-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_security_admin_appealPolicy_title}</h1>
             <p class="adm-page-desc">${msg_security_admin_appealPolicy_desc}</p>
         </div>
-        <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/appeals">${msg_security_admin_nav_appeals}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies">${msg_security_admin_nav_policies}</a>
+        <div class="adm-actions adm-appeal-policy-page-actions">
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/appeals">${msg_security_admin_nav_appeals}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/policies">${msg_security_admin_nav_policies}</a>
         </div>
     </div>
 
@@ -69,13 +69,13 @@
         <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
-    <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeal-policy" class="adm-card adm-appeal-policy-card">
+    <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeal-policy" class="adm-card adm-appeal-policy-card adm-overflow-visible">
         <div class="adm-card-header adm-appeal-policy-head">
             <div>
                 <div class="adm-card-title">${msg_security_admin_appealPolicy_cardTitle}</div>
                 <div class="adm-muted"><c:out value="${policy.policyCode}" default="DEFAULT"/></div>
             </div>
-            <label class="adm-check">
+            <label class="adm-check adm-appeal-policy-active">
                 <input type="checkbox" name="active" ${policy.active ? 'checked' : ''}>
                 ${msg_security_admin_common_enabled}
             </label>
@@ -175,12 +175,12 @@
             </label>
 
             <div class="adm-actions adm-appeal-policy-actions">
-                <button type="submit" class="adm-btn primary">${msg_security_admin_common_save}</button>
+                <button type="submit" class="adm-btn adm-btn-primary">${msg_security_admin_common_save}</button>
             </div>
         </div>
     </form>
 
-    <div class="adm-card adm-appeal-policy-history-card">
+    <div class="adm-card adm-appeal-policy-history-card adm-overflow-visible">
         <div class="adm-card-header">
             <div>
                 <div class="adm-card-title">${msg_security_admin_appealPolicy_history_title}</div>
@@ -189,7 +189,7 @@
         </div>
         <div class="adm-card-body">
             <div class="adm-table-wrap">
-                <table class="adm-table">
+                <table class="adm-table adm-appeal-policy-history-table" data-admin-list-ignore="true">
                     <thead>
                     <tr>
                         <th>${msg_security_admin_appealPolicy_history_version}</th>
@@ -224,7 +224,7 @@
                         </tr>
                     </c:forEach>
                     <c:if test="${empty policyHistories}">
-                        <tr><td colspan="5" class="adm-empty">${msg_security_admin_appealPolicy_history_empty}</td></tr>
+                        <tr class="adm-local-empty"><td colspan="5" class="adm-local-empty-cell">${msg_security_admin_appealPolicy_history_empty}</td></tr>
                     </c:if>
                     </tbody>
                 </table>
@@ -232,3 +232,5 @@
         </div>
     </div>
 </div>
+
+<%@ include file="../layout-close.jsp" %>

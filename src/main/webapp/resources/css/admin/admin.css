@@ -7798,6 +7798,14 @@ body.sa-light .adm-governance-page .adm-security-assessment-primary {
 }
 
 /* Security appeal policy */
+.adm-governance-page.adm-appeal-policy-page {
+    max-width: min(100%, 1500px);
+}
+
+.adm-governance-page .adm-appeal-policy-page-actions .adm-btn {
+    white-space: nowrap;
+}
+
 .adm-governance-page .adm-appeal-policy-card,
 .adm-governance-page .adm-appeal-policy-history-card {
     overflow: visible;
@@ -7810,6 +7818,18 @@ body.sa-light .adm-governance-page .adm-security-assessment-primary {
 
 .adm-governance-page .adm-appeal-policy-head {
     align-items: center;
+    gap: 14px;
+}
+
+.adm-governance-page .adm-appeal-policy-active {
+    flex: 0 0 auto;
+    width: auto;
+    height: auto;
+    min-width: max-content;
+    min-height: 34px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
 }
 
 .adm-governance-page .adm-appeal-policy-body {
@@ -7854,6 +7874,9 @@ body.sa-light .adm-governance-page .adm-security-assessment-primary {
 }
 
 .adm-governance-page .adm-appeal-policy-check {
+    display: inline-flex !important;
+    width: auto;
+    height: auto;
     min-height: 38px;
     align-items: center;
 }
@@ -7869,6 +7892,14 @@ body.sa-light .adm-governance-page .adm-security-assessment-primary {
 
 .adm-governance-page .adm-appeal-policy-actions {
     justify-content: flex-end;
+}
+
+.adm-governance-page .adm-appeal-policy-actions .adm-btn {
+    white-space: nowrap;
+}
+
+.adm-governance-page .adm-appeal-policy-history-table {
+    min-width: 900px;
 }
 
 .adm-governance-page .adm-appeal-policy-snapshot-grid {
@@ -7897,6 +7928,7 @@ body.sa-light .adm-governance-page .adm-appeal-policy-section-title {
 @media (max-width: 760px) {
     .adm-governance-page .adm-appeal-policy-head {
         align-items: stretch;
+        flex-direction: column;
     }
 
     .adm-governance-page .adm-appeal-policy-grid,
@@ -7907,6 +7939,10 @@ body.sa-light .adm-governance-page .adm-appeal-policy-section-title {
 
     .adm-governance-page .adm-appeal-policy-actions {
         justify-content: flex-start;
+    }
+
+    .adm-governance-page .adm-appeal-policy-actions .adm-btn {
+        width: 100%;
     }
 }
 
