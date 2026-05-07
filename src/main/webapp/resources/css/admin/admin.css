@@ -251,6 +251,11 @@ button, input, select, textarea {
 }
 
 body.adm-nav-lock { overflow: hidden; }
+.adm-is-hidden { display: none !important; }
+.adm-overflow-visible { overflow: visible; }
+.adm-modal-sm { max-width: 520px; }
+.adm-full-control { width: 100%; }
+.adm-textarea-compact { min-height: 90px; resize: vertical; }
 
 
 /* 콘텐츠 영역 */
@@ -1032,6 +1037,10 @@ button.adm-inline-chip {
     padding: 4px;
     min-width: 130px;
     box-shadow: 0 8px 24px rgba(0,0,0,.45);
+}
+.adm-tabs-more[hidden],
+.adm-tabs-dropdown[hidden] {
+    display: none;
 }
 .adm-tabs-dropdown .adm-tab {
     width: 100%;
@@ -1917,6 +1926,18 @@ body.sa-light .adm-report-desc {
     color: #475569;
 }
 
+.adm-bool {
+    font-weight: 800;
+}
+
+.adm-bool.is-yes {
+    color: #4ade80;
+}
+
+.adm-bool.is-no {
+    color: #94a3b8;
+}
+
 .adm-inline-warning {
     font-size: 10px;
     background: #422006;
@@ -2430,6 +2451,7 @@ body.sa-light .adm-tr-pill { background:#e2e8f0; color:#334155; }
 .adm-export-item:last-child { border-bottom: 0; }
 .adm-export-item:hover:not(:disabled) { background: #2d3748; }
 .adm-export-item:disabled { color: #64748b; cursor: not-allowed; }
+.adm-export-item.has-selection { color: #e2e8f0; }
 body.sa-light .adm-export-item { color: #334155; border-bottom-color: #e2e8f0; }
 body.sa-light .adm-export-item:hover:not(:disabled) { background: #f1f5f9; }
 body.sa-light .adm-export-item:disabled { color: #94a3b8; }
@@ -2749,6 +2771,55 @@ body.sa-light .adm-dash-sort-reset:hover {
 }
 
 /* 회원 관리: 기준 목록 툴바 */
+.adm-member-filter-card {
+    margin-bottom: 20px;
+}
+
+.adm-member-keyword-field {
+    flex: 1;
+    min-width: 220px;
+}
+
+.adm-member-search-row,
+.adm-member-date-row,
+.adm-member-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.adm-member-search-type {
+    width: 100px;
+}
+
+.adm-member-search-box {
+    flex: 1;
+}
+
+.adm-member-date-input {
+    width: 130px;
+}
+
+.adm-member-date-sep {
+    color: #475569;
+    font-size: 12px;
+}
+
+.adm-member-filter-actions {
+    align-items: flex-end;
+}
+
+.adm-member-total-label {
+    color: #475569;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.adm-member-check-head {
+    width: 40px;
+    text-align: center;
+}
+
 .js-member-section-card .adm-member-list-head {
     min-height: 64px;
 }
@@ -2874,6 +2945,10 @@ body.sa-light .adm-dash-sort-reset:hover {
     font-size: 12px;
 }
 
+.adm-member-overflow-toggle.has-selection {
+    color: #e2e8f0;
+}
+
 .adm-member-overflow-panel {
     display: none;
     position: absolute;
@@ -2995,6 +3070,17 @@ body.sa-light .js-member-section-card .js-member-page-state {
 }
 
 @media (max-width: 767px) {
+    .adm-member-search-row,
+    .adm-member-date-row,
+    .adm-member-filter-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .adm-member-search-type,
+    .adm-member-date-input,
+    .adm-member-filter-actions .adm-btn {
+        width: 100%;
+    }
     .js-member-section-card .adm-member-controlbar,
     .js-member-section-card .adm-local-pagination {
         align-items: stretch;
@@ -11264,9 +11350,30 @@ tr[data-quota-id].is-dirty td {
     font-size: 12px;
 }
 
+.adm-context-empty.is-compact {
+    min-height: auto;
+    padding: 20px;
+}
+
 .adm-context-social-item,
 .adm-context-metric-grid {
     margin-top: 12px;
+}
+
+.adm-context-inline-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.adm-context-warning-text {
+    color: #fbbf24;
+}
+
+.adm-chatbot-ip-select {
+    min-width: 140px;
+    font-size: 11px;
 }
 
 .adm-context-social-value {
