@@ -219,18 +219,17 @@ function enhanceBlockLocalTables() {
             const wrap = card.querySelector('.adm-table-wrap');
             if (wrap && !card.querySelector('.js-block-bulkbar[data-section="' + section + '"]')) {
                 const bar = document.createElement('div');
-                bar.className = 'js-block-bulkbar';
+                bar.className = 'js-block-bulkbar adm-block-bulkbar is-floating is-hidden';
                 bar.dataset.section = section;
-                bar.style.cssText = 'display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 14px;margin:0 16px 12px;align-items:center;gap:10px;flex-wrap:wrap;';
                 if (section === 'user-blocks') {
-                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>' + ADMIN_BLOCK_MSG.selectedCount + '</span>'
+                    bar.innerHTML = '<span class="adm-block-bulk-count-text"><span class="js-block-bulk-count">0</span>' + ADMIN_BLOCK_MSG.selectedCount + '</span>'
                         + '<button type="button" class="adm-btn adm-btn-primary js-bulk-release-user-blocks">' + ADMIN_BLOCK_MSG.bulkRelease + '</button>'
-                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">' + ADMIN_BLOCK_MSG.clearSelection + '</button>';
+                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection adm-block-clear-selection" data-section="' + section + '">' + ADMIN_BLOCK_MSG.clearSelection + '</button>';
                 } else {
-                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>' + ADMIN_BLOCK_MSG.selectedCount + '</span>'
+                    bar.innerHTML = '<span class="adm-block-bulk-count-text"><span class="js-block-bulk-count">0</span>' + ADMIN_BLOCK_MSG.selectedCount + '</span>'
                         + '<button type="button" class="adm-btn adm-btn-primary js-bulk-toggle-ip-rules" data-active="true">' + ADMIN_BLOCK_MSG.bulkActivate + '</button>'
                         + '<button type="button" class="adm-btn adm-btn-danger js-bulk-toggle-ip-rules" data-active="false">' + ADMIN_BLOCK_MSG.bulkDeactivate + '</button>'
-                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">' + ADMIN_BLOCK_MSG.clearSelection + '</button>';
+                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection adm-block-clear-selection" data-section="' + section + '">' + ADMIN_BLOCK_MSG.clearSelection + '</button>';
                 }
                 wrap.parentElement.insertBefore(bar, wrap);
             }
@@ -246,7 +245,7 @@ function updateBlockBulkBar(section) {
     const checks = selectedBlockChecks(section);
     const bar = document.querySelector('.js-block-bulkbar[data-section="' + section + '"]');
     if (bar) {
-        bar.style.display = checks.length > 0 ? 'flex' : 'none';
+        bar.classList.toggle('is-hidden', checks.length === 0);
         const count = bar.querySelector('.js-block-bulk-count');
         if (count) count.textContent = checks.length;
     }

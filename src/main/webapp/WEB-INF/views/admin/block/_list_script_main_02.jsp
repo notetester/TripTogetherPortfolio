@@ -172,9 +172,9 @@ function updateLocalSortIndicators(section) {
     if (resetBtn) {
         if (activeCellIndex >= 0) {
             resetBtn.textContent = ADMIN_BLOCK_MSG.dashSortReset;
-            resetBtn.style.display = '';
+            resetBtn.classList.remove('is-hidden');
         } else {
-            resetBtn.style.display = 'none';
+            resetBtn.classList.add('is-hidden');
         }
     }
 }
