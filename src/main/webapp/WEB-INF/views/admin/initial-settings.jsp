@@ -28,7 +28,7 @@
             <h1>${msg_admin_initialSettings_title}</h1>
             <p class="adm-page-desc">${msg_admin_initialSettings_desc}</p>
         </div>
-        <div class="adm-actions">
+        <div class="adm-actions adm-initial-page-actions">
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/runtime-settings">${msg_admin_layout_menu_runtimeSettings}</a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/policy-history">${msg_admin_layout_menu_policyHistory}</a>
         </div>
@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div class="adm-card-body adm-initial-card-body">
-                <div class="adm-initial-main-action">
+                <div class="adm-initial-main-action adm-initial-export-action">
                     <a class="adm-btn adm-btn-primary" href="${pageContext.request.contextPath}/admin/initial-settings/export">
                         ${msg_admin_initialSettings_exportButton}
                     </a>
@@ -80,7 +80,7 @@
                         <span>${msg_admin_initialSettings_importFile}</span>
                         <input class="adm-input" type="file" name="file" accept="application/json,.json" required>
                     </label>
-                    <div class="adm-initial-main-action">
+                    <div class="adm-initial-main-action adm-initial-import-action">
                         <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_initialSettings_importButton}</button>
                     </div>
                 </form>
