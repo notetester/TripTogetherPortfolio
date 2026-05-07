@@ -4307,6 +4307,51 @@ body.sa-light .adm-audit-bulk-bar {
     backdrop-filter: blur(4px);
 }
 
+.adm-governance-page .review-detail-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(2,6,23,.62);
+}
+
+.adm-governance-page .review-detail-modal.is-open {
+    display: flex;
+}
+
+.adm-governance-page .review-detail-card {
+    width: min(920px, calc(100vw - 48px));
+    max-height: calc(100vh - 80px);
+    overflow: auto;
+    border: 1px solid rgba(148,163,184,.22);
+    border-radius: 8px;
+    box-shadow: 0 24px 80px rgba(2,6,23,.42);
+}
+
+.adm-governance-page .review-detail-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(148,163,184,.18);
+}
+
+.adm-governance-page .review-detail-title {
+    margin: 0;
+    font-size: 20px;
+    letter-spacing: 0;
+}
+
+.adm-governance-page .review-detail-body {
+    display: grid;
+    gap: 12px;
+    padding: 18px 20px;
+}
+
 .adm-governance-page .provider-detail-card,
 .adm-governance-page .waf-detail-card,
 .adm-governance-page .review-detail-card {
@@ -4326,10 +4371,22 @@ body.sa-light .adm-audit-bulk-bar {
 .adm-governance-page .provider-detail-item,
 .adm-governance-page .waf-detail-item,
 .adm-governance-page .review-detail-item {
+    padding: 12px;
     border-radius: 14px;
     border: 1px solid rgba(148,163,184,.18);
     background: rgba(15,23,42,.65) !important;
     color: #e2e8f0;
+}
+
+.adm-governance-page .review-detail-item strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #cbd5e1;
+}
+
+.adm-governance-page .review-detail-pre {
+    white-space: pre-wrap;
+    line-height: 1.65;
 }
 
 .adm-governance-page .provider-detail-label,
@@ -4431,6 +4488,10 @@ body.sa-light .adm-governance-page .waf-detail-item,
 body.sa-light .adm-governance-page .review-detail-item {
     background: #ffffff !important;
     border-color: #e2e8f0;
+}
+
+body.sa-light .adm-governance-page .review-detail-item strong {
+    color: #334155;
 }
 
 body.sa-light .adm-governance-page .provider-detail-card,
@@ -5330,6 +5391,122 @@ body.sa-light .adm-governance-page .adm-login-review-summary span {
 
     .adm-governance-page .adm-login-review-filter-actions .adm-btn {
         width: auto;
+    }
+}
+
+/* General security review list */
+.adm-governance-page .adm-security-review-filter-card,
+.adm-governance-page .adm-security-review-list-card {
+    overflow: visible;
+    border-radius: 8px;
+}
+
+.adm-governance-page .adm-security-review-filter-card {
+    margin-bottom: 12px;
+}
+
+.adm-governance-page .adm-security-review-filterbar {
+    display: grid;
+    grid-template-columns: minmax(130px, .7fr) minmax(130px, .7fr) minmax(180px, .95fr) minmax(280px, 1.45fr) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-governance-page .adm-security-review-filterbar label,
+.adm-governance-page .adm-security-review-keyword-field {
+    min-width: 0;
+}
+
+.adm-governance-page .adm-security-review-filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.adm-governance-page .adm-security-review-table td {
+    vertical-align: top;
+}
+
+.adm-governance-page .adm-security-review-primary {
+    font-weight: 800;
+    color: #dbeafe;
+}
+
+.adm-governance-page .adm-security-review-summary {
+    display: flex;
+    min-width: 0;
+    max-width: 560px;
+    flex-direction: column;
+    gap: 4px;
+    line-height: 1.45;
+}
+
+.adm-governance-page .adm-security-review-summary strong {
+    color: #e5e7eb;
+}
+
+.adm-governance-page .adm-security-review-summary span {
+    color: #94a3b8;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.adm-governance-page .adm-security-review-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-width: 240px;
+}
+
+.adm-governance-page .adm-security-review-row-actions form {
+    margin: 0;
+}
+
+.adm-governance-page .adm-security-review-row-actions .adm-btn {
+    min-height: 30px;
+    padding: 6px 9px;
+    white-space: nowrap;
+}
+
+body.sa-light .adm-governance-page .adm-security-review-primary,
+body.sa-light .adm-governance-page .adm-security-review-summary strong {
+    color: #0f172a;
+}
+
+body.sa-light .adm-governance-page .adm-security-review-summary span {
+    color: #64748b;
+}
+
+@media (max-width: 1240px) {
+    .adm-governance-page .adm-security-review-filterbar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .adm-governance-page .adm-security-review-keyword-field {
+        grid-column: span 2;
+    }
+
+    .adm-governance-page .adm-security-review-filter-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+    .adm-governance-page .adm-security-review-filterbar {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-governance-page .adm-security-review-keyword-field {
+        grid-column: auto;
+    }
+
+    .adm-governance-page .adm-security-review-filter-actions .adm-btn {
+        width: auto;
+    }
+
+    .adm-governance-page .adm-security-review-row-actions {
+        min-width: 190px;
     }
 }
 
