@@ -393,6 +393,11 @@ body.adm-nav-lock { overflow: hidden; }
     cursor: pointer; border: 1px solid; transition: all .15s;
     display: flex; align-items: center; gap: 6px; white-space: nowrap;
 }
+.adm-btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 .adm-btn-primary {
     background: #3b82f6; border-color: #3b82f6; color: #fff;
 }
@@ -8746,7 +8751,8 @@ body.sa-light .adm-audit-row-detail-value {
 }
 
 .adm-inquiry-back-row,
-.adm-inquiry-detail-card {
+.adm-inquiry-detail-card,
+.adm-inquiry-answer-card {
     margin-bottom: 16px;
 }
 

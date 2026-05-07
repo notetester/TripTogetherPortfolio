@@ -37,7 +37,7 @@
 <spring:message var="msg_admin_inquiry_detail_confirmChangeStatus" code="admin.inquiry.detail.confirmChangeStatus"/>
 <spring:message var="msg_admin_inquiry_detail_viewOriginal" code="admin.inquiry.detail.viewOriginal"/>
 <spring:message var="msg_admin_inquiry_detail_id" code="admin.inquiry.detail.id"/>
-<spring:message var="msg_admin_inquiry_detail_title" code="admin.inquiry.detail.title"/>
+<spring:message var="msg_admin_inquiry_detail_title" code="admin.inquiry.detail.title" arguments="${inquiry.inquiryId}"/>
 <spring:message var="msg_admin_inquiry_status_pending" code="admin.inquiry.status.pending"/>
 <spring:message var="msg_admin_inquiry_status_inProgress" code="admin.inquiry.status.inProgress"/>
 <spring:message var="msg_admin_inquiry_status_completed" code="admin.inquiry.status.completed"/>
@@ -51,7 +51,7 @@
 <spring:message var="msg_admin_inquiry_category_etc" code="admin.inquiry.category.etc"/>
 <spring:message var="msg_admin_common_sameCategory" code="admin.common.sameCategory"/>
 <spring:message var="msg_admin_inquiry_privateFlag" code="admin.inquiry.privateFlag"/>
-<spring:message var="msg_admin_inquiry_viewCount" code="admin.inquiry.viewCount"/>
+<spring:message var="msg_admin_inquiry_viewCount" code="admin.inquiry.viewCount" arguments="${inquiry.viewCount}"/>
 <spring:message var="msg_admin_common_nickname" code="admin.common.nickname"/>
 <spring:message var="msg_admin_common_memberInfoView" code="admin.common.memberInfoView"/>
 <spring:message var="msg_admin_common_sameAuthor" code="admin.common.sameAuthor"/>
@@ -137,7 +137,7 @@
             </div>
 
             <%-- 답변 카드 --%>
-            <div class="adm-card" id="inquiry-answer-card">
+            <div class="adm-card adm-inquiry-answer-card" id="inquiry-answer-card">
                 <div class="adm-card-head">
                     <div class="adm-card-title">${msg_admin_inquiry_detail_answerTitle}</div>
                     <c:if test="${not empty inquiry.answerId}">
@@ -256,12 +256,15 @@
                             <div class="adm-inquiry-status-actions">
                                 <button class="adm-btn adm-btn-ghost adm-inquiry-status-btn is-pending"
                                         data-status="PENDING"
+                                        ${inquiry.status eq 'PENDING' ? 'disabled' : ''}
                                         onclick="changeStatus(this.getAttribute('data-status'))">${msg_admin_inquiry_status_pending}</button>
                                 <button class="adm-btn adm-btn-ghost adm-inquiry-status-btn is-progress"
                                         data-status="IN_PROGRESS"
+                                        ${inquiry.status eq 'IN_PROGRESS' ? 'disabled' : ''}
                                         onclick="changeStatus(this.getAttribute('data-status'))">${msg_admin_inquiry_status_inProgress}</button>
                                 <button class="adm-btn adm-btn-ghost adm-inquiry-status-btn is-complete"
                                         data-status="COMPLETED"
+                                        ${inquiry.status eq 'COMPLETED' ? 'disabled' : ''}
                                         onclick="changeStatus(this.getAttribute('data-status'))">${msg_admin_inquiry_status_completed}</button>
                             </div>
                         </div>
@@ -272,9 +275,9 @@
                                 <div class="adm-inquiry-delete-warning">⚠ ${msg_admin_inquiry_detail_deleteRequestPending}</div>
                                 <div class="adm-inquiry-side-stack">
                                     <button class="adm-btn adm-btn-ghost adm-inquiry-danger-btn"
-                                            onclick="approveDeleteRequest()">🗑️ ${msg_admin_inquiry_detail_approveDeleteRequest}</button>
+                                            onclick="approveDeleteRequest()">${msg_admin_inquiry_detail_approveDeleteRequest}</button>
                                     <button class="adm-btn adm-btn-ghost adm-inquiry-muted-btn"
-                                            onclick="rejectDeleteRequest()">✖ ${msg_admin_inquiry_detail_rejectDeleteRequest}</button>
+                                            onclick="rejectDeleteRequest()">${msg_admin_inquiry_detail_rejectDeleteRequest}</button>
                                 </div>
                             </div>
                         </c:if>
@@ -329,12 +332,14 @@ var INQUIRY_DETAIL_MSG = {
 function goBackToList() {
     var params = new URLSearchParams(window.location.search);
     var page       = params.get('page')       || '1';
+    var size       = params.get('size')       || '';
     var status     = params.get('status')     || '';
     var category   = params.get('category')   || '';
     var answered   = params.get('answered')   || '';
     var searchType = params.get('searchType') || '';
     var keyword    = params.get('keyword')    || '';
     var url = ctx + '/admin/inquiries?page=' + page;
+    if (size)       url += '&size='       + encodeURIComponent(size);
     if (status)     url += '&status='     + encodeURIComponent(status);
     if (category)   url += '&category='   + encodeURIComponent(category);
     if (answered)   url += '&answered='   + encodeURIComponent(answered);
@@ -344,8 +349,12 @@ function goBackToList() {
 }
 
 function applyInquiryFilter(button) {
+    var current = new URLSearchParams(window.location.search);
     var params = new URLSearchParams();
     params.set('page', '1');
+    if (current.get('size')) {
+        params.set('size', current.get('size'));
+    }
     if (button.dataset.category) {
         params.set('category', button.dataset.category);
     }
@@ -417,7 +426,7 @@ function deleteInquiry() {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     }).then(function(r) { return r.json(); })
       .then(function(d) {
-        if (d.success) { location.href = ctx + '/admin/inquiries'; }
+        if (d.success) { goBackToList(); }
         else { alert(d.message || INQUIRY_DETAIL_MSG.processFailed); }
     });
 }
@@ -429,7 +438,7 @@ function approveDeleteRequest() {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     }).then(function(r) { return r.json(); })
       .then(function(d) {
-        if (d.success) { location.href = ctx + '/admin/inquiries'; }
+        if (d.success) { goBackToList(); }
         else { alert(d.message || INQUIRY_DETAIL_MSG.processFailed); }
     });
 }
