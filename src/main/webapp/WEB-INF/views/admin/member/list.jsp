@@ -181,12 +181,14 @@
 <spring:message var="msg_admin_blocks_mode_client" code="admin.blocks.mode.client"/>
 <spring:message var="msg_admin_blocks_mode_server" code="admin.blocks.mode.server"/>
 <spring:message var="msg_admin_common_pageSize" code="admin.common.pageSize"/>
+<spring:message var="msg_admin_common_pageSizeLabel" code="admin.common.pageSizeLabel"/>
 <spring:message var="msg_admin_common_pageSize_10" code="admin.common.pageSize" arguments="10"/>
 <spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20"/>
 <spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
 <spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100"/>
 <spring:message var="msg_admin_common_selectedCount" code="admin.common.selectedCount"/>
 <spring:message var="msg_admin_common_clearSelection" code="admin.common.clearSelection"/>
+<spring:message var="msg_admin_common_apply" code="admin.common.apply"/>
 <spring:message var="msg_admin_common_member" code="admin.common.member"/>
 <spring:message var="msg_admin_common_status" code="admin.common.status"/>
 <spring:message var="msg_admin_members_social" code="admin.members.social"/>
@@ -307,15 +309,15 @@
          회원 목록 테이블
     ══════════════════════════════════════════ --%>
     <div class="adm-card js-member-section-card" data-section="members" data-enhanced="true" style="overflow:visible;">
-        <div class="adm-card-head">
+        <div class="adm-card-head adm-member-list-head">
             <div class="adm-card-title">
                 👥 ${msg_admin_members_listTitle}
                 <span id="memberTotalLabel" style="font-size:12px;font-weight:400;color:#475569;">
                     <spring:message var="msg_admin_members_totalMembers_args_total" code="admin.members.totalMembers" arguments="${total}"/>${msg_admin_members_totalMembers_args_total}
                 </span>
             </div>
-            <div style="position:relative;display:flex;align-items:center;gap:8px;">
-                <select class="adm-select" id="exportFormat" style="width:90px;">
+            <div class="adm-member-export-control adm-export-control">
+                <select class="adm-select adm-member-export-format" id="exportFormat">
                     <option value="csv">CSV</option>
                     <option value="excel">Excel</option>
                 </select>
@@ -328,36 +330,48 @@
             </div>
         </div>
 
-        <div class="adm-local-toolbar adm-member-local-toolbar">
-            <div class="adm-local-toolbar-group adm-member-toolbar-actions">
-                <button type="button" class="adm-dash-sort-reset js-member-sort-reset" style="display:none;" onclick="resetMemberSort()"></button>
-                <select class="adm-select js-member-section-mode" id="memberModeSelect" title="${msg_admin_blocks_mode_label}">
-                    <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
-                    <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
-                </select>
-                <select class="adm-select js-member-page-size" style="width:90px;" id="sizeSelect" onchange="changeSize(this.value)">
-                    <option value="10"  ${search.size==10  ? 'selected' : ''}>${msg_admin_common_pageSize_10}</option>
-                    <option value="20"  ${search.size==20  ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
-                    <option value="50"  ${search.size==50  ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
-                    <option value="100" ${search.size==100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
-                </select>
+        <div class="adm-member-controlbar">
+            <%-- 일괄 처리 바: 선택 전에도 슬롯을 유지해 보기 도구 위치가 튀지 않도록 한다. --%>
+            <div id="bulkBar" class="adm-member-bulkbar" aria-live="polite">
+                <span class="adm-member-bulk-count"><strong id="bulkCount">0</strong>${msg_admin_common_selectedCount}</span>
+                <div class="adm-member-bulk-actions">
+                    <select class="adm-select" id="bulkStatusSelect">
+                        <option value="">상태 선택</option>
+                        <option value="ACTIVE">${msg_admin_status_ACTIVE}</option>
+                        <option value="DORMANT">${msg_admin_status_DORMANT}</option>
+                        <option value="BLOCKED">${msg_admin_status_BLOCKED}</option>
+                        <option value="DELETED">${msg_admin_status_DELETED}</option>
+                    </select>
+                    <button type="button" class="adm-btn adm-btn-primary adm-member-bulk-apply" onclick="applyBulkStatus()">${msg_admin_common_apply}</button>
+                </div>
+                <button type="button" class="adm-btn adm-btn-ghost adm-member-bulk-clear" onclick="clearSelection()">${msg_admin_common_clearSelection}</button>
             </div>
-        </div>
 
-        <%-- 일괄 처리 바 --%>
-        <div id="bulkBar" style="display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 16px;margin:0 0 12px;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><strong id="bulkCount">0</strong>${msg_admin_common_selectedCount}</span>
-            <div style="display:flex;align-items:center;gap:6px;">
-                <select class="adm-select" id="bulkStatusSelect" style="width:130px;">
-                    <option value="">상태 선택</option>
-                    <option value="ACTIVE">${msg_admin_status_ACTIVE}</option>
-                    <option value="DORMANT">${msg_admin_status_DORMANT}</option>
-                    <option value="BLOCKED">${msg_admin_status_BLOCKED}</option>
-                    <option value="DELETED">${msg_admin_status_DELETED}</option>
-                </select>
-                <button type="button" class="adm-btn adm-btn-primary" style="font-size:12px;" onclick="applyBulkStatus()">적용</button>
+            <div class="adm-member-view-tools">
+                <div id="memberPrimaryTools" class="adm-member-primary-tools">
+                    <button type="button" class="adm-dash-sort-reset js-member-sort-reset adm-member-tool-item adm-member-sort-reset" style="display:none;" onclick="resetMemberSort()"></button>
+                    <label class="adm-member-tool-item adm-member-tool adm-member-mode-tool">
+                        <span class="adm-member-tool-label">${msg_admin_blocks_mode_label}</span>
+                        <select class="adm-select js-member-section-mode" id="memberModeSelect" title="${msg_admin_blocks_mode_label}">
+                            <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
+                            <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
+                        </select>
+                    </label>
+                    <label class="adm-member-tool-item adm-member-tool adm-member-size-tool">
+                        <span class="adm-member-tool-label">${msg_admin_common_pageSizeLabel}</span>
+                        <select class="adm-select js-member-page-size" id="sizeSelect" onchange="changeSize(this.value)">
+                            <option value="10"  ${search.size==10  ? 'selected' : ''}>${msg_admin_common_pageSize_10}</option>
+                            <option value="20"  ${search.size==20  ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
+                            <option value="50"  ${search.size==50  ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
+                            <option value="100" ${search.size==100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="adm-member-overflow-menu" id="memberOverflowMenu">
+                    <button type="button" class="adm-btn adm-btn-ghost adm-member-overflow-toggle" aria-expanded="false" aria-controls="memberOverflowPanel">옵션 ▾</button>
+                    <div id="memberOverflowPanel" class="adm-member-overflow-panel"></div>
+                </div>
             </div>
-            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;margin-left:auto;" onclick="clearSelection()">${msg_admin_common_clearSelection}</button>
         </div>
 
         <div class="adm-table-wrap" style="overflow:visible;">
@@ -582,6 +596,7 @@ function updateMemberSortIndicators() {
         resetBtn.textContent = ADMIN_MEMBER_MSG.dashSortReset;
         resetBtn.style.display = memberSectionState.sortBy ? '' : 'none';
     }
+    syncMemberControlOverflow();
 }
 
 function updateMemberTotal(total) {
@@ -812,9 +827,17 @@ function updateBulkBar() {
     const checked = document.querySelectorAll('.js-row-check:checked');
     const n = checked.length;
     const bulkBar = document.getElementById('bulkBar');
-    if (bulkBar) bulkBar.style.display = n > 0 ? 'flex' : 'none';
+    if (bulkBar) {
+        bulkBar.classList.toggle('is-active', n > 0);
+        bulkBar.setAttribute('aria-hidden', n > 0 ? 'false' : 'true');
+        bulkBar.querySelectorAll('select, button').forEach(function (control) {
+            control.disabled = n === 0;
+        });
+    }
     const bulkCount = document.getElementById('bulkCount');
     if (bulkCount) bulkCount.textContent = n;
+    const bulkStatusSelect = document.getElementById('bulkStatusSelect');
+    if (bulkStatusSelect && n === 0) bulkStatusSelect.value = '';
     const selBtn = document.getElementById('exportSelectedBtn');
     if (selBtn) {
         selBtn.disabled = n === 0;
@@ -878,6 +901,59 @@ function exportData(scope) {
     window.location.href = ctx + '/admin/members/export?' + params.toString();
 }
 
+let memberControlOverflowSync = null;
+
+function isVisibleMemberTool(tool) {
+    if (!tool) return false;
+    return !tool.classList.contains('js-member-sort-reset') || tool.style.display !== 'none';
+}
+
+function syncMemberControlOverflow() {
+    if (typeof memberControlOverflowSync === 'function') memberControlOverflowSync();
+}
+
+function initMemberControlOverflow() {
+    const primary = document.getElementById('memberPrimaryTools');
+    const menu = document.getElementById('memberOverflowMenu');
+    const panel = document.getElementById('memberOverflowPanel');
+    const toggle = menu ? menu.querySelector('.adm-member-overflow-toggle') : null;
+    if (!primary || !menu || !panel || !toggle) return;
+
+    const tools = [
+        { node: document.querySelector('.adm-member-sort-reset'), breakpoint: 1380 },
+        { node: document.querySelector('.adm-member-mode-tool'), breakpoint: 1180 },
+        { node: document.querySelector('.adm-member-size-tool'), breakpoint: 980 }
+    ].filter(function (item) { return !!item.node; });
+
+    memberControlOverflowSync = function () {
+        const width = window.innerWidth || document.documentElement.clientWidth || 1600;
+        tools.forEach(function (item) {
+            const target = width <= item.breakpoint ? panel : primary;
+            if (item.node.parentElement !== target) target.appendChild(item.node);
+        });
+        const hasItems = Array.from(panel.children).some(isVisibleMemberTool);
+        menu.classList.toggle('has-items', hasItems);
+        if (!hasItems) {
+            menu.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+    };
+
+    toggle.addEventListener('click', function () {
+        const willOpen = !menu.classList.contains('open');
+        menu.classList.toggle('open', willOpen);
+        toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+    document.addEventListener('click', function (e) {
+        if (!menu.contains(e.target)) {
+            menu.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+    });
+    window.addEventListener('resize', syncMemberControlOverflow, { passive: true });
+    syncMemberControlOverflow();
+}
+
 function initMemberSection() {
     const sizeSelect = document.getElementById('sizeSelect');
     memberSectionState.pageSize = Number(sizeSelect ? sizeSelect.value : 20) || 20;
@@ -915,6 +991,8 @@ function initMemberSection() {
     markOriginalIndices(existingRows);
     updateMemberPaginationMeta(memberSectionState.page, Number((document.querySelector('.js-member-page-state') || {}).textContent?.split('/')[1] || 1), Number('${total}' || existingRows.length), existingRows.length);
     updateMemberSortIndicators();
+    updateBulkBar();
+    initMemberControlOverflow();
     if (memberSectionState.mode === 'CLIENT') renderMemberByMode(1);
 }
 

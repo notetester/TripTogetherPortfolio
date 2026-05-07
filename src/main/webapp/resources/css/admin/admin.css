@@ -2634,20 +2634,163 @@ body.sa-light .adm-dash-sort-reset:hover {
     border-color: #94a3b8;
 }
 
-/* 회원 관리: 차단 관리 섹션과 동일한 툴바/페이징 레이아웃 */
-.js-member-section-card .adm-member-local-toolbar {
-    display: flex;
-    justify-content: flex-end;
+/* 회원 관리: 기준 목록 툴바 */
+.js-member-section-card .adm-member-list-head {
+    min-height: 64px;
+}
+
+.adm-member-export-control {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.adm-member-export-format {
+    width: 90px;
+}
+
+.js-member-section-card .adm-member-controlbar {
+    display: grid;
+    grid-template-columns: minmax(360px, 1fr) max-content;
     align-items: center;
     gap: 12px;
-    padding: 16px;
+    padding: 12px 16px;
     border-bottom: 1px solid rgba(148, 163, 184, 0.14);
     background: rgba(15, 23, 42, 0.42);
 }
 
-.js-member-section-card .adm-member-toolbar-actions {
+.adm-member-bulkbar {
+    min-height: 44px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .15s ease, border-color .15s ease, background-color .15s ease;
+}
+
+.adm-member-bulkbar.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    border-color: rgba(59, 130, 246, .56);
+    background: rgba(29, 78, 137, .48);
+}
+
+.adm-member-bulk-count {
+    flex: 0 0 auto;
+    color: #93c5fd;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.adm-member-bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+#bulkStatusSelect {
+    width: 130px;
+}
+
+.adm-member-bulk-apply,
+.adm-member-bulk-clear {
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.adm-member-bulk-clear {
     margin-left: auto;
+}
+
+.adm-member-view-tools,
+.adm-member-primary-tools {
+    display: flex;
+    align-items: center;
     justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+}
+
+.adm-member-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.adm-member-tool-label {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.adm-member-tool .adm-select {
+    min-width: 118px;
+}
+
+.adm-member-size-tool .adm-select {
+    width: 90px;
+    min-width: 90px;
+}
+
+.adm-member-overflow-menu {
+    position: relative;
+    display: none;
+    flex: 0 0 auto;
+}
+
+.adm-member-overflow-menu.has-items {
+    display: inline-flex;
+}
+
+.adm-member-overflow-toggle {
+    min-width: 76px;
+    font-size: 12px;
+}
+
+.adm-member-overflow-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 70;
+    min-width: 224px;
+    padding: 10px;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    background: #111827;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, .32);
+}
+
+.adm-member-overflow-menu.open .adm-member-overflow-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.adm-member-overflow-panel .adm-member-tool-item {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.adm-member-overflow-panel .adm-dash-sort-reset {
+    justify-content: center;
+}
+
+.adm-member-overflow-panel .adm-member-tool .adm-select {
+    min-width: 130px;
 }
 
 .js-member-section-card .adm-local-pagination {
@@ -2683,10 +2826,29 @@ body.sa-light .adm-dash-sort-reset:hover {
     font-size: 13px;
 }
 
-body.sa-light .js-member-section-card .adm-member-local-toolbar,
+body.sa-light .js-member-section-card .adm-member-controlbar,
 body.sa-light .js-member-section-card .adm-local-pagination {
     background: #f8fafc;
     border-color: #e2e8f0;
+}
+
+body.sa-light .adm-member-bulkbar.is-active {
+    border-color: rgba(37, 99, 235, .34);
+    background: #eff6ff;
+}
+
+body.sa-light .adm-member-tool {
+    color: #475569;
+}
+
+body.sa-light .adm-member-tool-label {
+    color: #64748b;
+}
+
+body.sa-light .adm-member-overflow-panel {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, .14);
 }
 
 body.sa-light .js-member-section-card .adm-local-page-info,
@@ -2694,19 +2856,66 @@ body.sa-light .js-member-section-card .js-member-page-state {
     color: #475569;
 }
 
+@media (max-width: 900px) {
+    .js-member-section-card .adm-member-controlbar {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+    .adm-member-bulkbar:not(.is-active) {
+        display: none;
+    }
+    .adm-member-bulkbar {
+        flex-wrap: wrap;
+    }
+    .adm-member-bulk-clear {
+        margin-left: 0;
+    }
+    .adm-member-view-tools,
+    .adm-member-primary-tools {
+        justify-content: flex-start;
+    }
+    .adm-member-overflow-panel {
+        left: 0;
+        right: auto;
+    }
+}
+
 @media (max-width: 767px) {
-    .js-member-section-card .adm-member-local-toolbar,
+    .js-member-section-card .adm-member-controlbar,
     .js-member-section-card .adm-local-pagination {
         align-items: stretch;
         padding: 14px 16px;
     }
-    .js-member-section-card .adm-member-toolbar-actions,
     .js-member-section-card .adm-local-page-actions {
         width: 100%;
         margin-left: 0;
         justify-content: flex-end;
     }
     .js-member-section-card .adm-local-page-info {
+        width: 100%;
+    }
+}
+
+@media (max-width: 560px) {
+    .adm-member-export-control {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .adm-member-bulkbar {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .adm-member-bulk-actions,
+    .adm-member-bulk-actions .adm-select,
+    .adm-member-bulk-actions .adm-btn {
+        width: 100%;
+    }
+    .adm-member-overflow-menu,
+    .adm-member-overflow-toggle {
+        width: 100%;
+    }
+    .adm-member-overflow-panel {
         width: 100%;
     }
 }
@@ -2820,7 +3029,7 @@ body.sa-light .adm-section-list-page-info {
 }
 
 /* ── 회원 관리: 차단 관리형 섹션 도구 보강 ── */
-.adm-member-local-toolbar {
+.adm-member-controlbar {
     border-top: 1px solid #1e293b;
     border-bottom: 1px solid #1e293b;
 }
@@ -2837,7 +3046,7 @@ body.sa-light .adm-section-list-page-info {
     opacity: .55;
     pointer-events: none;
 }
-body.sa-light .adm-member-local-toolbar {
+body.sa-light .adm-member-controlbar {
     border-top-color: #e2e8f0;
     border-bottom-color: #e2e8f0;
 }
