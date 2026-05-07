@@ -44,6 +44,44 @@
         <div class="adm-alert danger"><c:out value="${error}"/></div>
     </c:if>
 
+    <section class="adm-card adm-initial-dashboard-card">
+        <div class="adm-card-header">
+            <div>
+                <div class="adm-card-title">현재 적용 설정 현황</div>
+                <div class="adm-muted">내보내기 가능한 운영 설정 묶음을 한 화면에서 확인합니다.</div>
+            </div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-initial-summary-grid">
+                <div class="adm-initial-summary-item">
+                    <span class="adm-initial-summary-label">런타임 설정</span>
+                    <strong>${initialSettingsSummary['runtimeSettings']}</strong>
+                    <span class="adm-muted">환경별 즉시 적용 값</span>
+                </div>
+                <div class="adm-initial-summary-item">
+                    <span class="adm-initial-summary-label">Provider 설정</span>
+                    <strong>${initialSettingsSummary['providerConfigs']}</strong>
+                    <span class="adm-muted">위험 판단 연동 설정</span>
+                </div>
+                <div class="adm-initial-summary-item">
+                    <span class="adm-initial-summary-label">로그인 위험 정책</span>
+                    <strong>${initialSettingsSummary['loginRiskPolicies']}</strong>
+                    <span class="adm-muted">검토/차단 기준</span>
+                </div>
+                <div class="adm-initial-summary-item">
+                    <span class="adm-initial-summary-label">이의제기 정책</span>
+                    <strong>${initialSettingsSummary['securityAppealPolicy']}</strong>
+                    <span class="adm-muted">접수/처리 정책</span>
+                </div>
+                <div class="adm-initial-summary-item">
+                    <span class="adm-initial-summary-label">통합 정책</span>
+                    <strong>${initialSettingsSummary['systemPolicies']}</strong>
+                    <span class="adm-muted">스케줄 정책</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <div class="adm-initial-grid">
         <section class="adm-card adm-initial-card">
             <div class="adm-card-header">
@@ -53,11 +91,40 @@
                 </div>
             </div>
             <div class="adm-card-body adm-initial-card-body">
-                <div class="adm-initial-main-action adm-initial-export-action">
-                    <a class="adm-btn adm-btn-primary" href="${pageContext.request.contextPath}/admin/initial-settings/export">
-                        ${msg_admin_initialSettings_exportButton}
-                    </a>
-                </div>
+                <form class="adm-initial-export-form" method="get" action="${pageContext.request.contextPath}/admin/initial-settings/export">
+                    <div class="adm-initial-scope-grid">
+                        <label class="adm-initial-scope-option">
+                            <input type="checkbox" name="sections" value="runtimeSettings" checked>
+                            <span>런타임 설정</span>
+                            <em>${initialSettingsSummary['runtimeSettings']}건</em>
+                        </label>
+                        <label class="adm-initial-scope-option">
+                            <input type="checkbox" name="sections" value="providerConfigs" checked>
+                            <span>Provider 설정</span>
+                            <em>${initialSettingsSummary['providerConfigs']}건</em>
+                        </label>
+                        <label class="adm-initial-scope-option">
+                            <input type="checkbox" name="sections" value="loginRiskPolicies" checked>
+                            <span>로그인 위험 정책</span>
+                            <em>${initialSettingsSummary['loginRiskPolicies']}건</em>
+                        </label>
+                        <label class="adm-initial-scope-option">
+                            <input type="checkbox" name="sections" value="securityAppealPolicy" checked>
+                            <span>이의제기 정책</span>
+                            <em>${initialSettingsSummary['securityAppealPolicy']}건</em>
+                        </label>
+                        <label class="adm-initial-scope-option">
+                            <input type="checkbox" name="sections" value="systemPolicies" checked>
+                            <span>통합 정책</span>
+                            <em>${initialSettingsSummary['systemPolicies']}건</em>
+                        </label>
+                    </div>
+                    <div class="adm-initial-main-action adm-initial-export-action">
+                        <button class="adm-btn adm-btn-primary" type="submit">
+                            ${msg_admin_initialSettings_exportButton}
+                        </button>
+                    </div>
+                </form>
                 <div class="adm-initial-note">
                     ${msg_admin_initialSettings_exportScope}
                 </div>
@@ -91,3 +158,5 @@
         </section>
     </div>
 </div>
+
+<%@ include file="layout-close.jsp" %>

@@ -15,6 +15,11 @@
 <spring:message var="msg_admin_runtimeSettings_includeInactive" code="admin.runtimeSettings.includeInactive"/>
 <spring:message var="msg_admin_common_search" code="admin.common.search"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
+<spring:message var="msg_admin_common_status" code="admin.common.status"/>
+<spring:message var="msg_admin_common_inactive" code="admin.common.inactive"/>
+<spring:message var="msg_admin_common_noData" code="admin.common.noData"/>
+<spring:message var="msg_admin_common_detail" code="admin.common.detail"/>
+<spring:message var="msg_admin_common_close" code="admin.common.close"/>
 <spring:message var="msg_admin_runtimeSettings_createTitle" code="admin.runtimeSettings.createTitle"/>
 <spring:message var="msg_admin_runtimeSettings_createDesc" code="admin.runtimeSettings.createDesc"/>
 <spring:message var="msg_admin_runtimeSettings_key" code="admin.runtimeSettings.key"/>
@@ -147,7 +152,7 @@
         </div>
     </div>
 
-    <div class="adm-card adm-runtime-summary-card">
+    <div class="adm-card adm-runtime-list-card">
         <div class="adm-card-header">
             <div>
                 <div class="adm-card-title">
@@ -155,6 +160,83 @@
                     <span class="adm-section-total-inline">${msg_admin_runtimeSettings_totalCountDisplay}</span>
                 </div>
                 <div class="adm-muted">${msg_admin_runtimeSettings_desc}</div>
+            </div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-table-wrap">
+                <table class="adm-table adm-runtime-settings-table">
+                    <thead>
+                    <tr>
+                        <th>${msg_admin_runtimeSettings_group}</th>
+                        <th>${msg_admin_runtimeSettings_key}</th>
+                        <th>${msg_admin_runtimeSettings_displayName}</th>
+                        <th>${msg_admin_runtimeSettings_valueType}</th>
+                        <th>${msg_admin_runtimeSettings_value}</th>
+                        <th>${msg_admin_runtimeSettings_updatedAt}</th>
+                        <th>${msg_admin_common_status}</th>
+                        <th>${msg_admin_common_detail}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="s" items="${settings}">
+                        <c:url var="runtimeSettingHistoryUrl" value="/admin/runtime-settings">
+                            <c:if test="${not empty settingGroup}">
+                                <c:param name="settingGroup" value="${settingGroup}"/>
+                            </c:if>
+                            <c:if test="${not empty keyword}">
+                                <c:param name="keyword" value="${keyword}"/>
+                            </c:if>
+                            <c:if test="${includeInactive}">
+                                <c:param name="includeInactive" value="on"/>
+                            </c:if>
+                            <c:param name="historyKey" value="${s.settingKey}"/>
+                        </c:url>
+                        <tr>
+                            <td><span class="adm-badge"><c:out value="${s.settingGroup}"/></span></td>
+                            <td>
+                                <button class="adm-runtime-key-link js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-${s.settingIdx}">
+                                    <c:out value="${s.settingKey}"/>
+                                </button>
+                            </td>
+                            <td><c:out value="${s.displayName}" default="-"/></td>
+                            <td><c:out value="${s.valueType}"/></td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${s.secret}">
+                                        <span class="adm-runtime-secret-value">SECRET</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="adm-runtime-value-preview"><c:out value="${s.settingValue}" default="-"/></span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td><fmt:formatDate value="${s.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
+                            <td>
+                                <span class="adm-badge ${s.active ? 'ACTIVE' : 'DORMANT'}">
+                                    <c:choose>
+                                        <c:when test="${s.active}">${msg_admin_runtimeSettings_active}</c:when>
+                                        <c:otherwise>${msg_admin_common_inactive}</c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <c:if test="${not s.editable}">
+                                    <span class="adm-badge">${msg_admin_runtimeSettings_editable} OFF</span>
+                                </c:if>
+                            </td>
+                            <td>
+                                <div class="adm-runtime-row-actions">
+                                    <button class="adm-btn adm-btn-ghost js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-${s.settingIdx}">
+                                        ${msg_admin_common_detail}
+                                    </button>
+                                    <a class="adm-btn" href="${runtimeSettingHistoryUrl}">${msg_admin_runtimeSettings_viewHistory}</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <c:if test="${empty settings}">
+                        <tr><td colspan="8" class="adm-empty">${msg_admin_common_noData}</td></tr>
+                    </c:if>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -172,19 +254,21 @@
             </c:if>
             <c:param name="historyKey" value="${s.settingKey}"/>
         </c:url>
-        <form method="post" action="${pageContext.request.contextPath}/admin/runtime-settings/${s.settingIdx}" class="adm-card adm-runtime-setting-card">
-            <div class="adm-card-header">
+        <div class="adm-modal-overlay adm-runtime-setting-modal" id="runtime-setting-modal-${s.settingIdx}">
+            <form method="post" action="${pageContext.request.contextPath}/admin/runtime-settings/${s.settingIdx}" class="adm-modal adm-runtime-setting-card">
+            <div class="adm-modal-head">
                 <div>
-                    <div class="adm-card-title"><c:out value="${s.displayName}"/></div>
+                    <div class="adm-modal-title"><c:out value="${s.displayName}"/></div>
                     <div class="adm-muted"><c:out value="${s.settingGroup}"/> · <c:out value="${s.settingKey}"/> · <c:out value="${s.valueType}"/></div>
                 </div>
+                <button class="adm-modal-close js-runtime-setting-close" type="button" aria-label="닫기">&times;</button>
+            </div>
+            <div class="adm-modal-body">
                 <div class="adm-runtime-flag-row">
                     <label class="adm-check"><input type="checkbox" name="secret" ${s.secret ? 'checked' : ''}> ${msg_admin_runtimeSettings_secret}</label>
                     <label class="adm-check"><input type="checkbox" name="editable" ${s.editable ? 'checked' : ''}> ${msg_admin_runtimeSettings_editable}</label>
                     <label class="adm-check"><input type="checkbox" name="active" ${s.active ? 'checked' : ''}> ${msg_admin_runtimeSettings_active}</label>
                 </div>
-            </div>
-            <div class="adm-card-body">
                 <c:if test="${not empty settingGroup}">
                     <input type="hidden" name="returnSettingGroup" value="${fn:escapeXml(settingGroup)}">
                 </c:if>
@@ -221,12 +305,14 @@
                         <textarea class="adm-input" name="description" rows="2"><c:out value="${s.description}"/></textarea>
                     </label>
                 </div>
-                <div class="adm-actions adm-runtime-actions">
-                    <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_save}</button>
-                    <a class="adm-btn" href="${runtimeSettingHistoryUrl}">${msg_admin_runtimeSettings_viewHistory}</a>
-                </div>
             </div>
-        </form>
+            <div class="adm-modal-foot">
+                <a class="adm-btn" href="${runtimeSettingHistoryUrl}">${msg_admin_runtimeSettings_viewHistory}</a>
+                <button class="adm-btn adm-btn-ghost js-runtime-setting-close" type="button">${msg_admin_common_close}</button>
+                <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_save}</button>
+            </div>
+            </form>
+        </div>
     </c:forEach>
 
     <div class="adm-card adm-runtime-history-card">
@@ -286,3 +372,36 @@
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+    function closeModal(modal) {
+        if (modal) modal.classList.remove('open');
+    }
+    function openModal(modal) {
+        if (modal) modal.classList.add('open');
+    }
+    document.querySelectorAll('.js-runtime-setting-open').forEach(function (button) {
+        button.addEventListener('click', function () {
+            openModal(document.getElementById(button.dataset.modalId));
+        });
+    });
+    document.querySelectorAll('.js-runtime-setting-close').forEach(function (button) {
+        button.addEventListener('click', function () {
+            closeModal(button.closest('.adm-runtime-setting-modal'));
+        });
+    });
+    document.querySelectorAll('.adm-runtime-setting-modal').forEach(function (modal) {
+        modal.addEventListener('click', function (event) {
+            if (event.target === modal) closeModal(modal);
+        });
+    });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            document.querySelectorAll('.adm-runtime-setting-modal.open').forEach(closeModal);
+        }
+    });
+})();
+</script>
+
+<%@ include file="layout-close.jsp" %>

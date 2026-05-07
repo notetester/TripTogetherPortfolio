@@ -19,6 +19,7 @@ import org.triptogether.auth.vo.UsersVO;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -36,12 +37,14 @@ public class AdminInitialSettingsController {
     public String page(Model model) {
         model.addAttribute("activeMenu", "initialSettings");
         model.addAttribute("pageTitleCode", "admin.initialSettings.title");
+        model.addAttribute("initialSettingsSummary", initialSettingsService.exportSummary());
         return "admin/initial-settings";
     }
 
     @GetMapping("/export")
-    public ResponseEntity<byte[]> exportSettings(HttpSession session) throws Exception {
-        Map<String, Object> payload = initialSettingsService.exportSettings();
+    public ResponseEntity<byte[]> exportSettings(@RequestParam(value = "sections", required = false) List<String> sections,
+                                                 HttpSession session) throws Exception {
+        Map<String, Object> payload = initialSettingsService.exportSettings(sections);
         byte[] body = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(payload);
         adminActionAuditService.record(
                 "INITIAL_SETTINGS_EXPORT",

@@ -35,6 +35,7 @@
 <spring:message var="msg_admin_policy_operator" code="admin.policy.operator"/>
 <spring:message var="msg_admin_common_system" code="admin.common.system"/>
 <spring:message var="msg_admin_common_result" code="admin.common.result"/>
+<spring:message var="msg_admin_common_detail" code="admin.common.detail"/>
 <spring:message var="msg_admin_policy_noHistory" code="admin.policy.noHistory"/>
 <spring:message var="msg_admin_policy_saving" code="admin.policy.saving"/>
 <spring:message var="msg_admin_policy_saveSuccess" code="admin.policy.saveSuccess"/>
@@ -110,19 +111,96 @@
         </div>
     </div>
 
+    <div class="adm-card adm-policy-list-shell">
+        <div class="adm-card-head">
+            <div class="adm-card-title">
+                ${msg_admin_policy_centerTitle}
+                <span class="adm-section-total-inline">${msg_admin_policy_totalCountDisplay}</span>
+            </div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-table-wrap">
+                <table class="adm-table adm-policy-table">
+                    <thead>
+                    <tr>
+                        <th>${msg_admin_policy_centerTitle}</th>
+                        <th>${msg_admin_common_status}</th>
+                        <th>${msg_admin_policy_scheduleType}</th>
+                        <th>${msg_admin_policy_nextExecute}</th>
+                        <th>${msg_admin_policy_lastExecute}</th>
+                        <th>${msg_admin_policy_lastMessage}</th>
+                        <th>${msg_admin_common_detail}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${policies}" var="policy">
+                        <tr>
+                            <td>
+                                <button type="button" class="adm-policy-title-link js-policy-modal-open" data-modal-id="policy-modal-${policy.policyCode}">
+                                    <c:out value="${policy.policyName}"/>
+                                </button>
+                                <div class="adm-page-muted"><c:out value="${policy.policyGroup}"/> · <c:out value="${policy.policyCode}"/></div>
+                            </td>
+                            <td>
+                                <span class="status-badge ${policy.active ? 'ACTIVE' : 'DORMANT'}">
+                                    <c:choose>
+                                        <c:when test="${policy.active}">${msg_admin_common_active}</c:when>
+                                        <c:otherwise>${msg_admin_common_inactive}</c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </td>
+                            <td><c:out value="${policy.scheduleType}" default="-"/></td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${not empty policy.nextExecuteAtDate}">
+                                        <fmt:formatDate value="${policy.nextExecuteAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+                                    </c:when>
+                                    <c:otherwise>${msg_admin_policy_unscheduled}</c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${not empty policy.lastExecutedAtDate}">
+                                        <fmt:formatDate value="${policy.lastExecutedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+                                        <c:if test="${not empty policy.lastExecutionStatus}">
+                                            <div class="adm-page-muted"><c:out value="${policy.lastExecutionStatus}"/></div>
+                                        </c:if>
+                                    </c:when>
+                                    <c:otherwise>${msg_admin_policy_noExecution}</c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td><span class="adm-policy-message-preview"><c:out value="${empty policy.lastExecutionMessage ? msg_admin_policy_noExecution : policy.lastExecutionMessage}"/></span></td>
+                            <td>
+                                <div class="adm-policy-row-actions">
+                                    <button type="button" class="adm-btn adm-btn-ghost js-policy-modal-open" data-modal-id="policy-modal-${policy.policyCode}">${msg_admin_common_detail}</button>
+                                    <button type="button" class="adm-btn" onclick="runPolicyNow('${policy.policyCode}', this)">${msg_admin_policy_runNow}</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <c:if test="${empty policies}">
+                        <tr><td colspan="7" class="adm-empty">${msg_admin_common_noData}</td></tr>
+                    </c:if>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <div class="policy-layout">
         <div class="policy-main-column">
             <c:forEach items="${policies}" var="policy">
-                <div class="adm-card policy-card"
-                     data-policy-code="${policy.policyCode}"
-                     data-config-json="${fn:escapeXml(policy.configJson)}"
-                     data-schedule-type="${policy.scheduleType}"
-                     data-schedule-interval="${policy.scheduleIntervalHours}"
-                     data-schedule-day="${policy.scheduleDayOfMonth}"
-                     data-schedule-time="${policy.scheduleTime}">
-                    <div class="adm-card-head">
+                <div class="adm-modal-overlay adm-policy-edit-modal" id="policy-modal-${policy.policyCode}">
+                    <div class="adm-modal adm-policy-edit-dialog policy-card"
+                         data-policy-code="${policy.policyCode}"
+                         data-config-json="${fn:escapeXml(policy.configJson)}"
+                         data-schedule-type="${policy.scheduleType}"
+                         data-schedule-interval="${policy.scheduleIntervalHours}"
+                         data-schedule-day="${policy.scheduleDayOfMonth}"
+                         data-schedule-time="${policy.scheduleTime}">
+                    <div class="adm-modal-head">
                         <div>
-                            <div class="adm-card-title">${policy.policyName}</div>
+                            <div class="adm-modal-title">${policy.policyName}</div>
                             <div class="adm-card-subtitle">${policy.policyCode}</div>
                         </div>
                         <div class="policy-card-head-actions">
@@ -133,9 +211,10 @@
                                 </c:choose>
                             </span>
                             <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('${policy.policyCode}', this)">${msg_admin_policy_runNow}</button>
+                            <button type="button" class="adm-modal-close js-policy-modal-close" aria-label="닫기">&times;</button>
                         </div>
                     </div>
-                    <div class="adm-card-body">
+                    <div class="adm-modal-body">
                         <div class="policy-form-grid">
                             <div class="policy-config-dormant" hidden>
                                 <div class="adm-filter-label">${msg_admin_policy_inactiveDays}</div>
@@ -203,6 +282,7 @@
                                 <button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('${policy.policyCode}', this)">${msg_admin_policy_save}</button>
                             </div>
                         </div>
+                    </div>
                     </div>
                 </div>
             </c:forEach>
@@ -357,6 +437,30 @@ function hydratePolicyCard(card) {
 }
 
 document.querySelectorAll('.policy-card').forEach(hydratePolicyCard);
+document.querySelectorAll('.js-policy-modal-open').forEach(function (button) {
+    button.addEventListener('click', function () {
+        const modal = document.getElementById(button.dataset.modalId);
+        if (modal) modal.classList.add('open');
+    });
+});
+document.querySelectorAll('.js-policy-modal-close').forEach(function (button) {
+    button.addEventListener('click', function () {
+        const modal = button.closest('.adm-policy-edit-modal');
+        if (modal) modal.classList.remove('open');
+    });
+});
+document.querySelectorAll('.adm-policy-edit-modal').forEach(function (modal) {
+    modal.addEventListener('click', function (event) {
+        if (event.target === modal) modal.classList.remove('open');
+    });
+});
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+        document.querySelectorAll('.adm-policy-edit-modal.open').forEach(function (modal) {
+            modal.classList.remove('open');
+        });
+    }
+});
 
 async function savePolicy(policyCode, button) {
     const card = button.closest('.policy-card');

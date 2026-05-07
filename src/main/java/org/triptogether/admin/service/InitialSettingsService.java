@@ -16,13 +16,24 @@ import org.triptogether.config.RuntimeSettingService;
 import org.triptogether.config.RuntimeSettingVO;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class InitialSettingsService {
+
+    private static final List<String> SECTION_KEYS = List.of(
+            "runtimeSettings",
+            "providerConfigs",
+            "loginRiskPolicies",
+            "securityAppealPolicy",
+            "systemPolicies"
+    );
 
     private final ObjectMapper objectMapper;
     private final AdminMapper adminMapper;
@@ -32,15 +43,41 @@ public class InitialSettingsService {
     private final AdminPolicyService adminPolicyService;
 
     public Map<String, Object> exportSettings() {
+        return exportSettings(SECTION_KEYS);
+    }
+
+    public Map<String, Object> exportSettings(Collection<String> sections) {
+        Set<String> selected = normalizeSections(sections);
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("schemaVersion", 1);
         result.put("exportedAt", LocalDateTime.now().toString());
-        result.put("runtimeSettings", runtimeSettingService.getRuntimeSettings(null, null, true));
-        result.put("providerConfigs", loginRiskPolicyService.getProviderConfigs());
-        result.put("loginRiskPolicies", loginRiskPolicyService.getPolicies(true));
-        result.put("securityAppealPolicy", loginRiskPolicyService.getSecurityAppealPolicy());
-        result.put("systemPolicies", adminMapper.findSystemPolicies());
+        result.put("sections", selected);
+        if (selected.contains("runtimeSettings")) {
+            result.put("runtimeSettings", runtimeSettingService.getRuntimeSettings(null, null, true));
+        }
+        if (selected.contains("providerConfigs")) {
+            result.put("providerConfigs", loginRiskPolicyService.getProviderConfigs());
+        }
+        if (selected.contains("loginRiskPolicies")) {
+            result.put("loginRiskPolicies", loginRiskPolicyService.getPolicies(true));
+        }
+        if (selected.contains("securityAppealPolicy")) {
+            result.put("securityAppealPolicy", loginRiskPolicyService.getSecurityAppealPolicy());
+        }
+        if (selected.contains("systemPolicies")) {
+            result.put("systemPolicies", adminMapper.findSystemPolicies());
+        }
         return result;
+    }
+
+    public Map<String, Integer> exportSummary() {
+        Map<String, Integer> summary = new LinkedHashMap<>();
+        summary.put("runtimeSettings", runtimeSettingService.getRuntimeSettings(null, null, true).size());
+        summary.put("providerConfigs", loginRiskPolicyService.getProviderConfigs().size());
+        summary.put("loginRiskPolicies", loginRiskPolicyService.getPolicies(true).size());
+        summary.put("securityAppealPolicy", loginRiskPolicyService.getSecurityAppealPolicy() == null ? 0 : 1);
+        summary.put("systemPolicies", adminMapper.findSystemPolicies().size());
+        return summary;
     }
 
     @Transactional
@@ -131,6 +168,29 @@ public class InitialSettingsService {
             copy.put(key, entry.getValue());
         }
         return copy;
+    }
+
+    private Set<String> normalizeSections(Collection<String> sections) {
+        if (sections == null || sections.isEmpty()) {
+            return new LinkedHashSet<>(SECTION_KEYS);
+        }
+        Set<String> selected = new LinkedHashSet<>();
+        for (String section : sections) {
+            if (section == null || section.isBlank()) {
+                continue;
+            }
+            String[] parts = section.split(",");
+            for (String part : parts) {
+                String key = part.trim();
+                if (SECTION_KEYS.contains(key)) {
+                    selected.add(key);
+                }
+            }
+        }
+        if (selected.isEmpty()) {
+            return new LinkedHashSet<>(SECTION_KEYS);
+        }
+        return selected;
     }
 
     @SuppressWarnings("unchecked")

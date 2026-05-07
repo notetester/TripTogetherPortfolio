@@ -199,3 +199,5 @@
     });
 })();
 </script>
+
+<%@ include file="../layout-close.jsp" %>

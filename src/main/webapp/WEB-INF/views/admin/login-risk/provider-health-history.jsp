@@ -103,3 +103,5 @@
         </div>
     </div>
 </div>
+
+<%@ include file="../layout-close.jsp" %>

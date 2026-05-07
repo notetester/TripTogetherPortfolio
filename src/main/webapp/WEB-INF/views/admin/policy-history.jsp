@@ -184,3 +184,4 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+<%@ include file="layout-close.jsp" %>

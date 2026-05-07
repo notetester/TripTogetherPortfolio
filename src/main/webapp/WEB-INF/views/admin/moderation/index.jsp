@@ -47,6 +47,98 @@
         </c:if>
     </div>
 
+    <div class="adm-moderation-dashboard">
+        <div class="adm-moderation-metric">
+            <span>검열 강도</span>
+            <strong>
+                <c:choose>
+                    <c:when test="${policy.toxicityLevel eq 'STRICT'}">${msg_admin_moderation_level_strict}</c:when>
+                    <c:when test="${policy.toxicityLevel eq 'LOOSE'}">${msg_admin_moderation_level_loose}</c:when>
+                    <c:otherwise>${msg_admin_moderation_level_normal}</c:otherwise>
+                </c:choose>
+            </strong>
+            <em>${msg_admin_moderation_toxicityTitle}</em>
+        </div>
+        <div class="adm-moderation-metric">
+            <span>게시글 스팸</span>
+            <strong>${policy.postMaxCount}</strong>
+            <em>${policy.postWindowMinutes}${msg_admin_moderation_minutesWithin}</em>
+        </div>
+        <div class="adm-moderation-metric">
+            <span>댓글 스팸</span>
+            <strong>${policy.commentMaxCount}</strong>
+            <em>${policy.commentWindowMinutes}${msg_admin_moderation_minutesWithin}</em>
+        </div>
+        <div class="adm-moderation-metric">
+            <span>문의 스팸</span>
+            <strong>${policy.inquiryMaxCount}</strong>
+            <em>${policy.inquiryWindowMinutes}${msg_admin_moderation_minutesWithin}</em>
+        </div>
+        <div class="adm-moderation-metric">
+            <span>신고 블러</span>
+            <strong>${policy.reportThreshold}</strong>
+            <em>${msg_admin_moderation_blurAfterCount}</em>
+        </div>
+    </div>
+
+    <div class="adm-card adm-moderation-rule-table-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">악성 콘텐츠 운영 기준</div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-table-wrap">
+                <table class="adm-table adm-moderation-rule-table">
+                    <thead>
+                    <tr>
+                        <th>정책</th>
+                        <th>현재 기준</th>
+                        <th>탐지 창</th>
+                        <th>처리</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>${msg_admin_moderation_toxicityTitle}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${policy.toxicityLevel eq 'STRICT'}">${msg_admin_moderation_level_strict}</c:when>
+                                <c:when test="${policy.toxicityLevel eq 'LOOSE'}">${msg_admin_moderation_level_loose}</c:when>
+                                <c:otherwise>${msg_admin_moderation_level_normal}</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>-</td>
+                        <td>${msg_admin_moderation_toxicityDescription}</td>
+                    </tr>
+                    <tr>
+                        <td>${msg_admin_moderation_postSpamTitle}</td>
+                        <td>${policy.postMaxCount}${msg_admin_moderation_blockAfterCount}</td>
+                        <td>${policy.postWindowMinutes}${msg_admin_moderation_minutesWithin}</td>
+                        <td>자동 차단 후보</td>
+                    </tr>
+                    <tr>
+                        <td>${msg_admin_moderation_commentSpamTitle}</td>
+                        <td>${policy.commentMaxCount}${msg_admin_moderation_blockAfterCount}</td>
+                        <td>${policy.commentWindowMinutes}${msg_admin_moderation_minutesWithin}</td>
+                        <td>자동 차단 후보</td>
+                    </tr>
+                    <tr>
+                        <td>${msg_admin_moderation_inquirySpamTitle}</td>
+                        <td>${policy.inquiryMaxCount}${msg_admin_moderation_blockAfterCount}</td>
+                        <td>${policy.inquiryWindowMinutes}${msg_admin_moderation_minutesWithin}</td>
+                        <td>관리 검토</td>
+                    </tr>
+                    <tr>
+                        <td>${msg_admin_moderation_reportThresholdTitle}</td>
+                        <td>${policy.reportThreshold}${msg_admin_moderation_blurAfterCount}</td>
+                        <td>-</td>
+                        <td>콘텐츠 블러</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <div class="adm-card adm-moderation-card">
         <div class="adm-card-head">
             <div class="adm-card-title">
