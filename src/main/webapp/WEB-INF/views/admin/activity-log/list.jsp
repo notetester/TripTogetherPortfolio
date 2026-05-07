@@ -101,6 +101,10 @@
   <div class="adm-card adm-managed-section-card adm-activity-log-card js-activity-section-card adm-overflow-visible">
     <div class="adm-card-head"><div class="adm-card-title">${msg_admin_activity_historyTitle}<span class="adm-section-total-inline">${msg_admin_activity_totalCountDisplay}</span></div></div>
     <div class="adm-local-toolbar adm-managed-local-toolbar">
+      <div class="adm-managed-selection-bar" id="activitySelectionBar" aria-live="polite">
+        <span class="adm-managed-selected-count" id="activitySelectedCount">0건 선택</span>
+        <button type="button" class="adm-btn adm-btn-ghost" onclick="clearActivitySelection()">선택 해제</button>
+      </div>
       <div class="adm-local-toolbar-group adm-managed-toolbar-actions">
         <button type="button" class="adm-dash-sort-reset js-activity-sort-reset adm-is-hidden" onclick="resetActivitySort()"></button>
         <select class="adm-select adm-audit-size-select" id="activitySizeSelect" onchange="changeActivitySize(this.value)">
@@ -108,11 +112,19 @@
           <option value="50" ${search.size==50 ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
           <option value="100" ${search.size==100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
         </select>
+        <select class="adm-select adm-managed-export-format" id="activityExportFormat" aria-label="내보내기 형식">
+          <option value="csv">CSV</option>
+          <option value="excel">Excel</option>
+        </select>
+        <button type="button" class="adm-btn adm-btn-primary js-activity-selected-export" onclick="exportSelectedActivityLogs()" disabled>선택 내보내기</button>
       </div>
     </div>
     <div class="adm-table-wrap">
-      <table class="adm-table adm-section-table-fixed adm-activity-section-table" data-admin-list-ignore="true">
+      <table class="adm-table adm-section-table-fixed adm-activity-section-table" data-admin-list-ignore="hard">
         <thead><tr>
+          <th class="adm-managed-check-cell">
+            <input type="checkbox" class="adm-check" id="activityCheckAll" aria-label="현재 화면 전체 선택">
+          </th>
           <th class="js-activity-sort" data-sort="time" onclick="sortBy('time')">${msg_admin_common_time}</th>
           <th class="js-activity-sort" data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}</th>
           <th class="js-activity-sort" data-sort="domain" onclick="sortBy('domain')">${msg_admin_activity_domain}</th>
@@ -129,7 +141,10 @@
         <c:forEach items="${list}" var="item">
           <fmt:formatDate var="itemDateFilter" value="${item.createdAtDate}" pattern="yyyy-MM-dd"/>
           <fmt:formatDate var="itemTimeDisplay" value="${item.createdAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
-          <tr>
+          <tr class="js-activity-row">
+            <td class="adm-managed-check-cell">
+              <input type="checkbox" class="adm-check js-activity-row-check" value="${item.activityIdx}" aria-label="행 선택">
+            </td>
             <td>
               <button type="button" class="adm-cell-link"
                       data-date="${itemDateFilter}"
@@ -304,7 +319,7 @@
             </td>
           </tr>
         </c:forEach>
-        <c:if test="${empty list}"><tr class="adm-local-empty"><td colspan="11" class="adm-local-empty-cell">${msg_admin_common_noResults}</td></tr></c:if>
+        <c:if test="${empty list}"><tr class="adm-local-empty"><td colspan="12" class="adm-local-empty-cell">${msg_admin_common_noResults}</td></tr></c:if>
       </tbody></table>
     </div>
     <div class="adm-local-pagination" id="activityPaging">
@@ -336,6 +351,102 @@ var curSortField = '${search.sortField}';
 var curSortDir = '${search.sortDir}';
 var activitySortResetText = '${msg_admin_blocks_js_dashSortReset_js}';
 
+function activityRows() {
+  return Array.from(document.querySelectorAll('.adm-activity-section-table .js-activity-row'));
+}
+function selectedActivityRows() {
+  return activityRows().filter(function(row) {
+    var check = row.querySelector('.js-activity-row-check');
+    return check && check.checked;
+  });
+}
+function updateActivitySelection() {
+  var rows = activityRows();
+  var selected = selectedActivityRows();
+  var checks = rows.map(function(row) { return row.querySelector('.js-activity-row-check'); }).filter(Boolean);
+  var all = document.getElementById('activityCheckAll');
+  if (all) {
+    all.checked = checks.length > 0 && checks.every(function(check) { return check.checked; });
+    all.indeterminate = checks.some(function(check) { return check.checked; }) && !all.checked;
+  }
+  var count = document.getElementById('activitySelectedCount');
+  if (count) count.textContent = selected.length + '건 선택';
+  var bar = document.getElementById('activitySelectionBar');
+  if (bar) bar.classList.toggle('is-active', selected.length > 0);
+  var exportButton = document.querySelector('.js-activity-selected-export');
+  if (exportButton) {
+    exportButton.disabled = selected.length === 0;
+    exportButton.textContent = selected.length > 0 ? '선택 내보내기 (' + selected.length + ')' : '선택 내보내기';
+  }
+}
+function clearActivitySelection() {
+  activityRows().forEach(function(row) {
+    var check = row.querySelector('.js-activity-row-check');
+    if (check) check.checked = false;
+  });
+  updateActivitySelection();
+}
+function toggleActivitySelection(checked) {
+  activityRows().forEach(function(row) {
+    var check = row.querySelector('.js-activity-row-check');
+    if (check) check.checked = checked;
+  });
+  updateActivitySelection();
+}
+function activityExportText(cell) {
+  var clone = cell.cloneNode(true);
+  clone.querySelectorAll('.adm-cell-link-note, input, .adm-row-btn, .adm-inline-actions, .js-admin-translation-widget').forEach(function(node) { node.remove(); });
+  return (clone.textContent || '').replace(/\s+/g, ' ').trim();
+}
+function activityCsvEscape(value) {
+  return '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
+}
+function activityXmlEscape(value) {
+  return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function downloadActivityExport(content, filename, type) {
+  var blob = new Blob([content], { type: type });
+  var url = URL.createObjectURL(blob);
+  var link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+}
+function exportSelectedActivityLogs() {
+  var selected = selectedActivityRows();
+  if (!selected.length) {
+    if (window.adm_toast) adm_toast('선택된 항목이 없습니다.', 'error');
+    else alert('선택된 항목이 없습니다.');
+    return;
+  }
+  var table = document.querySelector('.adm-activity-section-table');
+  var headers = Array.from(table.querySelectorAll('thead th')).slice(1, -1)
+    .map(function(th) { return (th.textContent || '').replace(/[▲▼]/g, '').replace(/\s+/g, ' ').trim(); });
+  var rows = selected.map(function(row) {
+    return Array.from(row.children).slice(1, -1).map(activityExportText);
+  });
+  var format = (document.getElementById('activityExportFormat') || {}).value || 'csv';
+  if (format === 'excel') {
+    var xmlRows = [headers].concat(rows).map(function(row, index) {
+      return '<Row>' + row.map(function(value) {
+        var style = index === 0 ? ' ss:StyleID="header"' : '';
+        return '<Cell' + style + '><Data ss:Type="String">' + activityXmlEscape(value) + '</Data></Cell>';
+      }).join('') + '</Row>';
+    }).join('');
+    var xls = '<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?>'
+      + '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">'
+      + '<Styles><Style ss:ID="header"><Font ss:Bold="1"/><Interior ss:Color="#D9EAF7" ss:Pattern="Solid"/></Style></Styles>'
+      + '<Worksheet ss:Name="selected_activity"><Table>' + xmlRows + '</Table></Worksheet></Workbook>';
+    downloadActivityExport('\ufeff' + xls, 'activity-logs-selected.xls', 'application/vnd.ms-excel;charset=utf-8');
+  } else {
+    var csv = [headers].concat(rows).map(function(row) { return row.map(activityCsvEscape).join(','); }).join('\n');
+    downloadActivityExport('\ufeff' + csv, 'activity-logs-selected.csv', 'text/csv;charset=utf-8');
+  }
+}
+
 function updateActivitySortIndicators() {
   document.querySelectorAll('.adm-activity-section-table th[data-sort]').forEach(function(th) {
     var active = th.getAttribute('data-sort') === curSortField && !!curSortField;
@@ -363,6 +474,15 @@ function updateActivitySortIndicators() {
   }
 }
 updateActivitySortIndicators();
+document.addEventListener('DOMContentLoaded', function() {
+  var all = document.getElementById('activityCheckAll');
+  if (all) all.addEventListener('change', function() { toggleActivitySelection(all.checked); });
+  activityRows().forEach(function(row) {
+    var check = row.querySelector('.js-activity-row-check');
+    if (check) check.addEventListener('change', updateActivitySelection);
+  });
+  updateActivitySelection();
+});
 
 function sortBy(field) {
   var params = new URLSearchParams(window.location.search);

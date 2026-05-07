@@ -170,7 +170,7 @@
         </div>
 
         <div class="adm-table-wrap">
-            <table class="adm-table adm-section-table-fixed adm-security-section-table" data-admin-list-ignore="true" data-section="securityAudits">
+            <table class="adm-table adm-section-table-fixed adm-security-section-table" data-admin-list-ignore="hard" data-section="securityAudits">
                 <colgroup>
                     <col style="width:44px;">
                     <col style="width:150px;">

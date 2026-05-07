@@ -183,7 +183,7 @@
         </div>
 
         <div class="adm-table-wrap">
-            <table class="adm-table adm-section-table-fixed adm-login-section-table" data-admin-list-ignore="true" data-section="loginAudits">
+            <table class="adm-table adm-section-table-fixed adm-login-section-table" data-admin-list-ignore="hard" data-section="loginAudits">
                 <colgroup>
                     <col style="width:44px;">
                     <col style="width:150px;">
