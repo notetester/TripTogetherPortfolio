@@ -1110,7 +1110,7 @@ public class AdminController {
             adminPolicyService.updatePolicy(policyCode, configJson, scheduleType, scheduleIntervalHours, scheduleDayOfMonth,
                     scheduleTime, active, loginUser != null ? loginUser.getUserIdx() : null);
             result.put("success", true);
-            result.put("message", "운영 정책을 저장했습니다.");
+            result.put("message", msg("admin.policy.saveSuccess"));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -1126,7 +1126,7 @@ public class AdminController {
             var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
             adminPolicyService.runPolicyNow(policyCode, loginUser != null ? loginUser.getUserIdx() : null);
             result.put("success", true);
-            result.put("message", "정책을 즉시 실행했습니다.");
+            result.put("message", msg("admin.policy.runSuccess"));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());

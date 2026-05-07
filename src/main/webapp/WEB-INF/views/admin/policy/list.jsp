@@ -46,6 +46,10 @@
 <spring:message var="msg_admin_policy_runFailure" code="admin.policy.runFailure"/>
 <spring:message var="msg_admin_policy_runError" code="admin.policy.runError"/>
 <spring:message var="msg_admin_policy_jsonParseError" code="admin.policy.jsonParseError"/>
+<spring:message var="msg_admin_policy_configJson" code="admin.policy.configJson"/>
+<spring:message var="msg_admin_policy_configJsonHelp" code="admin.policy.configJsonHelp"/>
+<spring:message var="msg_admin_policy_formatJson" code="admin.policy.formatJson"/>
+<spring:message var="msg_admin_policy_configJsonRequired" code="admin.policy.configJsonRequired"/>
 <c:set var="activeMenu" value="policies"/>
 
 <c:set var="pageTitle" value="${msg_admin_policy_pageTitle}"/>
@@ -165,6 +169,17 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="policy-config-json-wrap" style="margin-top:14px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">
+                                <div class="adm-filter-label">${msg_admin_policy_configJson}</div>
+                                <button type="button" class="adm-btn adm-btn-ghost js-policy-format-json">${msg_admin_policy_formatJson}</button>
+                            </div>
+                            <textarea class="adm-input js-policy-config-json"
+                                      rows="8"
+                                      spellcheck="false"
+                                      style="font-family:Consolas,Monaco,monospace;line-height:1.45;resize:vertical;"><c:out value="${policy.configJson}"/></textarea>
+                            <div class="adm-card-subtitle" style="margin-top:6px;">${msg_admin_policy_configJsonHelp}</div>
+                        </div>
                         <div class="policy-card-foot">
                             <div class="policy-card-foot-note">
                                 ${msg_admin_policy_lastMessage}:
@@ -262,6 +277,17 @@ function parsePolicyConfig(text) {
     }
 }
 
+function parsePolicyConfigStrict(text) {
+    if (!text || !text.trim()) {
+        return {};
+    }
+    return JSON.parse(text);
+}
+
+function prettyPolicyJson(value) {
+    return JSON.stringify(value || {}, null, 2);
+}
+
 function togglePolicyScheduleFields(card) {
     const scheduleType = card.querySelector('.js-policy-schedule-type').value;
     card.querySelector('.js-policy-interval-wrap').style.display = scheduleType === 'INTERVAL_HOURS' ? '' : 'none';
@@ -291,6 +317,26 @@ function hydratePolicyCard(card) {
         card.querySelector('.js-policy-only-active').checked = config.onlyActiveMembers !== false;
     }
 
+    const configTextarea = card.querySelector('.js-policy-config-json');
+    if (configTextarea) {
+        try {
+            configTextarea.value = prettyPolicyJson(config);
+        } catch (e) {
+            configTextarea.value = card.dataset.configJson || '{}';
+        }
+    }
+
+    const formatJsonButton = card.querySelector('.js-policy-format-json');
+    if (formatJsonButton) {
+        formatJsonButton.addEventListener('click', function() {
+            try {
+                configTextarea.value = prettyPolicyJson(parsePolicyConfigStrict(configTextarea.value));
+            } catch (e) {
+                adm_toast(POLICY_TEXT.jsonParseError, 'error');
+            }
+        });
+    }
+
     scheduleTypeInput.addEventListener('change', function() {
         togglePolicyScheduleFields(card);
     });
@@ -306,7 +352,18 @@ async function savePolicy(policyCode, button) {
     const scheduleDayOfMonth = card.querySelector('.js-policy-day').value;
     const scheduleTime = card.querySelector('.js-policy-time').value;
     const active = card.querySelector('.js-policy-active').checked;
-    let config = {};
+    const configTextarea = card.querySelector('.js-policy-config-json');
+    let config;
+    try {
+        config = parsePolicyConfigStrict(configTextarea ? configTextarea.value : '{}');
+    } catch (e) {
+        console.error(e);
+        adm_toast(POLICY_TEXT.jsonParseError, 'error');
+        if (configTextarea) {
+            configTextarea.focus();
+        }
+        return;
+    }
 
     if (policyCode === 'DORMANT_ACCOUNT_POLICY') {
         config.inactiveDays = Number(card.querySelector('.js-policy-inactive-days').value || 365);
@@ -315,7 +372,7 @@ async function savePolicy(policyCode, button) {
     }
 
     const payload = new URLSearchParams({
-        configJson: JSON.stringify(config),
+        configJson: prettyPolicyJson(config),
         scheduleType: scheduleType,
         scheduleIntervalHours: scheduleIntervalHours || '',
         scheduleDayOfMonth: scheduleDayOfMonth || '',
