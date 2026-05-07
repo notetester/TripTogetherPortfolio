@@ -6334,6 +6334,10 @@ body.sa-light .adm-governance-page .provider-detail-close {
     vertical-align: top;
 }
 
+.adm-governance-page .adm-provider-health-table {
+    min-width: 980px;
+}
+
 .adm-governance-page .adm-provider-health-provider {
     font-weight: 800;
     color: #dbeafe;
@@ -6344,6 +6348,10 @@ body.sa-light .adm-governance-page .provider-detail-close {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     line-height: 1.45;
+}
+
+.adm-governance-page .adm-provider-health-filter-actions .adm-btn {
+    white-space: nowrap;
 }
 
 body.sa-light .adm-governance-page .adm-provider-health-provider {

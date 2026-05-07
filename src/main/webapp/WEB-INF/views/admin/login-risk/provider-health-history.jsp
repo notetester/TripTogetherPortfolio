@@ -30,7 +30,7 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content adm-governance-page">
+<div class="adm-content adm-governance-page adm-provider-health-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_security_admin_providerHealth_title}</h1>
@@ -42,7 +42,7 @@
         </div>
     </div>
 
-    <form method="get" class="adm-card adm-provider-health-filter-card">
+    <form method="get" class="adm-card adm-provider-health-filter-card adm-overflow-visible">
         <div class="adm-card-body">
             <div class="adm-provider-health-filterbar">
                 <label class="adm-provider-health-code-field">${msg_security_admin_providerHealth_providerCode}
@@ -52,14 +52,14 @@
                     <input class="adm-input" type="number" min="1" max="200" name="limit" value="${limit}">
                 </label>
                 <div class="adm-provider-health-filter-actions">
-                    <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
-                    <a class="adm-btn ghost" href="${pageContext.request.contextPath}/admin/login-risk/provider-health-history">${msg_admin_common_reset}</a>
+                    <button class="adm-btn adm-btn-primary" type="submit">${msg_security_admin_common_search}</button>
+                    <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/provider-health-history">${msg_admin_common_reset}</a>
                 </div>
             </div>
         </div>
     </form>
 
-    <div class="adm-card adm-provider-health-list-card">
+    <div class="adm-card adm-provider-health-list-card adm-overflow-visible">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_security_admin_providerHealth_title}</div>
             <div class="adm-page-muted">${msg_admin_common_totalCount}</div>
@@ -67,6 +67,7 @@
         <div class="adm-table-wrap">
             <table id="providerHealthHistoryTable"
                    class="adm-table adm-section-table-fixed adm-provider-health-table"
+                   data-admin-list-ignore="true"
                    data-section="providerHealthHistory">
                 <thead>
                 <tr>
@@ -95,7 +96,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty histories}">
-                    <tr><td colspan="7" class="adm-empty">${msg_security_admin_providerHealth_empty}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="7" class="adm-local-empty-cell">${msg_security_admin_providerHealth_empty}</td></tr>
                 </c:if>
                 </tbody>
             </table>
