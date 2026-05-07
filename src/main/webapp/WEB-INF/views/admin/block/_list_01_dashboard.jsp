@@ -283,7 +283,7 @@
                                         </td>
                                         <td>
                                             <button type="button"
-                                                    class="adm-inline-chip js-apply-block-filter"
+                                                    class="adm-inline-chip adm-dashboard-status-filter js-apply-block-filter"
                                                     data-section="user-blocks"
                                                     data-field="snapshotStatus"
                                                     data-keyword="${fn:escapeXml(b.snapshotStatus)}">

@@ -8164,8 +8164,48 @@ body.sa-light .adm-governance-page .adm-appeal-policy-section-title {
     line-height: 1.45;
 }
 
+.adm-governance-page .adm-appeal-bulk-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 10px 16px;
+    border-top: 1px solid rgba(148, 163, 184, .14);
+    border-bottom: 1px solid rgba(148, 163, 184, .14);
+    background: rgba(15, 23, 42, .18);
+}
+
 .adm-governance-page .adm-appeal-summary strong {
     color: #e5e7eb;
+}
+
+.adm-governance-page .adm-appeal-title-link {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #e5e7eb;
+    font: inherit;
+    font-weight: 800;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.adm-governance-page .adm-appeal-title-link:hover,
+.adm-governance-page .adm-appeal-title-link:focus-visible {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+.adm-governance-page .adm-appeal-content-preview,
+.adm-governance-page .adm-appeal-review-preview {
+    display: none;
 }
 
 .adm-governance-page .adm-appeal-summary span,
@@ -8291,8 +8331,14 @@ body.sa-light .adm-governance-page .adm-appeal-policy-section-title {
 
 body.sa-light .adm-governance-page .adm-appeal-primary,
 body.sa-light .adm-governance-page .adm-appeal-summary strong,
+body.sa-light .adm-governance-page .adm-appeal-title-link,
 body.sa-light .adm-governance-page .appeal-modal-title {
     color: #0f172a;
+}
+
+body.sa-light .adm-governance-page .adm-appeal-bulk-actions {
+    border-color: #e2e8f0;
+    background: #f8fafc;
 }
 
 body.sa-light .adm-governance-page .adm-appeal-summary span,
@@ -8402,10 +8448,37 @@ body.sa-light .adm-governance-page .appeal-modal-value {
 }
 
 .adm-governance-page .sync-detail {
-    max-width: 520px;
+    display: -webkit-box;
+    max-width: 680px;
+    overflow: hidden;
     overflow-wrap: anywhere;
-    white-space: pre-wrap;
-    line-height: 1.55;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    line-height: 1.45;
+}
+
+.adm-governance-page .adm-waf-detail-trigger {
+    display: grid;
+    gap: 5px;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.adm-governance-page .adm-waf-detail-trigger:hover .sync-detail,
+.adm-governance-page .adm-waf-detail-trigger:focus-visible .sync-detail {
+    color: #bfdbfe;
+}
+
+.adm-governance-page .adm-waf-more {
+    color: #93c5fd;
+    font-size: 11px;
+    font-weight: 800;
 }
 
 .adm-governance-page .sync-meta {
@@ -13093,4 +13166,118 @@ body.sa-light .adm-context-metric-value.is-danger {
     .adm-audit-filter-actions .adm-btn {
         width: auto;
     }
+}
+
+/* 관리자 운영 화면 라이트 테마 보강 */
+body.sa-light .adm-governance-page .adm-page-head,
+body.sa-light .adm-governance-page .adm-card,
+body.sa-light .adm-governance-page .policy-card,
+body.sa-light .adm-governance-page .policy-overview-card,
+body.sa-light .adm-governance-page .policy-history-card,
+body.sa-light .adm-governance-page .policy-history-item,
+body.sa-light .adm-governance-page .adm-login-policy-card,
+body.sa-light .adm-governance-page .adm-policy-guide-card,
+body.sa-light .adm-governance-page .adm-login-review-filter-card,
+body.sa-light .adm-governance-page .adm-login-review-list-card,
+body.sa-light .adm-governance-page .adm-security-review-filter-card,
+body.sa-light .adm-governance-page .adm-security-review-list-card,
+body.sa-light .adm-governance-page .adm-external-assessment-filter-card,
+body.sa-light .adm-governance-page .adm-external-assessment-list-card,
+body.sa-light .adm-governance-page .adm-security-assessment-filter-card,
+body.sa-light .adm-governance-page .adm-security-assessment-list-card,
+body.sa-light .adm-governance-page .adm-appeal-policy-card,
+body.sa-light .adm-governance-page .adm-appeal-policy-history-card,
+body.sa-light .adm-governance-page .adm-appeal-filter-card,
+body.sa-light .adm-governance-page .adm-appeal-list-card,
+body.sa-light .adm-governance-page .adm-waf-filter-card,
+body.sa-light .adm-governance-page .adm-waf-list-card,
+body.sa-light .adm-governance-page .provider-detail-card,
+body.sa-light .adm-governance-page .waf-detail-card,
+body.sa-light .adm-governance-page .review-detail-card {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+    box-shadow: none;
+}
+
+body.sa-light .adm-governance-page .adm-card-header,
+body.sa-light .adm-governance-page .adm-card-head,
+body.sa-light .adm-governance-page .provider-detail-head,
+body.sa-light .adm-governance-page .waf-detail-head,
+body.sa-light .adm-governance-page .review-detail-head {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+body.sa-light .adm-governance-page h1,
+body.sa-light .adm-governance-page h2,
+body.sa-light .adm-governance-page h3,
+body.sa-light .adm-governance-page .adm-card-title,
+body.sa-light .adm-governance-page .adm-page-head h1,
+body.sa-light .adm-governance-page .adm-login-review-type,
+body.sa-light .adm-governance-page .adm-security-review-primary,
+body.sa-light .adm-governance-page .adm-external-assessment-primary,
+body.sa-light .adm-governance-page .adm-security-assessment-primary,
+body.sa-light .adm-governance-page .adm-appeal-primary,
+body.sa-light .adm-governance-page .adm-waf-primary,
+body.sa-light .adm-governance-page .policy-overview-title,
+body.sa-light .adm-governance-page .policy-history-card-title,
+body.sa-light .adm-governance-page .policy-history-item-title {
+    color: #0f172a !important;
+}
+
+body.sa-light .adm-governance-page .adm-page-desc,
+body.sa-light .adm-governance-page .adm-page-head p,
+body.sa-light .adm-governance-page .adm-muted,
+body.sa-light .adm-governance-page .adm-page-muted,
+body.sa-light .adm-governance-page .adm-card-subtitle,
+body.sa-light .adm-governance-page .sync-meta,
+body.sa-light .adm-governance-page .policy-overview-meta,
+body.sa-light .adm-governance-page .policy-history-item-meta {
+    color: #64748b !important;
+}
+
+body.sa-light .adm-governance-page label,
+body.sa-light .adm-governance-page .adm-filter-label,
+body.sa-light .adm-governance-page .adm-check,
+body.sa-light .adm-governance-page .policy-inline-check,
+body.sa-light .adm-governance-page .adm-table th,
+body.sa-light .adm-governance-page .adm-table td {
+    color: #334155 !important;
+}
+
+body.sa-light .adm-governance-page .adm-input,
+body.sa-light .adm-governance-page .adm-select,
+body.sa-light .adm-governance-page textarea.adm-input,
+body.sa-light .adm-governance-page select.adm-input,
+body.sa-light .adm-governance-page input.adm-input {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+body.sa-light .adm-governance-page .adm-table thead th {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+body.sa-light .adm-governance-page .adm-table tbody td {
+    background: #ffffff;
+    border-color: #e2e8f0;
+}
+
+body.sa-light .adm-governance-page .adm-table tbody tr:hover td {
+    background: #f8fafc;
+}
+
+body.sa-light .adm-governance-page pre,
+body.sa-light .adm-governance-page .adm-table pre,
+body.sa-light .adm-governance-page .js-policy-diff,
+body.sa-light .adm-governance-page .review-detail-pre,
+body.sa-light .adm-governance-page .sync-detail,
+body.sa-light .adm-governance-page .adm-policy-snapshot-pre,
+body.sa-light .adm-governance-page .adm-runtime-snapshot-pre {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #334155 !important;
 }

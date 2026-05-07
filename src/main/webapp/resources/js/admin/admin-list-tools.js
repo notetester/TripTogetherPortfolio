@@ -45,7 +45,7 @@
     };
 
     const SELECTOR = '.adm-content table.adm-table, .adm-content table.sa-salary-table#salaryTable';
-    const SKIP_PATHS = ['/admin/blocks', '/admin/members'];
+    const SKIP_PATHS = ['/admin/blocks', '/admin/members', '/admin/business-applications'];
 
     const tableStates = new WeakMap();
 

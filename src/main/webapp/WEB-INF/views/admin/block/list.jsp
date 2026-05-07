@@ -121,12 +121,12 @@
 
     .adm-block-action-title {
         font-weight: 800;
-        color: #0f172a;
+        color: #e2e8f0;
     }
 
     .adm-block-action-desc {
         margin-top: 4px;
-        color: #64748b;
+        color: #94a3b8;
         font-size: 12px;
     }
 
@@ -146,8 +146,9 @@
     }
 
     .adm-block-field {
-        color: #475569;
+        color: #cbd5e1;
         font-size: 12px;
+        font-weight: 700;
     }
 
     .adm-block-source-input {
@@ -156,8 +157,38 @@
 
     .adm-block-upload-result {
         width: 100%;
-        color: #475569;
+        color: #94a3b8;
         font-size: 12px;
+    }
+
+    .adm-block-feed-form input[type="file"].adm-input {
+        min-height: 38px;
+        padding: 7px 10px;
+        color: #cbd5e1;
+        cursor: pointer;
+    }
+
+    .adm-block-feed-form input[type="file"].adm-input::file-selector-button {
+        margin-right: 10px;
+        padding: 7px 11px;
+        border: 1px solid rgba(96, 165, 250, .38);
+        border-radius: 8px;
+        background: rgba(30, 64, 175, .36);
+        color: #dbeafe;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .adm-dashboard-status-filter {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .adm-dashboard-status-filter:hover {
+        background: transparent;
+        transform: none;
     }
 
     .adm-dashboard-list-grid {
@@ -225,6 +256,26 @@
 
     .adm-block-clear-selection {
         margin-left: auto;
+    }
+
+    body.sa-light .adm-block-action-title {
+        color: #0f172a;
+    }
+
+    body.sa-light .adm-block-action-desc,
+    body.sa-light .adm-block-field,
+    body.sa-light .adm-block-upload-result {
+        color: #64748b;
+    }
+
+    body.sa-light .adm-block-feed-form input[type="file"].adm-input {
+        color: #334155;
+    }
+
+    body.sa-light .adm-block-feed-form input[type="file"].adm-input::file-selector-button {
+        border-color: #bfdbfe;
+        background: #eff6ff;
+        color: #1d4ed8;
     }
 
     .adm-th-check { width: 36px; }

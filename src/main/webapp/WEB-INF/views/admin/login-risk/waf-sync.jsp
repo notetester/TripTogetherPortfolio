@@ -115,7 +115,12 @@
                         <td>
                             <div><c:out value="${i.targetType}"/>: <c:out value="${i.targetValue}"/></div>
                         </td>
-                        <td><div class="sync-detail"><c:out value="${i.detailMessage}"/></div></td>
+                        <td>
+                            <button class="adm-waf-detail-trigger js-waf-modal-open" type="button" data-modal-id="waf-detail-${i.syncIdx}">
+                                <span class="sync-detail"><c:out value="${i.detailMessage}"/></span>
+                                <span class="adm-waf-more">${msg_security_admin_common_detail}</span>
+                            </button>
+                        </td>
                         <td><fmt:formatDate value="${i.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                         <td>
                             <span class="sync-meta">${msg_security_admin_wafSync_updatedAt}: <fmt:formatDate value="${i.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>

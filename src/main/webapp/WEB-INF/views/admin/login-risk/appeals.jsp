@@ -98,6 +98,21 @@
             <div class="adm-card-title">${msg_security_admin_appeals_title}</div>
             <div class="adm-page-muted">${msg_admin_common_totalCount}</div>
         </div>
+        <div class="adm-appeal-bulk-actions">
+            <span class="adm-page-muted">${msg_security_admin_common_action}</span>
+            <button type="button" class="adm-btn adm-btn-primary js-appeal-bulk-action"
+                    data-decision="accept"
+                    data-comment="${fn:escapeXml(msg_security_admin_comment_appealAccepted)}">${msg_security_admin_common_accept}</button>
+            <button type="button" class="adm-btn adm-btn-ghost js-appeal-bulk-action"
+                    data-decision="hold"
+                    data-comment="${fn:escapeXml(msg_security_admin_comment_needMoreCheck)}">${msg_security_admin_common_hold}</button>
+            <button type="button" class="adm-btn adm-btn-danger js-appeal-bulk-action"
+                    data-decision="reject"
+                    data-comment="${fn:escapeXml(msg_security_admin_comment_appealRejected)}">${msg_security_admin_common_rejectAppeal}</button>
+            <button type="button" class="adm-btn adm-btn-ghost js-appeal-bulk-action"
+                    data-decision="close"
+                    data-comment="${fn:escapeXml(msg_security_admin_comment_appealClosed)}">${msg_security_admin_common_closeAppeal}</button>
+        </div>
         <div class="adm-table-wrap">
             <table id="securityAppealTable"
                    class="adm-table adm-section-table-fixed adm-appeal-table"
@@ -114,7 +129,7 @@
                 </thead>
                 <tbody>
                 <c:forEach var="a" items="${appeals}">
-                    <tr>
+                    <tr data-appeal-id="${a.appealIdx}">
                         <td><span class="adm-badge"><c:out value="${a.appealStatus}"/></span></td>
                         <td>
                             <div class="adm-appeal-primary">
@@ -136,10 +151,12 @@
                         </td>
                         <td>
                             <div class="adm-appeal-summary">
-                                <strong><c:out value="${a.appealTitle}"/></strong>
-                                <span><c:out value="${a.appealContent}"/></span>
+                                <button class="adm-appeal-title-link js-appeal-modal-open" type="button" data-modal-id="appeal-modal-${a.appealIdx}">
+                                    <c:out value="${a.appealTitle}"/>
+                                </button>
+                                <span class="adm-appeal-content-preview"><c:out value="${a.appealContent}"/></span>
                                 <c:if test="${not empty a.reviewComment}">
-                                    <span>${msg_security_admin_common_reviewComment}: <c:out value="${a.reviewComment}"/></span>
+                                    <span class="adm-appeal-review-preview">${msg_security_admin_common_reviewComment}: <c:out value="${a.reviewComment}"/></span>
                                 </c:if>
                             </div>
                             <div class="adm-appeal-meta-grid">
@@ -294,6 +311,36 @@
         if (event.key === 'Escape') {
             document.querySelectorAll('.appeal-modal-backdrop:not([hidden])').forEach(closeModal);
         }
+    });
+    document.querySelectorAll('.js-appeal-bulk-action').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const rows = Array.from(document.querySelectorAll('#securityAppealTable .js-admin-list-row-check:checked'))
+                .map(function (checkbox) { return checkbox.closest('tr'); })
+                .filter(function (row) { return row && row.dataset.appealId; });
+            if (!rows.length) {
+                if (typeof window.adm_toast === 'function') window.adm_toast('선택된 이의제기가 없습니다.', 'error');
+                else alert('선택된 이의제기가 없습니다.');
+                return;
+            }
+            if (button.disabled) return;
+            button.disabled = true;
+            const decision = button.dataset.decision;
+            const comment = button.dataset.comment || '';
+            const body = new URLSearchParams();
+            body.set('comment', comment);
+            Promise.all(rows.map(function (row) {
+                return fetch('${pageContext.request.contextPath}/admin/login-risk/appeals/' + encodeURIComponent(row.dataset.appealId) + '/' + decision, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: body.toString()
+                });
+            })).finally(function () {
+                window.location.reload();
+            });
+        });
     });
 })();
 </script>
