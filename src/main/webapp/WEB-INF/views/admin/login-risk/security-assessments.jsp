@@ -38,17 +38,17 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content adm-governance-page">
+<div class="adm-content adm-governance-page adm-security-assessment-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_security_admin_nav_securityAssessments}</h1>
             <p class="adm-page-desc">${msg_security_admin_securityAssessments_desc}</p>
         </div>
-        <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/assessments">${msg_security_admin_nav_externalAssessmentsLong}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">${msg_security_admin_nav_securityReviews}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">${msg_security_admin_nav_providerConfigs}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/blocks">${msg_security_admin_nav_blocks}</a>
+        <div class="adm-actions adm-security-assessment-page-actions">
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/assessments">${msg_security_admin_nav_externalAssessmentsLong}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">${msg_security_admin_nav_securityReviews}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">${msg_security_admin_nav_providerConfigs}</a>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/blocks">${msg_security_admin_nav_blocks}</a>
         </div>
     </div>
 
@@ -56,11 +56,11 @@
         <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
-    <form method="get" class="adm-card adm-security-assessment-filter-card">
+    <form method="get" class="adm-card adm-security-assessment-filter-card adm-overflow-visible">
         <div class="adm-card-body">
             <div class="adm-security-assessment-filterbar">
                 <label>${msg_security_admin_common_scope}
-                    <select class="adm-input" name="assessmentScope">
+                    <select class="adm-select" name="assessmentScope">
                         <option value="">${msg_security_admin_common_all}</option>
                         <option value="LOGIN_RISK" ${assessmentScope == 'LOGIN_RISK' ? 'selected' : ''}>LOGIN_RISK</option>
                         <option value="USER_SECURITY" ${assessmentScope == 'USER_SECURITY' ? 'selected' : ''}>USER_SECURITY</option>
@@ -69,7 +69,7 @@
                     </select>
                 </label>
                 <label>${msg_security_admin_common_sourceKind}
-                    <select class="adm-input" name="sourceKind">
+                    <select class="adm-select" name="sourceKind">
                         <option value="">${msg_security_admin_common_all}</option>
                         <option value="AI_MODEL" ${sourceKind == 'AI_MODEL' ? 'selected' : ''}>AI_MODEL</option>
                         <option value="RULE_ALGORITHM" ${sourceKind == 'RULE_ALGORITHM' ? 'selected' : ''}>RULE_ALGORITHM</option>
@@ -78,7 +78,7 @@
                     </select>
                 </label>
                 <label>${msg_security_admin_common_riskLevel}
-                    <select class="adm-input" name="riskLevel">
+                    <select class="adm-select" name="riskLevel">
                         <option value="">${msg_security_admin_common_all}</option>
                         <option value="CRITICAL" ${riskLevel == 'CRITICAL' ? 'selected' : ''}>CRITICAL</option>
                         <option value="HIGH" ${riskLevel == 'HIGH' ? 'selected' : ''}>HIGH</option>
@@ -88,7 +88,7 @@
                     </select>
                 </label>
                 <label>${msg_security_admin_common_status}
-                    <select class="adm-input" name="decisionStatus">
+                    <select class="adm-select" name="decisionStatus">
                         <option value="">${msg_security_admin_common_all}</option>
                         <option value="PROPOSED" ${decisionStatus == 'PROPOSED' ? 'selected' : ''}>PROPOSED</option>
                         <option value="APPLIED" ${decisionStatus == 'APPLIED' ? 'selected' : ''}>APPLIED</option>
@@ -100,14 +100,14 @@
                     <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${msg_security_admin_placeholder_accountIpEvidenceSource}">
                 </label>
                 <div class="adm-security-assessment-filter-actions">
-                    <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
-                    <a class="adm-btn ghost" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_admin_common_reset}</a>
+                    <button class="adm-btn adm-btn-primary" type="submit">${msg_security_admin_common_search}</button>
+                    <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_admin_common_reset}</a>
                 </div>
             </div>
         </div>
     </form>
 
-    <div class="adm-card adm-security-assessment-list-card">
+    <div class="adm-card adm-security-assessment-list-card adm-overflow-visible">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_security_admin_securityAssessments_title}</div>
             <div class="adm-page-muted">${msg_admin_common_totalCount}</div>
@@ -160,11 +160,11 @@
                                         <input type="hidden" name="severity" value="${fn:escapeXml(a.riskLevel)}">
                                         <input type="hidden" name="summary" value="${fn:escapeXml(a.recommendationAction)}">
                                         <input type="hidden" name="detailMessage" value="${fn:escapeXml(a.evidenceSummary)}">
-                                        <button class="adm-btn" type="submit">${msg_security_admin_common_enqueueReview}</button>
+                                        <button class="adm-btn adm-btn-ghost" type="submit">${msg_security_admin_common_enqueueReview}</button>
                                     </form>
                                     <c:if test="${a.subjectType == 'USER'}">
                                         <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-assessments/${a.assessmentIdx}/apply-user-block">
-                                            <button class="adm-btn danger" type="submit">${msg_security_admin_common_applyUserBlock}</button>
+                                            <button class="adm-btn adm-btn-danger" type="submit">${msg_security_admin_common_applyUserBlock}</button>
                                         </form>
                                     </c:if>
                                 </div>
@@ -173,10 +173,12 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty assessments}">
-                    <tr><td colspan="8" class="adm-empty">${msg_security_admin_empty_securityAssessments}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="8" class="adm-local-empty-cell">${msg_security_admin_empty_securityAssessments}</td></tr>
                 </c:if>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+<%@ include file="../layout-close.jsp" %>
