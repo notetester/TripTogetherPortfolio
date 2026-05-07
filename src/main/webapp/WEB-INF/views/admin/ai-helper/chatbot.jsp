@@ -204,6 +204,11 @@
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content adm-ai-page adm-ai-chatbot-page">
+    <c:set var="aiListTotal" value="${empty total ? 0 : total}"/>
+    <spring:message var="msg_admin_ai_listTotalCountDisplay" code="admin.common.totalCountFormat" arguments="${aiListTotal}"/>
+    <spring:message var="msg_admin_ai_linksTotalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(topUrls)}"/>
+    <spring:message var="msg_admin_ai_blocksTotalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(blocks)}"/>
+    <spring:message var="msg_admin_ai_quotasTotalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(quotas)}"/>
 
     <%-- ── 챗봇 내부 sub-tab ── --%>
     <div class="adm-ai-tabs">
@@ -252,9 +257,6 @@
             </div>
         </div>
 
-        <%-- ── 대화 세션 목록 (대시보드 내 통합) ── --%>
-        <div class="adm-ai-section-title">${msg_admin_aiHelper_assistant_section_sessions}</div>
-
         <div class="adm-card adm-ai-filter-card">
             <form method="get" action="${pageContext.request.contextPath}/admin/ai-helper/chatbot" class="adm-ai-search-form">
                 <input type="hidden" name="tab" value="dashboard"/>
@@ -264,12 +266,17 @@
                     <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot" class="adm-btn adm-btn-ghost">${msg_admin_common_reset}</a>
                 </c:if>
             </form>
-            <div class="adm-ai-total">${msg_admin_common_totalCountFormat}</div>
         </div>
 
         <div class="adm-card adm-ai-table-card">
+            <div class="adm-card-head adm-ai-list-head">
+                <div class="adm-card-title">
+                    대화 목록
+                    <span class="adm-section-total-inline">${msg_admin_ai_listTotalCountDisplay}</span>
+                </div>
+            </div>
             <div class="adm-table-wrap">
-            <table class="adm-table adm-ai-table adm-ai-conversations-table">
+            <table class="adm-table adm-ai-table adm-ai-conversations-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-ai-col-id"/>
                     <col class="adm-ai-col-title"/>
@@ -457,11 +464,14 @@
 
         <%-- 상위 URL 랭킹 --%>
         <div class="adm-card adm-ai-table-card">
-            <div class="adm-ai-table-title">
-                상위 클릭 URL (최대 20개)
+            <div class="adm-card-head adm-ai-list-head">
+                <div class="adm-card-title">
+                    상위 클릭 URL
+                    <span class="adm-section-total-inline">${msg_admin_ai_linksTotalCountDisplay}</span>
+                </div>
             </div>
             <div class="adm-table-wrap">
-            <table class="adm-table adm-ai-table adm-ai-links-table">
+            <table class="adm-table adm-ai-table adm-ai-links-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-ai-col-rank"/>
                     <col class="adm-ai-col-url"/>
@@ -516,8 +526,14 @@
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'inappropriate'}">
         <div class="adm-card adm-ai-table-card">
+            <div class="adm-card-head adm-ai-list-head">
+                <div class="adm-card-title">
+                    ${msg_admin_aiHelper_chatbot_tab_inappropriate}
+                    <span class="adm-section-total-inline">${msg_admin_ai_listTotalCountDisplay}</span>
+                </div>
+            </div>
             <div class="adm-table-wrap">
-            <table class="adm-table adm-ai-table adm-ai-moderation-table">
+            <table class="adm-table adm-ai-table adm-ai-moderation-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-ai-col-id"/>
                     <col class="adm-ai-col-user"/>
@@ -613,8 +629,14 @@
         </div>
 
         <div class="adm-card adm-ai-table-card">
+            <div class="adm-card-head adm-ai-list-head">
+                <div class="adm-card-title">
+                    ${msg_admin_aiHelper_chatbot_tab_blocks}
+                    <span class="adm-section-total-inline">${msg_admin_ai_blocksTotalCountDisplay}</span>
+                </div>
+            </div>
             <div class="adm-table-wrap">
-            <table class="adm-table adm-ai-table adm-ai-blocks-table">
+            <table class="adm-table adm-ai-table adm-ai-blocks-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-ai-col-id"/>
                     <col class="adm-ai-col-type"/>
@@ -715,8 +737,14 @@
         </div>
 
         <div class="adm-card adm-ai-table-card">
+            <div class="adm-card-head adm-ai-list-head">
+                <div class="adm-card-title">
+                    ${msg_admin_aiHelper_chatbot_tab_quotas}
+                    <span class="adm-section-total-inline">${msg_admin_ai_quotasTotalCountDisplay}</span>
+                </div>
+            </div>
             <div class="adm-table-wrap">
-            <table class="adm-table adm-ai-table adm-ai-quotas-table">
+            <table class="adm-table adm-ai-table adm-ai-quotas-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-ai-col-grade"/>
                     <col class="adm-ai-col-quota"/>
@@ -936,7 +964,7 @@
                 document.getElementById('clickersModalBody').innerHTML =
                     '<div class="adm-local-empty-cell">클릭 이력이 없습니다.</div>';
             } else {
-                let html = '<table class="adm-table adm-ai-table adm-ai-clickers-table">' +
+                let html = '<table class="adm-table adm-ai-table adm-ai-clickers-table" data-admin-list-ignore="true">' +
                            '<thead><tr>' +
                            '<th>시각</th><th>유저</th><th>세션</th><th>IP</th><th>대화</th><th>메시지</th>' +
                            '</tr></thead><tbody>';

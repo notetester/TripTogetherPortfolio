@@ -181,6 +181,10 @@
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content adm-ai-page adm-ai-assistant-page">
+    <c:set var="aiListTotal" value="${empty total ? 0 : total}"/>
+    <spring:message var="msg_admin_ai_listTotalCountDisplay" code="admin.common.totalCountFormat" arguments="${aiListTotal}"/>
+    <spring:message var="msg_admin_ai_blocksTotalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(blocks)}"/>
+    <spring:message var="msg_admin_ai_quotasTotalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(quotas)}"/>
 
     <%-- ── 도우미 내부 sub-tab ── --%>
     <div class="adm-ai-tabs">
@@ -229,9 +233,6 @@
             </div>
         </div>
 
-        <%-- ── 대화 세션 목록 (대시보드 내 통합) ── --%>
-        <div class="adm-ai-section-title">${msg_admin_aiHelper_assistant_section_sessions}</div>
-
         <div class="adm-card adm-ai-filter-card">
             <form method="get" action="${pageContext.request.contextPath}/admin/ai-helper" class="adm-ai-search-form">
                 <input type="hidden" name="tab" value="dashboard"/>
@@ -241,12 +242,17 @@
                     <a href="${pageContext.request.contextPath}/admin/ai-helper" class="adm-btn adm-btn-ghost">${msg_admin_common_reset}</a>
                 </c:if>
             </form>
-            <div class="adm-ai-total">${msg_admin_common_totalCountFormat}</div>
         </div>
 
         <div class="adm-card adm-ai-table-card">
+            <div class="adm-card-head adm-ai-list-head">
+                <div class="adm-card-title">
+                    ${msg_admin_aiHelper_assistant_section_sessions}
+                    <span class="adm-section-total-inline">${msg_admin_ai_listTotalCountDisplay}</span>
+                </div>
+            </div>
             <div class="adm-table-wrap">
-            <table class="adm-table adm-ai-table adm-ai-sessions-table">
+            <table class="adm-table adm-ai-table adm-ai-sessions-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-ai-col-id"/>
                     <col class="adm-ai-col-title"/>
@@ -371,12 +377,17 @@
             <div class="adm-ai-description">
                 ${msg_admin_aiHelper_assistant_messagesDescription}
             </div>
-            <div class="adm-ai-total">${msg_admin_common_totalCountFormat}</div>
         </div>
 
         <div class="adm-card adm-ai-table-card">
+            <div class="adm-card-head adm-ai-list-head">
+                <div class="adm-card-title">
+                    ${msg_admin_aiHelper_assistant_tab_messages}
+                    <span class="adm-section-total-inline">${msg_admin_ai_listTotalCountDisplay}</span>
+                </div>
+            </div>
             <div class="adm-table-wrap">
-            <table class="adm-table adm-ai-table adm-ai-messages-table">
+            <table class="adm-table adm-ai-table adm-ai-messages-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-ai-col-id"/>
                     <col class="adm-ai-col-session"/>
@@ -494,8 +505,14 @@
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'inappropriate'}">
         <div class="adm-card adm-ai-table-card">
+            <div class="adm-card-head adm-ai-list-head">
+                <div class="adm-card-title">
+                    부적절 메시지
+                    <span class="adm-section-total-inline">${msg_admin_ai_listTotalCountDisplay}</span>
+                </div>
+            </div>
             <div class="adm-table-wrap">
-            <table class="adm-table adm-ai-table adm-ai-moderation-table">
+            <table class="adm-table adm-ai-table adm-ai-moderation-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-ai-col-id"/>
                     <col class="adm-ai-col-session"/>
@@ -603,8 +620,14 @@
         </div>
 
         <div class="adm-card adm-ai-table-card">
+            <div class="adm-card-head adm-ai-list-head">
+                <div class="adm-card-title">
+                    차단 기록
+                    <span class="adm-section-total-inline">${msg_admin_ai_blocksTotalCountDisplay}</span>
+                </div>
+            </div>
             <div class="adm-table-wrap">
-            <table class="adm-table adm-ai-table adm-ai-blocks-table">
+            <table class="adm-table adm-ai-table adm-ai-blocks-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-ai-col-id"/>
                     <col class="adm-ai-col-type"/>
@@ -687,8 +710,14 @@
         </div>
 
         <div class="adm-card adm-ai-table-card">
+            <div class="adm-card-head adm-ai-list-head">
+                <div class="adm-card-title">
+                    한도 정책
+                    <span class="adm-section-total-inline">${msg_admin_ai_quotasTotalCountDisplay}</span>
+                </div>
+            </div>
             <div class="adm-table-wrap">
-            <table class="adm-table adm-ai-table adm-ai-quotas-table">
+            <table class="adm-table adm-ai-table adm-ai-quotas-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-ai-col-grade"/>
                     <col class="adm-ai-col-quota"/>

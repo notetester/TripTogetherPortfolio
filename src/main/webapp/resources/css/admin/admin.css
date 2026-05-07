@@ -11553,6 +11553,10 @@ body.sa-light .adm-ad-note-box {
     overflow: visible;
 }
 
+.adm-ai-list-head {
+    align-items: center;
+}
+
 .adm-ai-table {
     width: 100%;
 }
