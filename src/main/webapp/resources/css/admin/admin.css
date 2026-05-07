@@ -10093,6 +10093,191 @@ tr[data-quota-id].is-dirty td {
     white-space: pre-wrap;
 }
 
+.adm-ai-block-dialog {
+    max-width: 520px;
+}
+
+.adm-ai-modal-field {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.adm-ai-modal-field .adm-input,
+.adm-ai-modal-field .adm-select {
+    width: 100%;
+}
+
+.adm-ai-modal-textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.adm-ai-bool {
+    font-weight: 800;
+}
+
+.adm-ai-bool.is-yes {
+    color: #4ade80;
+}
+
+.adm-ai-bool.is-no {
+    color: #94a3b8;
+}
+
+.adm-tab-panel[hidden] {
+    display: none;
+}
+
+.adm-context-empty {
+    padding: 32px;
+    color: #64748b;
+    text-align: center;
+}
+
+.adm-context-empty.is-error {
+    color: #f87171;
+}
+
+.adm-context-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.adm-context-record-head,
+.adm-context-action-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.adm-context-record-time,
+.adm-context-record-subline,
+.adm-context-record-code,
+.adm-context-ip-cell {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.adm-context-record-code,
+.adm-context-ip-cell {
+    font-size: 11px;
+}
+
+.adm-context-record-line {
+    margin-top: 6px;
+    color: #cbd5e1;
+    font-size: 12px;
+}
+
+.adm-context-record-subline,
+.adm-context-record-code {
+    margin-top: 4px;
+}
+
+.adm-context-record-title {
+    font-size: 13px;
+}
+
+.adm-context-mono-link {
+    color: #60a5fa;
+    font-family: "JetBrains Mono", "Consolas", monospace;
+    text-decoration: none;
+}
+
+.adm-context-mono-link:hover {
+    color: #93c5fd;
+}
+
+.adm-context-panel-title {
+    margin-bottom: 10px;
+    color: #e2e8f0;
+    font-weight: 900;
+}
+
+.adm-context-field {
+    margin-top: 10px;
+}
+
+.adm-context-panel-btn {
+    margin-top: 12px;
+}
+
+.adm-context-action-row .adm-select,
+.adm-context-full-control {
+    width: 100%;
+}
+
+.adm-context-two-col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.detail-value.is-small {
+    font-size: 12px;
+}
+
+.adm-context-social-item,
+.adm-context-metric-grid {
+    margin-top: 12px;
+}
+
+.adm-context-social-value {
+    margin-top: 4px;
+}
+
+.adm-context-metric-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.adm-context-metric {
+    flex: 1 1 100px;
+    min-width: 100px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: #1a2030;
+    text-align: center;
+}
+
+.adm-context-metric-label {
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.adm-context-metric-value {
+    margin-top: 4px;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.adm-context-metric-value.is-success {
+    color: #4ade80;
+}
+
+.adm-context-metric-value.is-danger {
+    color: #f87171;
+}
+
+.adm-context-metric-time {
+    margin-top: 4px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.adm-context-table-scroll {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 340px;
+}
+
 body.sa-light .adm-ai-tabs {
     border-color: #e2e8f0;
 }
@@ -10170,6 +10355,45 @@ body.sa-light .adm-ai-message-item {
 
 body.sa-light .adm-ai-message-item.is-ai {
     background: #f0fdfa;
+}
+
+body.sa-light .adm-ai-bool.is-yes {
+    color: #16a34a;
+}
+
+body.sa-light .adm-ai-bool.is-no,
+body.sa-light .adm-context-empty,
+body.sa-light .adm-context-record-time,
+body.sa-light .adm-context-record-subline,
+body.sa-light .adm-context-record-code,
+body.sa-light .adm-context-ip-cell,
+body.sa-light .adm-context-metric-time {
+    color: #64748b;
+}
+
+body.sa-light .adm-context-empty.is-error {
+    color: #dc2626;
+}
+
+body.sa-light .adm-context-record-line,
+body.sa-light .adm-context-panel-title {
+    color: #334155;
+}
+
+body.sa-light .adm-context-mono-link {
+    color: #2563eb;
+}
+
+body.sa-light .adm-context-metric {
+    background: #f8fafc;
+}
+
+body.sa-light .adm-context-metric-value.is-success {
+    color: #16a34a;
+}
+
+body.sa-light .adm-context-metric-value.is-danger {
+    color: #dc2626;
 }
 
 @media (max-width: 1280px) {
@@ -10553,6 +10777,17 @@ body.sa-light .adm-ai-message-item.is-ai {
     .adm-ai-message-head {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .adm-context-action-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .adm-context-action-row .adm-btn,
+    .adm-context-panel-btn {
+        width: 100%;
+        justify-content: center;
     }
 }
 
