@@ -53,11 +53,20 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-row-actions { display:flex; align-items:center; gap:6px; flex-wrap:nowrap; }
 .sa-muted-button { color:#94a3b8; }
 .sa-modal-sm { width:520px; max-width:95vw; }
+.sa-modal-xs { width:460px; max-width:95vw; }
 .sa-modal-md { width:680px; max-width:95vw; }
+.sa-modal-lg { width:600px; max-width:95vw; }
 .sa-modal-scroll { max-height:70vh; overflow-y:auto; }
 .sa-modal-search-row { display:flex; gap:8px; margin-bottom:16px; }
 .sa-modal-search-row .adm-input { flex:1; min-width:0; }
 .sa-modal-description { margin-bottom:12px; color:#64748b; font-size:13px; line-height:1.6; white-space:pre-line; }
+.sa-policy-head-card { margin-bottom:20px; }
+.sa-policy-head-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.sa-policy-head-title { margin-bottom:4px; color:#e2e8f0; font-size:15px; font-weight:700; }
+.sa-form-grid-single { grid-template-columns:1fr; }
+.sa-required { color:#ef4444; }
+.sa-uppercase-input { text-transform:uppercase; }
+.sa-group-main { flex:1; min-width:0; }
 .sa-members-filter-card { margin-bottom:20px; }
 .sa-members-filterbar { align-items:flex-end; gap:10px; }
 .sa-members-keyword-field { flex:1 1 320px; min-width:220px; }

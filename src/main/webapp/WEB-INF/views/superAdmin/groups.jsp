@@ -74,15 +74,15 @@
 
 <%@ include file="layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content sa-policy-admin-page">
 
     <%-- 헤더 + 생성 버튼 --%>
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card sa-policy-head-card">
         <div class="adm-card-body">
-            <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div class="sa-policy-head-row">
                 <div>
-                    <div style="font-size:15px;font-weight:700;margin-bottom:4px;">${msg_superAdmin_groups_cardTitle}</div>
-                    <div style="font-size:13px;color:#94a3b8;">${msg_superAdmin_groups_cardDescription}</div>
+                    <div class="sa-policy-head-title">${msg_superAdmin_groups_cardTitle}</div>
+                    <div class="sa-card-subtitle">${msg_superAdmin_groups_cardDescription}</div>
                 </div>
                 <button class="adm-btn adm-btn-primary" onclick="openCreateModal()">${msg_superAdmin_groups_createButton}</button>
             </div>
@@ -90,10 +90,10 @@
     </div>
 
     <div class="adm-card">
-        <div class="adm-card-body" style="padding:0;">
+        <div class="adm-card-body sa-table-card-body">
             <c:choose>
                 <c:when test="${empty groupList}">
-                    <div style="text-align:center;padding:60px;color:#94a3b8;">${msg_superAdmin_groups_empty}</div>
+                    <div class="sa-empty-cell sa-empty-cell-large">${msg_superAdmin_groups_empty}</div>
                 </c:when>
                 <c:otherwise>
                     <c:forEach var="g" items="${groupList}">
@@ -101,7 +101,7 @@
                         <div>
                             <span class="sa-group-code">${fn:escapeXml(g.groupCode)}</span>
                         </div>
-                        <div style="flex:1;">
+                        <div class="sa-group-main">
                             <div class="sa-group-name">${fn:escapeXml(g.displayName)}</div>
                             <div class="sa-group-desc">${fn:escapeXml(g.description)}</div>
                         </div>
@@ -112,7 +112,7 @@
                                 <c:otherwise><span class="adm-badge">${msg_superAdmin_groups_status_inactive}</span></c:otherwise>
                             </c:choose>
                         </div>
-                        <div style="display:flex;gap:6px;">
+                        <div class="sa-row-actions">
                             <button class="adm-btn adm-btn-sm adm-btn-ghost"
                                     data-code="${g.groupCode}" data-name="${fn:escapeXml(g.displayName)}"
                                     onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">${msg_superAdmin_groups_action_detail}</button>
@@ -128,8 +128,7 @@
                                             onclick="toggleGroup(this.getAttribute('data-code'), true)">${msg_superAdmin_groups_action_activate}</button>
                                 </c:otherwise>
                             </c:choose>
-                            <button class="adm-btn adm-btn-sm"
-                                    style="background:#1e2330;color:#94a3b8;border:1px solid #2d3748;"
+                            <button class="adm-btn adm-btn-sm sa-muted-button"
                                     data-code="${g.groupCode}" data-cnt="${g.itemCount}"
                                     onclick="deleteGroup(this.getAttribute('data-code'))">${msg_superAdmin_groups_action_delete}</button>
                         </div>
@@ -145,19 +144,19 @@
      그룹 생성 모달
 ══════════════════════════════════════════ --%>
 <div class="adm-modal-overlay" id="createModal">
-    <div class="adm-modal" style="width:460px;max-width:95vw;">
+    <div class="adm-modal sa-modal-xs">
         <div class="adm-modal-head">
             <div class="adm-modal-title">${msg_superAdmin_groups_modal_createTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('createModal')">✕</button>
         </div>
         <div class="adm-modal-body">
-            <div class="sa-form-grid" style="grid-template-columns:1fr;">
+            <div class="sa-form-grid sa-form-grid-single">
                 <div class="sa-form-group">
-                    <label class="sa-form-label">${msg_superAdmin_groups_form_groupCode} <span style="color:#ef4444;">*</span></label>
-                    <input class="adm-input" id="newGroupCode" type="text" placeholder="${msg_superAdmin_groups_form_groupCodePlaceholder}" style="text-transform:uppercase;">
+                    <label class="sa-form-label">${msg_superAdmin_groups_form_groupCode} <span class="sa-required">*</span></label>
+                    <input class="adm-input sa-uppercase-input" id="newGroupCode" type="text" placeholder="${msg_superAdmin_groups_form_groupCodePlaceholder}">
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">${msg_superAdmin_groups_form_displayName} <span style="color:#ef4444;">*</span></label>
+                    <label class="sa-form-label">${msg_superAdmin_groups_form_displayName} <span class="sa-required">*</span></label>
                     <input class="adm-input" id="newGroupName" type="text" placeholder="${msg_superAdmin_groups_form_displayNamePlaceholder}">
                 </div>
                 <div class="sa-form-group">
@@ -177,7 +176,7 @@
      그룹 상세 모달
 ══════════════════════════════════════════ --%>
 <div class="adm-modal-overlay" id="detailModal">
-    <div class="adm-modal" style="width:560px;max-width:95vw;">
+    <div class="adm-modal sa-modal-md">
         <div class="adm-modal-head">
             <div class="adm-modal-title" id="detailModalTitle">${msg_superAdmin_groups_modal_detailTitleSuffix}</div>
             <button class="adm-modal-close" onclick="closeModal('detailModal')">✕</button>

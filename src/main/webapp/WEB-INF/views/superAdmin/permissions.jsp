@@ -65,14 +65,14 @@
 
 <%@ include file="layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content sa-policy-admin-page">
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card sa-policy-head-card">
         <div class="adm-card-body">
-            <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div class="sa-policy-head-row">
                 <div>
-                    <div style="font-size:15px;font-weight:700;margin-bottom:4px;">${msg_superAdmin_permissions_cardTitle}</div>
-                    <div style="font-size:13px;color:#94a3b8;">${msg_superAdmin_permissions_cardDescription}</div>
+                    <div class="sa-policy-head-title">${msg_superAdmin_permissions_cardTitle}</div>
+                    <div class="sa-card-subtitle">${msg_superAdmin_permissions_cardDescription}</div>
                 </div>
                 <button class="adm-btn adm-btn-primary" onclick="openCreateModal()">${msg_superAdmin_permissions_createButton}</button>
             </div>
@@ -80,10 +80,10 @@
     </div>
 
     <div class="adm-card">
-        <div class="adm-card-body" style="padding:0;">
+        <div class="adm-card-body sa-table-card-body">
             <c:choose>
                 <c:when test="${empty permissionList}">
-                    <div style="text-align:center;padding:60px;color:#94a3b8;">${msg_superAdmin_permissions_empty}</div>
+                    <div class="sa-empty-cell sa-empty-cell-large">${msg_superAdmin_permissions_empty}</div>
                 </c:when>
                 <c:otherwise>
                     <c:forEach var="p" items="${permissionList}">
@@ -91,18 +91,18 @@
                         <div>
                             <span class="sa-group-code">${fn:escapeXml(p.permissionCode)}</span>
                         </div>
-                        <div style="flex:1;">
+                        <div class="sa-group-main">
                             <div class="sa-group-name">${fn:escapeXml(p.displayName)}</div>
                             <div class="sa-group-desc">${fn:escapeXml(p.description)}</div>
                         </div>
                         <div class="sa-group-cnt">${msg_superAdmin_permissions_list_usageCount}</div>
-                        <div style="display:flex;gap:6px;align-items:center;">
+                        <div class="sa-row-actions">
                             <c:choose>
                                 <c:when test="${p.active}"><span class="adm-badge adm-badge-green">${msg_superAdmin_permissions_status_active}</span></c:when>
                                 <c:otherwise><span class="adm-badge">${msg_superAdmin_permissions_status_inactive}</span></c:otherwise>
                             </c:choose>
                         </div>
-                        <div style="display:flex;gap:6px;">
+                        <div class="sa-row-actions">
                             <button class="adm-btn adm-btn-sm adm-btn-ghost"
                                     data-code="${fn:escapeXml(p.permissionCode)}"
                                     data-name="${fn:escapeXml(p.displayName)}"
@@ -119,8 +119,7 @@
                                             onclick="togglePerm(this.getAttribute('data-code'), true)">${msg_superAdmin_permissions_action_activate}</button>
                                 </c:otherwise>
                             </c:choose>
-                            <button class="adm-btn adm-btn-sm"
-                                    style="background:#1e2330;color:#94a3b8;border:1px solid #2d3748;"
+                            <button class="adm-btn adm-btn-sm sa-muted-button"
                                     data-code="${fn:escapeXml(p.permissionCode)}"
                                     data-usage="${p.usageCount}"
                                     onclick="deletePerm(this.getAttribute('data-code'), this.getAttribute('data-usage'))">${msg_superAdmin_permissions_action_delete}</button>
@@ -135,19 +134,19 @@
 
 <%-- 생성 모달 --%>
 <div class="adm-modal-overlay" id="createModal">
-    <div class="adm-modal" style="width:460px;max-width:95vw;">
+    <div class="adm-modal sa-modal-xs">
         <div class="adm-modal-head">
             <div class="adm-modal-title">${msg_superAdmin_permissions_modal_createTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('createModal')">✕</button>
         </div>
         <div class="adm-modal-body">
-            <div class="sa-form-grid" style="grid-template-columns:1fr;">
+            <div class="sa-form-grid sa-form-grid-single">
                 <div class="sa-form-group">
-                    <label class="sa-form-label">${msg_superAdmin_permissions_form_code} <span style="color:#ef4444;">*</span></label>
-                    <input class="adm-input" id="newCode" type="text" placeholder="${msg_superAdmin_permissions_form_codePlaceholder}" style="text-transform:uppercase;">
+                    <label class="sa-form-label">${msg_superAdmin_permissions_form_code} <span class="sa-required">*</span></label>
+                    <input class="adm-input sa-uppercase-input" id="newCode" type="text" placeholder="${msg_superAdmin_permissions_form_codePlaceholder}">
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">${msg_superAdmin_permissions_form_displayName} <span style="color:#ef4444;">*</span></label>
+                    <label class="sa-form-label">${msg_superAdmin_permissions_form_displayName} <span class="sa-required">*</span></label>
                     <input class="adm-input" id="newName" type="text" placeholder="${msg_superAdmin_permissions_form_displayNamePlaceholder}">
                 </div>
                 <div class="sa-form-group">
@@ -165,7 +164,7 @@
 
 <%-- 상세 모달 --%>
 <div class="adm-modal-overlay" id="detailModal">
-    <div class="adm-modal" style="width:560px;max-width:95vw;">
+    <div class="adm-modal sa-modal-md">
         <div class="adm-modal-head">
             <div class="adm-modal-title" id="detailModalTitle">${msg_superAdmin_permissions_modal_detailTitleSuffix}</div>
             <button class="adm-modal-close" onclick="closeModal('detailModal')">✕</button>
