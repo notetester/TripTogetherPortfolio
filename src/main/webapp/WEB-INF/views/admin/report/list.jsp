@@ -32,7 +32,6 @@
 <spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_reports_listTitle" code="admin.reports.listTitle"/>
-<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
 <spring:message var="msg_admin_reports_reportCount" code="admin.reports.reportCount"/>
 <spring:message var="msg_admin_common_target" code="admin.common.target"/>
 <spring:message var="msg_admin_reports_reporter" code="admin.reports.reporter"/>
@@ -48,8 +47,14 @@
 <spring:message var="msg_admin_reports_accountBlocked" code="admin.reports.accountBlocked"/>
 <spring:message var="msg_admin_reports_detail_processingTitle" code="admin.reports.detail.processingTitle"/>
 <spring:message var="msg_admin_common_noResults" code="admin.common.noResults"/>
-<spring:message var="msg_admin_common_pageStatus" code="admin.common.pageStatus"/>
 <spring:message var="msg_admin_reports_viewSite" code="admin.reports.viewSite"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_common_pageSize_10" code="admin.common.pageSize" arguments="10"/>
+<spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
+<spring:message var="msg_admin_reports_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${totalCount}"/>
+<spring:message var="msg_admin_reports_currentCountDisplay" code="admin.common.currentCountFormat" arguments="${fn:length(reportList)}"/>
 <c:set var="activeMenu" value="reports"/>
 
 
@@ -82,6 +87,7 @@
     <div class="adm-card adm-report-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/reports">
+                <input type="hidden" name="pageSize" value="${search.pageSize}"/>
                 <div class="adm-filter-bar adm-report-filterbar">
 
                     <div>
@@ -138,11 +144,21 @@
 
     <%-- ── 목록 테이블 ── --%>
     <div class="adm-card adm-report-list-card">
-        <div class="adm-card-head">
-            <div class="adm-card-title">${msg_admin_reports_listTitle}<span class="adm-section-total-inline">${msg_admin_common_totalCount}</span></div>
+        <div class="adm-card-head adm-report-list-head">
+            <div class="adm-card-title">
+                ${msg_admin_reports_listTitle}
+                <span class="adm-section-total-inline">${msg_admin_reports_totalCountDisplay}</span>
+            </div>
+            <div class="adm-report-list-controls">
+                <select class="adm-select adm-report-size-select" onchange="goReportPageSize(this.value)">
+                    <option value="10" ${search.pageSize == 10 ? 'selected' : ''}>${msg_admin_common_pageSize_10}</option>
+                    <option value="20" ${search.pageSize == 20 ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
+                    <option value="50" ${search.pageSize == 50 ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
+                </select>
+            </div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table adm-report-table">
+            <table class="adm-table adm-report-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-report-col-id">
                     <col class="adm-report-col-count">
@@ -167,7 +183,15 @@
                 </thead>
                 <tbody>
                 <c:forEach items="${reportList}" var="r">
-                    <tr class="rpt-admin-row" data-id="${r.reportId}">
+                    <c:url var="reportDetailUrl" value="/admin/reports/${r.reportId}">
+                        <c:param name="page" value="${paging.currentPage}"/>
+                        <c:param name="pageSize" value="${search.pageSize}"/>
+                        <c:param name="status" value="${search.status}"/>
+                        <c:param name="targetType" value="${search.targetType}"/>
+                        <c:param name="reason" value="${search.reason}"/>
+                        <c:param name="keyword" value="${search.keyword}"/>
+                    </c:url>
+                    <tr class="rpt-admin-row" data-id="${r.reportId}" data-href="${reportDetailUrl}">
                         <td>#${r.reportId}</td>
 
                         <%-- 신고수: 3건 이상이면 빨간 강조 --%>
@@ -184,7 +208,7 @@
 
                         <%-- 대상 --%>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}"
+                            <a href="${reportDetailUrl}"
                                class="adm-cell-link"
                                onclick="event.stopPropagation();">
                                 <span class="mem-name">
@@ -241,7 +265,7 @@
 
                         <%-- 사유 --%>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}&jump=report-processing-actions"
+                            <a href="${reportDetailUrl}&amp;jump=report-processing-actions"
                                class="adm-cell-link"
                                onclick="event.stopPropagation();">
                                 <span class="adm-report-reason-text">
@@ -263,7 +287,7 @@
 
                         <%-- 신고일 --%>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}"
+                            <a href="${reportDetailUrl}"
                                class="adm-cell-link"
                                onclick="event.stopPropagation();">
                                 <span><fmt:formatDate value="${r.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
@@ -272,7 +296,7 @@
 
                         <%-- 처리일 --%>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}&jump=report-processing-actions"
+                            <a href="${reportDetailUrl}&amp;jump=report-processing-actions"
                                class="adm-cell-link"
                                onclick="event.stopPropagation();">
                                 <span>
@@ -288,7 +312,7 @@
 
                         <%-- 상태 배지 --%>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}&jump=report-processing-actions"
+                            <a href="${reportDetailUrl}&amp;jump=report-processing-actions"
                                class="adm-cell-link"
                                onclick="event.stopPropagation();">
                                 <span class="status-badge ${r.status}">
@@ -313,20 +337,17 @@
         </div>
 
         <%-- 페이지네이션 --%>
-        <c:if test="${totalPage > 1}">
-            <div class="adm-paging">
-                <c:if test="${search.page > 1}">
-                    <button class="adm-page-btn" onclick="goPage(${search.page - 1})">‹</button>
-                </c:if>
-                <c:forEach begin="1" end="${totalPage}" var="p">
-                    <button class="adm-page-btn ${p == search.page ? 'active' : ''}" onclick="goPage(${p})">${p}</button>
-                </c:forEach>
-                <c:if test="${search.page < totalPage}">
-                    <button class="adm-page-btn" onclick="goPage(${search.page + 1})">›</button>
-                </c:if>
-                <span class="adm-page-info">${msg_admin_common_pageStatus}</span>
+        <c:set var="reportTotalPage" value="${paging.totalPage < 1 ? 1 : paging.totalPage}"/>
+        <div class="adm-local-pagination adm-report-local-pagination">
+            <div class="adm-local-page-info">
+                ${msg_admin_reports_totalCountDisplay} / ${msg_admin_reports_currentCountDisplay}
             </div>
-        </c:if>
+            <div class="adm-local-page-actions">
+                <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage <= 1 ? 'disabled' : ''} onclick="goPage(${paging.currentPage - 1})">${msg_admin_common_prev}</button>
+                <span class="adm-local-page-state">${paging.currentPage} / ${reportTotalPage}</span>
+                <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage >= reportTotalPage ? 'disabled' : ''} onclick="goPage(${paging.currentPage + 1})">${msg_admin_common_next}</button>
+            </div>
+        </div>
     </div>
 
     <%-- ── 유저 화면 바로가기 ── --%>
@@ -339,17 +360,23 @@
 
 <script>
 var ctx = '${pageContext.request.contextPath}';
-var listParams = 'page=${search.page}&status=${search.status}&targetType=${search.targetType}&reason=${search.reason}&keyword=' + encodeURIComponent('${search.keyword}');
 // 행 클릭 시 어드민 신고 상세 페이지 이동
 document.querySelectorAll('.rpt-admin-row[data-id]').forEach(function (tr) {
     tr.addEventListener('click', function (e) {
         if (e.target.closest('button, a')) return;
-        location.href = ctx + '/admin/reports/' + this.getAttribute('data-id') + '?' + listParams;
+        location.href = this.getAttribute('data-href');
     });
 });
 function goPage(page) {
     var params = new URLSearchParams(window.location.search);
     params.set('page', page);
+    location.href = ctx + '/admin/reports?' + params.toString();
+}
+
+function goReportPageSize(pageSize) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('pageSize', pageSize);
+    params.set('page', '1');
     location.href = ctx + '/admin/reports?' + params.toString();
 }
 

@@ -8934,6 +8934,29 @@ body.sa-light .adm-inquiry-blocked-note {
     gap: 8px;
 }
 
+.adm-report-list-card {
+    overflow: visible;
+}
+
+.adm-report-list-head {
+    align-items: center;
+}
+
+.adm-report-list-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.adm-report-size-select {
+    min-width: 112px;
+}
+
+.adm-report-local-pagination {
+    border-top: 1px solid rgba(148, 163, 184, .14);
+}
+
 .adm-report-table {
     width: 100%;
     min-width: 980px;
