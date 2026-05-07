@@ -72,7 +72,7 @@
                 <span class="adm-nav-icon">🏢</span> ${msg_superAdmin_layout_menu_org}
             </a>
 
-            <div class="adm-nav-section" style="margin-top:16px;">${msg_superAdmin_layout_section_permissions}</div>
+            <div class="adm-nav-section sa-nav-section-spaced">${msg_superAdmin_layout_section_permissions}</div>
             <a class="adm-nav-item ${activeMenu=='permissions'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/permissions">
                 <span class="adm-nav-icon">🔑</span> ${msg_superAdmin_layout_menu_permissionItems}
             </a>
@@ -83,7 +83,7 @@
                 <span class="adm-nav-icon">🗂️</span> ${msg_superAdmin_layout_menu_permissionTemplates}
             </a>
 
-            <div class="adm-nav-section" style="margin-top:16px;">${msg_superAdmin_layout_section_analytics}</div>
+            <div class="adm-nav-section sa-nav-section-spaced">${msg_superAdmin_layout_section_analytics}</div>
             <a class="adm-nav-item ${activeMenu=='salary'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/salary">
                 <span class="adm-nav-icon">💰</span> ${msg_superAdmin_layout_menu_salary}
             </a>
@@ -91,11 +91,11 @@
                 <span class="adm-nav-icon">📊</span> ${msg_superAdmin_layout_menu_stats}
             </a>
 
-            <div style="margin-top:16px; padding: 0 10px;">
+            <div class="sa-nav-aux-wrap">
                 <a class="adm-nav-item sa-nav-aux" href="${pageContext.request.contextPath}/admin">
                     <span class="adm-nav-icon">↩️</span> ${msg_superAdmin_layout_menu_adminPanel}
                 </a>
-                <a class="adm-nav-item sa-nav-aux" href="${pageContext.request.contextPath}/" target="_blank" style="margin-top:4px;">
+                <a class="adm-nav-item sa-nav-aux sa-nav-aux-site" href="${pageContext.request.contextPath}/" target="_blank">
                     <span class="adm-nav-icon">↗️</span> ${msg_superAdmin_layout_menu_viewSite}
                 </a>
             </div>

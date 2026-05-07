@@ -75,7 +75,7 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content" style="padding:0;">
+<div class="adm-content sa-profile-page">
     <div class="sa-profile-wrap">
 
         <%-- ── 왼쪽 네비게이션 ── --%>
@@ -96,7 +96,7 @@
                         <c:otherwise>${msg_superAdmin_member_edit_sub_titleUnset}</c:otherwise>
                     </c:choose>
                 </div>
-                <div class="sa-profile-sub" style="margin-top:2px;">
+                <div class="sa-profile-sub sa-profile-department">
                     <c:choose>
                         <c:when test="${not empty member.adminDepartment}">${fn:escapeXml(member.adminDepartment)}</c:when>
                         <c:otherwise>${msg_superAdmin_member_edit_sub_departmentUnset}</c:otherwise>
@@ -122,9 +122,9 @@
                 </div>
             </div>
 
-            <div style="padding:16px;">
+            <div class="sa-profile-back-wrap">
                 <a href="${pageContext.request.contextPath}/superAdmin/members"
-                   class="adm-btn adm-btn-ghost" style="width:100%;text-align:center;">${msg_superAdmin_member_edit_backToList}</a>
+                   class="adm-btn adm-btn-ghost sa-profile-back-link">${msg_superAdmin_member_edit_backToList}</a>
             </div>
         </aside>
 
@@ -441,13 +441,13 @@
                 </div>
                 <div class="sa-profile-section-body">
                     <div class="sa-form-grid">
-                        <div class="sa-form-group" style="grid-column:1/-1;">
+                        <div class="sa-form-group sa-form-group-full">
                             <label class="sa-form-label">${msg_superAdmin_member_edit_field_responsibility}</label>
                             <input class="adm-input" type="text" name="adminResponsibility" form="editForm"
                                    value="${fn:escapeXml(member.adminResponsibility)}"
                                    placeholder="${msg_superAdmin_member_edit_placeholder_responsibility}">
                         </div>
-                        <div class="sa-form-group" style="grid-column:1/-1;">
+                        <div class="sa-form-group sa-form-group-full">
                             <label class="sa-form-label">${msg_superAdmin_member_edit_field_permissionDescription}</label>
                             <input class="adm-input" type="text" name="adminPermission" form="editForm"
                                    value="${fn:escapeXml(member.adminPermission)}"
@@ -466,10 +466,10 @@
                             </select>
                         </div>
                         <c:if test="${not empty groupList}">
-                        <div class="sa-form-group" style="grid-column:1/-1;">
+                        <div class="sa-form-group sa-form-group-full">
                             <label class="sa-form-label">${msg_superAdmin_member_edit_field_groupApply}</label>
-                            <div style="display:flex;gap:8px;">
-                                <select class="adm-select" id="editGroupApplySelect" style="flex:1;">
+                            <div class="sa-inline-row">
+                                <select class="adm-select" id="editGroupApplySelect">
                                     <option value="">${msg_superAdmin_member_edit_option_selectGroup}</option>
                                     <c:forEach var="g" items="${groupList}">
                                         <c:if test="${g.active}">
@@ -479,7 +479,7 @@
                                 </select>
                                 <button class="adm-btn adm-btn-ghost" type="button" onclick="applyGroupPerms()">${msg_superAdmin_member_edit_button_apply}</button>
                             </div>
-                            <div style="font-size:12px;color:#94a3b8;margin-top:4px;">${msg_superAdmin_member_edit_hint_groupApply}</div>
+                            <div class="sa-help-text">${msg_superAdmin_member_edit_hint_groupApply}</div>
                         </div>
                         </c:if>
                     </div>
@@ -495,8 +495,8 @@
                     <div class="sa-profile-section-title">${msg_superAdmin_member_edit_section_manager}</div>
                 </div>
                 <div class="sa-profile-section-body">
-                    <div class="sa-form-grid" style="max-width:400px;">
-                        <div class="sa-form-group" style="grid-column:1/-1;">
+                    <div class="sa-form-grid sa-manager-grid">
+                        <div class="sa-form-group sa-form-group-full">
                             <label class="sa-form-label">${msg_superAdmin_member_edit_field_manager}</label>
                             <select class="adm-select sa-full-select" name="adminManager" form="editForm">
                                 <option value="">${msg_superAdmin_member_edit_option_none}</option>
@@ -521,7 +521,7 @@
 </div>
 
 <%-- 숨겨진 폼 (전체 필드 포함 - 저장 시 모든 값 전달) --%>
-<form id="editForm" style="display:none;"></form>
+<form id="editForm" hidden></form>
 
 <script>
 var CTX_EDIT = '${pageContext.request.contextPath}';

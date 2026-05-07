@@ -6,8 +6,7 @@ function adm_toast(msg, type = 'success') {
     el.className = 'adm-toast ' + type;
     el.innerHTML = (type === 'success' ? '✅ ' : '❌ ') + msg;
     c.appendChild(el);
-    setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(16px)';
-        el.style.transition='.3s'; setTimeout(()=>el.remove(),300); }, 2800);
+    setTimeout(() => { el.classList.add('is-hiding'); setTimeout(()=>el.remove(),300); }, 2800);
 }
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {

@@ -1371,6 +1371,7 @@ body.sa-light .adm-chatbot-mode-btn.active { background: #dbeafe; color: #1d4ed8
     min-width: 240px;
 }
 @keyframes toastIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:none} }
+.adm-toast.is-hiding { opacity:0; transform:translateX(16px); transition:.3s; }
 .adm-toast.success { background: #14532d; border: 1px solid #166534; color: #4ade80; }
 .adm-toast.error   { background: #450a0a; border: 1px solid #7f1d1d; color: #f87171; }
 

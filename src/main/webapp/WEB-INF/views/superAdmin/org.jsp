@@ -16,15 +16,15 @@
 
 <%@ include file="layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content sa-org-page">
     <div class="adm-card">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_superAdmin_org_cardTitle}</div>
-            <div style="font-size:13px;color:#94a3b8;">${msg_superAdmin_org_cardDescription}</div>
+            <div class="sa-card-subtitle">${msg_superAdmin_org_cardDescription}</div>
         </div>
         <div class="adm-card-body">
             <div id="org-chart"></div>
-            <div id="org-empty" style="display:none;text-align:center;padding:60px;color:#94a3b8;">${msg_superAdmin_org_empty}</div>
+            <div id="org-empty" class="sa-empty-cell sa-org-empty" hidden>${msg_superAdmin_org_empty}</div>
         </div>
     </div>
 </div>
@@ -103,7 +103,7 @@ function renderNode(node, depth) {
 
 window.addEventListener('DOMContentLoaded', () => {
     if (admins.length === 0) {
-        document.getElementById('org-empty').style.display = 'block';
+        document.getElementById('org-empty').hidden = false;
         return;
     }
     var tree = buildTree(admins);

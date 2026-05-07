@@ -7,6 +7,10 @@
 body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif !important; }
 .adm-btn, .adm-input, .adm-select, .adm-table, .adm-nav-item,
 .sa-profile-field input, .sa-profile-field select, .sa-profile-field textarea { font-family: inherit; }
+.sa-nav-section-spaced { margin-top:16px; }
+.sa-nav-aux-wrap { margin-top:16px; padding:0 10px; }
+.sa-nav-aux-site { margin-top:4px; }
+.sa-card-subtitle { color:#94a3b8; font-size:13px; line-height:1.5; }
 
 /* ── 상세 그리드 ── */
 .sa-detail-grid { display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
@@ -102,6 +106,12 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-form-group { display:flex; flex-direction:column; gap:6px; }
 .sa-form-label { font-size:13px; color:#64748b; font-weight:500; }
 .sa-full-select { width:100%; }
+.sa-profile-page { padding:0; }
+.sa-profile-department { margin-top:2px; }
+.sa-profile-back-wrap { padding:16px; }
+.sa-profile-back-link { width:100%; justify-content:center; text-align:center; }
+.sa-form-group-full { grid-column:1/-1; }
+.sa-manager-grid { max-width:400px; }
 
 /* ── 조직도 (클래식 top-down 트리: 부모 아래 자식들 가로 정렬 + ┴ 분기) ── */
 .sa-org-tree         { display:flex; flex-direction:column; align-items:center; overflow-x:auto; padding:16px 24px; gap:0;
