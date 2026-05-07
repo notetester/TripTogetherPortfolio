@@ -9251,6 +9251,30 @@ body.sa-light .adm-report-deleted-badge {
     justify-content: flex-end;
 }
 
+.adm-community-list-card {
+    overflow: visible;
+}
+
+.adm-community-list-head {
+    align-items: center;
+}
+
+.adm-community-list-controls {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.adm-community-size-select {
+    min-width: 112px;
+}
+
+.adm-community-local-pagination {
+    border-top: 1px solid rgba(148, 163, 184, .14);
+}
+
 .adm-community-bulk-bar[hidden] {
     display: none;
 }

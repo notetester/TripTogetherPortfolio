@@ -63,7 +63,6 @@
 <spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_community_list_postsTitle" code="admin.community.list.postsTitle"/>
-<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
 <spring:message var="msg_admin_community_action_bulkBlock" code="admin.community.action.bulkBlock"/>
 <spring:message var="msg_admin_community_action_bulkDelete" code="admin.community.action.bulkDelete"/>
 <spring:message var="msg_admin_community_column_id" code="admin.community.column.id"/>
@@ -81,8 +80,14 @@
 <spring:message var="msg_admin_community_action_block" code="admin.community.action.block"/>
 <spring:message var="msg_admin_community_action_delete" code="admin.community.action.delete"/>
 <spring:message var="msg_admin_common_noResults" code="admin.common.noResults"/>
-<spring:message var="msg_admin_common_pageStatus" code="admin.common.pageStatus"/>
 <spring:message var="msg_admin_community_viewSite" code="admin.community.viewSite"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
+<spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100"/>
+<spring:message var="msg_admin_community_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${total}"/>
+<spring:message var="msg_admin_community_currentCountDisplay" code="admin.common.currentCountFormat" arguments="${fn:length(list)}"/>
 <c:set var="activeMenu" value="community"/>
 
 
@@ -125,6 +130,7 @@
     <div class="adm-card adm-community-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/community" id="searchForm">
+                <input type="hidden" name="size" value="${search.size}"/>
                 <div class="adm-filter-bar adm-community-filterbar">
                     <div>
                         <div class="adm-filter-label">${msg_admin_community_filter_status}</div>
@@ -184,19 +190,29 @@
 
     <%-- ── 목록 테이블 ── --%>
     <div class="adm-card adm-community-list-card">
-        <div class="adm-card-head">
-            <div class="adm-card-title">${msg_admin_community_list_postsTitle}<span class="adm-section-total-inline">${msg_admin_common_totalCount}</span></div>
-            <%-- 일괄 처리 버튼 --%>
-            <div id="bulkBar" class="adm-community-bulk-bar" hidden>
-                <span id="bulkCount" class="adm-community-bulk-count"></span>
-                <button class="adm-btn adm-btn-ghost adm-community-danger-btn"
-                        onclick="bulkAction('block')">${msg_admin_community_action_bulkBlock}</button>
-                <button class="adm-btn adm-btn-ghost adm-community-muted-btn"
-                        onclick="bulkAction('delete')">${msg_admin_community_action_bulkDelete}</button>
+        <div class="adm-card-head adm-community-list-head">
+            <div class="adm-card-title">
+                ${msg_admin_community_list_postsTitle}
+                <span class="adm-section-total-inline">${msg_admin_community_totalCountDisplay}</span>
+            </div>
+            <div class="adm-community-list-controls">
+                <select class="adm-select adm-community-size-select" onchange="goCommunityPageSize(this.value)">
+                    <option value="20" ${search.size == 20 ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
+                    <option value="50" ${search.size == 50 ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
+                    <option value="100" ${search.size == 100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
+                </select>
+                <%-- 일괄 처리 버튼 --%>
+                <div id="bulkBar" class="adm-community-bulk-bar" hidden>
+                    <span id="bulkCount" class="adm-community-bulk-count"></span>
+                    <button class="adm-btn adm-btn-ghost adm-community-danger-btn"
+                            onclick="bulkAction('block')">${msg_admin_community_action_bulkBlock}</button>
+                    <button class="adm-btn adm-btn-ghost adm-community-muted-btn"
+                            onclick="bulkAction('delete')">${msg_admin_community_action_bulkDelete}</button>
+                </div>
             </div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table adm-community-table adm-community-post-table">
+            <table class="adm-table adm-community-table adm-community-post-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-community-col-check">
                     <col class="adm-community-col-id">
@@ -225,11 +241,21 @@
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="p">
+                    <c:url var="communityPostDetailUrl" value="/admin/community/posts/${p.postId}">
+                        <c:param name="page" value="${paging.currentPage}"/>
+                        <c:param name="size" value="${search.size}"/>
+                        <c:param name="status" value="${search.status}"/>
+                        <c:param name="postType" value="${search.postType}"/>
+                        <c:param name="flagged" value="${search.flagged}"/>
+                        <c:param name="sortBy" value="${search.sortBy}"/>
+                        <c:param name="searchType" value="${search.searchType}"/>
+                        <c:param name="keyword" value="${search.keyword}"/>
+                    </c:url>
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${p.postId}"></td>
                         <td class="adm-community-id-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}">#${p.postId}</a>
+                               href="${communityPostDetailUrl}">#${p.postId}</a>
                         </td>
 
                         <%-- 작성자 --%>
@@ -264,7 +290,7 @@
 
                         <%-- 제목 + 30일 배지 --%>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}"
+                            <a href="${communityPostDetailUrl}"
                                class="adm-link-title"
                                title="${p.title}">
                                     <c:choose>
@@ -314,7 +340,7 @@
 
                         <%-- 상태 --%>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}"
+                            <a href="${communityPostDetailUrl}"
                                class="adm-cell-link adm-cell-link--inline status-badge ${p.postStatus}">
                                 <c:choose>
                                     <c:when test="${p.postStatus == 'ACTIVE'}">${msg_admin_community_status_active}</c:when>
@@ -327,7 +353,7 @@
 
                         <%-- 등록일 --%>
                         <td class="adm-community-date-cell">
-                            <a href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}"
+                            <a href="${communityPostDetailUrl}"
                                class="adm-cell-link adm-cell-link--inline">
                                 <fmt:formatDate value="${p.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
                             </a>
@@ -380,20 +406,17 @@
         </div>
 
         <%-- 페이지네이션 --%>
-        <c:if test="${paging.totalPage > 1}">
-            <div class="adm-paging">
-                <c:if test="${paging.prev}">
-                    <button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button>
-                </c:if>
-                <c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="pg">
-                    <button class="adm-page-btn ${pg == paging.currentPage ? 'active' : ''}" onclick="goPage(${pg})">${pg}</button>
-                </c:forEach>
-                <c:if test="${paging.next}">
-                    <button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button>
-                </c:if>
-                <span class="adm-page-info">${msg_admin_common_pageStatus}</span>
+        <c:set var="communityTotalPage" value="${paging.totalPage < 1 ? 1 : paging.totalPage}"/>
+        <div class="adm-local-pagination adm-community-local-pagination">
+            <div class="adm-local-page-info">
+                ${msg_admin_community_totalCountDisplay} / ${msg_admin_community_currentCountDisplay}
             </div>
-        </c:if>
+            <div class="adm-local-page-actions">
+                <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage <= 1 ? 'disabled' : ''} onclick="goPage(${paging.currentPage - 1})">${msg_admin_common_prev}</button>
+                <span class="adm-local-page-state">${paging.currentPage} / ${communityTotalPage}</span>
+                <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage >= communityTotalPage ? 'disabled' : ''} onclick="goPage(${paging.currentPage + 1})">${msg_admin_common_next}</button>
+            </div>
+        </div>
     </div>
 
     <%-- ── 유저 화면 바로가기 ── --%>
@@ -503,6 +526,13 @@ function applySelectFilter(button) {
 function goPage(page) {
     var params = new URLSearchParams(window.location.search);
     params.set('page', page);
+    location.href = ctx + '/admin/community?' + params.toString();
+}
+
+function goCommunityPageSize(size) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('size', size);
+    params.set('page', '1');
     location.href = ctx + '/admin/community?' + params.toString();
 }
 
