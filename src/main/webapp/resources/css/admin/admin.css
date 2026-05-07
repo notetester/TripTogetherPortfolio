@@ -7459,6 +7459,144 @@ body.sa-light .adm-inquiry-blocked-note {
     padding: 0 10px;
 }
 
+.adm-report-back-row {
+    margin-bottom: 16px;
+}
+
+.adm-report-detail-head-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.adm-report-small-btn {
+    min-height: 30px;
+    padding: 5px 10px;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.adm-report-meta-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.adm-report-target-id,
+.adm-report-spot-id {
+    margin-left: 4px;
+    color: #64748b;
+}
+
+.adm-report-spot-id {
+    font-weight: 400;
+}
+
+.adm-report-deleted-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding: 2px 8px;
+    color: #fca5a5;
+    font-size: 11px;
+    border-radius: 4px;
+    background: #450a0a;
+}
+
+.adm-report-target-actions {
+    margin-left: 8px;
+}
+
+.adm-report-strong-value {
+    font-weight: 600;
+}
+
+.adm-report-prewrap-value {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.adm-report-count-wrap {
+    font-size: 13px;
+}
+
+.adm-report-detail-meta {
+    display: flex;
+    gap: 20px;
+    padding-top: 12px;
+    color: #64748b;
+    font-size: 12px;
+    border-top: 1px solid #1e2736;
+    flex-wrap: wrap;
+}
+
+.adm-report-side-label {
+    margin-bottom: 2px;
+    color: #64748b;
+    font-size: 11px;
+}
+
+.adm-report-side-label.is-spaced {
+    margin-bottom: 8px;
+}
+
+.adm-report-side-value {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.adm-report-side-full-btn {
+    display: block;
+    width: 100%;
+    font-size: 12px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.adm-report-meta-actions-spaced {
+    margin-top: 8px;
+}
+
+.adm-report-action-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.adm-report-action-btn {
+    min-height: 28px;
+    padding: 4px 10px;
+    font-size: 11px;
+}
+
+.adm-report-action-btn.is-muted {
+    color: #94a3b8;
+    border-color: #94a3b8;
+}
+
+.adm-report-action-btn.is-warning {
+    color: #fb923c;
+    border-color: #fb923c;
+}
+
+.adm-report-action-btn.is-danger {
+    color: #f87171;
+    border-color: #f87171;
+}
+
+.adm-report-action-btn.is-critical {
+    color: #dc2626;
+    border-color: #dc2626;
+}
+
+.adm-report-action-btn.is-info {
+    margin-top: 4px;
+    color: #7dd3fc;
+    border-color: #7dd3fc;
+}
+
 body.sa-light .rpt-admin-row:hover {
     background: #f8fafc;
 }
@@ -7474,6 +7612,15 @@ body.sa-light .adm-report-member-name {
 
 body.sa-light .adm-report-blocked-note {
     color: #b91c1c;
+}
+
+body.sa-light .adm-report-detail-meta {
+    border-top-color: #e2e8f0;
+}
+
+body.sa-light .adm-report-deleted-badge {
+    color: #b91c1c;
+    background: #fee2e2;
 }
 
 @media (max-width: 1280px) {

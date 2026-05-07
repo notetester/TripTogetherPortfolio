@@ -80,8 +80,8 @@
 <c:set var="pageTitle" value="${msg_admin_reports_detail_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
-    <div style="margin-bottom:16px;">
+<div class="adm-content adm-report-page">
+    <div class="adm-report-back-row">
         <a href="javascript:goBackToList()" class="adm-back-link">← ${msg_admin_reports_detail_backToList}</a>
     </div>
 
@@ -92,7 +92,7 @@
             <div class="adm-card">
                 <div class="adm-card-head">
                     <div class="adm-card-title">${msg_admin_reports_detail_title}</div>
-                    <div style="display:flex;gap:8px;align-items:center;">
+                    <div class="adm-report-detail-head-actions">
                         <span class="status-badge ${report.status}">
                             <c:choose>
                                 <c:when test="${report.status eq 'IN_REVIEW'}">${msg_admin_reports_status_inReview}</c:when>
@@ -106,27 +106,24 @@
                         <c:if test="${report.targetType eq 'post' and report.targetStatus ne 'DELETED'}">
                             <a href="${pageContext.request.contextPath}/community/${report.targetId}"
                                target="_blank"
-                               class="adm-btn adm-btn-ghost"
-                               style="font-size:12px;text-decoration:none;">${msg_admin_reports_detail_viewOriginal}</a>
+                               class="adm-btn adm-btn-ghost adm-report-small-btn">${msg_admin_reports_detail_viewOriginal}</a>
                         </c:if>
                         <c:if test="${report.targetType eq 'comment' and report.targetStatus ne 'DELETED'}">
                             <a href="${pageContext.request.contextPath}/community/${empty report.sourceId ? report.targetPostId : report.sourceId}"
                                target="_blank"
-                               class="adm-btn adm-btn-ghost"
-                               style="font-size:12px;text-decoration:none;">${msg_admin_reports_detail_viewOriginal}</a>
+                               class="adm-btn adm-btn-ghost adm-report-small-btn">${msg_admin_reports_detail_viewOriginal}</a>
                         </c:if>
                         <c:if test="${report.targetType eq 'review' and report.targetStatus ne 'DELETED' and not empty report.targetSpotIdx}">
                             <a href="${pageContext.request.contextPath}/detail/${report.targetSpotIdx}"
                                target="_blank"
-                               class="adm-btn adm-btn-ghost"
-                               style="font-size:12px;text-decoration:none;">${msg_admin_reports_detail_viewSpot}</a>
+                               class="adm-btn adm-btn-ghost adm-report-small-btn">${msg_admin_reports_detail_viewSpot}</a>
                         </c:if>
                     </div>
                 </div>
                 <div class="adm-card-body">
 
                     <%-- 대상 정보 --%>
-                    <div style="display:flex;flex-direction:column;gap:14px;">
+                    <div class="adm-report-meta-stack">
                         <div class="adm-meta-row">
                             <div class="adm-meta-key">${msg_admin_reports_detail_reportTarget}</div>
                             <div class="adm-detail-value">
@@ -145,16 +142,16 @@
                                     </c:when>
                                     <c:otherwise>${report.targetType}</c:otherwise>
                                 </c:choose>
-                                <span style="color:#64748b;margin-left:4px;">#${report.targetId}</span>
+                                <span class="adm-report-target-id">#${report.targetId}</span>
                                 <c:if test="${report.targetStatus eq 'DELETED'}">
-                                    <span style="margin-left:8px;font-size:11px;background:#450a0a;color:#fca5a5;padding:2px 8px;border-radius:4px;">
+                                    <span class="adm-report-deleted-badge">
                                         <c:choose>
                                             <c:when test="${report.targetType eq 'review'}">🗑 ${msg_admin_reports_targetBlocked}</c:when>
                                             <c:otherwise>🗑 ${msg_admin_reports_targetDeleted}</c:otherwise>
                                         </c:choose>
                                     </span>
                                 </c:if>
-                                <span class="adm-inline-actions" style="margin-left:8px;">
+                                <span class="adm-inline-actions adm-report-target-actions">
                                     <c:if test="${report.targetType eq 'user' and not empty report.targetId}">
                                         <button type="button"
                                                 class="adm-inline-chip js-open-member-context"
@@ -194,7 +191,7 @@
                         <c:if test="${report.targetType eq 'post' and not empty report.targetTitle}">
                             <div class="adm-meta-row">
                                 <div class="adm-meta-key">${msg_admin_common_title}</div>
-                                <div class="adm-detail-value" style="font-weight:600;">${fn:escapeXml(report.targetTitle)}</div>
+                                <div class="adm-detail-value adm-report-strong-value">${fn:escapeXml(report.targetTitle)}</div>
                                 <div class="adm-tr-inline js-admin-translation-widget"
                                      data-label="${msg_admin_translation_label_reportTargetTitle}"
                                      data-source-type="REPORT_TARGET"
@@ -207,7 +204,7 @@
                         <c:if test="${report.targetType eq 'comment' and not empty report.targetContent}">
                             <div class="adm-meta-row">
                                 <div class="adm-meta-key">${msg_admin_reports_detail_commentBody}</div>
-                                <div class="adm-detail-value" style="white-space:pre-wrap;word-break:break-word;">
+                                <div class="adm-detail-value adm-report-prewrap-value">
                                     <c:choose>
                                         <c:when test="${fn:length(report.targetContent) > 200}">${fn:escapeXml(fn:substring(report.targetContent, 0, 200))}…</c:when>
                                         <c:otherwise>${fn:escapeXml(report.targetContent)}</c:otherwise>
@@ -226,16 +223,16 @@
                             <c:if test="${not empty report.targetSpotName}">
                                 <div class="adm-meta-row">
                                     <div class="adm-meta-key">${msg_admin_reports_detail_spot}</div>
-                                    <div class="adm-detail-value" style="font-weight:600;">
+                                    <div class="adm-detail-value adm-report-strong-value">
                                         ${fn:escapeXml(report.targetSpotName)}
-                                        <span style="color:#64748b;margin-left:4px;font-weight:400;">#${report.targetSpotIdx}</span>
+                                        <span class="adm-report-spot-id">#${report.targetSpotIdx}</span>
                                     </div>
                                 </div>
                             </c:if>
                             <c:if test="${not empty report.targetContent}">
                                 <div class="adm-meta-row">
                                     <div class="adm-meta-key">${msg_admin_reports_detail_reviewBody}</div>
-                                    <div class="adm-detail-value" style="white-space:pre-wrap;word-break:break-word;">
+                                    <div class="adm-detail-value adm-report-prewrap-value">
                                         <c:choose>
                                             <c:when test="${fn:length(report.targetContent) > 200}">${fn:escapeXml(fn:substring(report.targetContent, 0, 200))}…</c:when>
                                             <c:otherwise>${fn:escapeXml(report.targetContent)}</c:otherwise>
@@ -264,7 +261,7 @@
                                     <c:when test="${report.reason eq 'other'}">${msg_admin_reports_reason_other}</c:when>
                                     <c:when test="${report.reason eq 'user'}">${msg_admin_reports_reason_user}</c:when>
                                     <c:when test="${not empty report.reason}">${report.reason}</c:when>
-                                    <c:otherwise><span style="color:#64748b;">—</span></c:otherwise>
+                                    <c:otherwise><span class="adm-report-muted">—</span></c:otherwise>
                                 </c:choose>
                             </div>
                         </div>
@@ -285,20 +282,19 @@
 
                         <div class="adm-meta-row">
                             <div class="adm-meta-key">${msg_admin_reports_detail_sameTargetReports}</div>
-                            <div style="font-size:13px;">
+                            <div class="adm-report-count-wrap">
                                 <c:choose>
                                     <c:when test="${report.targetReportCount >= 3}">
-                                        <span style="color:#f87171;font-weight:700;">🔴 ${report.targetReportCount}${msg_admin_common_countSuffix}</span>
+                                        <span class="adm-report-count is-hot">🔴 ${report.targetReportCount}${msg_admin_common_countSuffix}</span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span style="color:#94a3b8;">${report.targetReportCount}${msg_admin_common_countSuffix}</span>
+                                        <span class="adm-report-count">${report.targetReportCount}${msg_admin_common_countSuffix}</span>
                                     </c:otherwise>
                                 </c:choose>
                             </div>
                         </div>
 
-                        <div style="border-top:1px solid #1e2736;padding-top:12px;
-                                    display:flex;gap:20px;font-size:12px;color:#64748b;">
+                        <div class="adm-report-detail-meta">
                             <span>${msg_admin_reports_reportedAt} <fmt:formatDate value="${report.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
                             <c:if test="${not empty report.resolvedAt}">
                                 <span>${msg_admin_reports_resolvedAt} <fmt:formatDate value="${report.resolvedAt}" type="both" dateStyle="short" timeStyle="short"/></span>
@@ -324,65 +320,60 @@
 
                         <c:if test="${report.userIdx == 18}">
                             <div>
-                                <span style="display:inline-block;padding:3px 10px;background:#ede9fe;color:#6d28d9;border-radius:999px;font-size:11px;font-weight:600;"
+                                <span class="adm-report-ai-badge"
                                       title="Perspective API 민감도 분석에 의해 자동 감지된 신고">
                                     🤖 AI 자동감지
                                 </span>
                             </div>
                         </c:if>
                         <div>
-                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${msg_admin_common_userId}</div>
-                            <div style="font-size:14px;font-weight:600;">${report.userId}</div>
+                            <div class="adm-report-side-label">${msg_admin_common_userId}</div>
+                            <div class="adm-report-side-value">${report.userId}</div>
                         </div>
                         <div>
-                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${msg_admin_common_nickname}</div>
-                            <div style="font-size:14px;font-weight:600;">${report.nickname}</div>
+                            <div class="adm-report-side-label">${msg_admin_common_nickname}</div>
+                            <div class="adm-report-side-value">${report.nickname}</div>
                         </div>
 
                         <div class="adm-meta-actions">
                             <c:choose>
                                 <c:when test="${not empty report.userIdx}">
                                     <button type="button"
-                                            class="adm-btn adm-btn-ghost js-open-member-context"
-                                            data-user-idx="${report.userIdx}"
-                                            style="width:100%;text-align:center;font-size:12px;display:block;">
+                                            class="adm-btn adm-btn-ghost adm-report-side-full-btn js-open-member-context"
+                                            data-user-idx="${report.userIdx}">
                                         ${msg_admin_common_memberInfoView}
                                     </button>
                                 </c:when>
                                 <c:otherwise>
                                     <a href="${pageContext.request.contextPath}/admin/members?searchType=userId&keyword=${report.userId}"
-                                       class="adm-btn adm-btn-ghost"
-                                       style="text-align:center;font-size:12px;text-decoration:none;display:block;">
+                                       class="adm-btn adm-btn-ghost adm-report-side-full-btn">
                                         ${msg_admin_common_memberInfoView}
                                     </a>
                                 </c:otherwise>
                             </c:choose>
                         </div>
 
-                        <div class="adm-meta-actions" style="margin-top:8px;">
+                        <div class="adm-meta-actions adm-report-meta-actions-spaced">
                             <button type="button"
-                                    class="adm-btn adm-btn-ghost"
+                                    class="adm-btn adm-btn-ghost adm-report-side-full-btn"
                                     data-keyword="${report.userId}"
-                                    onclick="openReportFilter(this)"
-                                    style="width:100%;text-align:center;font-size:12px;">
+                                    onclick="openReportFilter(this)">
                                 ${msg_admin_common_sameReporter}
                             </button>
                         </div>
 
                         <%-- 처리 버튼: targetType에 따라 조건부 --%>
                         <div class="adm-meta-actions" id="report-processing-actions">
-                            <div style="font-size:11px;color:#64748b;margin-bottom:8px;">${msg_admin_reports_detail_processingTitle}</div>
-                            <div style="display:flex;flex-direction:column;gap:6px;">
+                            <div class="adm-report-side-label is-spaced">${msg_admin_reports_detail_processingTitle}</div>
+                            <div class="adm-report-action-stack">
 
                                 <%-- post / comment / review 공통 버튼 --%>
                                 <c:if test="${report.targetType eq 'post' or report.targetType eq 'comment' or report.targetType eq 'review'}">
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:11px;color:#94a3b8;border-color:#94a3b8;"
+                                    <button class="adm-btn adm-btn-ghost adm-report-action-btn is-muted"
                                             onclick="resolve('REJECTED')">${msg_admin_reports_detail_rejectKeepContent}</button>
                                     <%-- 이미 삭제/차단된 콘텐츠면 삭제 계열 버튼 숨김 --%>
                                     <c:if test="${report.targetStatus ne 'DELETED'}">
-                                        <button class="adm-btn adm-btn-ghost"
-                                                style="font-size:11px;color:#fb923c;border-color:#fb923c;"
+                                        <button class="adm-btn adm-btn-ghost adm-report-action-btn is-warning"
                                                 onclick="resolve('DELETE_CONTENT')">
                                                 <c:choose>
                                                     <c:when test="${report.targetType eq 'review'}">${msg_admin_reports_detail_blockReview}</c:when>
@@ -391,12 +382,10 @@
                                             </button>
                                         </c:if>
                                     <c:if test="${report.targetUserRole ne 'SYSTEM'}">
-                                        <button class="adm-btn adm-btn-ghost"
-                                                style="font-size:11px;color:#f87171;border-color:#f87171;"
+                                        <button class="adm-btn adm-btn-ghost adm-report-action-btn is-danger"
                                                 onclick="resolve('BLOCK_AUTHOR')">${msg_admin_reports_detail_blockAuthor}</button>
                                         <c:if test="${report.targetStatus ne 'DELETED'}">
-                                            <button class="adm-btn adm-btn-ghost"
-                                                    style="font-size:11px;color:#dc2626;border-color:#dc2626;"
+                                            <button class="adm-btn adm-btn-ghost adm-report-action-btn is-critical"
                                                     onclick="resolve('DELETE_AND_BLOCK')">
                                                 <c:choose>
                                                     <c:when test="${report.targetType eq 'review'}">${msg_admin_reports_detail_blockReviewAndAuthor}</c:when>
@@ -409,20 +398,17 @@
 
                                 <%-- user 대상 버튼 --%>
                                 <c:if test="${report.targetType eq 'user'}">
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:11px;color:#94a3b8;border-color:#94a3b8;"
+                                    <button class="adm-btn adm-btn-ghost adm-report-action-btn is-muted"
                                             onclick="resolve('REJECTED')">${msg_admin_reports_detail_rejectKeepUser}</button>
                                     <c:if test="${report.targetUserRole ne 'SYSTEM'}">
-                                        <button class="adm-btn adm-btn-ghost"
-                                                style="font-size:11px;color:#f87171;border-color:#f87171;"
+                                        <button class="adm-btn adm-btn-ghost adm-report-action-btn is-danger"
                                                 onclick="resolve('BLOCK_USER')">${msg_admin_reports_detail_blockUser}</button>
                                     </c:if>
                                 </c:if>
 
                                 <%-- 처리된 신고: 검토중 복원 버튼 --%>
                                 <c:if test="${report.status eq 'RESOLVED' or report.status eq 'DISMISSED'}">
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:11px;color:#7dd3fc;border-color:#7dd3fc;margin-top:4px;"
+                                    <button class="adm-btn adm-btn-ghost adm-report-action-btn is-info"
                                             onclick="resolve('REVERT_TO_PENDING')">${msg_admin_reports_detail_revertToPending}</button>
                                 </c:if>
 
