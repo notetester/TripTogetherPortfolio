@@ -14,6 +14,7 @@
 <spring:message var="msg_security_admin_providerHealth_providerCode" code="security.admin.providerHealth.providerCode"/>
 <spring:message var="msg_security_admin_providerHealth_limit" code="security.admin.providerHealth.limit"/>
 <spring:message var="msg_security_admin_common_search" code="security.admin.common.search"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_security_admin_providerHealth_checkedAt" code="security.admin.providerHealth.checkedAt"/>
 <spring:message var="msg_security_admin_providerHealth_provider" code="security.admin.providerHealth.provider"/>
 <spring:message var="msg_security_admin_providerHealth_checkSource" code="security.admin.providerHealth.checkSource"/>
@@ -22,6 +23,7 @@
 <spring:message var="msg_security_admin_providerHealth_actor" code="security.admin.providerHealth.actor"/>
 <spring:message var="msg_security_admin_providerHealth_detail" code="security.admin.providerHealth.detail"/>
 <spring:message var="msg_security_admin_providerHealth_empty" code="security.admin.providerHealth.empty"/>
+<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount" arguments="${fn:length(histories)}"/>
 <c:set var="pageTitle" value="${msg_security_admin_providerHealth_title}"/>
 <c:set var="activeMenu" value="providerHealthHistory"/>
 
@@ -40,49 +42,63 @@
         </div>
     </div>
 
-    <form method="get" class="adm-card" style="margin-bottom:16px;">
-        <div class="adm-form-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
-            <label>${msg_security_admin_providerHealth_providerCode}
-                <input class="adm-input" type="text" name="providerCode" value="${fn:escapeXml(providerCode)}" placeholder="${msg_security_admin_providerHealth_providerCodePlaceholder}">
-            </label>
-            <label>${msg_security_admin_providerHealth_limit}
-                <input class="adm-input" type="number" min="1" max="200" name="limit" value="${limit}">
-            </label>
-            <div style="align-self:end;">
-                <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
+    <form method="get" class="adm-card adm-provider-health-filter-card">
+        <div class="adm-card-body">
+            <div class="adm-provider-health-filterbar">
+                <label class="adm-provider-health-code-field">${msg_security_admin_providerHealth_providerCode}
+                    <input class="adm-input" type="text" name="providerCode" value="${fn:escapeXml(providerCode)}" placeholder="${msg_security_admin_providerHealth_providerCodePlaceholder}">
+                </label>
+                <label class="adm-provider-health-limit-field">${msg_security_admin_providerHealth_limit}
+                    <input class="adm-input" type="number" min="1" max="200" name="limit" value="${limit}">
+                </label>
+                <div class="adm-provider-health-filter-actions">
+                    <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
+                    <a class="adm-btn ghost" href="${pageContext.request.contextPath}/admin/login-risk/provider-health-history">${msg_admin_common_reset}</a>
+                </div>
             </div>
         </div>
     </form>
 
-    <div class="adm-table-wrap">
-        <table class="adm-table">
-            <thead>
-            <tr>
-                <th>${msg_security_admin_providerHealth_checkedAt}</th>
-                <th>${msg_security_admin_providerHealth_provider}</th>
-                <th>${msg_security_admin_providerHealth_checkSource}</th>
-                <th>${msg_security_admin_providerHealth_statusBefore}</th>
-                <th>${msg_security_admin_providerHealth_statusAfter}</th>
-                <th>${msg_security_admin_providerHealth_actor}</th>
-                <th>${msg_security_admin_providerHealth_detail}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <c:forEach var="h" items="${histories}">
+    <div class="adm-card adm-provider-health-list-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">${msg_security_admin_providerHealth_title}</div>
+            <div class="adm-page-muted">${msg_admin_common_totalCount}</div>
+        </div>
+        <div class="adm-table-wrap">
+            <table id="providerHealthHistoryTable"
+                   class="adm-table adm-section-table-fixed adm-provider-health-table"
+                   data-section="providerHealthHistory">
+                <thead>
                 <tr>
-                    <td><fmt:formatDate value="${h.checkedAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
-                    <td><c:out value="${h.providerKind}"/> · <c:out value="${h.providerCode}"/></td>
-                    <td><span class="adm-badge"><c:out value="${h.checkSource}"/></span></td>
-                    <td><c:out value="${h.statusBefore}" default="-"/></td>
-                    <td><c:out value="${h.statusAfter}" default="-"/></td>
-                    <td><c:out value="${h.actorUserIdx}" default="-"/></td>
-                    <td><div style="white-space:pre-wrap;max-width:520px;"><c:out value="${h.detailMessage}" default="-"/></div></td>
+                    <th>${msg_security_admin_providerHealth_checkedAt}</th>
+                    <th>${msg_security_admin_providerHealth_provider}</th>
+                    <th>${msg_security_admin_providerHealth_checkSource}</th>
+                    <th>${msg_security_admin_providerHealth_statusBefore}</th>
+                    <th>${msg_security_admin_providerHealth_statusAfter}</th>
+                    <th>${msg_security_admin_providerHealth_actor}</th>
+                    <th>${msg_security_admin_providerHealth_detail}</th>
                 </tr>
-            </c:forEach>
-            <c:if test="${empty histories}">
-                <tr><td colspan="7" class="adm-empty">${msg_security_admin_providerHealth_empty}</td></tr>
-            </c:if>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <c:forEach var="h" items="${histories}">
+                    <tr>
+                        <td><fmt:formatDate value="${h.checkedAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
+                        <td>
+                            <div class="adm-provider-health-provider"><c:out value="${h.providerKind}"/></div>
+                            <div class="adm-page-muted"><c:out value="${h.providerCode}"/></div>
+                        </td>
+                        <td><span class="adm-badge"><c:out value="${h.checkSource}"/></span></td>
+                        <td><c:out value="${h.statusBefore}" default="-"/></td>
+                        <td><c:out value="${h.statusAfter}" default="-"/></td>
+                        <td><c:out value="${h.actorUserIdx}" default="-"/></td>
+                        <td><div class="adm-provider-health-detail"><c:out value="${h.detailMessage}" default="-"/></div></td>
+                    </tr>
+                </c:forEach>
+                <c:if test="${empty histories}">
+                    <tr><td colspan="7" class="adm-empty">${msg_security_admin_providerHealth_empty}</td></tr>
+                </c:if>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

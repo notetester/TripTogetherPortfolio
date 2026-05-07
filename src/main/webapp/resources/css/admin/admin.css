@@ -4907,3 +4907,73 @@ body.sa-light .adm-governance-page .provider-detail-close {
         padding: 14px;
     }
 }
+
+/* Provider health history */
+.adm-governance-page .adm-provider-health-filter-card,
+.adm-governance-page .adm-provider-health-list-card {
+    overflow: visible;
+    border-radius: 8px;
+}
+
+.adm-governance-page .adm-provider-health-filter-card {
+    margin-bottom: 12px;
+}
+
+.adm-governance-page .adm-provider-health-filterbar {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) minmax(120px, 170px) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-governance-page .adm-provider-health-code-field,
+.adm-governance-page .adm-provider-health-limit-field {
+    min-width: 0;
+}
+
+.adm-governance-page .adm-provider-health-filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.adm-governance-page .adm-provider-health-table td {
+    vertical-align: top;
+}
+
+.adm-governance-page .adm-provider-health-provider {
+    font-weight: 800;
+    color: #dbeafe;
+}
+
+.adm-governance-page .adm-provider-health-detail {
+    max-width: 520px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.45;
+}
+
+body.sa-light .adm-governance-page .adm-provider-health-provider {
+    color: #1d4ed8;
+}
+
+@media (max-width: 900px) {
+    .adm-governance-page .adm-provider-health-filterbar {
+        grid-template-columns: minmax(0, 1fr) minmax(120px, 170px);
+    }
+
+    .adm-governance-page .adm-provider-health-filter-actions {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .adm-governance-page .adm-provider-health-filterbar {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-governance-page .adm-provider-health-filter-actions .adm-btn {
+        width: auto;
+    }
+}
