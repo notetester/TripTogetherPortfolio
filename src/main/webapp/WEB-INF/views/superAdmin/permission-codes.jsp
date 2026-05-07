@@ -188,11 +188,11 @@
         <div class="adm-modal-body">
 
             <div class="sa-section-title">${msg_superAdmin_permissionCodes_modal_addPermission}</div>
-            <div id="permItemList" style="margin-bottom:16px;">
-                <div style="text-align:center;padding:16px;color:#94a3b8;">${msg_superAdmin_permissionCodes_loading}</div>
+            <div id="permItemList" class="sa-modal-list-block">
+                <div class="sa-empty-cell is-small">${msg_superAdmin_permissionCodes_loading}</div>
             </div>
-            <div style="display:flex;gap:8px;margin-bottom:20px;">
-                <select class="adm-select" id="addPermSelect" style="flex:1;">
+            <div class="sa-modal-inline-control">
+                <select class="adm-select" id="addPermSelect">
                     <option value="">${msg_superAdmin_permissionCodes_modal_permissionSelectPlaceholder}</option>
                     <c:forEach var="p" items="${permissionPolicies}">
                         <option value="${fn:escapeXml(p.permissionCode)}">${fn:escapeXml(p.displayName)} (${fn:escapeXml(p.permissionCode)})</option>
@@ -202,11 +202,11 @@
             </div>
 
             <div class="sa-section-title">${msg_superAdmin_permissionCodes_modal_addGroup}</div>
-            <div id="groupItemList" style="margin-bottom:16px;">
-                <div style="text-align:center;padding:16px;color:#94a3b8;">${msg_superAdmin_permissionCodes_loading}</div>
+            <div id="groupItemList" class="sa-modal-list-block">
+                <div class="sa-empty-cell is-small">${msg_superAdmin_permissionCodes_loading}</div>
             </div>
-            <div style="display:flex;gap:8px;margin-bottom:20px;">
-                <select class="adm-select" id="addGroupSelect" style="flex:1;">
+            <div class="sa-modal-inline-control">
+                <select class="adm-select" id="addGroupSelect">
                     <option value="">${msg_superAdmin_permissionCodes_modal_groupSelectPlaceholder}</option>
                     <c:forEach var="g" items="${groupList}">
                         <c:if test="${g.active}">
@@ -218,14 +218,14 @@
             </div>
 
             <div class="sa-section-title">${msg_superAdmin_permissionCodes_modal_assignedAdmins}</div>
-            <div style="display:flex;gap:8px;margin-bottom:10px;">
-                <input class="adm-input" id="adminSearchInput" type="text" placeholder="${msg_superAdmin_permissionCodes_modal_adminSearchPlaceholder}" style="flex:1;"
+            <div class="sa-modal-inline-control is-tight">
+                <input class="adm-input" id="adminSearchInput" type="text" placeholder="${msg_superAdmin_permissionCodes_modal_adminSearchPlaceholder}"
                        onkeydown="if(event.key==='Enter') searchAdminsToAssign()">
                 <button class="adm-btn adm-btn-primary" onclick="searchAdminsToAssign()">${msg_superAdmin_permissionCodes_searchButton}</button>
             </div>
-            <div id="adminSearchResult" style="margin-bottom:12px;"></div>
-            <div id="adminList" style="margin-bottom:8px;">
-                <div style="text-align:center;padding:16px;color:#94a3b8;">${msg_superAdmin_permissionCodes_loading}</div>
+            <div id="adminSearchResult" class="sa-modal-result"></div>
+            <div id="adminList" class="sa-modal-list-block is-short">
+                <div class="sa-empty-cell is-small">${msg_superAdmin_permissionCodes_loading}</div>
             </div>
 
         </div>
@@ -365,7 +365,7 @@ function loadDetail() {
             var adminCount = data.adminCount      || 0;
 
             document.getElementById('permItemList').innerHTML = permItems.length === 0
-                ? '<div style="color:#94a3b8;padding:4px 0;">' + PERMISSION_CODE_MESSAGES.noPermissions + '</div>'
+                ? '<div class="sa-soft-empty">' + PERMISSION_CODE_MESSAGES.noPermissions + '</div>'
                 : permItems.map(i => `
                     <div class="sa-group-item-row">
                         <span class="sa-group-item-name">\${i.displayName}</span>
@@ -376,7 +376,7 @@ function loadDetail() {
                     </div>`).join('');
 
             document.getElementById('groupItemList').innerHTML = groupItems.length === 0
-                ? '<div style="color:#94a3b8;padding:4px 0;">' + PERMISSION_CODE_MESSAGES.noGroups + '</div>'
+                ? '<div class="sa-soft-empty">' + PERMISSION_CODE_MESSAGES.noGroups + '</div>'
                 : groupItems.map(g => `
                     <div class="sa-group-item-row">
                         <span class="sa-group-item-name">\${g.displayName}</span>
@@ -388,7 +388,7 @@ function loadDetail() {
 
             var admins = data.admins || [];
             document.getElementById('adminList').innerHTML = admins.length === 0
-                ? '<div style="color:#94a3b8;padding:4px 0;">' + PERMISSION_CODE_MESSAGES.noAdmins + '</div>'
+                ? '<div class="sa-soft-empty">' + PERMISSION_CODE_MESSAGES.noAdmins + '</div>'
                 : admins.map(m => `
                     <div class="sa-group-item-row">
                         <span class="sa-group-item-name">\${m.nickname}</span>
@@ -466,17 +466,17 @@ function searchAdminsToAssign() {
         .then(data => {
             var users = data.users || [];
             if (users.length === 0) {
-                document.getElementById('adminSearchResult').innerHTML = '<div style="color:#94a3b8;font-size:13px;padding:4px 0;">' + PERMISSION_CODE_MESSAGES.searchEmpty + '</div>';
+                document.getElementById('adminSearchResult').innerHTML = '<div class="sa-soft-empty">' + PERMISSION_CODE_MESSAGES.searchEmpty + '</div>';
                 return;
             }
             document.getElementById('adminSearchResult').innerHTML =
-                '<div style="border:1px solid #2d3748;border-radius:6px;overflow:hidden;">' +
+                '<div class="sa-dynamic-list">' +
                 users.map(u => `
-                    <div class="sa-group-item-row" style="cursor:pointer;" data-uid="\${u.userIdx}"
+                    <div class="sa-group-item-row sa-clickable-row" data-uid="\${u.userIdx}"
                          onclick="assignCodeToAdmin(this.getAttribute('data-uid'), '\${u.nickname}')">
                         <span class="sa-group-item-name">\${u.nickname}</span>
                         <span class="sa-group-item-code">\${u.userId}</span>
-                        <span style="font-size:12px;color:#6366f1;">\${PERMISSION_CODE_MESSAGES.assignAction}</span>
+                        <span class="sa-action-link">\${PERMISSION_CODE_MESSAGES.assignAction}</span>
                     </div>`).join('') + '</div>';
         });
 }

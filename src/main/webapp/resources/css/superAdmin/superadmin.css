@@ -44,8 +44,12 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-member-id,
 .sa-muted-text { color:#94a3b8; font-size:12px; }
 .sa-empty-cell { text-align:center; padding:40px; color:#94a3b8; }
+.sa-empty-cell.is-small { padding:16px; }
 .sa-empty-cell.is-compact { padding:20px; }
 .sa-empty-cell.is-danger { color:#ef4444; }
+.sa-empty-cell-large { padding:60px; }
+.sa-soft-empty { color:#94a3b8; font-size:13px; padding:4px 0; }
+.sa-soft-empty.is-padded { padding:8px 0; }
 .sa-table-card-body { padding:0; }
 .sa-check-head { width:40px; text-align:center; }
 .sa-check-cell { text-align:center; }
@@ -67,6 +71,16 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-required { color:#ef4444; }
 .sa-uppercase-input { text-transform:uppercase; }
 .sa-group-main { flex:1; min-width:0; }
+.sa-modal-list-block { margin-bottom:16px; }
+.sa-modal-list-block.is-short { margin-bottom:8px; }
+.sa-modal-result { margin-bottom:12px; }
+.sa-modal-inline-control { display:flex; align-items:center; gap:8px; margin-bottom:20px; }
+.sa-modal-inline-control.is-tight { margin-bottom:10px; }
+.sa-modal-inline-control .adm-input,
+.sa-modal-inline-control .adm-select { flex:1; min-width:0; }
+.sa-dynamic-list { border:1px solid #2d3748; border-radius:6px; overflow:hidden; }
+.sa-clickable-row { cursor:pointer; }
+.sa-action-link { color:#6366f1; font-size:12px; }
 .sa-members-filter-card { margin-bottom:20px; }
 .sa-members-filterbar { align-items:flex-end; gap:10px; }
 .sa-members-keyword-field { flex:1 1 320px; min-width:220px; }
@@ -106,7 +120,11 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
     .sa-modal-search-row .adm-btn { width:100%; }
     .sa-members-filter-actions,
     .sa-modal-search-row,
+    .sa-modal-inline-control,
+    .sa-policy-head-row,
     .sa-row-actions { align-items:stretch; flex-direction:column; }
+    .sa-modal-inline-control .adm-btn,
+    .sa-policy-head-row .adm-btn,
     .sa-row-actions .adm-btn { width:100%; }
 }
 
@@ -477,6 +495,8 @@ body.sa-light .sa-mode-toggle button.active { background:#6366f1; color:#fff; }
 /* sa- 요소 */
 body.sa-light .sa-detail-label      { color:#64748b; }
 body.sa-light .sa-section-title     { color:#94a3b8; }
+body.sa-light .sa-policy-head-title { color:#1e293b; }
+body.sa-light .sa-dynamic-list      { border-color:#e2e8f0; }
 body.sa-light .sa-perm-item         { border-color:#e2e8f0; }
 body.sa-light .sa-perm-item:hover   { background:#f8fafc; }
 body.sa-light .sa-salary-table thead th { background:#f8fafc; color:#64748b; border-bottom-color:#e2e8f0; }

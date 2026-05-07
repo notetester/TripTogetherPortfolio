@@ -171,22 +171,22 @@
         </div>
         <div class="adm-modal-body">
             <div class="sa-section-title">${msg_superAdmin_permissions_modal_groups}</div>
-            <div id="groupList" style="margin-bottom:16px;">
-                <div style="text-align:center;padding:16px;color:#94a3b8;">${msg_superAdmin_permissions_loading}</div>
+            <div id="groupList" class="sa-modal-list-block">
+                <div class="sa-empty-cell is-small">${msg_superAdmin_permissions_loading}</div>
             </div>
             <div class="sa-section-title">${msg_superAdmin_permissions_modal_templates}</div>
-            <div id="codeList" style="margin-bottom:16px;">
-                <div style="text-align:center;padding:16px;color:#94a3b8;">${msg_superAdmin_permissions_loading}</div>
+            <div id="codeList" class="sa-modal-list-block">
+                <div class="sa-empty-cell is-small">${msg_superAdmin_permissions_loading}</div>
             </div>
             <div class="sa-section-title">${msg_superAdmin_permissions_modal_directAdmins}</div>
-            <div style="display:flex;gap:8px;margin-bottom:10px;">
-                <input class="adm-input" id="adminSearchInput" type="text" placeholder="${msg_superAdmin_permissions_modal_adminSearchPlaceholder}" style="flex:1;"
+            <div class="sa-modal-inline-control is-tight">
+                <input class="adm-input" id="adminSearchInput" type="text" placeholder="${msg_superAdmin_permissions_modal_adminSearchPlaceholder}"
                        onkeydown="if(event.key==='Enter') searchAdminsToGrant()">
                 <button class="adm-btn adm-btn-primary" onclick="searchAdminsToGrant()">${msg_superAdmin_permissions_searchButton}</button>
             </div>
-            <div id="adminSearchResult" style="margin-bottom:12px;"></div>
+            <div id="adminSearchResult" class="sa-modal-result"></div>
             <div id="adminList">
-                <div style="text-align:center;padding:16px;color:#94a3b8;">${msg_superAdmin_permissions_loading}</div>
+                <div class="sa-empty-cell is-small">${msg_superAdmin_permissions_loading}</div>
             </div>
         </div>
         <div class="adm-modal-foot">
@@ -307,7 +307,7 @@ function loadDetail() {
             var admins = data.admins || [];
 
             document.getElementById('groupList').innerHTML = groups.length === 0
-                ? '<div style="color:#94a3b8;padding:4px 0;">' + PERMISSION_MESSAGES.noGroups + '</div>'
+                ? '<div class="sa-soft-empty">' + PERMISSION_MESSAGES.noGroups + '</div>'
                 : groups.map(g => `
                     <div class="sa-group-item-row">
                         <span class="sa-group-item-name">\${g.displayName}</span>
@@ -315,7 +315,7 @@ function loadDetail() {
                     </div>`).join('');
 
             document.getElementById('codeList').innerHTML = codes.length === 0
-                ? '<div style="color:#94a3b8;padding:4px 0;">' + PERMISSION_MESSAGES.noTemplates + '</div>'
+                ? '<div class="sa-soft-empty">' + PERMISSION_MESSAGES.noTemplates + '</div>'
                 : codes.map(c => `
                     <div class="sa-group-item-row">
                         <span class="sa-group-item-name">\${c.displayName}</span>
@@ -323,7 +323,7 @@ function loadDetail() {
                     </div>`).join('');
 
             document.getElementById('adminList').innerHTML = admins.length === 0
-                ? '<div style="color:#94a3b8;padding:4px 0;">' + PERMISSION_MESSAGES.noAdmins + '</div>'
+                ? '<div class="sa-soft-empty">' + PERMISSION_MESSAGES.noAdmins + '</div>'
                 : admins.map(m => `
                     <div class="sa-group-item-row">
                         <span class="sa-group-item-name">\${m.nickname}</span>
@@ -343,17 +343,17 @@ function searchAdminsToGrant() {
         .then(data => {
             var users = data.users || [];
             if (users.length === 0) {
-                document.getElementById('adminSearchResult').innerHTML = '<div style="color:#94a3b8;font-size:13px;padding:4px 0;">' + PERMISSION_MESSAGES.searchEmpty + '</div>';
+                document.getElementById('adminSearchResult').innerHTML = '<div class="sa-soft-empty">' + PERMISSION_MESSAGES.searchEmpty + '</div>';
                 return;
             }
             document.getElementById('adminSearchResult').innerHTML =
-                '<div style="border:1px solid #2d3748;border-radius:6px;overflow:hidden;">' +
+                '<div class="sa-dynamic-list">' +
                 users.map(u => `
-                    <div class="sa-group-item-row" style="cursor:pointer;" data-uid="\${u.userIdx}"
+                    <div class="sa-group-item-row sa-clickable-row" data-uid="\${u.userIdx}"
                          onclick="grantToAdmin(this.getAttribute('data-uid'), '\${u.nickname}')">
                         <span class="sa-group-item-name">\${u.nickname}</span>
                         <span class="sa-group-item-code">\${u.userId}</span>
-                        <span style="font-size:12px;color:#6366f1;">\${PERMISSION_MESSAGES.grantAction}</span>
+                        <span class="sa-action-link">\${PERMISSION_MESSAGES.grantAction}</span>
                     </div>`).join('') + '</div>';
         });
 }

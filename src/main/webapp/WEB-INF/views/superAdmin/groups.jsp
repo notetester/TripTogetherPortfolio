@@ -183,12 +183,12 @@
         </div>
         <div class="adm-modal-body">
             <div class="sa-section-title">${msg_superAdmin_groups_modal_includedPermissions}</div>
-            <div id="groupItemList" style="margin-bottom:16px;">
-                <div style="text-align:center;padding:20px;color:#94a3b8;">${msg_superAdmin_groups_loading}</div>
+            <div id="groupItemList" class="sa-modal-list-block">
+                <div class="sa-empty-cell is-compact">${msg_superAdmin_groups_loading}</div>
             </div>
             <div class="sa-section-title">${msg_superAdmin_groups_modal_addPermission}</div>
-            <div style="display:flex;gap:8px;margin-bottom:20px;">
-                <select class="adm-select" id="addPermSelect" style="flex:1;">
+            <div class="sa-modal-inline-control">
+                <select class="adm-select" id="addPermSelect">
                     <option value="">${msg_superAdmin_groups_modal_permissionSelectPlaceholder}</option>
                     <c:forEach var="p" items="${permissionPolicies}">
                         <option value="${p.permissionCode}">${p.displayName} (${p.permissionCode})</option>
@@ -197,14 +197,14 @@
                 <button class="adm-btn adm-btn-primary" onclick="addItem()">${msg_superAdmin_groups_action_add}</button>
             </div>
             <div class="sa-section-title">${msg_superAdmin_groups_modal_members}</div>
-            <div style="display:flex;gap:8px;margin-bottom:10px;">
-                <input class="adm-input" id="memberSearchInput" type="text" placeholder="${msg_superAdmin_groups_modal_memberSearchPlaceholder}" style="flex:1;"
+            <div class="sa-modal-inline-control is-tight">
+                <input class="adm-input" id="memberSearchInput" type="text" placeholder="${msg_superAdmin_groups_modal_memberSearchPlaceholder}"
                        onkeydown="if(event.key==='Enter') searchMembersToAdd()">
                 <button class="adm-btn adm-btn-primary" onclick="searchMembersToAdd()">${msg_superAdmin_groups_searchButton}</button>
             </div>
-            <div id="memberSearchResult" style="margin-bottom:12px;"></div>
+            <div id="memberSearchResult" class="sa-modal-result"></div>
             <div id="groupMemberList">
-                <div style="text-align:center;padding:20px;color:#94a3b8;">${msg_superAdmin_groups_loading}</div>
+                <div class="sa-empty-cell is-compact">${msg_superAdmin_groups_loading}</div>
             </div>
         </div>
         <div class="adm-modal-foot">
@@ -308,13 +308,13 @@ function openDetailModal(groupCode, groupName) {
 }
 
 function loadGroupItems() {
-    document.getElementById('groupItemList').innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;">' + GROUP_MESSAGES.loading + '</div>';
+    document.getElementById('groupItemList').innerHTML = '<div class="sa-empty-cell is-compact">' + GROUP_MESSAGES.loading + '</div>';
     fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(currentGroupCode))
         .then(r => r.json())
         .then(data => {
             var items = data.items || [];
             if (items.length === 0) {
-                document.getElementById('groupItemList').innerHTML = '<div style="color:#94a3b8;padding:8px 0;">' + GROUP_MESSAGES.noPermissions + '</div>';
+                document.getElementById('groupItemList').innerHTML = '<div class="sa-soft-empty is-padded">' + GROUP_MESSAGES.noPermissions + '</div>';
             } else {
                 document.getElementById('groupItemList').innerHTML = items.map(i => `
                     <div class="sa-group-item-row">
@@ -334,12 +334,12 @@ function loadGroupItems() {
 }
 
 function loadGroupMembers() {
-    document.getElementById('groupMemberList').innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;">' + GROUP_MESSAGES.loading + '</div>';
+    document.getElementById('groupMemberList').innerHTML = '<div class="sa-empty-cell is-compact">' + GROUP_MESSAGES.loading + '</div>';
     fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(currentGroupCode) + '/members')
         .then(r => r.json())
         .then(data => {
             if (!data.members || data.members.length === 0) {
-                document.getElementById('groupMemberList').innerHTML = '<div style="color:#94a3b8;padding:8px 0;">' + GROUP_MESSAGES.noMembers + '</div>';
+                document.getElementById('groupMemberList').innerHTML = '<div class="sa-soft-empty is-padded">' + GROUP_MESSAGES.noMembers + '</div>';
                 return;
             }
             document.getElementById('groupMemberList').innerHTML = data.members.map(m => `
@@ -361,17 +361,17 @@ function searchMembersToAdd() {
         .then(data => {
             var users = data.users || [];
             if (users.length === 0) {
-                document.getElementById('memberSearchResult').innerHTML = '<div style="color:#94a3b8;font-size:13px;padding:4px 0;">' + GROUP_MESSAGES.searchEmpty + '</div>';
+                document.getElementById('memberSearchResult').innerHTML = '<div class="sa-soft-empty">' + GROUP_MESSAGES.searchEmpty + '</div>';
                 return;
             }
             document.getElementById('memberSearchResult').innerHTML =
-                '<div style="border:1px solid #2d3748;border-radius:6px;overflow:hidden;">' +
+                '<div class="sa-dynamic-list">' +
                 users.map(u => `
-                    <div class="sa-group-item-row" style="cursor:pointer;" data-uid="\${u.userIdx}"
+                    <div class="sa-group-item-row sa-clickable-row" data-uid="\${u.userIdx}"
                          onclick="addMemberToGroup(this.getAttribute('data-uid'), '\${u.nickname}')">
                         <span class="sa-group-item-name">\${u.nickname}</span>
                         <span class="sa-group-item-code">\${u.userId}</span>
-                        <span style="font-size:12px;color:#6366f1;">\${GROUP_MESSAGES.addAction}</span>
+                        <span class="sa-action-link">\${GROUP_MESSAGES.addAction}</span>
                     </div>`).join('') + '</div>';
         });
 }
