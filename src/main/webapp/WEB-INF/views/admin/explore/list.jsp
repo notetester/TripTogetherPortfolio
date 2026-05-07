@@ -40,7 +40,6 @@
 <spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_explore_list_title" code="admin.explore.list.title"/>
-<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
 <spring:message var="msg_admin_explore_action_bulkDelete" code="admin.explore.action.bulkDelete"/>
 <spring:message var="msg_admin_common_id" code="admin.common.id"/>
 <spring:message var="msg_admin_explore_table_image" code="admin.explore.table.image"/>
@@ -58,9 +57,13 @@
 <spring:message var="msg_admin_common_edit" code="admin.common.edit"/>
 <spring:message var="msg_admin_common_delete" code="admin.common.delete"/>
 <spring:message var="msg_admin_explore_list_empty" code="admin.explore.list.empty"/>
-<spring:message var="msg_admin_common_previous" code="admin.common.previous"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
 <spring:message var="msg_admin_common_next" code="admin.common.next"/>
-<spring:message var="msg_admin_common_pageStatus" code="admin.common.pageStatus"/>
+<spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
+<spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100"/>
+<spring:message var="msg_admin_explore_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${total}"/>
+<spring:message var="msg_admin_explore_currentCountDisplay" code="admin.common.currentCountFormat" arguments="${fn:length(list)}"/>
 <c:set var="activeMenu" value="explore"/>
 
 
@@ -107,6 +110,7 @@
     <div class="adm-card adm-explore-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/explore">
+                <input type="hidden" name="size" value="${search.size}"/>
                 <div class="adm-filter-bar adm-explore-filterbar">
                     <div>
                         <div class="adm-filter-label">${msg_admin_explore_filter_status}</div>
@@ -150,18 +154,25 @@
     </div>
 
     <div class="adm-card adm-explore-list-card">
-        <div class="adm-card-head">
-            <div class="adm-explore-list-title">
-                <div class="adm-card-title">${msg_admin_explore_list_title}</div>
-                <div class="adm-muted-inline">${msg_admin_common_totalCount}</div>
+        <div class="adm-card-head adm-explore-list-head">
+            <div class="adm-card-title">
+                ${msg_admin_explore_list_title}
+                <span class="adm-section-total-inline">${msg_admin_explore_totalCountDisplay}</span>
             </div>
-            <div id="bulkBar" class="adm-explore-bulk-bar" hidden>
-                <span id="bulkCount" class="adm-muted-inline"></span>
-                <button class="adm-btn adm-btn-ghost adm-explore-danger-btn" type="button" onclick="bulkAction('delete')">${msg_admin_explore_action_bulkDelete}</button>
+            <div class="adm-explore-list-controls">
+                <select class="adm-select adm-explore-size-select" onchange="goExplorePageSize(this.value)">
+                    <option value="20" ${search.size == 20 ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
+                    <option value="50" ${search.size == 50 ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
+                    <option value="100" ${search.size == 100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
+                </select>
+                <div id="bulkBar" class="adm-explore-bulk-bar" hidden>
+                    <span id="bulkCount" class="adm-muted-inline"></span>
+                    <button class="adm-btn adm-btn-ghost adm-explore-danger-btn" type="button" onclick="bulkAction('delete')">${msg_admin_explore_action_bulkDelete}</button>
+                </div>
             </div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table adm-explore-table adm-explore-spots-table">
+            <table class="adm-table adm-explore-table adm-explore-spots-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-explore-col-check">
                     <col class="adm-explore-col-id">
@@ -192,11 +203,30 @@
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="spot">
+                    <c:url var="spotDetailUrl" value="/admin/explore/spots/${spot.spotIdx}">
+                        <c:param name="source" value="spots"/>
+                        <c:param name="page" value="${paging.currentPage}"/>
+                        <c:param name="size" value="${search.size}"/>
+                        <c:param name="status" value="${search.status}"/>
+                        <c:param name="sortBy" value="${search.sortBy}"/>
+                        <c:param name="searchType" value="${search.searchType}"/>
+                        <c:param name="keyword" value="${search.keyword}"/>
+                    </c:url>
+                    <c:url var="spotEditUrl" value="/admin/explore/spots/${spot.spotIdx}">
+                        <c:param name="source" value="spots"/>
+                        <c:param name="page" value="${paging.currentPage}"/>
+                        <c:param name="size" value="${search.size}"/>
+                        <c:param name="status" value="${search.status}"/>
+                        <c:param name="sortBy" value="${search.sortBy}"/>
+                        <c:param name="searchType" value="${search.searchType}"/>
+                        <c:param name="keyword" value="${search.keyword}"/>
+                        <c:param name="edit" value="true"/>
+                    </c:url>
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${spot.spotIdx}"></td>
                         <td class="adm-muted-inline">
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}">#${spot.spotIdx}</a>
+                               href="${spotDetailUrl}">#${spot.spotIdx}</a>
                         </td>
                         <td>
                             <c:choose>
@@ -212,16 +242,17 @@
                         </td>
                         <td>
                             <c:url var="spotReviewsManageUrl" value="/admin/explore/reviews">
+                                <c:param name="size" value="${search.size}"/>
                                 <c:param name="searchType" value="name"/>
                                 <c:param name="keyword" value="${spot.name}"/>
                             </c:url>
-                            <a href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}" class="adm-link-title adm-explore-spot-title">${fn:escapeXml(spot.name)}</a>
+                            <a href="${spotDetailUrl}" class="adm-link-title adm-explore-spot-title">${fn:escapeXml(spot.name)}</a>
                             <a class="adm-cell-link adm-cell-link--inline adm-cell-ellipsis"
-                               href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}"
+                               href="${spotDetailUrl}"
                                title="${fn:escapeXml(spot.address)}">${fn:escapeXml(spot.address)}</a>
                             <div class="adm-inline-actions">
                                 <a href="${pageContext.request.contextPath}/detail/${spot.spotIdx}" target="_blank" class="adm-inline-chip">${msg_admin_explore_detail_userView}</a>
-                                <a href="${pageContext.request.contextPath}${spotReviewsManageUrl}" class="adm-inline-chip">${msg_admin_explore_detail_reviewsManageAll}</a>
+                                <a href="${spotReviewsManageUrl}" class="adm-inline-chip">${msg_admin_explore_detail_reviewsManageAll}</a>
                             </div>
                         </td>
                         <td>
@@ -240,26 +271,27 @@
                         </td>
                         <td class="adm-muted-inline">
                             <c:url var="spotRegionSearchUrl" value="/admin/explore">
+                                <c:param name="size" value="${search.size}"/>
                                 <c:param name="searchType" value="region"/>
                                 <c:param name="keyword" value="${spot.region}"/>
                             </c:url>
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}${spotRegionSearchUrl}">${fn:escapeXml(spot.region)}</a>
+                               href="${spotRegionSearchUrl}">${fn:escapeXml(spot.region)}</a>
                         </td>
                         <td class="adm-explore-rating-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}${spotReviewsManageUrl}"><fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/></a>
+                               href="${spotReviewsManageUrl}"><fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/></a>
                         </td>
                         <td class="adm-muted-inline">
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}${spotReviewsManageUrl}">${spot.reviewCount}</a>
+                               href="${spotReviewsManageUrl}">${spot.reviewCount}</a>
                         </td>
                         <td class="adm-muted-inline">
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}">${spot.likeCount}</a>
+                               href="${spotDetailUrl}">${spot.likeCount}</a>
                         </td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}?edit=true"
+                            <a href="${spotEditUrl}"
                                class="adm-cell-link adm-cell-link--inline status-badge ${spot.displayStatus}">
                                 <c:choose>
                                     <c:when test="${spot.displayStatus == 'ACTIVE'}">${msg_admin_explore_status_active}</c:when>
@@ -269,7 +301,7 @@
                         </td>
                         <td>
                             <div class="adm-row-actions">
-                                <a class="adm-row-btn detail" href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}?edit=true">${msg_admin_common_edit}</a>
+                                <a class="adm-row-btn detail" href="${spotEditUrl}">${msg_admin_common_edit}</a>
                                 <c:if test="${spot.displayStatus != 'DELETED'}">
                                     <div class="action-menu-wrap">
                                         <button class="adm-row-btn detail adm-row-btn-more"
@@ -295,20 +327,17 @@
                 </tbody>
             </table>
         </div>
-        <c:if test="${paging.totalPage > 1}">
-            <div class="adm-paging">
-                <c:if test="${paging.prev}">
-                    <button class="adm-page-btn" type="button" onclick="goPage(${paging.startPage - 1})">${msg_admin_common_previous}</button>
-                </c:if>
-                <c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="pg">
-                    <button class="adm-page-btn ${pg == paging.currentPage ? 'active' : ''}" type="button" onclick="goPage(${pg})">${pg}</button>
-                </c:forEach>
-                <c:if test="${paging.next}">
-                    <button class="adm-page-btn" type="button" onclick="goPage(${paging.endPage + 1})">${msg_admin_common_next}</button>
-                </c:if>
-                <span class="adm-page-info">${msg_admin_common_pageStatus}</span>
+        <c:set var="exploreTotalPage" value="${paging.totalPage < 1 ? 1 : paging.totalPage}"/>
+        <div class="adm-local-pagination adm-explore-local-pagination">
+            <div class="adm-local-page-info">
+                ${msg_admin_explore_totalCountDisplay} / ${msg_admin_explore_currentCountDisplay}
             </div>
-        </c:if>
+            <div class="adm-local-page-actions">
+                <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage <= 1 ? 'disabled' : ''} onclick="goPage(${paging.currentPage - 1})">${msg_admin_common_prev}</button>
+                <span class="adm-local-page-state">${paging.currentPage} / ${exploreTotalPage}</span>
+                <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage >= exploreTotalPage ? 'disabled' : ''} onclick="goPage(${paging.currentPage + 1})">${msg_admin_common_next}</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -396,6 +425,13 @@ function bulkAction(action) {
 function goPage(page) {
     var params = new URLSearchParams(window.location.search);
     params.set('page', page);
+    location.href = ctx + '/admin/explore?' + params.toString();
+}
+
+function goExplorePageSize(size) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('size', size);
+    params.set('page', '1');
     location.href = ctx + '/admin/explore?' + params.toString();
 }
 </script>

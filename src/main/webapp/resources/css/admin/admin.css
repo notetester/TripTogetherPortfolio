@@ -9751,11 +9751,29 @@ body.sa-light .adm-community-side-mono .adm-inline-link {
     display: none;
 }
 
-.adm-explore-list-title {
-    display: flex;
+.adm-explore-list-card {
+    overflow: visible;
+}
+
+.adm-explore-list-head {
     align-items: center;
-    gap: 12px;
+}
+
+.adm-explore-list-controls {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-left: auto;
     min-width: 0;
+}
+
+.adm-explore-size-select {
+    min-width: 112px;
+}
+
+.adm-explore-local-pagination {
+    border-top: 1px solid rgba(148, 163, 184, .14);
 }
 
 .adm-explore-danger-btn {

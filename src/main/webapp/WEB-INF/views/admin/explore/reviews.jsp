@@ -31,7 +31,6 @@
 <spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_explore_reviews_listTitle" code="admin.explore.reviews.listTitle"/>
-<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
 <spring:message var="msg_admin_explore_reviews_action_bulkBlock" code="admin.explore.reviews.action.bulkBlock"/>
 <spring:message var="msg_admin_explore_detail_reviewId" code="admin.explore.detail.reviewId"/>
 <spring:message var="msg_admin_explore_reviews_table_spot" code="admin.explore.reviews.table.spot"/>
@@ -46,9 +45,13 @@
 <spring:message var="msg_admin_explore_reviews_action_block" code="admin.explore.reviews.action.block"/>
 <spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
 <spring:message var="msg_admin_explore_reviews_empty" code="admin.explore.reviews.empty"/>
-<spring:message var="msg_admin_common_previous" code="admin.common.previous"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
 <spring:message var="msg_admin_common_next" code="admin.common.next"/>
-<spring:message var="msg_admin_common_pageStatus" code="admin.common.pageStatus"/>
+<spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
+<spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100"/>
+<spring:message var="msg_admin_explore_reviews_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${total}"/>
+<spring:message var="msg_admin_explore_reviews_currentCountDisplay" code="admin.common.currentCountFormat" arguments="${fn:length(list)}"/>
 <c:set var="activeMenu" value="explore"/>
 
 
@@ -81,6 +84,7 @@
     <div class="adm-card adm-explore-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/explore/reviews">
+                <input type="hidden" name="size" value="${search.size}"/>
                 <div class="adm-filter-bar adm-explore-filterbar adm-explore-review-filterbar">
                     <div>
                         <div class="adm-filter-label">${msg_admin_explore_filter_status}</div>
@@ -112,18 +116,25 @@
     </div>
 
     <div class="adm-card adm-explore-list-card">
-        <div class="adm-card-head">
-            <div class="adm-explore-list-title">
-                <div class="adm-card-title">${msg_admin_explore_reviews_listTitle}</div>
-                <div class="adm-muted-inline">${msg_admin_common_totalCount}</div>
+        <div class="adm-card-head adm-explore-list-head">
+            <div class="adm-card-title">
+                ${msg_admin_explore_reviews_listTitle}
+                <span class="adm-section-total-inline">${msg_admin_explore_reviews_totalCountDisplay}</span>
             </div>
-            <div id="bulkBar" class="adm-explore-bulk-bar" hidden>
-                <span id="bulkCount" class="adm-muted-inline"></span>
-                <button class="adm-btn adm-btn-ghost adm-explore-danger-btn" type="button" onclick="bulkAction('block')">${msg_admin_explore_reviews_action_bulkBlock}</button>
+            <div class="adm-explore-list-controls">
+                <select class="adm-select adm-explore-size-select" onchange="goExploreReviewPageSize(this.value)">
+                    <option value="20" ${search.size == 20 ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
+                    <option value="50" ${search.size == 50 ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
+                    <option value="100" ${search.size == 100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
+                </select>
+                <div id="bulkBar" class="adm-explore-bulk-bar" hidden>
+                    <span id="bulkCount" class="adm-muted-inline"></span>
+                    <button class="adm-btn adm-btn-ghost adm-explore-danger-btn" type="button" onclick="bulkAction('block')">${msg_admin_explore_reviews_action_bulkBlock}</button>
+                </div>
             </div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table adm-explore-table adm-explore-reviews-table">
+            <table class="adm-table adm-explore-table adm-explore-reviews-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-explore-col-check">
                     <col class="adm-explore-col-id">
@@ -150,11 +161,19 @@
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="review">
+                    <c:url var="reviewSpotDetailUrl" value="/admin/explore/spots/${review.spotIdx}">
+                        <c:param name="source" value="reviews"/>
+                        <c:param name="page" value="${paging.currentPage}"/>
+                        <c:param name="size" value="${search.size}"/>
+                        <c:param name="reviewStatus" value="${search.reviewStatus}"/>
+                        <c:param name="searchType" value="${search.searchType}"/>
+                        <c:param name="keyword" value="${search.keyword}"/>
+                    </c:url>
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${review.reviewIdx}"></td>
                         <td class="adm-muted-inline">#${review.reviewIdx}</td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}" class="adm-cell-link">
+                            <a href="${reviewSpotDetailUrl}" class="adm-cell-link">
                                 <span class="adm-explore-spot-name">${fn:escapeXml(review.spotName)}</span>
                                 <span class="adm-cell-link-note">${msg_admin_explore_detail_userView}</span>
                             </a>
@@ -229,7 +248,7 @@
                                 <c:if test="${review.displayStatus != 'BLOCKED'}">
                                     <button class="adm-row-btn danger" type="button" data-id="${review.reviewIdx}" onclick="actionReview(this, 'block')">${msg_admin_explore_reviews_action_block}</button>
                                 </c:if>
-                                <a class="adm-row-btn detail" href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}">${msg_admin_common_viewDetail}</a>
+                                <a class="adm-row-btn detail" href="${reviewSpotDetailUrl}">${msg_admin_common_viewDetail}</a>
                             </div>
                         </td>
                     </tr>
@@ -240,14 +259,17 @@
                 </tbody>
             </table>
         </div>
-        <c:if test="${paging.totalPage > 1}">
-            <div class="adm-paging">
-                <c:if test="${paging.prev}"><button class="adm-page-btn" type="button" onclick="goPage(${paging.startPage - 1})">${msg_admin_common_previous}</button></c:if>
-                <c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="pg"><button class="adm-page-btn ${pg == paging.currentPage ? 'active' : ''}" type="button" onclick="goPage(${pg})">${pg}</button></c:forEach>
-                <c:if test="${paging.next}"><button class="adm-page-btn" type="button" onclick="goPage(${paging.endPage + 1})">${msg_admin_common_next}</button></c:if>
-                <span class="adm-page-info">${msg_admin_common_pageStatus}</span>
+        <c:set var="exploreReviewTotalPage" value="${paging.totalPage < 1 ? 1 : paging.totalPage}"/>
+        <div class="adm-local-pagination adm-explore-local-pagination">
+            <div class="adm-local-page-info">
+                ${msg_admin_explore_reviews_totalCountDisplay} / ${msg_admin_explore_reviews_currentCountDisplay}
             </div>
-        </c:if>
+            <div class="adm-local-page-actions">
+                <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage <= 1 ? 'disabled' : ''} onclick="goPage(${paging.currentPage - 1})">${msg_admin_common_prev}</button>
+                <span class="adm-local-page-state">${paging.currentPage} / ${exploreReviewTotalPage}</span>
+                <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage >= exploreReviewTotalPage ? 'disabled' : ''} onclick="goPage(${paging.currentPage + 1})">${msg_admin_common_next}</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -349,6 +371,13 @@ function bulkAction(action) {
 function goPage(page) {
     var params = new URLSearchParams(window.location.search);
     params.set('page', page);
+    location.href = ctx + '/admin/explore/reviews?' + params.toString();
+}
+
+function goExploreReviewPageSize(size) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('size', size);
+    params.set('page', '1');
     location.href = ctx + '/admin/explore/reviews?' + params.toString();
 }
 </script>
