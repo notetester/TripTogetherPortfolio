@@ -6,9 +6,9 @@
 
 
 <div class="adm-content">
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-block-card-spaced">
         <div class="adm-card-body">
-            <div class="adm-kpi-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));">
+            <div class="adm-kpi-grid adm-block-kpi-grid">
                 <c:set var="kpiPct1" value="${totalUserCount > 0 ? activeUserBlockCount * 100 / totalUserCount : 0}"/>
                 <c:if test="${kpiPct1 > 100}"><c:set var="kpiPct1" value="100"/></c:if>
                 <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('user-blocks');renderSectionByMode('user-blocks');">
@@ -69,51 +69,51 @@
         </div>
     </div>
 
-    <div class="adm-card" style="margin-bottom:20px;">
-        <div class="adm-card-body" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+    <div class="adm-card adm-block-card-spaced">
+        <div class="adm-card-body adm-block-action-card-body">
             <div>
-                <div style="font-weight:800;color:#0f172a;">${msg_admin_blocks_runtimeCache_title}</div>
-                <div style="font-size:12px;color:#64748b;margin-top:4px;">${msg_admin_blocks_runtimeCache_desc}</div>
+                <div class="adm-block-action-title">${msg_admin_blocks_runtimeCache_title}</div>
+                <div class="adm-block-action-desc">${msg_admin_blocks_runtimeCache_desc}</div>
             </div>
             <button type="button" class="adm-btn adm-btn-primary js-sync-block-cache">${msg_admin_blocks_runtimeCache_sync}</button>
         </div>
     </div>
 
 
-    <div class="adm-card" style="margin-bottom:20px;">
-        <div class="adm-card-body" style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-            <div style="min-width:260px;flex:1;">
-                <div style="font-weight:800;color:#0f172a;">${msg_admin_blocks_policyFeed_title}</div>
-                <div style="font-size:12px;color:#64748b;margin-top:4px;">${msg_admin_blocks_policyFeed_desc}</div>
+    <div class="adm-card adm-block-card-spaced">
+        <div class="adm-card-body adm-block-action-card-body is-bottom">
+            <div class="adm-block-feed-main">
+                <div class="adm-block-action-title">${msg_admin_blocks_policyFeed_title}</div>
+                <div class="adm-block-action-desc">${msg_admin_blocks_policyFeed_desc}</div>
             </div>
-            <form id="policyFeedUploadForm" enctype="multipart/form-data" style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
-                <label style="font-size:12px;color:#475569;">
+            <form id="policyFeedUploadForm" enctype="multipart/form-data" class="adm-block-feed-form">
+                <label class="adm-block-field">
                     ${msg_admin_blocks_policyFeed_sourceName}
-                    <input class="adm-input" type="text" name="sourceName" value="MANUAL_UPLOAD_FEED" style="min-width:180px;">
+                    <input class="adm-input adm-block-source-input" type="text" name="sourceName" value="MANUAL_UPLOAD_FEED">
                 </label>
-                <label style="font-size:12px;color:#475569;">
+                <label class="adm-block-field">
                     ${msg_admin_context_ruleAction}
                     <select class="adm-select" name="defaultRuleAction">
                         <option value="BLOCK">${msg_admin_context_ruleAction_block}</option>
                         <option value="ALLOW">${msg_admin_context_ruleAction_allow}</option>
                     </select>
                 </label>
-                <label style="font-size:12px;color:#475569;">
+                <label class="adm-block-field">
                     ${msg_admin_blocks_policyFeed_file}
                     <input class="adm-input" type="file" name="file" accept=".csv,.json" required>
                 </label>
                 <button type="submit" class="adm-btn adm-btn-primary">${msg_admin_blocks_policyFeed_upload}</button>
             </form>
-            <div id="policyFeedUploadResult" style="width:100%;font-size:12px;color:#475569;"></div>
+            <div id="policyFeedUploadResult" class="adm-block-upload-result"></div>
         </div>
     </div>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-block-card-spaced">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/blocks">
                 <input type="hidden" name="tab" id="blockActiveTabInput" value="${fn:escapeXml(param.tab)}">
                 <div class="adm-filter-bar">
-                    <div style="flex:1;min-width:260px;">
+                    <div class="adm-block-filter-main">
                         <div class="adm-filter-label">${msg_admin_blocks_globalSearch}</div>
                         <div class="adm-search-box">
                             <span class="adm-search-ico">🔍</span>
@@ -197,7 +197,7 @@
                             </c:forEach>
                         </select>
                     </div>
-                    <div style="display:flex;align-items:flex-end;gap:8px;">
+                    <div class="adm-block-filter-actions">
                         <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_apply}</button>
                         <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/blocks" onclick="return resetBlockFilters();">${msg_admin_common_reset}</a>
                     </div>
@@ -206,7 +206,7 @@
         </div>
     </div>
 
-    <div class="adm-tab-row adm-block-tab-row" id="blockTabBar" style="margin-bottom:20px;">
+    <div class="adm-tab-row adm-block-tab-row adm-block-card-spaced" id="blockTabBar">
         <button type="button" class="adm-tab js-block-tab" data-tab="dashboard">${msg_admin_layout_menu_dashboard}</button>
         <button type="button" class="adm-tab js-block-tab" data-tab="all">${msg_admin_common_all}</button>
         <button type="button" class="adm-tab js-block-tab" data-tab="user-blocks">${msg_admin_blocks_section_userBlocks}</button>
@@ -215,7 +215,7 @@
         <button type="button" class="adm-tab js-block-tab" data-tab="histories">${msg_admin_blocks_section_histories}</button>
     </div>
 
-    <div class="adm-card js-dashboard-panel" style="margin-bottom:20px;display:none;">
+    <div class="adm-card js-dashboard-panel adm-block-card-spaced is-hidden">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_admin_blocks_dashboard_title}</div>
             <div class="adm-card-sub">${msg_admin_blocks_dashboard_sub}</div>
@@ -239,22 +239,22 @@
                     </div>
                 </div>
             </div>
-            <div class="adm-kpi-grid" style="display:grid;grid-template-columns:1fr;row-gap:28px;">
-                <div class="adm-card" style="margin:0;">
+            <div class="adm-dashboard-list-grid">
+                <div class="adm-card adm-dashboard-nested-card">
                     <div class="adm-card-head">
-                        <div class="adm-card-title" style="font-size:15px;">${msg_admin_blocks_dashboard_recentUserBlocks}</div>
-                        <div style="display:flex;align-items:center;gap:8px;">
+                        <div class="adm-card-title adm-dashboard-title">${msg_admin_blocks_dashboard_recentUserBlocks}</div>
+                        <div class="adm-dashboard-head-actions">
                             <div class="adm-card-sub">${msg_admin_blocks_dashboard_topFive}</div>
-                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-user-blocks" style="display:none;"></button>
+                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset is-hidden" data-table="dash-user-blocks"></button>
                         </div>
                     </div>
-                    <div class="adm-card-body" style="padding:0;">
+                    <div class="adm-card-body adm-block-card-body">
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-user-blocks">
                                 <thead><tr>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_member}</th>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_target}</th>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_status}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_common_member}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_common_target}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_common_status}</th>
                                     <th>${msg_admin_common_action}</th>
                                 </tr></thead>
                                 <tbody>
@@ -313,28 +313,28 @@
                                     </tr>
                                 </c:forEach>
                                 <c:if test="${empty dashboardUserBlocks}">
-                                    <tr><td colspan="4" style="text-align:center;color:#64748b;">${msg_admin_common_noData}</td></tr>
+                                    <tr><td colspan="4" class="adm-local-empty-cell">${msg_admin_common_noData}</td></tr>
                                 </c:if>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-                <div class="adm-card" style="margin:0;">
+                <div class="adm-card adm-dashboard-nested-card">
                     <div class="adm-card-head">
-                        <div class="adm-card-title" style="font-size:15px;">${msg_admin_blocks_dashboard_recentIpRules}</div>
-                        <div style="display:flex;align-items:center;gap:8px;">
+                        <div class="adm-card-title adm-dashboard-title">${msg_admin_blocks_dashboard_recentIpRules}</div>
+                        <div class="adm-dashboard-head-actions">
                             <div class="adm-card-sub">${msg_admin_blocks_dashboard_ipRulesSub}</div>
-                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-ip-rules" style="display:none;"></button>
+                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset is-hidden" data-table="dash-ip-rules"></button>
                         </div>
                     </div>
-                    <div class="adm-card-body" style="padding:0;">
+                    <div class="adm-card-body adm-block-card-body">
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-ip-rules">
                                 <thead><tr>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_target}</th>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_actionLabel}</th>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_blocks_effectiveState}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_common_target}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_common_actionLabel}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_blocks_effectiveState}</th>
                                     <th>${msg_admin_common_action}</th>
                                 </tr></thead>
                                 <tbody>
@@ -399,28 +399,28 @@
                                     </tr>
                                 </c:forEach>
                                 <c:if test="${empty dashboardIpBlocks}">
-                                    <tr><td colspan="4" style="text-align:center;color:#64748b;">${msg_admin_common_noData}</td></tr>
+                                    <tr><td colspan="4" class="adm-local-empty-cell">${msg_admin_common_noData}</td></tr>
                                 </c:if>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-                <div class="adm-card" style="margin:0;">
+                <div class="adm-card adm-dashboard-nested-card">
                     <div class="adm-card-head">
-                        <div class="adm-card-title" style="font-size:15px;">${msg_admin_blocks_dashboard_recentBatchOps}</div>
-                        <div style="display:flex;align-items:center;gap:8px;">
+                        <div class="adm-card-title adm-dashboard-title">${msg_admin_blocks_dashboard_recentBatchOps}</div>
+                        <div class="adm-dashboard-head-actions">
                             <div class="adm-card-sub">${msg_admin_blocks_dashboard_batchOpsSub}</div>
-                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-batches" style="display:none;"></button>
+                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset is-hidden" data-table="dash-batches"></button>
                         </div>
                     </div>
-                    <div class="adm-card-body" style="padding:0;">
+                    <div class="adm-card-body adm-block-card-body">
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-batches">
                                 <thead><tr>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_context_batch}</th>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_actionLabel}</th>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_blocks_impact}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_context_batch}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_common_actionLabel}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_blocks_impact}</th>
                                     <th>${msg_admin_common_action}</th>
                                 </tr></thead>
                                 <tbody>
@@ -441,29 +441,29 @@
                                     </tr>
                                 </c:forEach>
                                 <c:if test="${empty batchOperations}">
-                                    <tr><td colspan="4" style="text-align:center;color:#64748b;">${msg_admin_common_noData}</td></tr>
+                                    <tr><td colspan="4" class="adm-local-empty-cell">${msg_admin_common_noData}</td></tr>
                                 </c:if>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-                <div class="adm-card" style="margin:0;">
+                <div class="adm-card adm-dashboard-nested-card">
                     <div class="adm-card-head">
-                        <div class="adm-card-title" style="font-size:15px;">${msg_admin_blocks_dashboard_recentHistory}</div>
-                        <div style="display:flex;align-items:center;gap:8px;">
+                        <div class="adm-card-title adm-dashboard-title">${msg_admin_blocks_dashboard_recentHistory}</div>
+                        <div class="adm-dashboard-head-actions">
                             <div class="adm-card-sub">${msg_admin_blocks_dashboard_historySub}</div>
-                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-histories" style="display:none;"></button>
+                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset is-hidden" data-table="dash-histories"></button>
                         </div>
                     </div>
-                    <div class="adm-card-body" style="padding:0;">
+                    <div class="adm-card-body adm-block-card-body">
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-histories">
                                 <thead><tr>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_time}</th>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_common_target}</th>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_blocks_changeKind}</th>
-                                    <th style="cursor:pointer;user-select:none;">${msg_admin_blocks_result}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_common_time}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_common_target}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_blocks_changeKind}</th>
+                                    <th class="adm-dashboard-sortable">${msg_admin_blocks_result}</th>
                                     <th>${msg_admin_common_action}</th>
                                 </tr></thead>
                                 <tbody>
@@ -533,7 +533,7 @@
                                     </tr>
                                 </c:forEach>
                                 <c:if test="${empty dashboardHistories}">
-                                    <tr><td colspan="5" style="text-align:center;color:#64748b;">${msg_admin_common_noData}</td></tr>
+                                    <tr><td colspan="5" class="adm-local-empty-cell">${msg_admin_common_noData}</td></tr>
                                 </c:if>
                                 </tbody>
                             </table>
@@ -544,11 +544,11 @@
         </div>
     </div>
 
-    <div class="adm-card js-section-card" data-section="user-blocks" data-enhanced="true" style="margin-bottom:20px;">
+    <div class="adm-card js-section-card adm-block-card-spaced" data-section="user-blocks" data-enhanced="true">
         <div class="adm-card-head">
             <div>
                 <div class="adm-card-title">${msg_admin_blocks_userBlocks_title}</div>
                 <div class="adm-card-sub">${msg_admin_blocks_userBlocks_sub}</div>
             </div>
-            <div style="position:relative;display:flex;align-items:center;gap:8px;">
-                <select 
+            <div class="adm-block-export-wrap">
+                <select

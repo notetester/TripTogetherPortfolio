@@ -59,13 +59,13 @@ function activateBlockTab(tab) {
 
     const dashboardPanel = document.querySelector('.js-dashboard-panel');
     if (dashboardPanel) {
-        dashboardPanel.style.display = activeBlockTab === 'dashboard' ? '' : 'none';
+        dashboardPanel.classList.toggle('is-hidden', activeBlockTab !== 'dashboard');
     }
 
     document.querySelectorAll('.js-section-card').forEach(function (card) {
         const section = card.dataset.section;
         const visible = activeBlockTab === 'all' || (activeBlockTab !== 'dashboard' && activeBlockTab === section);
-        card.style.display = visible ? '' : 'none';
+        card.classList.toggle('is-hidden', !visible);
     });
 }
 

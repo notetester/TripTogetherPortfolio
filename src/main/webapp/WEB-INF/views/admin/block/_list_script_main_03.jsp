@@ -143,7 +143,7 @@ function sortDashboardTable(table, cellIndex) {
     const card = table.closest('.adm-card');
     if (card) {
         const resetBtn = card.querySelector('.js-dash-sort-reset');
-        if (resetBtn) resetBtn.style.display = '';
+        if (resetBtn) resetBtn.classList.remove('is-hidden');
     }
 }
 
@@ -165,7 +165,7 @@ function resetDashboardSort(table) {
     const card = table.closest('.adm-card');
     if (card) {
         const resetBtn = card.querySelector('.js-dash-sort-reset');
-        if (resetBtn) resetBtn.style.display = 'none';
+        if (resetBtn) resetBtn.classList.add('is-hidden');
     }
 }
 
