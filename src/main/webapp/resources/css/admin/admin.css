@@ -8441,6 +8441,62 @@ body.sa-light .adm-governance-page .sync-meta {
     user-select: none;
 }
 
+.adm-activity-section-table {
+    table-layout: fixed;
+    min-width: 1560px;
+}
+.adm-activity-section-table th,
+.adm-activity-section-table td {
+    box-sizing: border-box;
+}
+.adm-activity-section-table th:nth-child(1) { width: 150px; }
+.adm-activity-section-table th:nth-child(2) { width: 150px; }
+.adm-activity-section-table th:nth-child(3) { width: 104px; }
+.adm-activity-section-table th:nth-child(4) { width: 112px; }
+.adm-activity-section-table th:nth-child(5) { width: 190px; }
+.adm-activity-section-table th:nth-child(6) { width: 240px; }
+.adm-activity-section-table th:nth-child(7) { width: 90px; }
+.adm-activity-section-table th:nth-child(8) { width: 96px; }
+.adm-activity-section-table th:nth-child(9) { width: 132px; }
+.adm-activity-section-table th:nth-child(10) { width: 210px; }
+.adm-activity-section-table th:nth-child(11) { width: 96px; }
+.adm-activity-section-table th.js-activity-sort.sorted {
+    color: #93c5fd;
+}
+.adm-activity-section-table th.js-activity-sort .sort-ico {
+    margin-left: 4px;
+    opacity: 1;
+    font-size: 10px;
+    font-weight: 900;
+}
+.adm-activity-section-table td {
+    overflow: hidden;
+}
+.adm-activity-section-table .adm-cell-link,
+.adm-activity-section-table .adm-inline-link,
+.adm-activity-section-table .mem-uid,
+.adm-activity-section-table .adm-cell-link-note,
+.adm-activity-section-table .adm-tr-inline {
+    min-width: 0;
+    max-width: 100%;
+}
+.adm-activity-section-table .adm-cell-link > span,
+.adm-activity-section-table .adm-cell-link-note,
+.adm-activity-section-table .adm-inline-link,
+.adm-activity-section-table .mem-uid,
+.adm-activity-section-table .adm-flow-id {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.js-activity-section-card .js-activity-page-state {
+    min-width: 48px;
+    text-align: center;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
 .adm-activity-member-name {
     color: #93c5fd;
     font-weight: 700;
@@ -8472,6 +8528,14 @@ body.sa-light .adm-governance-page .sync-meta {
 body.sa-light .adm-activity-member-name,
 body.sa-light .adm-activity-ip {
     color: #2563eb;
+}
+
+body.sa-light .adm-activity-section-table th.js-activity-sort.sorted {
+    color: #2563eb;
+}
+
+body.sa-light .js-activity-section-card .js-activity-page-state {
+    color: #475569;
 }
 
 body.sa-light .adm-activity-member-id,

@@ -62,17 +62,25 @@
 <spring:message var="msg_admin_common_trace" code="admin.common.trace"/>
 <spring:message var="msg_admin_common_noResults" code="admin.common.noResults"/>
 <spring:message var="msg_admin_common_pageStatus" code="admin.common.pageStatus"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_common_pageSize_30" code="admin.common.pageSize" arguments="30"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
+<spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100"/>
+<spring:message var="msg_admin_blocks_js_dashSortReset_js" code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>
+<spring:message var="msg_admin_activity_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${total}"/>
+<spring:message var="msg_admin_activity_currentCountDisplay" code="admin.common.currentCountFormat" arguments="${fn:length(list)}"/>
 <c:set var="activeMenu" value="activityLogs"/>
 
 
 <c:set var="pageTitle" value="${msg_admin_activity_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 <div class="adm-content">
-  <div class="adm-card adm-audit-filter-card adm-activity-audit-filter-card">
+  <div class="adm-card adm-audit-filter-card adm-activity-audit-filter-card adm-overflow-visible">
     <div class="adm-card-body">
       <form method="get" action="${pageContext.request.contextPath}/admin/activity-logs">
         <div class="adm-filter-bar adm-audit-filterbar adm-activity-audit-filterbar">
-          <div class="adm-search-box adm-audit-search-box"><div class="adm-filter-label">${msg_admin_common_search}</div><span class="adm-search-ico">🔍</span><input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_activity_searchPlaceholder}"></div>
+          <div class="adm-search-box adm-audit-search-box"><div class="adm-filter-label">${msg_admin_common_search}</div><span class="adm-search-ico">🔍</span><input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}" placeholder="${msg_admin_activity_searchPlaceholder}"></div>
           <div><div class="adm-filter-label">${msg_admin_activity_domain}</div><select class="adm-select" name="activityDomain"><option value="ALL" ${search.activityDomain=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="GENERAL" ${search.activityDomain=='GENERAL'?'selected':''}>${msg_admin_activity_domain_general}</option><option value="AUTH" ${search.activityDomain=='AUTH'?'selected':''}>${msg_admin_activity_domain_auth}</option><option value="ADMIN" ${search.activityDomain=='ADMIN'?'selected':''}>${msg_admin_activity_domain_admin}</option><option value="COMMUNITY" ${search.activityDomain=='COMMUNITY'?'selected':''}>${msg_admin_activity_domain_community}</option><option value="MYPAGE" ${search.activityDomain=='MYPAGE'?'selected':''}>${msg_admin_activity_domain_mypage}</option><option value="INQUIRY" ${search.activityDomain=='INQUIRY'?'selected':''}>${msg_admin_activity_domain_inquiry}</option></select></div>
           <div><div class="adm-filter-label">${msg_admin_activity_type}</div><select class="adm-select" name="activityType"><option value="ALL" ${search.activityType=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="PAGE_VIEW" ${search.activityType=='PAGE_VIEW'?'selected':''}>${msg_admin_activity_type_pageView}</option><option value="ACTION" ${search.activityType=='ACTION'?'selected':''}>${msg_admin_activity_type_action}</option><option value="AJAX" ${search.activityType=='AJAX'?'selected':''}>${msg_admin_activity_type_ajax}</option><option value="API" ${search.activityType=='API'?'selected':''}>${msg_admin_activity_type_api}</option></select></div>
           <div><div class="adm-filter-label">${msg_admin_logs_provider}</div><select class="adm-select" name="activityProvider"><option value="ALL" ${search.activityProvider=='ALL'?'selected':''}>${msg_admin_common_all}</option><option value="LOCAL" ${search.activityProvider=='LOCAL'?'selected':''}>${msg_admin_logs_provider_local}</option><option value="KAKAO" ${search.activityProvider=='KAKAO'?'selected':''}>${msg_admin_logs_provider_kakao}</option><option value="NAVER" ${search.activityProvider=='NAVER'?'selected':''}>${msg_admin_logs_provider_naver}</option><option value="GOOGLE" ${search.activityProvider=='GOOGLE'?'selected':''}>${msg_admin_logs_provider_google}</option></select></div>
@@ -83,25 +91,38 @@
             <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
             <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/activity-logs">${msg_admin_common_reset}</a>
           </div>
+          <input type="hidden" name="size" value="${search.size}">
+          <input type="hidden" name="sortField" value="${fn:escapeXml(search.sortField)}">
+          <input type="hidden" name="sortDir" value="${fn:escapeXml(search.sortDir)}">
         </div>
       </form>
     </div>
   </div>
-  <div class="adm-card adm-activity-log-card">
-    <div class="adm-card-head"><div class="adm-card-title">${msg_admin_activity_historyTitle}<span class="adm-section-total-inline">${msg_admin_common_totalCount}</span></div></div>
+  <div class="adm-card adm-managed-section-card adm-activity-log-card js-activity-section-card adm-overflow-visible">
+    <div class="adm-card-head"><div class="adm-card-title">${msg_admin_activity_historyTitle}<span class="adm-section-total-inline">${msg_admin_activity_totalCountDisplay}</span></div></div>
+    <div class="adm-local-toolbar adm-managed-local-toolbar">
+      <div class="adm-local-toolbar-group adm-managed-toolbar-actions">
+        <button type="button" class="adm-dash-sort-reset js-activity-sort-reset adm-is-hidden" onclick="resetActivitySort()"></button>
+        <select class="adm-select adm-audit-size-select" id="activitySizeSelect" onchange="changeActivitySize(this.value)">
+          <option value="30" ${search.size==30 ? 'selected' : ''}>${msg_admin_common_pageSize_30}</option>
+          <option value="50" ${search.size==50 ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
+          <option value="100" ${search.size==100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
+        </select>
+      </div>
+    </div>
     <div class="adm-table-wrap">
-      <table class="adm-table">
+      <table class="adm-table adm-section-table-fixed adm-activity-section-table" data-admin-list-ignore="true">
         <thead><tr>
-          <th data-sort="time" onclick="sortBy('time')">${msg_admin_common_time}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="domain" onclick="sortBy('domain')">${msg_admin_activity_domain}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="type" onclick="sortBy('type')">${msg_admin_activity_type}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="activityCode" onclick="sortBy('activityCode')">${msg_admin_activity_code}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="uri" onclick="sortBy('uri')">${msg_admin_common_uri}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="method" onclick="sortBy('method')">${msg_admin_activity_method}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="status" onclick="sortBy('status')">${msg_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="ip" onclick="sortBy('ip')">${msg_admin_common_ip}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="flow" onclick="sortBy('flow')">${msg_admin_activity_flow}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th class="js-activity-sort" data-sort="time" onclick="sortBy('time')">${msg_admin_common_time}</th>
+          <th class="js-activity-sort" data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}</th>
+          <th class="js-activity-sort" data-sort="domain" onclick="sortBy('domain')">${msg_admin_activity_domain}</th>
+          <th class="js-activity-sort" data-sort="type" onclick="sortBy('type')">${msg_admin_activity_type}</th>
+          <th class="js-activity-sort" data-sort="activityCode" onclick="sortBy('activityCode')">${msg_admin_activity_code}</th>
+          <th class="js-activity-sort" data-sort="uri" onclick="sortBy('uri')">${msg_admin_common_uri}</th>
+          <th class="js-activity-sort" data-sort="method" onclick="sortBy('method')">${msg_admin_activity_method}</th>
+          <th class="js-activity-sort" data-sort="status" onclick="sortBy('status')">${msg_admin_common_status}</th>
+          <th class="js-activity-sort" data-sort="ip" onclick="sortBy('ip')">${msg_admin_common_ip}</th>
+          <th class="js-activity-sort" data-sort="flow" onclick="sortBy('flow')">${msg_admin_activity_flow}</th>
           <th></th>
         </tr></thead>
         <tbody>
@@ -286,7 +307,14 @@
         <c:if test="${empty list}"><tr class="adm-local-empty"><td colspan="11" class="adm-local-empty-cell">${msg_admin_common_noResults}</td></tr></c:if>
       </tbody></table>
     </div>
-    <c:if test="${paging.totalPage > 1}"><div class="adm-paging"><c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if><c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p"><button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button></c:forEach><c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if><span class="adm-page-info">${msg_admin_common_pageStatus}</span></div></c:if>
+    <div class="adm-local-pagination" id="activityPaging">
+      <div class="adm-local-page-info">${msg_admin_activity_totalCountDisplay} / ${msg_admin_activity_currentCountDisplay}</div>
+      <div class="adm-local-page-actions">
+        <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage <= 1 ? 'disabled' : ''} onclick="goPage(${paging.currentPage - 1})">${msg_admin_common_prev}</button>
+        <span class="js-activity-page-state">${paging.currentPage} / ${paging.totalPage}</span>
+        <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage >= paging.totalPage ? 'disabled' : ''} onclick="goPage(${paging.currentPage + 1})">${msg_admin_common_next}</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -306,24 +334,53 @@
 var BASE_URL = '${pageContext.request.contextPath}/admin/activity-logs';
 var curSortField = '${search.sortField}';
 var curSortDir = '${search.sortDir}';
+var activitySortResetText = '${msg_admin_blocks_js_dashSortReset_js}';
 
-document.querySelectorAll('th[data-sort]').forEach(function(th) {
-  if (th.getAttribute('data-sort') === curSortField) {
-    th.classList.add('sorted');
+function updateActivitySortIndicators() {
+  document.querySelectorAll('.adm-activity-section-table th[data-sort]').forEach(function(th) {
+    var active = th.getAttribute('data-sort') === curSortField && !!curSortField;
+    th.classList.toggle('sorted', active);
     var ico = th.querySelector('.sort-ico');
-    if (ico) {
+    if (active) {
+      if (!ico) {
+        ico = document.createElement('span');
+        ico.className = 'sort-ico';
+        ico.setAttribute('aria-hidden', 'true');
+        th.appendChild(ico);
+      }
       var asc = curSortDir === 'ASC';
       ico.textContent = asc ? '▲' : '▼';
       ico.classList.toggle('asc', asc);
       ico.classList.toggle('desc', !asc);
+    } else if (ico) {
+      ico.remove();
     }
+  });
+  var resetBtn = document.querySelector('.js-activity-sort-reset');
+  if (resetBtn) {
+    resetBtn.textContent = activitySortResetText;
+    resetBtn.classList.toggle('adm-is-hidden', !curSortField);
   }
-});
+}
+updateActivitySortIndicators();
 
 function sortBy(field) {
   var params = new URLSearchParams(window.location.search);
   var dir = (params.get('sortField') === field && params.get('sortDir') !== 'ASC') ? 'ASC' : 'DESC';
   params.set('sortField', field); params.set('sortDir', dir); params.set('page', '1');
+  location.href = BASE_URL + '?' + params.toString();
+}
+function resetActivitySort() {
+  var params = new URLSearchParams(window.location.search);
+  params.delete('sortField');
+  params.delete('sortDir');
+  params.set('page', '1');
+  location.href = BASE_URL + '?' + params.toString();
+}
+function changeActivitySize(size) {
+  var params = new URLSearchParams(window.location.search);
+  params.set('size', size);
+  params.set('page', '1');
   location.href = BASE_URL + '?' + params.toString();
 }
 function filterByDate(dateStr) {
