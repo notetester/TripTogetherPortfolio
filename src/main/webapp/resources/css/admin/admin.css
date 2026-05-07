@@ -3334,23 +3334,20 @@ body.sa-light .adm-audit-bulk-bar {
 
 
 /* ══════════════════════════════════════════
-   Governance / Security Admin UX Refresh
-   - policy/settings/login-risk/provider/waf/appeal screens
-   - normalize newer adm-* class names and mobile layouts
+   Scoped Governance / Security Admin UX Refresh
+   적용 대상: .adm-content.adm-governance-page 화면만.
+   회원/기업/차단/내지갑 등 기존 관리자 화면 레이아웃에는 영향 주지 않는다.
 ══════════════════════════════════════════ */
-:root {
+.adm-governance-page {
     --adm-radius-lg: 18px;
     --adm-radius-md: 14px;
     --adm-gap: 16px;
-}
-
-.adm-content {
     width: 100%;
     max-width: 1540px;
     margin: 0 auto;
 }
 
-.adm-page-head {
+.adm-governance-page .adm-page-head {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -3365,7 +3362,7 @@ body.sa-light .adm-audit-bulk-bar {
     box-shadow: 0 18px 42px rgba(2,6,23,.22);
 }
 
-.adm-page-head h1 {
+.adm-governance-page .adm-page-head h1 {
     margin: 0;
     color: #f8fafc;
     font-size: clamp(22px, 2vw, 30px);
@@ -3373,7 +3370,8 @@ body.sa-light .adm-audit-bulk-bar {
     letter-spacing: -.02em;
 }
 
-.adm-page-desc {
+.adm-governance-page .adm-page-desc,
+.adm-governance-page .adm-page-head p {
     margin-top: 8px;
     max-width: 920px;
     color: #94a3b8;
@@ -3381,8 +3379,8 @@ body.sa-light .adm-audit-bulk-bar {
     line-height: 1.7;
 }
 
-.adm-actions,
-.policy-card-head-actions {
+.adm-governance-page .adm-actions,
+.adm-governance-page .policy-card-head-actions {
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -3390,24 +3388,24 @@ body.sa-light .adm-audit-bulk-bar {
     flex-wrap: wrap;
 }
 
-.adm-page-head .adm-actions {
+.adm-governance-page .adm-page-head .adm-actions {
     flex: 0 0 auto;
-    max-width: 52%;
+    max-width: 56%;
 }
 
-.adm-card {
+.adm-governance-page .adm-card {
     border-radius: var(--adm-radius-lg);
     border-color: rgba(148,163,184,.18);
     box-shadow: 0 18px 42px rgba(2,6,23,.18);
 }
 
-.adm-card + .adm-card,
-form.adm-card + form.adm-card {
+.adm-governance-page .adm-card + .adm-card,
+.adm-governance-page form.adm-card + form.adm-card {
     margin-top: 16px;
 }
 
-.adm-card-header,
-.adm-card-head {
+.adm-governance-page .adm-card-header,
+.adm-governance-page .adm-card-head {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -3417,7 +3415,7 @@ form.adm-card + form.adm-card {
     background: linear-gradient(180deg, rgba(30,41,59,.22), rgba(15,23,42,0));
 }
 
-.adm-card-title {
+.adm-governance-page .adm-card-title {
     min-width: 0;
     font-size: 15px;
     font-weight: 800;
@@ -3425,30 +3423,30 @@ form.adm-card + form.adm-card {
     letter-spacing: -.01em;
 }
 
-.adm-card-subtitle,
-.adm-muted,
-.adm-page-muted {
+.adm-governance-page .adm-card-subtitle,
+.adm-governance-page .adm-muted,
+.adm-governance-page .adm-page-muted {
     color: #94a3b8;
     font-size: 12px;
     line-height: 1.65;
 }
 
-.adm-card-body {
+.adm-governance-page .adm-card-body {
     padding: 20px;
 }
 
-.adm-form-grid,
-.policy-form-grid {
+.adm-governance-page .adm-form-grid,
+.adm-governance-page .policy-form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+    gap: 14px !important;
     align-items: end;
 }
 
-.adm-form-grid > label,
-.policy-form-grid > div,
-.policy-form-grid > label,
-.adm-card-body > label {
+.adm-governance-page .adm-form-grid > label,
+.adm-governance-page .policy-form-grid > div,
+.adm-governance-page .policy-form-grid > label,
+.adm-governance-page .adm-card-body > label {
     display: flex;
     flex-direction: column;
     gap: 7px;
@@ -3456,20 +3454,23 @@ form.adm-card + form.adm-card {
     color: #cbd5e1;
     font-size: 12px;
     font-weight: 700;
+    word-break: keep-all;
+    overflow-wrap: normal;
 }
 
-.adm-filter-label {
+.adm-governance-page .adm-filter-label {
     color: #94a3b8;
     font-size: 12px;
     font-weight: 700;
     margin-bottom: 7px;
+    word-break: keep-all;
 }
 
-.adm-input,
-.adm-select,
-textarea.adm-input,
-select.adm-input,
-input.adm-input {
+.adm-governance-page .adm-input,
+.adm-governance-page .adm-select,
+.adm-governance-page textarea.adm-input,
+.adm-governance-page select.adm-input,
+.adm-governance-page input.adm-input {
     width: 100%;
     min-width: 0;
     min-height: 40px;
@@ -3482,48 +3483,54 @@ input.adm-input {
     transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
 }
 
-textarea.adm-input {
+.adm-governance-page textarea.adm-input {
     min-height: 94px;
     resize: vertical;
     line-height: 1.55;
 }
 
-.adm-input:focus,
-.adm-select:focus,
-textarea.adm-input:focus,
-select.adm-input:focus,
-input.adm-input:focus {
+.adm-governance-page .adm-input:focus,
+.adm-governance-page .adm-select:focus,
+.adm-governance-page textarea.adm-input:focus,
+.adm-governance-page select.adm-input:focus,
+.adm-governance-page input.adm-input:focus {
     border-color: rgba(96,165,250,.72);
     box-shadow: 0 0 0 3px rgba(59,130,246,.18);
     background: #111827;
 }
 
-.adm-input::placeholder {
+.adm-governance-page .adm-input::placeholder {
     color: #64748b;
 }
 
-.adm-check,
-.policy-inline-check {
+.adm-governance-page .adm-check,
+.adm-governance-page .policy-inline-check {
     display: inline-flex !important;
     flex-direction: row !important;
     align-items: center;
+    justify-content: flex-start;
     gap: 8px;
     min-height: 40px;
     color: #cbd5e1;
     font-size: 13px;
     font-weight: 700;
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: normal;
+    line-height: 1.45;
 }
 
-.adm-check input,
-.policy-inline-check input {
+.adm-governance-page .adm-check input,
+.adm-governance-page .policy-inline-check input {
+    flex: 0 0 auto;
     width: 16px;
     height: 16px;
     accent-color: #60a5fa;
 }
 
-.adm-btn,
-a.adm-btn,
-button.adm-btn {
+.adm-governance-page .adm-btn,
+.adm-governance-page a.adm-btn,
+.adm-governance-page button.adm-btn {
     min-height: 38px;
     border-radius: 12px;
     padding: 9px 14px;
@@ -3536,41 +3543,36 @@ button.adm-btn {
     box-shadow: 0 8px 20px rgba(2,6,23,.12);
 }
 
-.adm-btn:hover,
-a.adm-btn:hover,
-button.adm-btn:hover {
+.adm-governance-page .adm-btn:hover,
+.adm-governance-page a.adm-btn:hover,
+.adm-governance-page button.adm-btn:hover {
     border-color: rgba(96,165,250,.55);
     background: rgba(30,41,59,.98);
     color: #ffffff;
     transform: translateY(-1px);
 }
 
-.adm-btn.primary,
-.adm-btn-primary {
+.adm-governance-page .adm-btn.primary,
+.adm-governance-page .adm-btn-primary {
     background: linear-gradient(135deg, #2563eb, #4f46e5);
     border-color: rgba(96,165,250,.75);
     color: #ffffff;
 }
 
-.adm-btn.primary:hover,
-.adm-btn-primary:hover {
-    background: linear-gradient(135deg, #1d4ed8, #4338ca);
-}
-
-.adm-btn.danger,
-.adm-btn-danger {
+.adm-governance-page .adm-btn.danger,
+.adm-governance-page .adm-btn-danger {
     background: rgba(127,29,29,.72);
     border-color: rgba(248,113,113,.48);
     color: #fee2e2;
 }
 
-.adm-btn.ghost,
-.adm-btn-ghost {
+.adm-governance-page .adm-btn.ghost,
+.adm-governance-page .adm-btn-ghost {
     background: rgba(15,23,42,.22);
     color: #cbd5e1;
 }
 
-.adm-alert {
+.adm-governance-page .adm-alert {
     margin: 0 0 16px;
     padding: 12px 14px;
     border-radius: 14px;
@@ -3580,58 +3582,58 @@ button.adm-btn:hover {
     line-height: 1.65;
 }
 
-.adm-alert.success {
+.adm-governance-page .adm-alert.success {
     border-color: rgba(34,197,94,.42);
     background: rgba(20,83,45,.28);
     color: #bbf7d0;
 }
 
-.adm-alert.warning {
+.adm-governance-page .adm-alert.warning {
     border-color: rgba(245,158,11,.42);
     background: rgba(120,53,15,.28);
     color: #fde68a;
 }
 
-.adm-alert.danger,
-.adm-alert.error {
+.adm-governance-page .adm-alert.danger,
+.adm-governance-page .adm-alert.error {
     border-color: rgba(239,68,68,.45);
     background: rgba(127,29,29,.30);
     color: #fecaca;
 }
 
-.adm-table-wrap {
+.adm-governance-page .adm-table-wrap {
     width: 100%;
     overflow-x: auto;
     border-radius: var(--adm-radius-md);
     -webkit-overflow-scrolling: touch;
 }
 
-.adm-table {
+.adm-governance-page .adm-table {
     min-width: 900px;
 }
 
-.adm-table th,
-.adm-table td {
+.adm-governance-page .adm-table th,
+.adm-governance-page .adm-table td {
     vertical-align: top;
 }
 
-.adm-table td {
+.adm-governance-page .adm-table td {
     line-height: 1.55;
 }
 
-.adm-table details {
+.adm-governance-page .adm-table details {
     min-width: 260px;
 }
 
-.adm-table details summary {
+.adm-governance-page .adm-table details summary {
     cursor: pointer;
     color: #93c5fd;
     font-weight: 700;
 }
 
-.adm-table pre,
-.js-policy-diff,
-.review-detail-pre {
+.adm-governance-page .adm-table pre,
+.adm-governance-page .js-policy-diff,
+.adm-governance-page .review-detail-pre {
     border: 1px solid rgba(148,163,184,.18);
     border-radius: 12px;
     background: rgba(2,6,23,.48);
@@ -3643,8 +3645,8 @@ button.adm-btn:hover {
     word-break: break-word;
 }
 
-.adm-badge,
-.status-badge {
+.adm-governance-page .adm-badge,
+.adm-governance-page .status-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -3660,112 +3662,110 @@ button.adm-btn:hover {
     white-space: nowrap;
 }
 
-.adm-empty,
-.policy-history-empty {
+.adm-governance-page .adm-empty,
+.adm-governance-page .policy-history-empty {
     padding: 28px 16px;
     color: #94a3b8;
     text-align: center;
     background: rgba(15,23,42,.35);
 }
 
-.policy-overview-grid {
+.adm-governance-page .policy-overview-grid {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 16px;
 }
 
-.policy-layout {
+.adm-governance-page .policy-layout {
     grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
     gap: 18px;
 }
 
-.policy-overview-card,
-.policy-history-card,
-.policy-history-item {
+.adm-governance-page .policy-overview-card,
+.adm-governance-page .policy-history-card,
+.adm-governance-page .policy-history-item {
     border-radius: 16px;
     border-color: rgba(148,163,184,.18);
     background: linear-gradient(180deg, rgba(30,41,59,.62), rgba(15,23,42,.72));
 }
 
-.policy-card {
+.adm-governance-page .policy-card {
     overflow: visible;
 }
 
-.policy-card textarea,
-textarea[name="configJson"],
-.js-policy-config-json {
+.adm-governance-page .policy-card textarea,
+.adm-governance-page textarea[name="configJson"],
+.adm-governance-page .js-policy-config-json {
     min-height: 150px;
     font-family: "JetBrains Mono", "Consolas", monospace;
     font-size: 12px;
 }
 
-.policy-card-foot {
+.adm-governance-page .policy-card-foot {
     padding-top: 14px;
     border-top: 1px solid rgba(148,163,184,.14);
 }
 
-.sync-detail,
-.waf-detail-value,
-.provider-detail-value {
+.adm-governance-page .sync-detail,
+.adm-governance-page .waf-detail-value,
+.adm-governance-page .provider-detail-value {
     word-break: break-word;
     overflow-wrap: anywhere;
 }
 
-.provider-detail-modal,
-.waf-detail-modal,
-.review-detail-modal {
+.adm-governance-page .provider-detail-modal,
+.adm-governance-page .waf-detail-modal,
+.adm-governance-page .review-detail-modal {
     backdrop-filter: blur(4px);
 }
 
-.provider-detail-card,
-.waf-detail-card,
-.review-detail-card {
+.adm-governance-page .provider-detail-card,
+.adm-governance-page .waf-detail-card,
+.adm-governance-page .review-detail-card {
     color: #e2e8f0;
     background: #111827 !important;
     border-color: rgba(148,163,184,.22) !important;
 }
 
-.provider-detail-grid,
-.waf-detail-grid,
-.review-detail-grid {
+.adm-governance-page .provider-detail-grid,
+.adm-governance-page .waf-detail-grid,
+.adm-governance-page .review-detail-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 12px;
 }
 
-.provider-detail-item,
-.waf-detail-item,
-.review-detail-item {
+.adm-governance-page .provider-detail-item,
+.adm-governance-page .waf-detail-item,
+.adm-governance-page .review-detail-item {
     border-radius: 14px;
     border: 1px solid rgba(148,163,184,.18);
     background: rgba(15,23,42,.65) !important;
     color: #e2e8f0;
 }
 
-.provider-detail-label,
-.waf-detail-label {
+.adm-governance-page .provider-detail-label,
+.adm-governance-page .waf-detail-label {
     color: #94a3b8 !important;
 }
 
-.provider-detail-value,
-.waf-detail-value {
+.adm-governance-page .provider-detail-value,
+.adm-governance-page .waf-detail-value {
     color: #e2e8f0 !important;
 }
 
-/* Inline style rescue for older cards that hard-coded light text colors. */
-.adm-content [style*="color:#0f172a"],
-.adm-content [style*="color: #0f172a"],
-.adm-content [style*="color:#1e293b"],
-.adm-content [style*="color: #1e293b"] {
+.adm-governance-page [style*="color:#0f172a"],
+.adm-governance-page [style*="color: #0f172a"],
+.adm-governance-page [style*="color:#1e293b"],
+.adm-governance-page [style*="color: #1e293b"] {
     color: #e2e8f0 !important;
 }
 
-.adm-content [style*="color:#64748b"],
-.adm-content [style*="color: #64748b"] {
+.adm-governance-page [style*="color:#64748b"],
+.adm-governance-page [style*="color: #64748b"] {
     color: #94a3b8 !important;
 }
 
-/* Light theme alignment */
-body.sa-light .adm-page-head {
+body.sa-light .adm-governance-page .adm-page-head {
     border-color: #e2e8f0;
     background:
         radial-gradient(circle at top left, rgba(59,130,246,.10), transparent 34%),
@@ -3773,114 +3773,115 @@ body.sa-light .adm-page-head {
     box-shadow: 0 18px 42px rgba(15,23,42,.08);
 }
 
-body.sa-light .adm-page-head h1,
-body.sa-light .adm-card-title,
-body.sa-light .policy-overview-title,
-body.sa-light .policy-history-card-title,
-body.sa-light .provider-detail-card,
-body.sa-light .waf-detail-card,
-body.sa-light .review-detail-card {
+body.sa-light .adm-governance-page .adm-page-head h1,
+body.sa-light .adm-governance-page .adm-card-title,
+body.sa-light .adm-governance-page .policy-overview-title,
+body.sa-light .adm-governance-page .policy-history-card-title,
+body.sa-light .adm-governance-page .provider-detail-card,
+body.sa-light .adm-governance-page .waf-detail-card,
+body.sa-light .adm-governance-page .review-detail-card {
     color: #0f172a;
 }
 
-body.sa-light .adm-page-desc,
-body.sa-light .adm-muted,
-body.sa-light .adm-page-muted,
-body.sa-light .adm-card-subtitle {
+body.sa-light .adm-governance-page .adm-page-desc,
+body.sa-light .adm-governance-page .adm-page-head p,
+body.sa-light .adm-governance-page .adm-muted,
+body.sa-light .adm-governance-page .adm-page-muted,
+body.sa-light .adm-governance-page .adm-card-subtitle {
     color: #64748b;
 }
 
-body.sa-light .adm-card-header,
-body.sa-light .adm-card-head {
+body.sa-light .adm-governance-page .adm-card-header,
+body.sa-light .adm-governance-page .adm-card-head {
     border-bottom-color: #e2e8f0;
     background: linear-gradient(180deg, #f8fafc, #ffffff);
 }
 
-body.sa-light .adm-form-grid > label,
-body.sa-light .policy-form-grid > div,
-body.sa-light .policy-form-grid > label,
-body.sa-light .adm-card-body > label,
-body.sa-light .adm-check,
-body.sa-light .policy-inline-check {
+body.sa-light .adm-governance-page .adm-form-grid > label,
+body.sa-light .adm-governance-page .policy-form-grid > div,
+body.sa-light .adm-governance-page .policy-form-grid > label,
+body.sa-light .adm-governance-page .adm-card-body > label,
+body.sa-light .adm-governance-page .adm-check,
+body.sa-light .adm-governance-page .policy-inline-check {
     color: #334155;
 }
 
-body.sa-light .adm-btn,
-body.sa-light a.adm-btn,
-body.sa-light button.adm-btn {
+body.sa-light .adm-governance-page .adm-btn,
+body.sa-light .adm-governance-page a.adm-btn,
+body.sa-light .adm-governance-page button.adm-btn {
     background: #ffffff;
     border-color: #cbd5e1;
     color: #334155;
     box-shadow: 0 8px 20px rgba(15,23,42,.06);
 }
 
-body.sa-light .adm-btn.primary,
-body.sa-light .adm-btn-primary {
+body.sa-light .adm-governance-page .adm-btn.primary,
+body.sa-light .adm-governance-page .adm-btn-primary {
     background: linear-gradient(135deg, #2563eb, #4f46e5);
     border-color: #2563eb;
     color: #ffffff;
 }
 
-body.sa-light .adm-alert {
+body.sa-light .adm-governance-page .adm-alert {
     background: #ffffff;
     color: #334155;
 }
 
-body.sa-light .adm-table pre,
-body.sa-light .js-policy-diff,
-body.sa-light .review-detail-pre {
+body.sa-light .adm-governance-page .adm-table pre,
+body.sa-light .adm-governance-page .js-policy-diff,
+body.sa-light .adm-governance-page .review-detail-pre {
     background: #f8fafc;
     color: #1e293b;
 }
 
-body.sa-light .policy-overview-card,
-body.sa-light .policy-history-card,
-body.sa-light .policy-history-item,
-body.sa-light .provider-detail-item,
-body.sa-light .waf-detail-item,
-body.sa-light .review-detail-item {
+body.sa-light .adm-governance-page .policy-overview-card,
+body.sa-light .adm-governance-page .policy-history-card,
+body.sa-light .adm-governance-page .policy-history-item,
+body.sa-light .adm-governance-page .provider-detail-item,
+body.sa-light .adm-governance-page .waf-detail-item,
+body.sa-light .adm-governance-page .review-detail-item {
     background: #ffffff !important;
     border-color: #e2e8f0;
 }
 
-body.sa-light .provider-detail-card,
-body.sa-light .waf-detail-card,
-body.sa-light .review-detail-card {
+body.sa-light .adm-governance-page .provider-detail-card,
+body.sa-light .adm-governance-page .waf-detail-card,
+body.sa-light .adm-governance-page .review-detail-card {
     background: #ffffff !important;
     border-color: #e2e8f0 !important;
 }
 
-body.sa-light .provider-detail-value,
-body.sa-light .waf-detail-value {
+body.sa-light .adm-governance-page .provider-detail-value,
+body.sa-light .adm-governance-page .waf-detail-value {
     color: #1e293b !important;
 }
 
 @media (max-width: 1180px) {
-    .adm-page-head {
+    .adm-governance-page .adm-page-head {
         align-items: stretch;
     }
-    .adm-page-head .adm-actions {
+    .adm-governance-page .adm-page-head .adm-actions {
         max-width: 100%;
     }
-    .policy-layout {
+    .adm-governance-page .policy-layout {
         grid-template-columns: 1fr;
     }
-    .adm-table {
+    .adm-governance-page .adm-table {
         min-width: 820px;
     }
 }
 
 @media (max-width: 860px) {
-    .adm-content {
+    .adm-governance-page {
         padding: 14px;
     }
-    .adm-page-head {
+    .adm-governance-page .adm-page-head {
         flex-direction: column;
         padding: 16px;
         border-radius: 16px;
     }
-    .adm-page-head .adm-actions,
-    .adm-actions {
+    .adm-governance-page .adm-page-head .adm-actions,
+    .adm-governance-page .adm-actions {
         width: 100%;
         justify-content: flex-start;
         overflow-x: auto;
@@ -3888,72 +3889,72 @@ body.sa-light .waf-detail-value {
         flex-wrap: nowrap;
         scrollbar-width: thin;
     }
-    .adm-page-head .adm-actions .adm-btn,
-    .adm-actions .adm-btn {
+    .adm-governance-page .adm-page-head .adm-actions .adm-btn,
+    .adm-governance-page .adm-actions .adm-btn {
         flex: 0 0 auto;
     }
-    .adm-form-grid,
-    .policy-form-grid {
+    .adm-governance-page .adm-form-grid,
+    .adm-governance-page .policy-form-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     }
-    .adm-card-header,
-    .adm-card-head {
+    .adm-governance-page .adm-card-header,
+    .adm-governance-page .adm-card-head {
         flex-direction: column;
         align-items: stretch;
     }
-    .policy-card-head-actions {
+    .adm-governance-page .policy-card-head-actions {
         justify-content: flex-start;
     }
 }
 
 @media (max-width: 640px) {
-    .adm-content {
+    .adm-governance-page {
         padding: 10px;
     }
-    .adm-page-head {
+    .adm-governance-page .adm-page-head {
         margin-bottom: 14px;
         padding: 14px;
     }
-    .adm-page-head h1 {
+    .adm-governance-page .adm-page-head h1 {
         font-size: 22px;
     }
-    .adm-card-body,
-    .adm-card-header,
-    .adm-card-head {
+    .adm-governance-page .adm-card-body,
+    .adm-governance-page .adm-card-header,
+    .adm-governance-page .adm-card-head {
         padding: 14px;
     }
-    .adm-form-grid,
-    .policy-form-grid,
-    .provider-detail-grid,
-    .waf-detail-grid,
-    .review-detail-grid {
+    .adm-governance-page .adm-form-grid,
+    .adm-governance-page .policy-form-grid,
+    .adm-governance-page .provider-detail-grid,
+    .adm-governance-page .waf-detail-grid,
+    .adm-governance-page .review-detail-grid {
         grid-template-columns: 1fr !important;
     }
-    .adm-actions {
+    .adm-governance-page .adm-actions {
         flex-wrap: wrap;
         overflow-x: visible;
     }
-    .adm-btn,
-    a.adm-btn,
-    button.adm-btn {
+    .adm-governance-page .adm-btn,
+    .adm-governance-page a.adm-btn,
+    .adm-governance-page button.adm-btn {
         width: 100%;
     }
-    .adm-page-head .adm-actions .adm-btn {
+    .adm-governance-page .adm-page-head .adm-actions .adm-btn {
         width: auto;
         max-width: 100%;
     }
-    .adm-table {
+    .adm-governance-page .adm-table {
         min-width: 720px;
         font-size: 12px;
     }
-    .adm-table th,
-    .adm-table td {
+    .adm-governance-page .adm-table th,
+    .adm-governance-page .adm-table td {
         padding: 10px 11px;
     }
-    .policy-overview-grid {
+    .adm-governance-page .policy-overview-grid {
         grid-template-columns: 1fr;
     }
-    .policy-card-foot {
+    .adm-governance-page .policy-card-foot {
         flex-direction: column;
         align-items: stretch;
     }

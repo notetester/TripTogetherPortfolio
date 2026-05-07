@@ -28,7 +28,7 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-governance-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_security_admin_providerHealth_title}</h1>

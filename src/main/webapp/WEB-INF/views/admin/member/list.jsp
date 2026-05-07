@@ -181,6 +181,10 @@
 <spring:message var="msg_admin_blocks_mode_client" code="admin.blocks.mode.client"/>
 <spring:message var="msg_admin_blocks_mode_server" code="admin.blocks.mode.server"/>
 <spring:message var="msg_admin_common_pageSize" code="admin.common.pageSize"/>
+<spring:message var="msg_admin_common_pageSize_10" code="admin.common.pageSize" arguments="10"/>
+<spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
+<spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100"/>
 <spring:message var="msg_admin_common_selectedCount" code="admin.common.selectedCount"/>
 <spring:message var="msg_admin_common_clearSelection" code="admin.common.clearSelection"/>
 <spring:message var="msg_admin_common_member" code="admin.common.member"/>
@@ -332,10 +336,10 @@
                     <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
                 </select>
                 <select class="adm-select js-member-page-size" style="width:90px;" id="sizeSelect" onchange="changeSize(this.value)">
-                    <option value="10"  ${search.size==10  ? 'selected' : ''}>${msg_admin_common_pageSize}</option>
-                    <option value="20"  ${search.size==20  ? 'selected' : ''}>${msg_admin_common_pageSize}</option>
-                    <option value="50"  ${search.size==50  ? 'selected' : ''}>${msg_admin_common_pageSize}</option>
-                    <option value="100" ${search.size==100 ? 'selected' : ''}>${msg_admin_common_pageSize}</option>
+                    <option value="10"  ${search.size==10  ? 'selected' : ''}>${msg_admin_common_pageSize_10}</option>
+                    <option value="20"  ${search.size==20  ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
+                    <option value="50"  ${search.size==50  ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
+                    <option value="100" ${search.size==100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
                 </select>
             </div>
         </div>

@@ -55,7 +55,7 @@
 <c:set var="pageTitle" value="${msg_admin_policy_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-governance-page">
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_admin_policy_centerTitle}</div>

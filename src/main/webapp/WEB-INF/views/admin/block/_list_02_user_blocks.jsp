@@ -41,9 +41,9 @@ id="ub-exportFormat" class="adm-select js-block-export-format" data-section="use
                         <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
                     </select>
                     <select class="adm-select js-local-page-size" data-section="user-blocks">
-                        <option value="10">${msg_admin_common_pageSize}</option>
-                        <option value="20" selected>${msg_admin_common_pageSize}</option>
-                        <option value="50">${msg_admin_common_pageSize}</option>
+                        <option value="10">${msg_admin_common_pageSize_10}</option>
+                        <option value="20" selected>${msg_admin_common_pageSize_20}</option>
+                        <option value="50">${msg_admin_common_pageSize_50}</option>
                     </select>
                 </div>
             </div>

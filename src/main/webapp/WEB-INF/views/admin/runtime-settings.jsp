@@ -45,7 +45,7 @@
 
 <%@ include file="layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-governance-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_admin_runtimeSettings_title}</h1>

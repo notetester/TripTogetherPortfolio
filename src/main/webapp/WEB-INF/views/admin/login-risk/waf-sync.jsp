@@ -52,7 +52,7 @@
     @media (max-width:720px) { .waf-detail-grid { grid-template-columns:1fr; } }
 </style>
 
-<div class="adm-content">
+<div class="adm-content adm-governance-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_security_admin_wafSync_title}</h1>

@@ -75,7 +75,7 @@
     });
 </script>
 
-<div class="adm-content">
+<div class="adm-content adm-governance-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_security_admin_securityReviews_title}</h1>

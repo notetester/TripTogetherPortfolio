@@ -77,6 +77,10 @@
 <spring:message var="msg_admin_blocks_mode_client" code="admin.blocks.mode.client" scope="request"/>
 <spring:message var="msg_admin_blocks_mode_server" code="admin.blocks.mode.server" scope="request"/>
 <spring:message var="msg_admin_common_pageSize" code="admin.common.pageSize" scope="request"/>
+<spring:message var="msg_admin_common_pageSize_10" code="admin.common.pageSize" arguments="10" scope="request"/>
+<spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20" scope="request"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50" scope="request"/>
+<spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100" scope="request"/>
 <spring:message var="msg_admin_common_selectedCount" code="admin.common.selectedCount" scope="request"/>
 <spring:message var="msg_admin_common_bulkRelease" code="admin.common.bulkRelease" scope="request"/>
 <spring:message var="msg_admin_common_clearSelection" code="admin.common.clearSelection" scope="request"/>
