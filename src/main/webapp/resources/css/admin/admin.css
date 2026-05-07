@@ -7103,6 +7103,135 @@ body.sa-light .adm-audit-row-detail-value {
     background: #f8fafc;
 }
 
+/* Inquiry admin */
+.adm-inquiry-page {
+    max-width: 1540px;
+    margin: 0 auto;
+}
+
+.adm-inquiry-filter-card {
+    margin-bottom: 16px;
+    overflow: visible;
+}
+
+.adm-filter-bar.adm-inquiry-filterbar {
+    display: grid;
+    grid-template-columns: minmax(130px, .5fr) minmax(130px, .5fr) minmax(130px, .5fr) minmax(360px, 1.35fr) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-inquiry-filterbar > div,
+.adm-inquiry-search-row,
+.adm-inquiry-search-box {
+    min-width: 0;
+}
+
+.adm-inquiry-filterbar .adm-select,
+.adm-inquiry-filterbar .adm-input {
+    width: 100%;
+}
+
+.adm-inquiry-search-row {
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr);
+    gap: 6px;
+}
+
+.adm-inquiry-filter-actions {
+    display: flex;
+    align-items: end;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.adm-inquiry-table {
+    width: 100%;
+    min-width: 920px;
+}
+
+.adm-inq-row {
+    cursor: pointer;
+}
+
+.adm-inquiry-col-id {
+    width: 86px;
+}
+
+.adm-inquiry-col-author {
+    width: 170px;
+}
+
+.adm-inquiry-col-category {
+    width: 120px;
+}
+
+.adm-inquiry-col-status,
+.adm-inquiry-col-answer {
+    width: 140px;
+}
+
+.adm-inquiry-col-date {
+    width: 160px;
+}
+
+.adm-inquiry-member-name {
+    color: #93c5fd;
+    font-weight: 700;
+}
+
+.adm-inquiry-blocked-note {
+    color: #fca5a5;
+}
+
+.adm-inquiry-muted {
+    color: #64748b;
+}
+
+.adm-inquiry-site-link {
+    margin-top: 16px;
+    padding: 0 10px;
+}
+
+body.sa-light .adm-inquiry-member-name {
+    color: #2563eb;
+}
+
+body.sa-light .adm-inquiry-blocked-note {
+    color: #b91c1c;
+}
+
+@media (max-width: 1280px) {
+    .adm-filter-bar.adm-inquiry-filterbar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .adm-inquiry-search-field {
+        grid-column: span 2;
+    }
+
+    .adm-inquiry-filter-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+    .adm-filter-bar.adm-inquiry-filterbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .adm-inquiry-search-field {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 560px) {
+    .adm-filter-bar.adm-inquiry-filterbar,
+    .adm-inquiry-search-row {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 1540px) {
     .adm-filter-bar.adm-audit-filterbar {
         grid-template-columns: repeat(4, minmax(0, 1fr));

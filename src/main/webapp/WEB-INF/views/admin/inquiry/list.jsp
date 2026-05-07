@@ -36,6 +36,7 @@
 <spring:message var="msg_admin_inquiry_searchType_nickname" code="admin.inquiry.searchType.nickname"/>
 <spring:message var="msg_admin_inquiry_searchType_userId" code="admin.inquiry.searchType.userId"/>
 <spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_inquiry_listTitle" code="admin.inquiry.listTitle"/>
 <spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
 <spring:message var="msg_admin_inquiry_author" code="admin.inquiry.author"/>
@@ -55,7 +56,7 @@
 <c:set var="pageTitle" value="${msg_admin_inquiry_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-inquiry-page">
 
     <%-- ── 통계 카드 ── --%>
     <div class="adm-summary-grid">
@@ -77,10 +78,10 @@
         </div>
     </div>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-inquiry-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/inquiries">
-                <div class="adm-filter-bar">
+                <div class="adm-filter-bar adm-inquiry-filterbar">
                     <div>
                         <div class="adm-filter-label">${msg_admin_common_status}</div>
                         <select class="adm-select" name="status">
@@ -117,10 +118,10 @@
                         </select>
                     </div>
 
-                    <div style="flex:1;min-width:220px;">
+                    <div class="adm-inquiry-search-field">
                         <div class="adm-filter-label">${msg_admin_common_search}</div>
-                        <div style="display:flex;gap:6px;">
-                            <select class="adm-select" name="searchType" style="width:110px;">
+                        <div class="adm-inquiry-search-row">
+                            <select class="adm-select adm-inquiry-search-type" name="searchType">
                                 <option value="all" ${search.searchType=='all'?'selected':''}>${msg_admin_common_all}</option>
                                 <option value="inquiryId" ${search.searchType=='inquiryId'?'selected':''}>${msg_admin_inquiry_searchType_inquiryId}</option>
                                 <option value="title" ${search.searchType=='title'?'selected':''}>${msg_admin_inquiry_searchType_title}</option>
@@ -128,26 +129,37 @@
                                 <option value="nickname" ${search.searchType=='nickname'?'selected':''}>${msg_admin_inquiry_searchType_nickname}</option>
                                 <option value="userId" ${search.searchType=='userId'?'selected':''}>${msg_admin_inquiry_searchType_userId}</option>
                             </select>
-                            <div class="adm-search-box" style="flex:1;">
+                            <div class="adm-search-box adm-inquiry-search-box">
                                 <span class="adm-search-ico">🔍</span>
                                 <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_inquiry_searchPlaceholder}">
                             </div>
                         </div>
                     </div>
 
-                    <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
+                    <div class="adm-inquiry-filter-actions">
+                        <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/inquiries">${msg_admin_common_reset}</a>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="adm-card">
+    <div class="adm-card adm-inquiry-list-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">${msg_admin_inquiry_listTitle}</div>
-            <div style="font-size:12px;color:#64748b;">${msg_admin_common_totalCount}</div>
+            <div class="adm-card-title">${msg_admin_inquiry_listTitle}<span class="adm-section-total-inline">${msg_admin_common_totalCount}</span></div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table">
+            <table class="adm-table adm-inquiry-table">
+                <colgroup>
+                    <col class="adm-inquiry-col-id">
+                    <col class="adm-inquiry-col-author">
+                    <col>
+                    <col class="adm-inquiry-col-category">
+                    <col class="adm-inquiry-col-status">
+                    <col class="adm-inquiry-col-answer">
+                    <col class="adm-inquiry-col-date">
+                </colgroup>
                 <thead>
                 <tr>
                     <th>${msg_admin_common_id}</th>
@@ -161,7 +173,7 @@
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="item">
-                    <tr class="adm-inq-row" data-id="${item.inquiryId}" style="cursor:pointer;">
+                    <tr class="adm-inq-row" data-id="${item.inquiryId}">
                         <td>#${item.inquiryId}</td>
                         <%-- 작성자 --%>
                         <td>
@@ -169,10 +181,10 @@
                                     class="adm-cell-link js-open-member-context"
                                     data-user-idx="${item.userIdx}"
                                     onclick="event.stopPropagation();">
-                                <span style="font-weight:700;color:#93c5fd;">${item.nickname}</span>
+                                <span class="adm-inquiry-member-name">${item.nickname}</span>
                                 <span class="adm-cell-link-note">@${item.userId}</span>
                                 <c:if test="${item.accountStatus == 'BLOCKED'}">
-                                    <span class="adm-cell-link-note" style="color:#fca5a5;">${msg_admin_reports_accountBlocked}</span>
+                                    <span class="adm-cell-link-note adm-inquiry-blocked-note">${msg_admin_reports_accountBlocked}</span>
                                 </c:if>
                             </button>
                         </td>
@@ -233,7 +245,7 @@
                                         <span class="mem-name">${msg_admin_inquiry_answered}</span>
                                         <span class="adm-cell-link-note">${item.answerAdminNickname}</span>
                                     </c:when>
-                                    <c:otherwise><span style="color:#64748b;">${msg_admin_inquiry_unanswered}</span></c:otherwise>
+                                    <c:otherwise><span class="adm-inquiry-muted">${msg_admin_inquiry_unanswered}</span></c:otherwise>
                                 </c:choose>
                             </a>
                         </td>
@@ -247,7 +259,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="7" style="text-align:center;padding:40px;color:#475569;">${msg_admin_common_noResults}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="7" class="adm-local-empty-cell">${msg_admin_common_noResults}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -266,7 +278,7 @@
     </div>
 
     <%-- ── 유저 화면 바로가기 ── --%>
-    <div style="margin-top:16px;padding:0 10px;">
+    <div class="adm-inquiry-site-link">
         <a class="adm-nav-item adm-nav-ext" href="${pageContext.request.contextPath}/inquiry/list" target="_blank">
             <span class="adm-nav-icon">↗️</span> ${msg_admin_inquiry_viewSite}
         </a>
