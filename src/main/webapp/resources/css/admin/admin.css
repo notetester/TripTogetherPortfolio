@@ -2926,28 +2926,69 @@ body.sa-light .js-member-section-card .js-member-page-state {
     min-width: 42px;
     text-align: center !important;
 }
-.adm-admin-list-selection {
-    padding: 6px 10px;
-    border: 1px solid rgba(59,130,246,.28);
-    border-radius: 10px;
-    background: rgba(30,58,95,.45);
-}
-body.sa-light .adm-admin-list-selection {
-    background: #eff6ff;
-    border-color: #bfdbfe;
-}
-
 
 /* 공통 관리자 섹션 목록 도구 — 차단 관리 로컬 섹션 UX 확장 */
 .adm-section-list-toolbar {
+    display: grid;
+    grid-template-columns: minmax(260px, .42fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
     border-top: 1px solid rgba(30, 41, 59, .86);
     border-bottom: 1px solid rgba(30, 41, 59, .86);
     background: rgba(15, 23, 42, .22);
-    padding: 10px 14px;
+    padding: 12px 16px;
+}
+.adm-admin-list-bulkbar {
+    min-height: 44px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .15s ease, border-color .15s ease, background-color .15s ease;
+}
+.adm-admin-list-bulkbar.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    border-color: rgba(59,130,246,.56);
+    background: rgba(29,78,137,.48);
+}
+.adm-admin-list-selected-count {
+    color: #93c5fd;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.adm-admin-list-toolcluster,
+.adm-admin-list-primary-tools {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+}
+.adm-admin-list-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #94a3b8;
+    white-space: nowrap;
 }
 .adm-section-list-filter {
-    flex: 1 1 640px;
-    min-width: 280px;
+    min-width: 320px;
+    flex: 1 1 360px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 .adm-section-list-filter .adm-select {
     width: auto;
@@ -2961,32 +3002,86 @@ body.sa-light .adm-admin-list-selection {
     min-width: 180px;
 }
 .adm-section-list-size {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #94a3b8;
-    white-space: nowrap;
+    flex: 0 0 auto;
 }
 .adm-section-list-size .adm-select {
     width: 86px;
     min-width: 86px;
 }
-.adm-section-list-actions {
-    justify-content: flex-end;
+.adm-section-list-page-tools {
+    gap: 6px;
 }
 .adm-section-list-page-info {
     font-size: 12px;
     color: #94a3b8;
     white-space: nowrap;
 }
+.adm-admin-list-export-tool {
+    flex: 0 0 auto;
+}
+.adm-admin-list-overflow-menu {
+    position: relative;
+    display: none;
+    flex: 0 0 auto;
+}
+.adm-admin-list-overflow-menu.has-items {
+    display: inline-flex;
+}
+.adm-admin-list-overflow-toggle {
+    min-width: 76px;
+    font-size: 12px;
+}
+.adm-admin-list-overflow-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 70;
+    min-width: 260px;
+    padding: 10px;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    background: #111827;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, .32);
+}
+.adm-admin-list-overflow-menu.open .adm-admin-list-overflow-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.adm-admin-list-overflow-panel .adm-admin-list-tool,
+.adm-admin-list-overflow-panel .adm-section-list-filter,
+.adm-admin-list-overflow-panel .js-admin-list-sort-reset {
+    width: 100%;
+    justify-content: space-between;
+}
+.adm-admin-list-overflow-panel .adm-section-list-filter {
+    min-width: 0;
+    flex-wrap: wrap;
+}
+.adm-admin-list-overflow-panel .adm-section-list-search {
+    flex: 1 1 100%;
+}
+.adm-admin-list-overflow-panel .js-admin-list-sort-reset {
+    justify-content: center;
+}
 body.sa-light .adm-section-list-toolbar {
     background: #f8fafc;
     border-color: #e2e8f0;
 }
+body.sa-light .adm-admin-list-bulkbar.is-active {
+    background: #eff6ff;
+    border-color: rgba(37,99,235,.34);
+}
 body.sa-light .adm-section-list-size,
+body.sa-light .adm-admin-list-tool,
 body.sa-light .adm-section-list-page-info {
     color: #64748b;
+}
+body.sa-light .adm-admin-list-overflow-panel {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, .14);
 }
 .adm-admin-list-table td {
     padding-top: 9px;
@@ -3010,12 +3105,40 @@ body.sa-light .adm-section-list-page-info {
 }
 @media (max-width: 900px) {
     .adm-section-list-toolbar {
+        grid-template-columns: 1fr;
         align-items: stretch;
     }
-    .adm-section-list-filter,
-    .adm-section-list-actions {
+    .adm-admin-list-bulkbar:not(.is-active) {
+        display: none;
+    }
+    .adm-admin-list-toolcluster,
+    .adm-admin-list-primary-tools {
+        justify-content: flex-start;
+    }
+    .adm-section-list-filter {
         width: 100%;
         justify-content: flex-start;
+    }
+    .adm-admin-list-overflow-panel {
+        left: 0;
+        right: auto;
+    }
+}
+@media (max-width: 560px) {
+    .adm-section-list-filter,
+    .adm-admin-list-bulkbar {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .adm-section-list-filter,
+    .adm-section-list-filter .adm-select,
+    .adm-section-list-search,
+    .adm-admin-list-bulkbar .adm-btn,
+    .adm-admin-list-overflow-menu,
+    .adm-admin-list-overflow-toggle,
+    .adm-admin-list-overflow-panel {
+        width: 100%;
     }
 }
 

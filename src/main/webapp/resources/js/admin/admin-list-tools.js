@@ -263,36 +263,39 @@
         if (existing) return existing;
 
         const toolbar = document.createElement('div');
-        toolbar.className = 'adm-local-toolbar adm-section-list-toolbar js-admin-list-tools-toolbar';
+        toolbar.className = 'adm-section-list-toolbar adm-admin-list-controlbar js-admin-list-tools-toolbar';
         toolbar.dataset.tableId = table.id;
         toolbar.innerHTML =
-            '<div class="adm-local-toolbar-group adm-section-list-filter">'
-            + '<label class="adm-section-list-size adm-section-list-mode"><span>' + TEXT.loadMode + '</span>'
+            '<div class="adm-admin-list-selection adm-admin-list-bulkbar" aria-live="polite">'
+            + '<span class="adm-admin-list-selected-count"></span>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-list-clear-selection">' + TEXT.clearSelection + '</button>'
+            + '</div>'
+            + '<div class="adm-admin-list-toolcluster">'
+            + '<div class="adm-admin-list-primary-tools js-admin-list-primary-tools">'
+            + '<label class="adm-admin-list-tool adm-section-list-mode"><span>' + TEXT.loadMode + '</span>'
             + '<select class="adm-select js-admin-list-mode">'
             + '<option value="page">' + TEXT.displayCurrent + '</option>'
             + '<option value="full">' + TEXT.displayAll + '</option>'
             + '</select></label>'
+            + '<div class="adm-admin-list-tool adm-section-list-filter">'
             + '<select class="adm-select js-admin-list-field" title="현재 화면 기준 필드"></select>'
             + '<div class="adm-search-box adm-section-list-search">'
             + '<span class="adm-search-ico">🔎</span>'
             + '<input type="text" class="adm-input js-admin-list-keyword" placeholder="' + TEXT.currentKeyword + '">'
             + '</div>'
             + '<button type="button" class="adm-btn adm-btn-ghost js-admin-list-filter-reset">↺ ' + TEXT.filterReset + '</button>'
-            + '<label class="adm-section-list-size"><span>' + TEXT.pageSize + '</span>'
+            + '</div>'
+            + '<label class="adm-admin-list-tool adm-section-list-size"><span>' + TEXT.pageSize + '</span>'
             + '<select class="adm-select js-admin-list-page-size">'
             + '<option value="10">10</option><option value="20" selected>20</option><option value="50">50</option><option value="100">100</option><option value="all">' + TEXT.pageSizeAll + '</option>'
             + '</select></label>'
-            + '</div>'
-            + '<div class="adm-local-toolbar-group adm-admin-list-selection" style="display:none;">'
-            + '<span class="adm-admin-list-selected-count" style="color:#93c5fd;font-size:13px;font-weight:700;"></span>'
-            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-list-clear-selection">' + TEXT.clearSelection + '</button>'
-            + '</div>'
-            + '<div class="adm-local-toolbar-group adm-section-list-actions">'
+            + '<div class="adm-admin-list-tool adm-section-list-page-tools">'
             + '<span class="adm-section-list-page-info js-admin-list-page-info"></span>'
             + '<button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev">' + TEXT.prev + '</button>'
             + '<button type="button" class="adm-btn adm-btn-ghost js-admin-list-next">' + TEXT.next + '</button>'
+            + '</div>'
             + '<button type="button" class="adm-btn adm-btn-ghost js-admin-list-sort-reset" style="display:none;">↺ ' + TEXT.sortReset + '</button>'
-            + '<div class="adm-export-control">'
+            + '<div class="adm-export-control adm-admin-list-export-tool">'
             + '<select class="adm-select js-admin-list-export-format"><option value="csv">' + TEXT.csv + '</option><option value="excel">' + TEXT.excel + '</option></select>'
             + '<div class="adm-export-menu">'
             + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ ' + TEXT.exportLabel + ' ▾</button>'
@@ -300,7 +303,13 @@
             + '<button type="button" class="js-admin-list-export" data-scope="page">📄 ' + TEXT.downloadPage + '</button>'
             + '<button type="button" class="js-admin-list-export" data-scope="filtered">📋 ' + TEXT.downloadFiltered + '</button>'
             + '<button type="button" class="js-admin-list-export js-admin-list-export-selected" data-scope="selected" disabled>☑ ' + TEXT.downloadSelected + ' (0)</button>'
-            + '</div></div></div></div>';
+            + '</div></div></div>'
+            + '</div>'
+            + '<div class="adm-admin-list-overflow-menu js-admin-list-overflow-menu">'
+            + '<button type="button" class="adm-btn adm-btn-ghost adm-admin-list-overflow-toggle js-admin-list-overflow-toggle" aria-expanded="false">옵션 ▾</button>'
+            + '<div class="adm-admin-list-overflow-panel js-admin-list-overflow-panel"></div>'
+            + '</div>'
+            + '</div>';
 
         parent.insertBefore(toolbar, wrap);
         return toolbar;
@@ -335,6 +344,61 @@
         } else {
             mode.innerHTML = '<option value="page">' + TEXT.displayCurrent + '</option><option value="full">' + TEXT.displayAll + '</option>';
         }
+    }
+
+    function isVisibleToolbarItem(item) {
+        if (!item) return false;
+        return !item.classList.contains('js-admin-list-sort-reset') || item.style.display !== 'none';
+    }
+
+    function syncToolbarOverflow(toolbar) {
+        if (toolbar && typeof toolbar.__adminListOverflowSync === 'function') {
+            toolbar.__adminListOverflowSync();
+        }
+    }
+
+    function initToolbarOverflow(toolbar) {
+        const primary = toolbar.querySelector('.js-admin-list-primary-tools');
+        const menu = toolbar.querySelector('.js-admin-list-overflow-menu');
+        const panel = toolbar.querySelector('.js-admin-list-overflow-panel');
+        const toggle = toolbar.querySelector('.js-admin-list-overflow-toggle');
+        if (!primary || !menu || !panel || !toggle) return;
+
+        const items = [
+            { node: toolbar.querySelector('.js-admin-list-sort-reset'), breakpoint: 1560 },
+            { node: toolbar.querySelector('.adm-section-list-filter'), breakpoint: 1380 },
+            { node: toolbar.querySelector('.adm-section-list-mode'), breakpoint: 1180 },
+            { node: toolbar.querySelector('.adm-section-list-size'), breakpoint: 1040 },
+            { node: toolbar.querySelector('.adm-section-list-page-tools'), breakpoint: 900 }
+        ].filter(function (item) { return !!item.node; });
+
+        toolbar.__adminListOverflowSync = function () {
+            const width = window.innerWidth || document.documentElement.clientWidth || 1600;
+            items.forEach(function (item) {
+                const target = width <= item.breakpoint ? panel : primary;
+                if (item.node.parentElement !== target) target.appendChild(item.node);
+            });
+            const hasItems = Array.from(panel.children).some(isVisibleToolbarItem);
+            menu.classList.toggle('has-items', hasItems);
+            if (!hasItems) {
+                menu.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        };
+
+        toggle.addEventListener('click', function () {
+            const willOpen = !menu.classList.contains('open');
+            menu.classList.toggle('open', willOpen);
+            toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
+        document.addEventListener('click', function (event) {
+            if (!menu.contains(event.target)) {
+                menu.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+        window.addEventListener('resize', function () { syncToolbarOverflow(toolbar); }, { passive: true });
+        syncToolbarOverflow(toolbar);
     }
 
     function normalizeManualSelection(table) {
@@ -399,7 +463,13 @@
         const selectedCountEl = toolbar.querySelector('.adm-admin-list-selected-count');
         const selectedExport = toolbar.querySelector('.js-admin-list-export-selected');
 
-        if (selectedBox) selectedBox.style.display = selectedCount > 0 ? 'inline-flex' : 'none';
+        if (selectedBox) {
+            selectedBox.classList.toggle('is-active', selectedCount > 0);
+            selectedBox.setAttribute('aria-hidden', selectedCount > 0 ? 'false' : 'true');
+            selectedBox.querySelectorAll('button').forEach(function (btn) {
+                btn.disabled = selectedCount === 0;
+            });
+        }
         if (selectedCountEl) selectedCountEl.textContent = TEXT.selectedPrefix + ' ' + selectedCount + TEXT.selectedSuffix;
         if (selectedExport) {
             selectedExport.disabled = selectedCount === 0;
@@ -521,6 +591,7 @@
             const toolbar = document.querySelector('.js-admin-list-tools-toolbar[data-table-id="' + table.id + '"]');
             const reset = toolbar ? toolbar.querySelector('.js-admin-list-sort-reset') : null;
             if (reset) reset.style.display = hasSortQuery() ? '' : 'none';
+            syncToolbarOverflow(toolbar);
             return;
         }
         const state = getState(table);
@@ -536,6 +607,7 @@
         const toolbar = document.querySelector('.js-admin-list-tools-toolbar[data-table-id="' + table.id + '"]');
         const reset = toolbar ? toolbar.querySelector('.js-admin-list-sort-reset') : null;
         if (reset) reset.style.display = state.sortIndex >= 0 || hasSortQuery() ? '' : 'none';
+        syncToolbarOverflow(toolbar);
     }
 
     function renderTable(table) {
@@ -759,6 +831,7 @@
         populateFieldSelect(table, toolbar);
         enhanceSorting(table);
         configureLoadMode(table, toolbar);
+        initToolbarOverflow(toolbar);
         bindToolbar(table, toolbar);
         bindSelection(table);
         renderTable(table);

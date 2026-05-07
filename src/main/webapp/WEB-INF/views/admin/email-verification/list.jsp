@@ -24,7 +24,7 @@
 <spring:message var="msg_admin_emailRequests_status_cancelled" code="admin.emailRequests.status.cancelled"/>
 <spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
-<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
+<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount" arguments="${total}"/>
 <spring:message var="msg_admin_emailRequests_requestedAt" code="admin.emailRequests.requestedAt"/>
 <spring:message var="msg_admin_common_member" code="admin.common.member"/>
 <spring:message var="msg_admin_context_requestEmail" code="admin.context.requestEmail"/>
@@ -41,7 +41,7 @@
 <spring:message var="msg_admin_common_trace" code="admin.common.trace"/>
 <spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
 <spring:message var="msg_admin_common_noResults" code="admin.common.noResults"/>
-<spring:message var="msg_admin_common_pageStatus" code="admin.common.pageStatus"/>
+<spring:message var="msg_admin_common_pageStatus" code="admin.common.pageStatus" arguments="${paging.currentPage},${paging.totalPage}"/>
 <c:set var="activeMenu" value="emailVerifications"/>
 
 
@@ -88,13 +88,16 @@
         </div>
     </div>
 
-    <div class="adm-card">
+    <div class="adm-card js-email-request-section-card" style="overflow:visible;">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_admin_emailRequests_historyTitle}</div>
             <div style="font-size:12px;color:#64748b;">${msg_admin_common_totalCount}</div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table">
+            <table id="emailVerificationRequestTable"
+                   class="adm-table adm-section-table-fixed adm-email-request-table"
+                   data-admin-list-server-sort="true"
+                   data-section="emailVerificationRequests">
                 <thead>
                 <tr>
           <th data-sort="time" onclick="sortBy('time')">${msg_admin_emailRequests_requestedAt}<span class="sort-ico" aria-hidden="true"></span></th>
