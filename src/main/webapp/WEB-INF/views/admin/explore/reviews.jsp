@@ -55,33 +55,33 @@
 <c:set var="pageTitle" value="${msg_admin_explore_reviews_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-explore-page">
     <div class="adm-admin-tabs">
-        <a class="adm-tab" href="${pageContext.request.contextPath}/admin/explore">
+        <a class="adm-tab adm-tab-link" href="${pageContext.request.contextPath}/admin/explore">
             ${msg_admin_explore_tabs_spots}
         </a>
-        <a class="adm-tab active" href="${pageContext.request.contextPath}/admin/explore/reviews">
+        <a class="adm-tab adm-tab-link active" href="${pageContext.request.contextPath}/admin/explore/reviews">
             ${msg_admin_explore_tabs_reviews}
         </a>
     </div>
 
-    <div class="adm-summary-grid" style="grid-template-columns:repeat(2, minmax(0, 1fr));">
-        <div class="adm-summary-card">
+    <div class="adm-summary-grid adm-explore-summary-two">
+        <div class="adm-card adm-summary-card">
             <div class="adm-summary-label">${msg_admin_explore_reviews_kpi_total}</div>
-            <div class="adm-summary-value">${stats.totalReviews}</div>
+            <div class="adm-summary-value is-success">${stats.totalReviews}</div>
             <div class="adm-summary-sub">${msg_admin_explore_reviews_kpi_activeCount}</div>
         </div>
-        <div class="adm-summary-card">
+        <div class="adm-card adm-summary-card">
             <div class="adm-summary-label">${msg_admin_explore_reviews_kpi_blocked}</div>
-            <div class="adm-summary-value">${stats.blockedReviews}</div>
+            <div class="adm-summary-value is-warning">${stats.blockedReviews}</div>
             <div class="adm-summary-sub">${msg_admin_explore_reviews_kpi_blockedSub}</div>
         </div>
     </div>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-explore-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/explore/reviews">
-                <div class="adm-filter-bar" style="flex-wrap:wrap;gap:12px;">
+                <div class="adm-filter-bar adm-explore-filterbar adm-explore-review-filterbar">
                     <div>
                         <div class="adm-filter-label">${msg_admin_explore_filter_status}</div>
                         <select class="adm-select" name="reviewStatus">
@@ -90,19 +90,19 @@
                             <option value="BLOCKED" ${search.reviewStatus=='BLOCKED'?'selected':''}>${msg_admin_explore_reviewStatus_blocked}</option>
                         </select>
                     </div>
-                    <div style="flex:1;min-width:220px;">
+                    <div class="adm-explore-search-field">
                         <div class="adm-filter-label">${msg_admin_explore_filter_search}</div>
-                        <div style="display:flex;gap:6px;">
-                            <select class="adm-select" name="searchType" style="width:120px;">
+                        <div class="adm-explore-search-row">
+                            <select class="adm-select adm-explore-search-type" name="searchType">
                                 <option value="all" ${search.searchType=='all'?'selected':''}>${msg_admin_common_all}</option>
                                 <option value="name" ${search.searchType=='name'?'selected':''}>${msg_admin_explore_searchType_name}</option>
                                 <option value="nickname" ${search.searchType=='nickname'?'selected':''}>${msg_admin_explore_searchType_nickname}</option>
                                 <option value="content" ${search.searchType=='content'?'selected':''}>${msg_admin_explore_searchType_content}</option>
                             </select>
-                            <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_explore_filter_searchPlaceholder}" style="flex:1;">
+                            <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_explore_filter_searchPlaceholder}">
                         </div>
                     </div>
-                    <div style="display:flex;align-items:flex-end;gap:6px;">
+                    <div class="adm-explore-filter-actions">
                         <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
                         <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/explore/reviews">${msg_admin_common_reset}</a>
                     </div>
@@ -111,30 +111,41 @@
         </div>
     </div>
 
-    <div class="adm-card">
+    <div class="adm-card adm-explore-list-card">
         <div class="adm-card-head">
-            <div style="display:flex;align-items:center;gap:12px;">
+            <div class="adm-explore-list-title">
                 <div class="adm-card-title">${msg_admin_explore_reviews_listTitle}</div>
                 <div class="adm-muted-inline">${msg_admin_common_totalCount}</div>
             </div>
-            <div id="bulkBar" style="display:none;gap:8px;align-items:center;">
+            <div id="bulkBar" class="adm-explore-bulk-bar" hidden>
                 <span id="bulkCount" class="adm-muted-inline"></span>
-                <button class="adm-btn adm-btn-ghost" type="button" onclick="bulkAction('block')">${msg_admin_explore_reviews_action_bulkBlock}</button>
+                <button class="adm-btn adm-btn-ghost adm-explore-danger-btn" type="button" onclick="bulkAction('block')">${msg_admin_explore_reviews_action_bulkBlock}</button>
             </div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table">
+            <table class="adm-table adm-explore-table adm-explore-reviews-table">
+                <colgroup>
+                    <col class="adm-explore-col-check">
+                    <col class="adm-explore-col-id">
+                    <col class="adm-explore-col-source">
+                    <col class="adm-explore-col-author">
+                    <col class="adm-explore-col-rating-small">
+                    <col>
+                    <col class="adm-explore-col-status">
+                    <col class="adm-explore-col-date">
+                    <col class="adm-explore-col-review-action">
+                </colgroup>
                 <thead>
                 <tr>
-                    <th style="width:36px;"><input type="checkbox" id="checkAll"></th>
-                    <th style="width:70px;">${msg_admin_explore_detail_reviewId}</th>
-                    <th style="width:180px;">${msg_admin_explore_reviews_table_spot}</th>
-                    <th style="width:120px;">${msg_admin_explore_reviews_table_author}</th>
-                    <th style="width:70px;">${msg_admin_explore_reviews_table_rating}</th>
+                    <th><input type="checkbox" id="checkAll"></th>
+                    <th>${msg_admin_explore_detail_reviewId}</th>
+                    <th>${msg_admin_explore_reviews_table_spot}</th>
+                    <th>${msg_admin_explore_reviews_table_author}</th>
+                    <th>${msg_admin_explore_reviews_table_rating}</th>
                     <th>${msg_admin_explore_reviews_table_content}</th>
-                    <th style="width:80px;">${msg_admin_common_status}</th>
-                    <th style="width:90px;">${msg_admin_explore_reviews_table_createdAt}</th>
-                    <th style="width:90px;">${msg_admin_common_action}</th>
+                    <th>${msg_admin_common_status}</th>
+                    <th>${msg_admin_explore_reviews_table_createdAt}</th>
+                    <th>${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -144,22 +155,20 @@
                         <td class="adm-muted-inline">#${review.reviewIdx}</td>
                         <td>
                             <a href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}" class="adm-cell-link">
-                                <span style="font-weight:700;color:#e2e8f0;">${fn:escapeXml(review.spotName)}</span>
+                                <span class="adm-explore-spot-name">${fn:escapeXml(review.spotName)}</span>
                                 <span class="adm-cell-link-note">${msg_admin_explore_detail_userView}</span>
                             </a>
                         </td>
                         <td>
                             <button type="button"
-                                    class="adm-inline-link js-open-member-context"
-                                    data-user-idx="${review.userIdx}"
-                                    style="font-size:13px;font-weight:700;color:#93c5fd;">
+                                    class="adm-inline-link adm-explore-author-name js-open-member-context"
+                                    data-user-idx="${review.userIdx}">
                                 ${fn:escapeXml(review.nickname)}
                             </button>
                             <div class="adm-muted-inline">
                                 <button type="button"
-                                        class="adm-inline-link js-open-member-context"
-                                        data-user-idx="${review.userIdx}"
-                                        style="font-size:12px;color:#94a3b8;">
+                                        class="adm-inline-link adm-explore-author-id js-open-member-context"
+                                        data-user-idx="${review.userIdx}">
                                     ${fn:escapeXml(review.userId)}
                                 </button>
                             </div>
@@ -168,7 +177,7 @@
                             <button type="button"
                                     class="adm-cell-link js-focus-review-action"
                                     data-review-idx="${review.reviewIdx}">
-                                <span style="font-size:12px;color:#d97706;">${review.rating}/5</span>
+                                <span class="adm-explore-rating-value">${review.rating}/5</span>
                                 <span class="adm-cell-link-note">${msg_admin_common_actionLabel}</span>
                             </button>
                         </td>
@@ -216,17 +225,17 @@
                             </button>
                         </td>
                         <td>
-                            <div id="review-action-${review.reviewIdx}" class="adm-row-actions" style="justify-content:flex-start;">
+                            <div id="review-action-${review.reviewIdx}" class="adm-row-actions adm-explore-review-actions">
                                 <c:if test="${review.displayStatus != 'BLOCKED'}">
-                                    <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${review.reviewIdx}" onclick="actionReview(this, 'block')">${msg_admin_explore_reviews_action_block}</button>
+                                    <button class="adm-row-btn danger" type="button" data-id="${review.reviewIdx}" onclick="actionReview(this, 'block')">${msg_admin_explore_reviews_action_block}</button>
                                 </c:if>
-                                <a class="adm-row-btn more" href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}">${msg_admin_common_viewDetail}</a>
+                                <a class="adm-row-btn detail" href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}">${msg_admin_common_viewDetail}</a>
                             </div>
                         </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="9" style="text-align:center;padding:40px;color:#475569;">${msg_admin_explore_reviews_empty}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="9" class="adm-local-empty-cell">${msg_admin_explore_reviews_empty}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -267,10 +276,10 @@ function updateBulkBar() {
     var checked = document.querySelectorAll('.row-check:checked');
     var bar = document.getElementById('bulkBar');
     if (checked.length > 0) {
-        bar.style.display = 'flex';
+        bar.hidden = false;
         document.getElementById('bulkCount').textContent = EXPLORE_REVIEW_MSG.bulkSelectedTemplate.replace('__COUNT__', checked.length);
     } else {
-        bar.style.display = 'none';
+        bar.hidden = true;
     }
 }
 

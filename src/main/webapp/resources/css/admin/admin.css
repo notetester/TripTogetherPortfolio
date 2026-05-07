@@ -8093,6 +8093,14 @@ body.sa-light .adm-community-side-mono .adm-inline-link {
     align-items: end;
 }
 
+.adm-explore-summary-two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.adm-filter-bar.adm-explore-review-filterbar {
+    grid-template-columns: minmax(128px, .42fr) minmax(360px, 1.5fr) auto;
+}
+
 .adm-explore-filterbar > div,
 .adm-explore-search-row {
     min-width: 0;
@@ -8174,6 +8182,26 @@ body.sa-light .adm-community-side-mono .adm-inline-link {
     width: 140px;
 }
 
+.adm-explore-col-source {
+    width: 180px;
+}
+
+.adm-explore-col-rating-small {
+    width: 70px;
+}
+
+.adm-explore-col-date {
+    width: 90px;
+}
+
+.adm-explore-col-review-action {
+    width: 112px;
+}
+
+.adm-explore-reviews-table {
+    min-width: 1040px;
+}
+
 .adm-explore-thumb {
     width: 56px;
     height: 56px;
@@ -8196,6 +8224,11 @@ body.sa-light .adm-community-side-mono .adm-inline-link {
     font-weight: 700;
 }
 
+.adm-explore-spot-name {
+    color: #e2e8f0;
+    font-weight: 700;
+}
+
 .adm-explore-spots-table .adm-cell-ellipsis {
     max-width: 260px;
     margin-top: 4px;
@@ -8215,14 +8248,23 @@ body.sa-light .adm-community-side-mono .adm-inline-link {
 }
 
 .adm-explore-rating-cell,
-.adm-explore-rating-cell .adm-cell-link {
+.adm-explore-rating-cell .adm-cell-link,
+.adm-explore-rating-value {
     color: #d97706;
     font-size: 12px;
     font-weight: 700;
 }
 
+.adm-explore-review-actions {
+    justify-content: flex-start;
+}
+
 body.sa-light .adm-explore-thumb {
     border-color: #cbd5e1;
+}
+
+body.sa-light .adm-explore-spot-name {
+    color: #0f172a;
 }
 
 body.sa-light .adm-explore-spots-table .adm-cell-ellipsis,
@@ -8235,7 +8277,8 @@ body.sa-light .adm-explore-author-name {
 }
 
 body.sa-light .adm-explore-rating-cell,
-body.sa-light .adm-explore-rating-cell .adm-cell-link {
+body.sa-light .adm-explore-rating-cell .adm-cell-link,
+body.sa-light .adm-explore-rating-value {
     color: #b45309;
 }
 
@@ -8341,6 +8384,10 @@ body.sa-light .adm-explore-rating-cell .adm-cell-link {
     }
 
     .adm-filter-bar.adm-explore-filterbar {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-explore-summary-two {
         grid-template-columns: 1fr;
     }
 }
