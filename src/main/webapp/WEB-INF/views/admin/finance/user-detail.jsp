@@ -25,6 +25,8 @@
 <spring:message var="msg_admin_finance_userDetail_paymentHistoryEmpty" code="admin.finance.userDetail.paymentHistoryEmpty"/>
 <spring:message var="msg_admin_finance_userDetail_col_method" code="admin.finance.userDetail.col.method"/>
 <spring:message var="msg_admin_finance_userDetail_col_status" code="admin.finance.userDetail.col.status"/>
+<spring:message var="msg_admin_finance_userDetail_walletCurrentCount" code="admin.common.currentCountFormat" arguments="${fn:length(walletHistory)}"/>
+<spring:message var="msg_admin_finance_userDetail_paymentCurrentCount" code="admin.common.currentCountFormat" arguments="${fn:length(paymentHistory)}"/>
 <c:set var="activeMenu" value="finance"/>
 <c:set var="pageTitle">${msg_admin_finance_userDetail_title}</c:set>
 <%@ include file="../layout.jsp" %>
@@ -91,11 +93,14 @@
     </div>
 
     <%-- 자산 변동 이력 --%>
-    <div class="adm-card adm-finance-history-card">
+    <div class="adm-card adm-finance-history-card adm-finance-managed-card adm-overflow-visible">
         <div class="adm-card-head">
-            <div class="adm-card-title">${msg_admin_finance_userDetail_walletHistory}</div>
+            <div class="adm-card-title">
+                ${msg_admin_finance_userDetail_walletHistory}
+                <span class="adm-section-total-inline">${msg_admin_finance_userDetail_walletCurrentCount}</span>
+            </div>
         </div>
-        <div class="adm-finance-table-scroll">
+        <div class="adm-table-wrap">
             <c:choose>
                 <c:when test="${empty walletHistory}">
                     <div class="adm-local-empty-cell">
@@ -103,7 +108,7 @@
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <table class="adm-table adm-finance-wallet-history-table">
+                    <table class="adm-table adm-finance-wallet-history-table" data-admin-list-ignore="true">
                         <colgroup>
                             <col class="adm-finance-col-time">
                             <col class="adm-finance-col-method">
@@ -143,11 +148,14 @@
     </div>
 
     <%-- 결제 이력 --%>
-    <div class="adm-card adm-finance-history-card">
+    <div class="adm-card adm-finance-history-card adm-finance-managed-card adm-overflow-visible">
         <div class="adm-card-head">
-            <div class="adm-card-title">${msg_admin_finance_userDetail_paymentHistory}</div>
+            <div class="adm-card-title">
+                ${msg_admin_finance_userDetail_paymentHistory}
+                <span class="adm-section-total-inline">${msg_admin_finance_userDetail_paymentCurrentCount}</span>
+            </div>
         </div>
-        <div class="adm-finance-table-scroll">
+        <div class="adm-table-wrap">
             <c:choose>
                 <c:when test="${empty paymentHistory}">
                     <div class="adm-local-empty-cell">
@@ -155,7 +163,7 @@
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <table class="adm-table adm-finance-payment-history-table">
+                    <table class="adm-table adm-finance-payment-history-table" data-admin-list-ignore="true">
                         <colgroup>
                             <col class="adm-finance-col-time">
                             <col>

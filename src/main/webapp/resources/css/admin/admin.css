@@ -4583,7 +4583,7 @@ body.sa-light .adm-fin-guide { color: #475569; }
 
 .adm-finance-history-card {
     margin-bottom: 20px;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .adm-finance-table-scroll {
