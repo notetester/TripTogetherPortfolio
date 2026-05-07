@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
 <%-- i18n message declarations: var names are derived from message codes. --%>
@@ -23,6 +24,8 @@
 <spring:message var="msg_security_admin_common_status" code="security.admin.common.status"/>
 <spring:message var="msg_security_admin_common_createdAt" code="security.admin.common.createdAt"/>
 <spring:message var="msg_security_admin_empty_externalAssessments" code="security.admin.empty.externalAssessments"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
+<spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount" arguments="${fn:length(assessments)}"/>
 <c:set var="pageTitle" value="${msg_security_admin_externalAssessments_title}"/>
 <c:set var="activeMenu" value="loginRiskAssessments"/>
 
@@ -38,93 +41,104 @@
         <div class="adm-actions">
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies">${msg_security_admin_nav_policies}</a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/reviews">${msg_security_admin_nav_reviews}</a>
-                    <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${msg_security_admin_nav_securityAssessments}</a>
         </div>
     </div>
 
-    <form method="get" class="adm-card" style="margin-bottom:16px;">
-        <div class="adm-form-grid" style="grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;">
-            <label>${msg_security_admin_common_sourceKind}
-                <select class="adm-input" name="sourceKind">
-                    <option value="">${msg_security_admin_common_all}</option>
-                    <option value="AI_MODEL" ${sourceKind == 'AI_MODEL' ? 'selected' : ''}>AI_MODEL</option>
-                    <option value="RULE_ALGORITHM" ${sourceKind == 'RULE_ALGORITHM' ? 'selected' : ''}>RULE_ALGORITHM</option>
-                    <option value="POLICY_AUTHORITY" ${sourceKind == 'POLICY_AUTHORITY' ? 'selected' : ''}>POLICY_AUTHORITY</option>
-                    <option value="ASSESSMENT_PIPELINE" ${sourceKind == 'ASSESSMENT_PIPELINE' ? 'selected' : ''}>ASSESSMENT_PIPELINE</option>
-                </select>
-            </label>
-            <label>${msg_security_admin_common_riskLevel}
-                <select class="adm-input" name="riskLevel">
-                    <option value="">${msg_security_admin_common_all}</option>
-                    <option value="CRITICAL" ${riskLevel == 'CRITICAL' ? 'selected' : ''}>CRITICAL</option>
-                    <option value="HIGH" ${riskLevel == 'HIGH' ? 'selected' : ''}>HIGH</option>
-                    <option value="MEDIUM" ${riskLevel == 'MEDIUM' ? 'selected' : ''}>MEDIUM</option>
-                    <option value="LOW" ${riskLevel == 'LOW' ? 'selected' : ''}>LOW</option>
-                    <option value="PENDING" ${riskLevel == 'PENDING' ? 'selected' : ''}>PENDING</option>
-                </select>
-            </label>
-            <label>${msg_security_admin_common_decisionStatus}
-                <select class="adm-input" name="decisionStatus">
-                    <option value="">${msg_security_admin_common_all}</option>
-                    <option value="PROPOSED" ${decisionStatus == 'PROPOSED' ? 'selected' : ''}>PROPOSED</option>
-                    <option value="APPLIED" ${decisionStatus == 'APPLIED' ? 'selected' : ''}>APPLIED</option>
-                    <option value="IGNORED" ${decisionStatus == 'IGNORED' ? 'selected' : ''}>IGNORED</option>
-                    <option value="PENDING" ${decisionStatus == 'PENDING' ? 'selected' : ''}>PENDING</option>
-                </select>
-            </label>
-            <label>${msg_security_admin_common_search}
-                <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="${msg_security_admin_placeholder_ipAccountSourceReason}">
-            </label>
-            <div style="align-self:end;">
-                <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
+    <form method="get" class="adm-card adm-external-assessment-filter-card">
+        <div class="adm-card-body">
+            <div class="adm-external-assessment-filterbar">
+                <label>${msg_security_admin_common_sourceKind}
+                    <select class="adm-input" name="sourceKind">
+                        <option value="">${msg_security_admin_common_all}</option>
+                        <option value="AI_MODEL" ${sourceKind == 'AI_MODEL' ? 'selected' : ''}>AI_MODEL</option>
+                        <option value="RULE_ALGORITHM" ${sourceKind == 'RULE_ALGORITHM' ? 'selected' : ''}>RULE_ALGORITHM</option>
+                        <option value="POLICY_AUTHORITY" ${sourceKind == 'POLICY_AUTHORITY' ? 'selected' : ''}>POLICY_AUTHORITY</option>
+                        <option value="ASSESSMENT_PIPELINE" ${sourceKind == 'ASSESSMENT_PIPELINE' ? 'selected' : ''}>ASSESSMENT_PIPELINE</option>
+                    </select>
+                </label>
+                <label>${msg_security_admin_common_riskLevel}
+                    <select class="adm-input" name="riskLevel">
+                        <option value="">${msg_security_admin_common_all}</option>
+                        <option value="CRITICAL" ${riskLevel == 'CRITICAL' ? 'selected' : ''}>CRITICAL</option>
+                        <option value="HIGH" ${riskLevel == 'HIGH' ? 'selected' : ''}>HIGH</option>
+                        <option value="MEDIUM" ${riskLevel == 'MEDIUM' ? 'selected' : ''}>MEDIUM</option>
+                        <option value="LOW" ${riskLevel == 'LOW' ? 'selected' : ''}>LOW</option>
+                        <option value="PENDING" ${riskLevel == 'PENDING' ? 'selected' : ''}>PENDING</option>
+                    </select>
+                </label>
+                <label>${msg_security_admin_common_decisionStatus}
+                    <select class="adm-input" name="decisionStatus">
+                        <option value="">${msg_security_admin_common_all}</option>
+                        <option value="PROPOSED" ${decisionStatus == 'PROPOSED' ? 'selected' : ''}>PROPOSED</option>
+                        <option value="APPLIED" ${decisionStatus == 'APPLIED' ? 'selected' : ''}>APPLIED</option>
+                        <option value="IGNORED" ${decisionStatus == 'IGNORED' ? 'selected' : ''}>IGNORED</option>
+                        <option value="PENDING" ${decisionStatus == 'PENDING' ? 'selected' : ''}>PENDING</option>
+                    </select>
+                </label>
+                <label class="adm-external-assessment-keyword-field">${msg_security_admin_common_search}
+                    <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${msg_security_admin_placeholder_ipAccountSourceReason}">
+                </label>
+                <div class="adm-external-assessment-filter-actions">
+                    <button class="adm-btn primary" type="submit">${msg_security_admin_common_search}</button>
+                    <a class="adm-btn ghost" href="${pageContext.request.contextPath}/admin/login-risk/assessments">${msg_admin_common_reset}</a>
+                </div>
             </div>
         </div>
     </form>
 
-    <div class="adm-table-wrap">
-        <table class="adm-table">
-            <thead>
-            <tr>
-                <th>${msg_security_admin_common_source}</th>
-                <th>${msg_security_admin_common_target}</th>
-                <th>${msg_security_admin_common_riskLevel}</th>
-                <th>${msg_security_admin_common_recommendationAction}</th>
-                <th>${msg_security_admin_common_evidence}</th>
-                <th>${msg_security_admin_common_status}</th>
-                <th>${msg_security_admin_common_createdAt}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <c:forEach var="a" items="${assessments}">
+    <div class="adm-card adm-external-assessment-list-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">${msg_security_admin_externalAssessments_title}</div>
+            <div class="adm-page-muted">${msg_admin_common_totalCount}</div>
+        </div>
+        <div class="adm-table-wrap">
+            <table id="externalAssessmentTable"
+                   class="adm-table adm-section-table-fixed adm-external-assessment-table"
+                   data-section="externalAssessments">
+                <thead>
                 <tr>
-                    <td>
-                        <strong>${a.sourceKind}</strong><br>
-                        <small>${a.sourceName}</small><br>
-                        <small>${a.sourceCode} ${a.sourceVersion}</small>
-                    </td>
-                    <td>
-                        ${a.subjectType}: ${a.subjectKey}<br>
-                        <c:if test="${not empty a.userId}"><small>${a.userId} / ${a.nickname}</small><br></c:if>
-                        <c:if test="${not empty a.ipAddress}"><small>IP: ${a.ipAddress}</small></c:if>
-                    </td>
-                    <td>
-                        <strong>${a.riskLevel}</strong>
-                        <c:if test="${not empty a.riskScore}"><br><small>score ${a.riskScore}</small></c:if>
-                        <c:if test="${not empty a.confidenceScore}"><br><small>confidence ${a.confidenceScore}</small></c:if>
-                    </td>
-                    <td>
-                        <strong>${a.recommendationAction}</strong><br>
-                        <small>${a.recommendationReason}</small>
-                    </td>
-                    <td>${a.evidenceSummary}</td>
-                    <td>${a.decisionStatus}</td>
-                    <td><fmt:formatDate value="${a.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
+                    <th>${msg_security_admin_common_source}</th>
+                    <th>${msg_security_admin_common_target}</th>
+                    <th>${msg_security_admin_common_riskLevel}</th>
+                    <th>${msg_security_admin_common_recommendationAction}</th>
+                    <th>${msg_security_admin_common_evidence}</th>
+                    <th>${msg_security_admin_common_status}</th>
+                    <th>${msg_security_admin_common_createdAt}</th>
                 </tr>
-            </c:forEach>
-            <c:if test="${empty assessments}">
-                <tr><td colspan="7" class="adm-empty">${msg_security_admin_empty_externalAssessments}</td></tr>
-            </c:if>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <c:forEach var="a" items="${assessments}">
+                    <tr>
+                        <td>
+                            <div class="adm-external-assessment-primary"><c:out value="${a.sourceKind}"/></div>
+                            <div class="adm-page-muted"><c:out value="${a.sourceName}"/></div>
+                            <div class="adm-page-muted"><c:out value="${a.sourceCode}"/> <c:out value="${a.sourceVersion}"/></div>
+                        </td>
+                        <td>
+                            <div><c:out value="${a.subjectType}"/>: <c:out value="${a.subjectKey}"/></div>
+                            <c:if test="${not empty a.userId}"><div class="adm-page-muted"><c:out value="${a.userId}"/> / <c:out value="${a.nickname}"/></div></c:if>
+                            <c:if test="${not empty a.ipAddress}"><div class="adm-page-muted">IP: <c:out value="${a.ipAddress}"/></div></c:if>
+                        </td>
+                        <td>
+                            <div class="adm-external-assessment-primary"><c:out value="${a.riskLevel}"/></div>
+                            <c:if test="${not empty a.riskScore}"><div class="adm-page-muted">score <c:out value="${a.riskScore}"/></div></c:if>
+                            <c:if test="${not empty a.confidenceScore}"><div class="adm-page-muted">confidence <c:out value="${a.confidenceScore}"/></div></c:if>
+                        </td>
+                        <td>
+                            <div class="adm-external-assessment-primary"><c:out value="${a.recommendationAction}"/></div>
+                            <div class="adm-page-muted"><c:out value="${a.recommendationReason}"/></div>
+                        </td>
+                        <td><div class="adm-external-assessment-evidence"><c:out value="${a.evidenceSummary}"/></div></td>
+                        <td><span class="adm-badge"><c:out value="${a.decisionStatus}"/></span></td>
+                        <td><fmt:formatDate value="${a.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
+                    </tr>
+                </c:forEach>
+                <c:if test="${empty assessments}">
+                    <tr><td colspan="7" class="adm-empty">${msg_security_admin_empty_externalAssessments}</td></tr>
+                </c:if>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

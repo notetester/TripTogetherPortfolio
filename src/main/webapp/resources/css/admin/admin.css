@@ -5332,3 +5332,79 @@ body.sa-light .adm-governance-page .adm-login-review-summary span {
         width: auto;
     }
 }
+
+/* External risk assessment list */
+.adm-governance-page .adm-external-assessment-filter-card,
+.adm-governance-page .adm-external-assessment-list-card {
+    overflow: visible;
+    border-radius: 8px;
+}
+
+.adm-governance-page .adm-external-assessment-filter-card {
+    margin-bottom: 12px;
+}
+
+.adm-governance-page .adm-external-assessment-filterbar {
+    display: grid;
+    grid-template-columns: minmax(180px, .95fr) minmax(130px, .7fr) minmax(160px, .8fr) minmax(260px, 1.35fr) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-governance-page .adm-external-assessment-filterbar label,
+.adm-governance-page .adm-external-assessment-keyword-field {
+    min-width: 0;
+}
+
+.adm-governance-page .adm-external-assessment-filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.adm-governance-page .adm-external-assessment-table td {
+    vertical-align: top;
+}
+
+.adm-governance-page .adm-external-assessment-primary {
+    font-weight: 800;
+    color: #dbeafe;
+}
+
+.adm-governance-page .adm-external-assessment-evidence {
+    max-width: 440px;
+    overflow-wrap: anywhere;
+    line-height: 1.45;
+}
+
+body.sa-light .adm-governance-page .adm-external-assessment-primary {
+    color: #0f172a;
+}
+
+@media (max-width: 1240px) {
+    .adm-governance-page .adm-external-assessment-filterbar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .adm-governance-page .adm-external-assessment-keyword-field {
+        grid-column: span 2;
+    }
+
+    .adm-governance-page .adm-external-assessment-filter-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+    .adm-governance-page .adm-external-assessment-filterbar {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-governance-page .adm-external-assessment-keyword-field {
+        grid-column: auto;
+    }
+
+    .adm-governance-page .adm-external-assessment-filter-actions .adm-btn {
+        width: auto;
+    }
+}
