@@ -58,7 +58,7 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-package-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_package_admin_title}</h1>
@@ -73,10 +73,10 @@
         <div class="adm-alert adm-alert-danger">${fn:escapeXml(packageReviewError)}</div>
     </c:if>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-package-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/packages">
-                <div class="adm-filter-bar">
+                <div class="adm-filter-bar adm-package-filterbar">
                     <div>
                         <div class="adm-filter-label">${msg_package_admin_filterStatus}</div>
                         <select class="adm-select" name="status">
@@ -88,7 +88,7 @@
                             <option value="BLOCKED" ${status eq 'BLOCKED' ? 'selected' : ''}>${msg_package_status_blocked}</option>
                         </select>
                     </div>
-                    <div style="display:flex;gap:6px;align-items:flex-end;">
+                    <div class="adm-package-filter-actions">
                         <button type="submit" class="adm-btn adm-btn-primary">${msg_package_admin_search}</button>
                         <a href="${pageContext.request.contextPath}/admin/packages"
                            class="adm-btn adm-btn-ghost">${msg_package_admin_reset}</a>
@@ -98,25 +98,32 @@
         </div>
     </div>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-package-section-card">
         <div class="adm-card-body">
-            <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:14px;">
+            <div class="adm-package-section-head">
                 <div>
-                    <h2 style="margin:0;color:#e2e8f0;font-size:18px;">${msg_package_revision_adminTitle}</h2>
-                    <p style="margin:6px 0 0;color:#94a3b8;font-size:13px;">${msg_package_revision_adminDesc}</p>
+                    <h2 class="adm-package-section-title">${msg_package_revision_adminTitle}</h2>
+                    <p class="adm-package-section-desc">${msg_package_revision_adminDesc}</p>
                 </div>
                 <span class="status-badge PENDING">${msg_package_status_pending}</span>
             </div>
 
             <c:choose>
                 <c:when test="${empty revisionList}">
-                    <div style="padding:24px;border:1px dashed rgba(148,163,184,.32);border-radius:14px;color:#64748b;text-align:center;">
+                    <div class="adm-package-empty-box">
                         ${msg_package_revision_empty}
                     </div>
                 </c:when>
                 <c:otherwise>
                     <div class="adm-table-wrap">
-                        <table class="adm-table">
+                        <table class="adm-table adm-package-table adm-package-revision-table">
+                            <colgroup>
+                                <col>
+                                <col class="adm-package-col-seller">
+                                <col class="adm-package-col-price">
+                                <col class="adm-package-col-date">
+                                <col class="adm-package-col-action">
+                            </colgroup>
                             <thead>
                             <tr>
                                 <th>${msg_package_revision_beforeAfter}</th>
@@ -133,12 +140,12 @@
                                         <button type="button"
                                                 class="adm-cell-link"
                                                 onclick="focusPackageReviewAction('revision-${revision.packageRevisionIdx}')">
-                                            <span style="font-size:12px;color:#94a3b8;">${msg_package_revision_current}</span>
-                                            <span style="font-weight:800;color:#e2e8f0;">${fn:escapeXml(revision.currentPackageTitle)}</span>
-                                            <span style="font-size:12px;color:#38bdf8;margin-top:6px;">${msg_package_revision_requested}</span>
-                                            <span style="font-weight:800;color:#e2e8f0;">${fn:escapeXml(revision.packageTitle)}</span>
+                                            <span class="adm-package-muted-line">${msg_package_revision_current}</span>
+                                            <span class="adm-package-strong-line">${fn:escapeXml(revision.currentPackageTitle)}</span>
+                                            <span class="adm-package-requested-line">${msg_package_revision_requested}</span>
+                                            <span class="adm-package-strong-line">${fn:escapeXml(revision.packageTitle)}</span>
                                             <c:if test="${not empty revision.packageSummary}">
-                                                <span style="font-size:12px;color:#94a3b8;margin-top:4px;max-width:420px;">
+                                                <span class="adm-package-summary-line">
                                                     ${fn:escapeXml(revision.packageSummary)}
                                                 </span>
                                             </c:if>
@@ -151,7 +158,7 @@
                                                 data-default-tab="profile">
                                             <span class="mem-name">${fn:escapeXml(revision.sellerNickname)}</span>
                                             <span class="mem-uid">user_idx ${revision.sellerUserIdx}</span>
-                                            <span style="font-size:12px;color:#94a3b8;margin-top:8px;">
+                                            <span class="adm-package-meta-line is-spaced">
                                                 ${fn:escapeXml(revision.spotRegion)} · ${fn:escapeXml(revision.spotName)}
                                             </span>
                                         </button>
@@ -160,10 +167,10 @@
                                         <button type="button"
                                                 class="adm-cell-link"
                                                 onclick="focusPackageReviewAction('revision-${revision.packageRevisionIdx}')">
-                                            <span style="font-weight:800;color:#e2e8f0;">
+                                            <span class="adm-package-strong-line">
                                                 <fmt:formatNumber value="${revision.packagePrice}" pattern="#,##0"/> ${fn:escapeXml(revision.currencyCode)}
                                             </span>
-                                            <span style="font-size:12px;color:#94a3b8;margin-top:4px;">
+                                            <span class="adm-package-meta-line">
                                                 <c:choose>
                                                     <c:when test="${not empty revision.startDate or not empty revision.endDate}">
                                                         ${revision.startDate} ~ ${revision.endDate}
@@ -171,7 +178,7 @@
                                                     <c:otherwise>${msg_package_common_always}</c:otherwise>
                                                 </c:choose>
                                             </span>
-                                            <span style="font-size:12px;color:#94a3b8;">
+                                            <span class="adm-package-meta-line">
                                                 <spring:message var="msg_package_common_minPeople_args_revision_minPeople" code="package.common.minPeople" arguments="${revision.minPeople}"/>${msg_package_common_minPeople_args_revision_minPeople}
                                                 <c:if test="${not empty revision.maxPeople}">
                                                     / ${msg_package_common_maxPeople}
@@ -228,9 +235,17 @@
         </div>
     </div>
 
-    <div class="adm-card">
+    <div class="adm-card adm-package-list-card">
         <div class="adm-table-wrap">
-            <table class="adm-table">
+            <table class="adm-table adm-package-table adm-package-main-table">
+                <colgroup>
+                    <col>
+                    <col class="adm-package-col-seller">
+                    <col class="adm-package-col-spot">
+                    <col class="adm-package-col-price">
+                    <col class="adm-package-col-status">
+                    <col class="adm-package-col-action">
+                </colgroup>
                 <thead>
                 <tr>
                     <th>${msg_package_admin_thPackage}</th>
@@ -245,16 +260,15 @@
                 <c:forEach var="pkg" items="${packageList}">
                     <tr>
                         <td>
-                            <div style="display:flex;gap:12px;align-items:flex-start;min-width:280px;">
-                                <div style="width:82px;height:58px;border-radius:10px;overflow:hidden;background:#1e293b;flex:0 0 auto;">
+                            <div class="adm-package-main-cell">
+                                <div class="adm-package-thumb">
                                     <c:choose>
                                         <c:when test="${not empty pkg.mainImagePath}">
                                             <img src="${fn:escapeXml(pkg.mainImagePath)}"
-                                                 alt="${fn:escapeXml(pkg.packageTitle)}"
-                                                 style="width:100%;height:100%;object-fit:cover;">
+                                                 alt="${fn:escapeXml(pkg.packageTitle)}">
                                         </c:when>
                                         <c:otherwise>
-                                            <div style="height:100%;display:grid;place-items:center;color:#94a3b8;font-size:11px;font-weight:800;">${msg_package_admin_noImage}</div>
+                                            <div class="adm-package-thumb-empty">${msg_package_admin_noImage}</div>
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
@@ -262,14 +276,14 @@
                                     <button type="button"
                                             class="adm-cell-link adm-cell-link--inline"
                                             onclick="focusPackageReviewAction('package-${pkg.packageIdx}')">
-                                        <span style="font-weight:800;">${fn:escapeXml(pkg.packageTitle)}</span>
+                                        <span class="adm-package-strong-line">${fn:escapeXml(pkg.packageTitle)}</span>
                                     </button>
                                     <c:if test="${not empty pkg.packageSummary}">
-                                        <div style="font-size:12px;color:#94a3b8;margin-top:4px;max-width:420px;">
+                                        <div class="adm-package-summary-line">
                                             ${fn:escapeXml(pkg.packageSummary)}
                                         </div>
                                     </c:if>
-                                    <div style="font-size:11px;color:#64748b;margin-top:4px;">${msg_package_admin_registeredAt}</div>
+                                    <div class="adm-package-registered-line">${msg_package_admin_registeredAt}</div>
                                 </div>
                             </div>
                         </td>
@@ -286,18 +300,18 @@
                             <button type="button"
                                     class="adm-cell-link"
                                     onclick="focusPackageReviewAction('package-${pkg.packageIdx}')">
-                                <span style="font-weight:700;color:#e2e8f0;">${fn:escapeXml(pkg.spotName)}</span>
-                                <span style="font-size:12px;color:#94a3b8;">${fn:escapeXml(pkg.spotRegion)}</span>
+                                <span class="adm-package-spot-name">${fn:escapeXml(pkg.spotName)}</span>
+                                <span class="adm-package-meta-line">${fn:escapeXml(pkg.spotRegion)}</span>
                             </button>
                         </td>
                         <td>
                             <button type="button"
                                     class="adm-cell-link"
                                     onclick="focusPackageReviewAction('package-${pkg.packageIdx}')">
-                                <span style="font-weight:800;color:#e2e8f0;">
+                                <span class="adm-package-strong-line">
                                     <fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0"/> ${fn:escapeXml(pkg.currencyCode)}
                                 </span>
-                                <span style="font-size:12px;color:#94a3b8;margin-top:4px;">
+                                <span class="adm-package-meta-line">
                                     <c:choose>
                                         <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
                                             ${pkg.startDate} ~ ${pkg.endDate}
@@ -305,7 +319,7 @@
                                         <c:otherwise>${msg_package_common_always}</c:otherwise>
                                     </c:choose>
                                 </span>
-                                <span style="font-size:12px;color:#94a3b8;">
+                                <span class="adm-package-meta-line">
                                     <spring:message var="msg_package_common_minPeople_args_pkg_minPeople" code="package.common.minPeople" arguments="${pkg.minPeople}"/>${msg_package_common_minPeople_args_pkg_minPeople}
                                     <c:if test="${not empty pkg.maxPeople}"> / ${msg_package_common_maxPeople}</c:if>
                                 </span>
@@ -332,12 +346,12 @@
                                 </span>
                             </button>
                             <c:if test="${pkg.packageStatus eq 'APPROVED' and pkg.expired}">
-                                <div style="font-size:11px;color:#fbbf24;margin-top:6px;max-width:240px;">
+                                <div class="adm-package-status-note is-warning">
                                     ${msg_package_manage_expiredHidden}
                                 </div>
                             </c:if>
                             <c:if test="${not empty pkg.rejectReason}">
-                                <div style="font-size:11px;color:#fca5a5;margin-top:6px;max-width:240px;">
+                                <div class="adm-package-status-note is-danger">
                                     ${fn:escapeXml(pkg.rejectReason)}
                                 </div>
                             </c:if>
@@ -376,7 +390,7 @@
                                     </div>
                                 </c:when>
                                 <c:otherwise>
-                                    <span style="color:#64748b;font-size:12px;">${msg_package_admin_notPending}</span>
+                                    <span class="adm-package-not-pending">${msg_package_admin_notPending}</span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -384,8 +398,8 @@
                 </c:forEach>
 
                 <c:if test="${empty packageList}">
-                    <tr>
-                        <td colspan="6" style="text-align:center;padding:40px;color:#64748b;">
+                    <tr class="adm-local-empty">
+                        <td colspan="6" class="adm-local-empty-cell">
                             ${msg_package_admin_noResults}
                         </td>
                     </tr>
