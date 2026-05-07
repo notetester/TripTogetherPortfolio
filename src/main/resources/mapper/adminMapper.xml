@@ -1949,7 +1949,9 @@
             <when test="sortField == 'expiresAt'">v.expired_at ${sortDir}, v.created_at DESC</when>
             <otherwise>v.created_at DESC, v.verify_idx DESC</otherwise>
         </choose>
-        LIMIT #{size} OFFSET #{offset}
+        <if test="paged">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
     </select>
 
     <select id="countEmailVerifications" resultType="int">

@@ -22,6 +22,22 @@
 <spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount" arguments="${total}"/>
+<spring:message var="msg_admin_common_export" code="admin.common.export"/>
+<spring:message var="msg_admin_common_exportAll" code="admin.common.exportAll"/>
+<spring:message var="msg_admin_common_exportFiltered" code="admin.common.exportFiltered"/>
+<spring:message var="msg_admin_blocks_mode_label" code="admin.blocks.mode.label"/>
+<spring:message var="msg_admin_blocks_mode_tipClient" code="admin.blocks.mode.tipClient"/>
+<spring:message var="msg_admin_blocks_mode_tipServer" code="admin.blocks.mode.tipServer"/>
+<spring:message var="msg_admin_blocks_mode_client" code="admin.blocks.mode.client"/>
+<spring:message var="msg_admin_blocks_mode_server" code="admin.blocks.mode.server"/>
+<spring:message var="msg_admin_blocks_js_dashSortReset_js" code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_pageSizeLabel" code="admin.common.pageSizeLabel"/>
+<spring:message var="msg_admin_common_pageSize_15" code="admin.common.pageSize" arguments="15"/>
+<spring:message var="msg_admin_common_pageSize_30" code="admin.common.pageSize" arguments="30"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
+<spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
 <spring:message var="msg_admin_emailTokens_createdAt" code="admin.emailTokens.createdAt"/>
 <spring:message var="msg_admin_common_member" code="admin.common.member"/>
 <spring:message var="msg_admin_context_targetEmail" code="admin.context.targetEmail"/>
@@ -42,11 +58,17 @@
 <c:set var="pageTitle" value="${msg_admin_emailTokens_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 <div class="adm-content">
-  <div class="adm-card" style="margin-bottom:20px;">
+  <div class="adm-card adm-email-filter-card">
     <div class="adm-card-body">
-      <form method="get" action="${pageContext.request.contextPath}/admin/email-tokens">
+      <form id="emailTokenSearchForm" method="get" action="${pageContext.request.contextPath}/admin/email-tokens">
+        <input type="hidden" name="page" value="${paging.currentPage}">
+        <input type="hidden" name="size" value="${search.size}">
+        <input type="hidden" name="mode" value="${search.mode}">
+        <input type="hidden" name="sortField" value="${search.sortField}">
+        <input type="hidden" name="sortDir" value="${search.sortDir}">
+        <input type="hidden" name="dateFilter" value="${search.dateFilter}">
         <div class="adm-filter-bar">
-          <div class="adm-search-box" style="flex:1;min-width:220px;">
+          <div class="adm-search-box adm-email-search-field">
             <div class="adm-filter-label">${msg_admin_common_search}</div>
             <span class="adm-search-ico">🔍</span>
             <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_emailTokens_searchPlaceholder}">
@@ -69,7 +91,7 @@
               <option value="UNUSED" ${search.used=='UNUSED'?'selected':''}>${msg_admin_context_unused}</option>
             </select>
           </div>
-          <div style="display:flex;align-items:flex-end;gap:8px;">
+          <div class="adm-email-filter-actions">
             <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
             <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/email-tokens">${msg_admin_common_reset}</a>
           </div>
@@ -77,36 +99,87 @@
       </form>
     </div>
   </div>
-  <div class="adm-card js-email-token-section-card" style="overflow:visible;">
-    <div class="adm-card-head">
+  <div class="adm-card js-email-token-section-card adm-managed-section-card adm-overflow-visible" data-section="emailVerificationTokens" data-enhanced="true">
+    <div class="adm-card-head adm-email-list-head">
       <div class="adm-card-title">${msg_admin_emailTokens_historyTitle}</div>
-      <div style="font-size:12px;color:#64748b;">${msg_admin_common_totalCount}</div>
+      <div class="adm-email-export-control adm-export-control">
+        <span id="emailTokenTotalLabel" class="adm-email-total-label">${msg_admin_common_totalCount}</span>
+        <select class="adm-select adm-email-export-format" id="emailTokenExportFormat">
+          <option value="csv">CSV</option>
+          <option value="excel">Excel</option>
+        </select>
+        <button type="button" class="adm-btn adm-btn-ghost js-email-token-export-toggle">${msg_admin_common_export} ▾</button>
+        <div id="emailTokenExportDropdown" class="adm-export-dropdown">
+          <button type="button" class="adm-export-item" onclick="exportEmailTokens('all')">${msg_admin_common_exportAll}</button>
+          <button type="button" class="adm-export-item" onclick="exportEmailTokens('search')">${msg_admin_common_exportFiltered}</button>
+          <button type="button" class="adm-export-item" onclick="exportEmailTokens('page')">현재 화면 내보내기</button>
+        </div>
+      </div>
     </div>
-    <div class="adm-table-wrap">
+
+    <div class="adm-email-controlbar">
+      <div></div>
+      <div class="adm-email-view-tools">
+        <div id="emailTokenPrimaryTools" class="adm-email-primary-tools">
+          <button type="button" class="adm-dash-sort-reset js-email-token-sort-reset adm-email-tool-item adm-email-sort-reset ${empty search.sortField ? 'adm-is-hidden' : ''}" onclick="resetEmailTokenSort()"></button>
+          <label class="adm-email-tool-item adm-email-tool adm-email-mode-tool">
+            <span class="adm-email-tool-label">${msg_admin_blocks_mode_label}</span>
+            <select class="adm-select" id="emailTokenModeSelect" title="${msg_admin_blocks_mode_label}" onchange="changeEmailTokenMode(this.value)">
+              <option value="CLIENT" title="${msg_admin_blocks_mode_tipClient}" ${search.mode=='CLIENT' ? 'selected' : ''}>${msg_admin_blocks_mode_client}</option>
+              <option value="SERVER" title="${msg_admin_blocks_mode_tipServer}" ${search.mode!='CLIENT' ? 'selected' : ''}>${msg_admin_blocks_mode_server}</option>
+            </select>
+          </label>
+          <label class="adm-email-tool-item adm-email-tool adm-email-size-tool">
+            <span class="adm-email-tool-label">${msg_admin_common_pageSizeLabel}</span>
+            <select class="adm-select" id="emailTokenSizeSelect" onchange="changeEmailTokenSize(this.value)">
+              <option value="15"  ${search.size==15  ? 'selected' : ''}>${msg_admin_common_pageSize_15}</option>
+              <option value="30"  ${search.size==30  ? 'selected' : ''}>${msg_admin_common_pageSize_30}</option>
+              <option value="50"  ${search.size==50  ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
+              <option value="100" ${search.size==100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
+            </select>
+          </label>
+        </div>
+        <div class="adm-email-overflow-menu" id="emailTokenOverflowMenu">
+          <button type="button" class="adm-btn adm-btn-ghost adm-email-overflow-toggle" aria-expanded="false" aria-controls="emailTokenOverflowPanel">옵션 ▾</button>
+          <div id="emailTokenOverflowPanel" class="adm-email-overflow-panel"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="adm-table-wrap adm-overflow-visible">
       <table id="emailVerificationTokenTable"
-             class="adm-table adm-section-table-fixed adm-email-token-table"
-             data-admin-list-server-sort="true"
+             class="adm-table adm-section-table-fixed adm-email-token-table adm-email-section-table"
+             data-admin-list-ignore="true"
              data-section="emailVerificationTokens">
         <thead><tr>
-          <th data-sort="time" onclick="sortBy('time')">${msg_admin_emailTokens_createdAt}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="purpose" onclick="sortBy('purpose')">${msg_admin_emailRequests_purpose}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="targetEmail" onclick="sortBy('targetEmail')">${msg_admin_context_targetEmail}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="used" onclick="sortBy('used')">${msg_admin_emailTokens_used}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="usedAt" onclick="sortBy('usedAt')">${msg_admin_emailTokens_usedAt}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="expiresAt" onclick="sortBy('expiresAt')">${msg_admin_context_expiresAt}<span class="sort-ico" aria-hidden="true"></span></th>
-          <th data-sort="requestId" onclick="sortBy('requestId')">${msg_admin_context_requestId}<span class="sort-ico" aria-hidden="true"></span></th>
+          <th class="js-email-token-sort" data-sort="time" onclick="sortBy('time')">${msg_admin_emailTokens_createdAt}</th>
+          <th class="js-email-token-sort" data-sort="member" onclick="sortBy('member')">${msg_admin_common_member}</th>
+          <th class="js-email-token-sort" data-sort="purpose" onclick="sortBy('purpose')">${msg_admin_emailRequests_purpose}</th>
+          <th class="js-email-token-sort" data-sort="targetEmail" onclick="sortBy('targetEmail')">${msg_admin_context_targetEmail}</th>
+          <th class="js-email-token-sort" data-sort="used" onclick="sortBy('used')">${msg_admin_emailTokens_used}</th>
+          <th class="js-email-token-sort" data-sort="usedAt" onclick="sortBy('usedAt')">${msg_admin_emailTokens_usedAt}</th>
+          <th class="js-email-token-sort" data-sort="expiresAt" onclick="sortBy('expiresAt')">${msg_admin_context_expiresAt}</th>
+          <th class="js-email-token-sort" data-sort="requestId" onclick="sortBy('requestId')">${msg_admin_context_requestId}</th>
           <th></th>
         </tr></thead>
-        <tbody>
-        <c:forEach items="${list}" var="item">
+        <tbody id="emailTokenRowsBody">
+        <c:forEach items="${list}" var="item" varStatus="st">
           <fmt:formatDate var="itemDateFilter" value="${item.createdAtDate}" pattern="yyyy-MM-dd"/>
           <fmt:formatDate var="itemTimeDisplay" value="${item.createdAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
           <fmt:formatDate var="itemUsedAtDisplay" value="${item.usedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
           <fmt:formatDate var="itemUsedAtDateFilter" value="${item.usedAtDate}" pattern="yyyy-MM-dd"/>
           <fmt:formatDate var="itemExpiredAtDisplay" value="${item.expiredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
           <fmt:formatDate var="itemExpiredAtDateFilter" value="${item.expiredAtDate}" pattern="yyyy-MM-dd"/>
-          <tr>
+          <tr class="js-email-token-row"
+              data-created-at="${item.createdAt}"
+              data-member="${fn:escapeXml(item.nickname)} ${fn:escapeXml(item.userId)}"
+              data-purpose="${fn:escapeXml(item.purpose)}"
+              data-target-email="${fn:escapeXml(item.email)}"
+              data-used="${item.used ? 'USED' : 'UNUSED'}"
+              data-used-at="${item.usedAt}"
+              data-expires-at="${item.expiredAt}"
+              data-request-id="${fn:escapeXml(item.requestId)}"
+              data-original-index="${st.index}">
             <td>
               <button type="button" class="adm-cell-link"
                       data-date="${itemDateFilter}"
@@ -118,8 +191,8 @@
             <td>
               <c:choose>
                 <c:when test="${not empty item.userIdx}">
-                  <button type="button" class="adm-inline-link js-open-member-context" data-user-idx="${item.userIdx}" data-default-tab="emailTokens" style="font-weight:700;color:#93c5fd;"><c:out value="${item.nickname}"/></button>
-                  <div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="${item.userIdx}" data-default-tab="emailTokens" style="color:#94a3b8;">@${item.userId}</button></div>
+                  <button type="button" class="adm-inline-link js-open-member-context adm-email-member-link" data-user-idx="${item.userIdx}" data-default-tab="emailTokens"><c:out value="${item.nickname}"/></button>
+                  <div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context adm-email-muted-link" data-user-idx="${item.userIdx}" data-default-tab="emailTokens">@${item.userId}</button></div>
                 </c:when>
                 <c:otherwise>
                   <div class="mem-name">${msg_admin_emailRequests_unknownRequest}</div>
@@ -184,7 +257,7 @@
               <button type="button" class="adm-cell-link"
                       data-keyword="${empty item.flowTraceId ? item.requestId : item.flowTraceId}"
                       onclick="openRelatedHistory('email-verifications', this)">
-                <span style="font-size:12px;color:#64748b;"><c:out value="${item.requestId}"/></span>
+                <span class="adm-email-request-id"><c:out value="${item.requestId}"/></span>
                 <c:if test="${not empty item.flowTraceId}">
                   <span class="adm-cell-link-note">${msg_admin_common_trace}: <c:out value="${item.flowTraceId}"/></span>
                 </c:if>
@@ -207,59 +280,202 @@
             </td>
           </tr>
         </c:forEach>
-        <c:if test="${empty list}"><tr><td colspan="9" style="text-align:center;padding:40px;color:#475569;">${msg_admin_common_noResults}</td></tr></c:if>
+        <c:if test="${empty list}"><tr class="adm-local-empty"><td colspan="9" class="adm-local-empty-cell">${msg_admin_common_noResults}</td></tr></c:if>
       </tbody></table>
     </div>
-    <c:if test="${paging.totalPage > 1}"><div class="adm-paging"><c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if><c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p"><button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button></c:forEach><c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if><span class="adm-page-info">${msg_admin_common_pageStatus}</span></div></c:if>
+    <div class="adm-local-pagination adm-email-pagination" data-section="emailVerificationTokens" id="emailTokenPaging">
+      <div class="adm-local-page-info js-email-token-page-info" data-section="emailVerificationTokens">총 ${total}건 / 현재 ${fn:length(list)}건</div>
+      <div class="adm-local-page-actions">
+        <button type="button" class="adm-btn adm-btn-ghost js-email-token-prev" onclick="goEmailTokenPage(emailTokenState.page - 1)">${msg_admin_common_prev}</button>
+        <span class="js-email-token-page-state" data-section="emailVerificationTokens">${paging.currentPage} / ${paging.totalPage}</span>
+        <button type="button" class="adm-btn adm-btn-ghost js-email-token-next" onclick="goEmailTokenPage(emailTokenState.page + 1)">${msg_admin_common_next}</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <div id="rowDetailModal" class="adm-modal-overlay" onclick="this.classList.remove('open')">
-  <div class="adm-modal" style="max-width:560px;width:100%;" onclick="event.stopPropagation()">
+  <div class="adm-modal adm-row-detail-modal" onclick="event.stopPropagation()">
     <div class="adm-modal-head">
       <div class="adm-modal-title" id="rowDetailModalTitle"></div>
       <button class="adm-modal-close" onclick="document.getElementById('rowDetailModal').classList.remove('open')">✕</button>
     </div>
-    <div class="adm-modal-body" style="padding:20px 24px;max-height:72vh;overflow-y:auto;">
-      <dl id="rowDetailModalContent" style="margin:0;"></dl>
+    <div class="adm-modal-body adm-row-detail-body">
+      <dl id="rowDetailModalContent" class="adm-row-detail-list"></dl>
     </div>
   </div>
 </div>
 
 <script>
 var BASE_URL = '${pageContext.request.contextPath}/admin/email-tokens';
-var curSortField = '${search.sortField}';
-var curSortDir = '${search.sortDir}';
+var EMAIL_TOKEN_MSG = {
+  sortReset: '${msg_admin_blocks_js_dashSortReset_js}',
+  noResults: '${msg_admin_common_noResults}'
+};
+var emailTokenState = {
+  mode: '${search.mode}' === 'CLIENT' ? 'CLIENT' : 'SERVER',
+  page: Number('${paging.currentPage}' || 1) || 1,
+  pageSize: Number('${search.size}' || 30) || 30,
+  sortField: '${fn:escapeXml(search.sortField)}',
+  sortDir: '${fn:escapeXml(search.sortDir)}' || 'DESC'
+};
 
-document.querySelectorAll('th[data-sort]').forEach(function(th) {
-  if (th.getAttribute('data-sort') === curSortField) {
-    th.classList.add('sorted');
-    var ico = th.querySelector('.sort-ico');
-    if (ico) {
-      var asc = curSortDir === 'ASC';
-      ico.textContent = asc ? '▲' : '▼';
-      ico.classList.toggle('asc', asc);
-      ico.classList.toggle('desc', !asc);
-    }
+function getEmailTokenForm() { return document.getElementById('emailTokenSearchForm'); }
+function getEmailTokenTbody() { return document.getElementById('emailTokenRowsBody'); }
+function emailTokenRows() { return Array.from(document.querySelectorAll('#emailTokenRowsBody .js-email-token-row')); }
+function syncEmailTokenHiddenInputs() {
+  var form = getEmailTokenForm();
+  if (!form) return;
+  var page = form.querySelector('[name=page]');
+  var size = form.querySelector('[name=size]');
+  var mode = form.querySelector('[name=mode]');
+  var sortField = form.querySelector('[name=sortField]');
+  var sortDir = form.querySelector('[name=sortDir]');
+  if (page) page.value = emailTokenState.page;
+  if (size) size.value = emailTokenState.pageSize;
+  if (mode) mode.value = emailTokenState.mode;
+  if (sortField) sortField.value = emailTokenState.sortField || '';
+  if (sortDir) sortDir.value = emailTokenState.sortDir || 'DESC';
+}
+function buildEmailTokenParams(pageOverride) {
+  var form = getEmailTokenForm();
+  var params = new URLSearchParams(form ? new FormData(form) : window.location.search);
+  params.set('page', String(pageOverride || emailTokenState.page || 1));
+  params.set('size', String(emailTokenState.pageSize || 30));
+  params.set('mode', emailTokenState.mode || 'SERVER');
+  if (emailTokenState.sortField) {
+    params.set('sortField', emailTokenState.sortField);
+    params.set('sortDir', emailTokenState.sortDir || 'DESC');
+  } else {
+    params.delete('sortField');
+    params.delete('sortDir');
   }
-});
+  return params;
+}
+function replaceEmailTokenUrl() {
+  var params = buildEmailTokenParams(emailTokenState.page);
+  window.history.replaceState(null, '', BASE_URL + '?' + params.toString());
+}
+function navigateEmailToken(pageOverride) {
+  syncEmailTokenHiddenInputs();
+  var params = buildEmailTokenParams(pageOverride || emailTokenState.page || 1);
+  location.href = BASE_URL + '?' + params.toString();
+}
+function updateEmailTokenSortIndicators() {
+  document.querySelectorAll('.js-email-token-sort').forEach(function(th) {
+    th.classList.remove('sorted');
+    var old = th.querySelector('.sort-ico');
+    if (old) old.remove();
+    if (emailTokenState.sortField && th.dataset.sort === emailTokenState.sortField) {
+      th.classList.add('sorted');
+      var asc = emailTokenState.sortDir === 'ASC';
+      var ico = document.createElement('span');
+      ico.className = 'sort-ico ' + (asc ? 'asc' : 'desc');
+      ico.textContent = asc ? '▲' : '▼';
+      th.appendChild(ico);
+    }
+  });
+  var reset = document.querySelector('.js-email-token-sort-reset');
+  if (reset) {
+    reset.textContent = EMAIL_TOKEN_MSG.sortReset || '↺ 초기화';
+    reset.classList.toggle('adm-is-hidden', !emailTokenState.sortField);
+  }
+  syncEmailTokenHiddenInputs();
+  syncEmailTokenControlOverflow();
+}
+function updateEmailTokenPaginationMeta(page, pages, total, current) {
+  var safePage = Math.max(1, Number(page || 1));
+  var safePages = Math.max(1, Number(pages || 1));
+  emailTokenState.page = Math.min(safePage, safePages);
+  var info = document.querySelector('.js-email-token-page-info');
+  if (info) info.textContent = '총 ' + Number(total || 0) + '건 / 현재 ' + Number(current || 0) + '건';
+  var label = document.getElementById('emailTokenTotalLabel');
+  if (label) label.textContent = '총 ' + Number(total || 0) + '건';
+  var state = document.querySelector('.js-email-token-page-state');
+  if (state) state.textContent = emailTokenState.page + ' / ' + safePages;
+  var prev = document.querySelector('.js-email-token-prev');
+  var next = document.querySelector('.js-email-token-next');
+  if (prev) prev.disabled = emailTokenState.page <= 1;
+  if (next) next.disabled = emailTokenState.page >= safePages;
+  syncEmailTokenHiddenInputs();
+}
+function emailTokenSortValue(row, field) {
+  if (!row || !field) return '';
+  if (field === 'time') return row.dataset.createdAt || '';
+  if (field === 'member') return row.dataset.member || '';
+  if (field === 'purpose') return row.dataset.purpose || '';
+  if (field === 'targetEmail') return row.dataset.targetEmail || '';
+  if (field === 'used') return row.dataset.used || '';
+  if (field === 'usedAt') return row.dataset.usedAt || '';
+  if (field === 'expiresAt') return row.dataset.expiresAt || '';
+  return row.dataset.requestId || '';
+}
+function compareEmailTokenRows(a, b) {
+  var field = emailTokenState.sortField;
+  if (!field) return Number(a.dataset.originalIndex || 0) - Number(b.dataset.originalIndex || 0);
+  var av = emailTokenSortValue(a, field);
+  var bv = emailTokenSortValue(b, field);
+  var cmp = String(av).localeCompare(String(bv), undefined, {numeric:true, sensitivity:'base'});
+  return cmp * (emailTokenState.sortDir === 'DESC' ? -1 : 1);
+}
+function renderEmailTokenClientPage(pageOverride) {
+  var tbody = getEmailTokenTbody();
+  if (!tbody) return;
+  var rows = emailTokenRows();
+  if (!rows.length) {
+    updateEmailTokenPaginationMeta(1, 1, 0, 0);
+    return;
+  }
+  rows.sort(compareEmailTokenRows).forEach(function(row) { tbody.appendChild(row); });
+  var pageSize = Number(emailTokenState.pageSize || 30);
+  var total = rows.length;
+  var pages = Math.max(1, Math.ceil(total / pageSize));
+  var page = Math.min(Math.max(1, Number(pageOverride || emailTokenState.page || 1)), pages);
+  var start = (page - 1) * pageSize;
+  rows.forEach(function(row, idx) {
+    row.classList.toggle('adm-is-hidden', idx < start || idx >= start + pageSize);
+  });
+  updateEmailTokenPaginationMeta(page, pages, total, Math.min(pageSize, Math.max(0, total - start)));
+  updateEmailTokenSortIndicators();
+  replaceEmailTokenUrl();
+}
 
 function sortBy(field) {
-  var params = new URLSearchParams(window.location.search);
-  var dir = (params.get('sortField') === field && params.get('sortDir') !== 'ASC') ? 'ASC' : 'DESC';
-  params.set('sortField', field); params.set('sortDir', dir); params.set('page', '1');
-  location.href = BASE_URL + '?' + params.toString();
+  emailTokenState.sortDir = (emailTokenState.sortField === field && emailTokenState.sortDir !== 'ASC') ? 'ASC' : 'DESC';
+  emailTokenState.sortField = field;
+  emailTokenState.page = 1;
+  if (emailTokenState.mode === 'CLIENT') renderEmailTokenClientPage(1);
+  else navigateEmailToken(1);
+}
+function resetEmailTokenSort() {
+  emailTokenState.sortField = '';
+  emailTokenState.sortDir = 'DESC';
+  emailTokenState.page = 1;
+  if (emailTokenState.mode === 'CLIENT') renderEmailTokenClientPage(1);
+  else navigateEmailToken(1);
+}
+function changeEmailTokenMode(value) {
+  emailTokenState.mode = value === 'CLIENT' ? 'CLIENT' : 'SERVER';
+  emailTokenState.page = 1;
+  localStorage.setItem('admin.emailTokens.mode', emailTokenState.mode);
+  navigateEmailToken(1);
+}
+function changeEmailTokenSize(value) {
+  emailTokenState.pageSize = Number(value || 30) || 30;
+  emailTokenState.page = 1;
+  if (emailTokenState.mode === 'CLIENT') renderEmailTokenClientPage(1);
+  else navigateEmailToken(1);
 }
 function filterByDate(dateStr) {
   var params = new URLSearchParams(window.location.search);
-  params.set('dateFilter', dateStr); params.set('page', '1');
+  params.set('dateFilter', dateStr); params.set('page', '1'); params.set('size', emailTokenState.pageSize); params.set('mode', emailTokenState.mode);
   location.href = BASE_URL + '?' + params.toString();
 }
 function applyKeywordFilter(button) {
   var keyword = button.getAttribute('data-keyword');
   if (!keyword) return;
   var params = new URLSearchParams(window.location.search);
-  params.set('keyword', keyword); params.set('page', '1');
+  params.set('keyword', keyword); params.set('page', '1'); params.set('size', emailTokenState.pageSize); params.set('mode', emailTokenState.mode);
   location.href = BASE_URL + '?' + params.toString();
 }
 function applySelectFilter(button) {
@@ -267,19 +483,28 @@ function applySelectFilter(button) {
   var paramValue = button.getAttribute('data-param-value');
   if (!paramName || !paramValue) return;
   var params = new URLSearchParams(window.location.search);
-  params.set(paramName, paramValue); params.set('page', '1');
+  params.set(paramName, paramValue); params.set('page', '1'); params.set('size', emailTokenState.pageSize); params.set('mode', emailTokenState.mode);
   location.href = BASE_URL + '?' + params.toString();
 }
-function goPage(page) {
-  var params = new URLSearchParams(window.location.search);
-  params.set('page', page);
-  location.href = BASE_URL + '?' + params.toString();
+function goEmailTokenPage(page) {
+  if (emailTokenState.mode === 'CLIENT') renderEmailTokenClientPage(page);
+  else navigateEmailToken(page);
 }
 function openRelatedHistory(path, button) {
   var params = new URLSearchParams();
   if (button.dataset.keyword) params.set('keyword', button.dataset.keyword);
   params.set('page', '1');
   location.href = '${pageContext.request.contextPath}/admin/' + path + '?' + params.toString();
+}
+function exportEmailTokens(scope) {
+  var format = document.getElementById('emailTokenExportFormat').value;
+  var params = buildEmailTokenParams(emailTokenState.page);
+  params.set('scope', scope);
+  params.set('format', format);
+  if (scope !== 'page') params.delete('page');
+  var dropdown = document.getElementById('emailTokenExportDropdown');
+  if (dropdown) dropdown.classList.remove('open');
+  window.location.href = BASE_URL + '/export?' + params.toString();
 }
 function openTokenDetail(btn) {
   var d = btn.dataset;
@@ -304,15 +529,89 @@ function showRowDetail(title, fields) {
     var label = pair[0], value = pair[1];
     if (!value || value === '' || value === '-') return;
     var dt = document.createElement('dt');
-    dt.style.cssText = 'font-size:11px;color:#64748b;margin-top:12px;margin-bottom:2px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;';
+    dt.className = 'adm-row-detail-label';
     dt.textContent = label;
     var dd = document.createElement('dd');
-    dd.style.cssText = 'font-size:13px;color:#e2e8f0;word-break:break-all;margin:0;padding:6px 10px;background:#0f1520;border-radius:4px;';
+    dd.className = 'adm-row-detail-value';
     dd.textContent = value;
     content.appendChild(dt);
     content.appendChild(dd);
   });
   modal.classList.add('open');
 }
+let emailTokenControlOverflowSync = null;
+function isVisibleEmailTokenTool(tool) {
+  if (!tool) return false;
+  return !tool.classList.contains('js-email-token-sort-reset') || !tool.classList.contains('adm-is-hidden');
+}
+function syncEmailTokenControlOverflow() {
+  if (typeof emailTokenControlOverflowSync === 'function') emailTokenControlOverflowSync();
+}
+function initEmailTokenControlOverflow() {
+  var primary = document.getElementById('emailTokenPrimaryTools');
+  var menu = document.getElementById('emailTokenOverflowMenu');
+  var panel = document.getElementById('emailTokenOverflowPanel');
+  var toggle = menu ? menu.querySelector('.adm-email-overflow-toggle') : null;
+  if (!primary || !menu || !panel || !toggle) return;
+  var tools = [
+    { node: document.querySelector('.js-email-token-sort-reset'), breakpoint: 1380 },
+    { node: document.querySelector('.adm-email-mode-tool'), breakpoint: 1180 },
+    { node: document.querySelector('.adm-email-size-tool'), breakpoint: 980 }
+  ].filter(function(item) { return !!item.node; });
+  emailTokenControlOverflowSync = function() {
+    var width = window.innerWidth || document.documentElement.clientWidth || 1600;
+    tools.forEach(function(item) {
+      var target = width <= item.breakpoint ? panel : primary;
+      if (item.node.parentElement !== target) target.appendChild(item.node);
+    });
+    var hasItems = Array.from(panel.children).some(isVisibleEmailTokenTool);
+    menu.classList.toggle('has-items', hasItems);
+    if (!hasItems) {
+      menu.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  };
+  toggle.addEventListener('click', function() {
+    var willOpen = !menu.classList.contains('open');
+    menu.classList.toggle('open', willOpen);
+    toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+  });
+  document.addEventListener('click', function(e) {
+    if (!menu.contains(e.target)) {
+      menu.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+  window.addEventListener('resize', syncEmailTokenControlOverflow, { passive: true });
+  syncEmailTokenControlOverflow();
+}
+function initEmailTokenSection() {
+  var storedMode = localStorage.getItem('admin.emailTokens.mode');
+  if (!new URLSearchParams(window.location.search).has('mode') && storedMode && storedMode !== emailTokenState.mode) {
+    emailTokenState.mode = storedMode === 'CLIENT' ? 'CLIENT' : 'SERVER';
+    navigateEmailToken(1);
+    return;
+  }
+  var modeSelect = document.getElementById('emailTokenModeSelect');
+  if (modeSelect) modeSelect.value = emailTokenState.mode;
+  var form = getEmailTokenForm();
+  if (form) form.addEventListener('submit', function() { emailTokenState.page = 1; syncEmailTokenHiddenInputs(); });
+  var exportToggle = document.querySelector('.js-email-token-export-toggle');
+  var exportDropdown = document.getElementById('emailTokenExportDropdown');
+  if (exportToggle && exportDropdown) {
+    exportToggle.addEventListener('click', function() { exportDropdown.classList.toggle('open'); });
+    document.addEventListener('click', function(e) {
+      if (!exportToggle.contains(e.target) && !exportDropdown.contains(e.target)) exportDropdown.classList.remove('open');
+    });
+  }
+  initEmailTokenControlOverflow();
+  if (emailTokenState.mode === 'CLIENT') {
+    renderEmailTokenClientPage(emailTokenState.page);
+  } else {
+    updateEmailTokenSortIndicators();
+    updateEmailTokenPaginationMeta(emailTokenState.page, Number('${paging.totalPage}' || 1), Number('${total}' || 0), emailTokenRows().length);
+  }
+}
+document.addEventListener('DOMContentLoaded', initEmailTokenSection);
 </script>
 <%@ include file="../layout-close.jsp" %>

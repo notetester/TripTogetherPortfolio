@@ -564,6 +564,57 @@ public class AdminController {
         }
     }
 
+    private byte[] buildEmailVerificationTokenCsv(List<AdminEmailVerificationVO> data) {
+        StringBuilder sb = new StringBuilder("﻿");
+        sb.append("토큰번호,요청번호,발급시각,회원번호,닉네임,아이디,목적,이메일,사용여부,사용시각,만료시각,취소시각,요청ID,흐름추적ID\n");
+        for (AdminEmailVerificationVO token : data) {
+            sb.append(csvVal(token.getVerifyIdx())).append(',')
+              .append(csvVal(token.getEmailVerificationRequestIdx())).append(',')
+              .append(csvVal(formatBusinessDate(token.getCreatedAt()))).append(',')
+              .append(csvVal(token.getUserIdx())).append(',')
+              .append(csvVal(token.getNickname())).append(',')
+              .append(csvVal(token.getUserId())).append(',')
+              .append(csvVal(token.getPurpose())).append(',')
+              .append(csvVal(token.getEmail())).append(',')
+              .append(token.isUsed() ? "USED" : "UNUSED").append(',')
+              .append(csvVal(formatBusinessDate(token.getUsedAt()))).append(',')
+              .append(csvVal(formatBusinessDate(token.getExpiredAt()))).append(',')
+              .append(csvVal(formatBusinessDate(token.getCancelledAt()))).append(',')
+              .append(csvVal(token.getRequestId())).append(',')
+              .append(csvVal(token.getFlowTraceId())).append('\n');
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private byte[] buildEmailVerificationTokenExcel(List<AdminEmailVerificationVO> data) throws Exception {
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            var sheet = wb.createSheet("이메일토큰");
+            String[] headers = {"토큰번호","요청번호","발급시각","회원번호","닉네임","아이디","목적","이메일","사용여부","사용시각","만료시각","취소시각","요청ID","흐름추적ID"};
+            var hRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) hRow.createCell(i).setCellValue(headers[i]);
+            int r = 1;
+            for (AdminEmailVerificationVO token : data) {
+                var row = sheet.createRow(r++);
+                row.createCell(0).setCellValue(token.getVerifyIdx() != null ? token.getVerifyIdx() : 0);
+                row.createCell(1).setCellValue(token.getEmailVerificationRequestIdx() != null ? token.getEmailVerificationRequestIdx() : 0);
+                row.createCell(2).setCellValue(formatBusinessDate(token.getCreatedAt()));
+                row.createCell(3).setCellValue(token.getUserIdx() != null ? token.getUserIdx() : 0);
+                row.createCell(4).setCellValue(safe(token.getNickname()));
+                row.createCell(5).setCellValue(safe(token.getUserId()));
+                row.createCell(6).setCellValue(safe(token.getPurpose()));
+                row.createCell(7).setCellValue(safe(token.getEmail()));
+                row.createCell(8).setCellValue(token.isUsed() ? "USED" : "UNUSED");
+                row.createCell(9).setCellValue(formatBusinessDate(token.getUsedAt()));
+                row.createCell(10).setCellValue(formatBusinessDate(token.getExpiredAt()));
+                row.createCell(11).setCellValue(formatBusinessDate(token.getCancelledAt()));
+                row.createCell(12).setCellValue(safe(token.getRequestId()));
+                row.createCell(13).setCellValue(safe(token.getFlowTraceId()));
+            }
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
     private byte[] buildBusinessApplicationCsv(List<BusinessAccountApplicationVO> data) {
         StringBuilder sb = new StringBuilder("﻿");
         sb.append("신청번호,회원번호,신청자,아이디,이메일,현재권한,요청권한,회사명,사업자번호,담당자,담당자연락처,상태,반려사유,검토자,신청일,검토일\n");
@@ -1167,6 +1218,40 @@ public class AdminController {
         model.addAllAttributes(adminService.getEmailVerificationList(search));
         model.addAttribute("activeMenu", "emailTokens");
         return "admin/email-token/list";
+    }
+
+    @SuppressWarnings("unchecked")
+    @GetMapping("/email-tokens/export")
+    public ResponseEntity<byte[]> exportEmailVerificationTokens(AdminEmailVerificationSearchVO search,
+                                                               @RequestParam(defaultValue = "search") String scope,
+                                                               @RequestParam(defaultValue = "csv") String format) {
+        try {
+            List<AdminEmailVerificationVO> data;
+            if ("all".equals(scope)) {
+                data = adminService.getEmailVerificationsForExport(new AdminEmailVerificationSearchVO());
+            } else if ("page".equals(scope)) {
+                data = (List<AdminEmailVerificationVO>) adminService.getEmailVerificationList(search)
+                    .getOrDefault("list", Collections.emptyList());
+            } else {
+                data = adminService.getEmailVerificationsForExport(search);
+            }
+
+            if ("excel".equals(format)) {
+                byte[] bytes = buildEmailVerificationTokenExcel(data);
+                return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"email-verification-tokens.xlsx\"")
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(bytes);
+            }
+            byte[] bytes = buildEmailVerificationTokenCsv(data);
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"email-verification-tokens.csv\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(bytes);
+        } catch (Exception e) {
+            log.error("이메일 액션 토큰 내보내기 실패", e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/activity-logs")

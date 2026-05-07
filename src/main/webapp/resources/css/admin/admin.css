@@ -3809,7 +3809,8 @@ body.sa-light .adm-business-section-table th.js-business-sort.sorted {
     align-items: flex-end;
     gap: 8px;
 }
-.js-email-request-section-card .adm-email-list-head {
+.js-email-request-section-card .adm-email-list-head,
+.js-email-token-section-card .adm-email-list-head {
     min-height: 64px;
 }
 .adm-email-total-label {
@@ -3824,7 +3825,8 @@ body.sa-light .adm-business-section-table th.js-business-sort.sorted {
 .adm-email-export-format {
     width: 90px;
 }
-.js-email-request-section-card .adm-email-controlbar {
+.js-email-request-section-card .adm-email-controlbar,
+.js-email-token-section-card .adm-email-controlbar {
     display: grid;
     grid-template-columns: minmax(320px, 1fr) max-content;
     align-items: center;
@@ -3925,7 +3927,8 @@ body.sa-light .adm-business-section-table th.js-business-sort.sorted {
 .adm-email-ip-text {
     color: #93c5fd;
 }
-.adm-email-pagination .js-email-page-state {
+.adm-email-pagination .js-email-page-state,
+.adm-email-pagination .js-email-token-page-state {
     min-width: 48px;
     text-align: center;
     color: #cbd5e1;
@@ -3961,7 +3964,8 @@ body.sa-light .adm-business-section-table th.js-business-sort.sorted {
     font-size: 13px;
     word-break: break-all;
 }
-body.sa-light .js-email-request-section-card .adm-email-controlbar {
+body.sa-light .js-email-request-section-card .adm-email-controlbar,
+body.sa-light .js-email-token-section-card .adm-email-controlbar {
     background: #f8fafc;
     border-color: #e2e8f0;
 }
@@ -3984,7 +3988,8 @@ body.sa-light .adm-email-section-table th.js-email-sort.sorted {
 }
 body.sa-light .adm-email-muted-link,
 body.sa-light .adm-email-request-id,
-body.sa-light .adm-email-pagination .js-email-page-state {
+body.sa-light .adm-email-pagination .js-email-page-state,
+body.sa-light .adm-email-pagination .js-email-token-page-state {
     color: #475569;
 }
 body.sa-light .adm-row-detail-value {
@@ -3992,7 +3997,8 @@ body.sa-light .adm-row-detail-value {
     color: #334155;
 }
 @media (max-width: 1100px) {
-    .js-email-request-section-card .adm-email-controlbar {
+    .js-email-request-section-card .adm-email-controlbar,
+    .js-email-token-section-card .adm-email-controlbar {
         grid-template-columns: 1fr;
         align-items: stretch;
     }
@@ -4014,16 +4020,20 @@ body.sa-light .adm-row-detail-value {
         width: 100%;
     }
     .js-email-request-section-card .adm-email-controlbar,
-    .js-email-request-section-card .adm-local-pagination {
+    .js-email-request-section-card .adm-local-pagination,
+    .js-email-token-section-card .adm-email-controlbar,
+    .js-email-token-section-card .adm-local-pagination {
         align-items: stretch;
         padding: 14px 16px;
     }
-    .js-email-request-section-card .adm-local-page-actions {
+    .js-email-request-section-card .adm-local-page-actions,
+    .js-email-token-section-card .adm-local-page-actions {
         width: 100%;
         margin-left: 0;
         justify-content: flex-end;
     }
-    .js-email-request-section-card .adm-local-page-info {
+    .js-email-request-section-card .adm-local-page-info,
+    .js-email-token-section-card .adm-local-page-info {
         width: 100%;
     }
 }

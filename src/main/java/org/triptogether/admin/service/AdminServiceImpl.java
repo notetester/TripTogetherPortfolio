@@ -1109,16 +1109,43 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Map<String, Object> getEmailVerificationList(AdminEmailVerificationSearchVO search) {
-        List<AdminEmailVerificationVO> list = adminMapper.findEmailVerifications(search);
-        int total = adminMapper.countEmailVerifications(search);
-        AdminPageVO paging = AdminPageVO.of(total, search.getPage(), search.getSize(), 10);
+        AdminEmailVerificationSearchVO normalized = normalizeEmailVerificationSearch(search);
+        int total = adminMapper.countEmailVerifications(normalized);
+        AdminPageVO paging = AdminPageVO.of(total, normalized.getPage(), normalized.getSize(), 10);
+        normalized.setPage(paging.getCurrentPage());
+        normalized.setPaged(!"CLIENT".equals(normalized.getMode()));
+
+        List<AdminEmailVerificationVO> list = adminMapper.findEmailVerifications(normalized);
 
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
         result.put("paging", paging);
         result.put("total", total);
-        result.put("search", search);
+        result.put("search", normalized);
         return result;
+    }
+
+    @Override
+    public List<AdminEmailVerificationVO> getEmailVerificationsForExport(AdminEmailVerificationSearchVO search) {
+        AdminEmailVerificationSearchVO normalized = normalizeEmailVerificationSearch(search);
+        normalized.setPage(1);
+        normalized.setPaged(false);
+        return adminMapper.findEmailVerifications(normalized);
+    }
+
+    private AdminEmailVerificationSearchVO normalizeEmailVerificationSearch(AdminEmailVerificationSearchVO source) {
+        AdminEmailVerificationSearchVO search = source != null ? source : new AdminEmailVerificationSearchVO();
+        search.setKeyword(trimToNull(search.getKeyword()));
+        search.setPurpose(search.getPurpose());
+        search.setUsed(search.getUsed());
+        search.setDateFilter(search.getDateFilter());
+        search.setSortField(search.getSortField());
+        search.setSortDir(search.getSortDir());
+        search.setMode(search.getMode());
+        search.setPage(search.getPage());
+        search.setSize(search.getSize());
+        search.setPaged(!"CLIENT".equals(search.getMode()));
+        return search;
     }
 
     // ===== 일반 활동 로그 =====
