@@ -707,19 +707,26 @@
          정책 (등급별 한도) 탭
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'quotas'}">
-        <style>
-            tr[data-quota-id].is-dirty td:first-child { box-shadow: inset 3px 0 0 0 #2563eb; }
-            tr[data-quota-id].is-dirty td { background: rgba(37, 99, 235, .04); }
-        </style>
-        <div class="adm-card" style="padding:16px;margin-bottom:16px;">
-            <div style="font-size:13px;color:#475569;line-height:1.6;">
+        <div class="adm-card adm-ai-info-card">
+            <div class="adm-ai-description">
                 ${msg_admin_aiHelper_chatbot_description_quota}<br>
                 ${msg_admin_aiHelper_chatbot_description_quotaSub}
             </div>
         </div>
 
-        <div class="adm-card" style="padding:0;overflow-x:auto;">
-            <table class="adm-table" style="width:100%;">
+        <div class="adm-card adm-ai-table-card">
+            <div class="adm-table-wrap">
+            <table class="adm-table adm-ai-table adm-ai-quotas-table">
+                <colgroup>
+                    <col class="adm-ai-col-grade"/>
+                    <col class="adm-ai-col-quota"/>
+                    <col class="adm-ai-col-quota"/>
+                    <col class="adm-ai-col-quota"/>
+                    <col class="adm-ai-col-period"/>
+                    <col class="adm-ai-col-reset"/>
+                    <col class="adm-ai-col-refund"/>
+                    <col class="adm-ai-col-user"/>
+                </colgroup>
                 <thead>
                     <tr>
                         <th>등급</th>
@@ -733,65 +740,73 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach var="q" items="${quotas}">
-                        <tr data-quota-id="${q.quotaId}">
-                            <td><strong>${q.grade}</strong></td>
-                            <td><input type="number" class="adm-input q-conv" value="${q.maxConversations}" data-original="${q.maxConversations}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
-                            <td><input type="number" class="adm-input q-msg" value="${q.maxMessagesPerPeriod}" data-original="${q.maxMessagesPerPeriod}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
-                            <td><input type="number" class="adm-input q-ctx" value="${q.maxContextMessages}" data-original="${q.maxContextMessages}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
-                            <td>
-                                <select class="adm-input q-period" data-original="${q.periodDays}" style="width:72px;padding:6px 10px;font-size:13px;">
-                                    <c:forEach var="d" items="1,2,3,4,5,7,14,30">
-                                        <option value="${d}" ${q.periodDays == d ? 'selected' : ''}>${d}일</option>
-                                    </c:forEach>
-                                </select>
-                            </td>
-                            <td>
-                                <select class="adm-input q-reset-h" data-original="${q.resetHour}" style="width:64px;padding:6px 8px;font-size:13px;">
-                                    <c:forEach var="h" begin="0" end="23">
-                                        <option value="${h}" ${q.resetHour == h ? 'selected' : ''}>
-                                            <fmt:formatNumber value="${h}" minIntegerDigits="2"/>
-                                        </option>
-                                    </c:forEach>
-                                </select>
-                                <span style="padding:0 2px;">:</span>
-                                <select class="adm-input q-reset-m" data-original="${q.resetMinute}" style="width:64px;padding:6px 8px;font-size:13px;">
-                                    <c:forEach var="m" begin="0" end="59">
-                                        <option value="${m}" ${q.resetMinute == m ? 'selected' : ''}>
-                                            <fmt:formatNumber value="${m}" minIntegerDigits="2"/>
-                                        </option>
-                                    </c:forEach>
-                                </select>
-                            </td>
-                            <td style="text-align:center;">
-                                <input type="checkbox" class="q-refund" ${q.quotaRefundEnabled ? 'checked' : ''} data-original="${q.quotaRefundEnabled ? 'true' : 'false'}" style="width:18px;height:18px;cursor:pointer;"/>
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${not empty q.updatedBy}">
-                                        <a class="quota-updater"
-                                           href="javascript:void(0);"
-                                           onclick="openDetail('${q.updatedBy}'); return false;"
-                                           style="color:#1d4ed8;text-decoration:none;font-weight:500;cursor:pointer;"
-                                           title="회원 상세 보기">
-                                            <c:choose>
-                                                <c:when test="${not empty q.updaterNickname}">${q.updaterNickname}</c:when>
-                                                <c:otherwise>#${q.updatedBy}</c:otherwise>
-                                            </c:choose>
-                                        </a>
-                                    </c:when>
-                                    <c:otherwise><span style="color:#94a3b8;">-</span></c:otherwise>
-                                </c:choose>
-                            </td>
-                        </tr>
-                    </c:forEach>
+                    <c:choose>
+                        <c:when test="${empty quotas}">
+                            <tr><td colspan="8" class="adm-local-empty-cell">등급이 없습니다.</td></tr>
+                        </c:when>
+                        <c:otherwise>
+                            <c:forEach var="q" items="${quotas}">
+                                <tr data-quota-id="${q.quotaId}">
+                                    <td><strong>${q.grade}</strong></td>
+                                    <td><input type="number" class="adm-input adm-ai-quota-input q-conv" value="${q.maxConversations}" data-original="${q.maxConversations}"/></td>
+                                    <td><input type="number" class="adm-input adm-ai-quota-input q-msg" value="${q.maxMessagesPerPeriod}" data-original="${q.maxMessagesPerPeriod}"/></td>
+                                    <td><input type="number" class="adm-input adm-ai-quota-input q-ctx" value="${q.maxContextMessages}" data-original="${q.maxContextMessages}"/></td>
+                                    <td>
+                                        <select class="adm-select adm-ai-quota-select q-period" data-original="${q.periodDays}">
+                                            <c:forEach var="d" items="1,2,3,4,5,7,14,30">
+                                                <option value="${d}" ${q.periodDays == d ? 'selected' : ''}>${d}일</option>
+                                            </c:forEach>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <div class="adm-ai-time-controls">
+                                            <select class="adm-select adm-ai-time-select q-reset-h" data-original="${q.resetHour}">
+                                                <c:forEach var="h" begin="0" end="23">
+                                                    <option value="${h}" ${q.resetHour == h ? 'selected' : ''}>
+                                                        <fmt:formatNumber value="${h}" minIntegerDigits="2"/>
+                                                    </option>
+                                                </c:forEach>
+                                            </select>
+                                            <span class="adm-ai-time-separator">:</span>
+                                            <select class="adm-select adm-ai-time-select q-reset-m" data-original="${q.resetMinute}">
+                                                <c:forEach var="m" begin="0" end="59">
+                                                    <option value="${m}" ${q.resetMinute == m ? 'selected' : ''}>
+                                                        <fmt:formatNumber value="${m}" minIntegerDigits="2"/>
+                                                    </option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td class="adm-ai-check-cell">
+                                        <input type="checkbox" class="adm-ai-checkbox q-refund" ${q.quotaRefundEnabled ? 'checked' : ''} data-original="${q.quotaRefundEnabled ? 'true' : 'false'}"/>
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${not empty q.updatedBy}">
+                                                <button type="button"
+                                                        class="adm-inline-link js-open-member-context"
+                                                        data-user-idx="${q.updatedBy}">
+                                                    <c:choose>
+                                                        <c:when test="${not empty q.updaterNickname}">${q.updaterNickname}</c:when>
+                                                        <c:otherwise>#${q.updatedBy}</c:otherwise>
+                                                    </c:choose>
+                                                </button>
+                                            </c:when>
+                                            <c:otherwise><span class="adm-ai-muted">-</span></c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
                 </tbody>
             </table>
+            </div>
         </div>
 
         <%-- 전체 저장 / 기본값 복원 (원본으로 되돌리기) --%>
-        <div style="margin-top:16px;display:flex;justify-content:flex-end;gap:8px;align-items:center;">
-            <span id="quotaDirtyHint" style="font-size:12px;color:#64748b;"></span>
+        <div class="adm-ai-footer-actions">
+            <span id="quotaDirtyHint" class="adm-ai-dirty-hint"></span>
             <button type="button" class="adm-btn adm-btn-ghost" onclick="resetQuotasToOriginal()"
                     title="불러온 DB 값으로 모두 되돌립니다">기본값 복원</button>
             <button type="button" class="adm-btn adm-btn-primary" onclick="saveAllQuotas()">전체 저장</button>
