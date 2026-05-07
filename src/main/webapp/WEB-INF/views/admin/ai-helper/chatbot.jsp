@@ -1161,7 +1161,7 @@
             <button class="adm-modal-close" onclick="closeDetail()">✕</button>
         </div>
         <div class="adm-modal-body" id="modalBody">
-            <div style="text-align:center;padding:40px;color:#475569;">${msg_admin_common_loading}</div>
+            <div class="adm-context-empty">${msg_admin_common_loading}</div>
         </div>
         <div class="adm-modal-foot">
             <button class="adm-btn adm-btn-ghost" onclick="closeDetail()">${msg_admin_common_close}</button>
@@ -1171,32 +1171,32 @@
 
 
 <div class="adm-modal-overlay" id="blockModal">
-    <div class="adm-modal" style="max-width:520px;">
+    <div class="adm-modal adm-ai-block-dialog">
         <div class="adm-modal-head">
             <div class="adm-modal-title" id="blockModalTitle">${msg_admin_members_blockModalTitle}</div>
             <button class="adm-modal-close" onclick="closeBlockModal()">✕</button>
         </div>
         <div class="adm-modal-body">
             <input type="hidden" id="blockUserIdx">
-            <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label">${msg_admin_context_action_blockType}</label>
-                <select id="blockType" class="adm-select" style="width:100%;" onchange="handleBlockTypeChange()">
+            <div class="adm-ai-modal-field">
+                <label class="form-label" for="blockType">${msg_admin_context_action_blockType}</label>
+                <select id="blockType" class="adm-select" onchange="handleBlockTypeChange()">
                     <option value="USER_ONLY">${msg_admin_context_blockType_userOnly}</option>
                     <option value="IP_ONLY">${msg_admin_context_blockType_ipOnly}</option>
                     <option value="USER_IP">${msg_admin_context_blockType_userIp}</option>
                 </select>
             </div>
-            <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label">${msg_admin_members_blockedIpLabel}</label>
+            <div class="adm-ai-modal-field">
+                <label class="form-label" for="blockedIp">${msg_admin_members_blockedIpLabel}</label>
                 <input id="blockedIp" class="adm-input" type="text" placeholder="${msg_admin_context_action_blockIpPlaceholder}">
             </div>
-            <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label">${msg_admin_members_blockExpiresLabel}</label>
+            <div class="adm-ai-modal-field">
+                <label class="form-label" for="blockedUntil">${msg_admin_members_blockExpiresLabel}</label>
                 <input id="blockedUntil" class="adm-input" type="datetime-local">
             </div>
-            <div class="form-group">
-                <label class="form-label">${msg_admin_members_blockReasonLabel}</label>
-                <textarea id="blockedReason" class="adm-input" style="min-height:90px;resize:vertical;" placeholder="${msg_admin_context_action_reasonPlaceholder}"></textarea>
+            <div class="adm-ai-modal-field">
+                <label class="form-label" for="blockedReason">${msg_admin_members_blockReasonLabel}</label>
+                <textarea id="blockedReason" class="adm-input adm-ai-modal-textarea" placeholder="${msg_admin_context_action_reasonPlaceholder}"></textarea>
             </div>
         </div>
         <div class="adm-modal-foot">
@@ -1252,7 +1252,7 @@ function escapeHtml(value) {
 }
 
 function formatNullable(value) {
-    return value ? escapeHtml(value) : '<span style="color:#475569">—</span>';
+    return value ? escapeHtml(value) : '<span class="adm-ai-muted">—</span>';
 }
 
 function formatDateTime(value) {
@@ -1288,8 +1288,8 @@ function formatHistoryDateTime(value) {
 
 function formatBooleanBadge(value) {
     return value
-        ? '<span style="color:#4ade80">✓ ' + escapeHtml(ADMIN_MEMBER_MSG.yes) + '</span>'
-        : '<span style="color:#475569">✗ ' + escapeHtml(ADMIN_MEMBER_MSG.no) + '</span>';
+        ? '<span class="adm-ai-bool is-yes">✓ ' + escapeHtml(ADMIN_MEMBER_MSG.yes) + '</span>'
+        : '<span class="adm-ai-bool is-no">✗ ' + escapeHtml(ADMIN_MEMBER_MSG.no) + '</span>';
 }
 
 function buildStatusBadge(status) {
@@ -1561,21 +1561,21 @@ async function changeRole(userIdx, role, reason, el) {
 
 function buildContextRows(items, renderer, emptyMessage) {
     if (!Array.isArray(items) || !items.length) {
-        return '<div style="text-align:center;padding:32px;color:#475569;">' + emptyMessage + '</div>';
+        return '<div class="adm-context-empty">' + emptyMessage + '</div>';
     }
-    return '<div style="display:flex;flex-direction:column;gap:10px;">' + items.map(renderer).join('') + '</div>';
+    return '<div class="adm-context-stack">' + items.map(renderer).join('') + '</div>';
 }
 
 function buildSecurityRows(items) {
     return buildContextRows(items, function(item) {
         return ''
             + '<div class="adm-context-record">'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div class="adm-context-record-head">'
             + '<div><strong>' + escapeHtml(item.eventType || '-') + '</strong> / ' + escapeHtml(item.eventStage || '-') + '</div>'
-            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.occurredAt)) + '</div>'
+            + '<div class="adm-context-record-time">' + escapeHtml(formatHistoryDateTime(item.occurredAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${msg_admin_context_inputValue_js}: ' + escapeHtml(item.inputIdentifier || '-') + '</div>'
-            + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">${msg_admin_context_targetEmail_js}: ' + escapeHtml(item.targetEmail || '-') + '</div>'
+            + '<div class="adm-context-record-line">${msg_admin_context_inputValue_js}: ' + escapeHtml(item.inputIdentifier || '-') + '</div>'
+            + '<div class="adm-context-record-subline">${msg_admin_context_targetEmail_js}: ' + escapeHtml(item.targetEmail || '-') + '</div>'
             + '</div>';
     }, '${msg_admin_context_empty_security_js}');
 }
@@ -1584,11 +1584,11 @@ function buildEmailRequestRows(items) {
     return buildContextRows(items, function(item) {
         return ''
             + '<div class="adm-context-record">'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div class="adm-context-record-head">'
             + '<div><strong>' + escapeHtml(item.purpose || '-') + '</strong> / ' + escapeHtml(item.status || '-') + '</div>'
-            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.requestedAt)) + '</div>'
+            + '<div class="adm-context-record-time">' + escapeHtml(formatHistoryDateTime(item.requestedAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${msg_admin_context_requestEmail_js}: ' + escapeHtml(item.pendingEmail || '-') + '</div>'
+            + '<div class="adm-context-record-line">${msg_admin_context_requestEmail_js}: ' + escapeHtml(item.pendingEmail || '-') + '</div>'
             + '</div>';
     }, '${msg_admin_context_empty_emailRequests_js}');
 }
@@ -1597,11 +1597,11 @@ function buildEmailTokenRows(items) {
     return buildContextRows(items, function(item) {
         return ''
             + '<div class="adm-context-record">'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div class="adm-context-record-head">'
             + '<div><strong>' + escapeHtml(item.purpose || '-') + '</strong> / ' + escapeHtml(item.used ? '${msg_admin_context_used_js}' : '${msg_admin_context_unused_js}') + '</div>'
-            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.createdAt)) + '</div>'
+            + '<div class="adm-context-record-time">' + escapeHtml(formatHistoryDateTime(item.createdAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${msg_admin_context_targetEmail_js}: ' + escapeHtml(item.email || '-') + '</div>'
+            + '<div class="adm-context-record-line">${msg_admin_context_targetEmail_js}: ' + escapeHtml(item.email || '-') + '</div>'
             + '</div>';
     }, '${msg_admin_context_empty_emailTokens_js}');
 }
@@ -1610,11 +1610,11 @@ function buildActivityRows(items) {
     return buildContextRows(items, function(item) {
         return ''
             + '<div class="adm-context-record">'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div class="adm-context-record-head">'
             + '<div><strong>' + escapeHtml(item.activityCode || '-') + '</strong> / ' + escapeHtml(item.activityDomain || item.activityType || '-') + '</div>'
-            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.createdAt)) + '</div>'
+            + '<div class="adm-context-record-time">' + escapeHtml(formatHistoryDateTime(item.createdAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${msg_admin_context_uri_js}: ' + escapeHtml(item.requestUri || '-') + '</div>'
+            + '<div class="adm-context-record-line">${msg_admin_context_uri_js}: ' + escapeHtml(item.requestUri || '-') + '</div>'
             + '</div>';
     }, '${msg_admin_context_empty_activity_js}');
 }
@@ -1623,12 +1623,12 @@ function buildBlockRows(items) {
     return buildContextRows(items, function(item) {
         return ''
             + '<div class="adm-context-record">'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div class="adm-context-record-head">'
             + '<div><strong>' + escapeHtml(item.blockType || '-') + '</strong> / ' + escapeHtml(item.active ? 'ACTIVE' : 'INACTIVE') + '</div>'
-            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.blockedAt)) + '</div>'
+            + '<div class="adm-context-record-time">' + escapeHtml(formatHistoryDateTime(item.blockedAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${msg_admin_common_reason_js}: ' + escapeHtml(item.reason || '-') + '</div>'
-            + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">IP: ' + escapeHtml(item.blockedIp || '-') + '</div>'
+            + '<div class="adm-context-record-line">${msg_admin_common_reason_js}: ' + escapeHtml(item.reason || '-') + '</div>'
+            + '<div class="adm-context-record-subline">IP: ' + escapeHtml(item.blockedIp || '-') + '</div>'
             + '</div>';
     }, '${msg_admin_context_empty_blocks_js}');
 }
@@ -1638,12 +1638,12 @@ function buildChatbotLinkClickRows(items) {
         const url = item.url || '';
         return ''
             + '<div class="adm-context-record">'
-            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
-            + '<div style="font-size:13px;"><strong>' + escapeHtml(item.label || '-') + '</strong></div>'
-            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.clickedAt)) + '</div>'
+            + '<div class="adm-context-record-head">'
+            + '<div class="adm-context-record-title"><strong>' + escapeHtml(item.label || '-') + '</strong></div>'
+            + '<div class="adm-context-record-time">' + escapeHtml(formatHistoryDateTime(item.clickedAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;"><a href="' + ctx + escapeHtml(url) + '" target="_blank" style="color:#60a5fa;font-family:monospace;text-decoration:none;">' + escapeHtml(url) + '</a></div>'
-            + '<div style="margin-top:4px;font-size:11px;color:#94a3b8;">'
+            + '<div class="adm-context-record-line"><a class="adm-context-mono-link" href="' + ctx + escapeHtml(url) + '" target="_blank">' + escapeHtml(url) + '</a></div>'
+            + '<div class="adm-context-record-code">'
             + 'conv #' + escapeHtml(item.conversationId || '-')
             + ' · msg #' + escapeHtml(item.messageId || '-')
             + ' · IP: ' + escapeHtml(item.ipAddress || '-')
@@ -1656,29 +1656,29 @@ function buildActionTab(m) {
     return ''
         + '<div class="adm-context-actions-grid">'
         + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '${msg_admin_context_action_profileTitle_js}' + '</div>'
+        + '<div class="adm-context-panel-title">' + '${msg_admin_context_action_profileTitle_js}' + '</div>'
         + '<div class="detail-label">' + '${msg_admin_context_nickname_js}' + '</div><input id="memberProfileNickname" class="adm-input" type="text" value="' + escapeHtml(m.nickname || '') + '">'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${msg_admin_context_nationality_js}' + '</div><input id="memberProfileNationality" class="adm-input" type="text" value="' + escapeHtml(m.nationality || '') + '">'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${msg_admin_context_preferredLanguage_js}' + '</div><input id="memberProfileLang" class="adm-input" type="text" value="' + escapeHtml(m.preferredLang || '') + '">'
-        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveMemberProfile(' + escapeHtml(m.userIdx) + ', this)">' + '${msg_admin_context_action_saveProfile_js}' + '</button>'
+        + '<div class="detail-label adm-context-field">' + '${msg_admin_context_nationality_js}' + '</div><input id="memberProfileNationality" class="adm-input" type="text" value="' + escapeHtml(m.nationality || '') + '">'
+        + '<div class="detail-label adm-context-field">' + '${msg_admin_context_preferredLanguage_js}' + '</div><input id="memberProfileLang" class="adm-input" type="text" value="' + escapeHtml(m.preferredLang || '') + '">'
+        + '<button type="button" class="adm-btn adm-btn-primary adm-context-panel-btn" onclick="saveMemberProfile(' + escapeHtml(m.userIdx) + ', this)">' + '${msg_admin_context_action_saveProfile_js}' + '</button>'
         + '</div>'
         + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '${msg_admin_context_action_statusRoleTitle_js}' + '</div>'
+        + '<div class="adm-context-panel-title">' + '${msg_admin_context_action_statusRoleTitle_js}' + '</div>'
         + '<div class="detail-label">' + '${msg_admin_members_accountStatus_js}' + '</div>'
-        + '<div style="display:flex;gap:8px;"><select id="memberStatusSelect" class="adm-select" style="width:100%;"><option value="ACTIVE">${msg_admin_status_ACTIVE_js}</option><option value="DORMANT">${msg_admin_status_DORMANT_js}</option><option value="BLOCKED">${msg_admin_status_BLOCKED_js}</option><option value="DELETED">${msg_admin_status_DELETED_js}</option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="applyStatusFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '${msg_admin_common_apply_js}' + '</button></div>'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${msg_admin_common_role_js}' + '</div>'
-        + '<select id="memberRoleSelect" class="adm-select" style="width:100%;"><option value="USER">${msg_admin_role_USER_js}</option><option value="BUSINESS">${msg_admin_role_BUSINESS_js}</option><option value="PARTNER">${msg_admin_role_PARTNER_js}</option><option value="BOT">${msg_admin_role_BOT_js}</option><option value="ADMIN">${msg_admin_role_ADMIN_js}</option></select>'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${msg_admin_context_action_roleReason_js}' + '</div>'
+        + '<div class="adm-context-action-row"><select id="memberStatusSelect" class="adm-select"><option value="ACTIVE">${msg_admin_status_ACTIVE_js}</option><option value="DORMANT">${msg_admin_status_DORMANT_js}</option><option value="BLOCKED">${msg_admin_status_BLOCKED_js}</option><option value="DELETED">${msg_admin_status_DELETED_js}</option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="applyStatusFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '${msg_admin_common_apply_js}' + '</button></div>'
+        + '<div class="detail-label adm-context-field">' + '${msg_admin_common_role_js}' + '</div>'
+        + '<select id="memberRoleSelect" class="adm-select adm-context-full-control"><option value="USER">${msg_admin_role_USER_js}</option><option value="BUSINESS">${msg_admin_role_BUSINESS_js}</option><option value="PARTNER">${msg_admin_role_PARTNER_js}</option><option value="BOT">${msg_admin_role_BOT_js}</option><option value="ADMIN">${msg_admin_role_ADMIN_js}</option></select>'
+        + '<div class="detail-label adm-context-field">' + '${msg_admin_context_action_roleReason_js}' + '</div>'
         + '<input id="memberRoleReason" class="adm-input" type="text" maxlength="500" placeholder="' + '${msg_admin_context_action_roleReasonPlaceholder_js}' + '">'
-        + '<button type="button" class="adm-btn adm-btn-ghost" style="margin-top:12px;" onclick="applyRoleFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '${msg_admin_context_action_changeRole_js}' + '</button>'
+        + '<button type="button" class="adm-btn adm-btn-ghost adm-context-panel-btn" onclick="applyRoleFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '${msg_admin_context_action_changeRole_js}' + '</button>'
         + '</div>'
         + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '${msg_admin_context_action_quickBlockTitle_js}' + '</div>'
-        + '<div class="detail-label">' + '${msg_admin_context_action_blockType_js}' + '</div><select id="detailBlockType" class="adm-select" style="width:100%;"><option value="USER_ONLY">' + '${msg_admin_context_blockType_userOnly_js}' + '</option><option value="IP_ONLY">' + '${msg_admin_context_blockType_ipOnly_js}' + '</option><option value="USER_IP">' + '${msg_admin_context_blockType_userIp_js}' + '</option></select>'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${msg_admin_context_blockedIp_js}' + '</div><input id="detailBlockedIp" class="adm-input" type="text" placeholder="' + '${msg_admin_context_action_blockIpPlaceholder_js}' + '">'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${msg_admin_context_action_blockExpires_js}' + '</div><input id="detailBlockedUntil" class="adm-input" type="datetime-local">'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${msg_admin_common_reason_js}' + '</div><textarea id="detailBlockedReason" class="adm-input" style="min-height:88px;resize:vertical;"></textarea>'
-        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="submitDetailBlock(' + escapeHtml(m.userIdx) + ', this)">' + '${msg_admin_context_action_applyBlock_js}' + '</button>'
+        + '<div class="adm-context-panel-title">' + '${msg_admin_context_action_quickBlockTitle_js}' + '</div>'
+        + '<div class="detail-label">' + '${msg_admin_context_action_blockType_js}' + '</div><select id="detailBlockType" class="adm-select adm-context-full-control"><option value="USER_ONLY">' + '${msg_admin_context_blockType_userOnly_js}' + '</option><option value="IP_ONLY">' + '${msg_admin_context_blockType_ipOnly_js}' + '</option><option value="USER_IP">' + '${msg_admin_context_blockType_userIp_js}' + '</option></select>'
+        + '<div class="detail-label adm-context-field">' + '${msg_admin_context_blockedIp_js}' + '</div><input id="detailBlockedIp" class="adm-input" type="text" placeholder="' + '${msg_admin_context_action_blockIpPlaceholder_js}' + '">'
+        + '<div class="detail-label adm-context-field">' + '${msg_admin_context_action_blockExpires_js}' + '</div><input id="detailBlockedUntil" class="adm-input" type="datetime-local">'
+        + '<div class="detail-label adm-context-field">' + '${msg_admin_common_reason_js}' + '</div><textarea id="detailBlockedReason" class="adm-input adm-ai-modal-textarea"></textarea>'
+        + '<button type="button" class="adm-btn adm-btn-primary adm-context-panel-btn" onclick="submitDetailBlock(' + escapeHtml(m.userIdx) + ', this)">' + '${msg_admin_context_action_applyBlock_js}' + '</button>'
         + '</div>'
         + '</div>';
 }
@@ -1687,7 +1687,7 @@ function buildActionTab(m) {
 async function openDetail(userIdx, defaultTab) {
     document.getElementById('detailModal').classList.add('open');
     document.getElementById('modalBody').innerHTML =
-        '<div style="text-align:center;padding:40px;color:#475569;">' + escapeHtml(ADMIN_MEMBER_MSG.loading) + ' ⏳</div>';
+        '<div class="adm-context-empty">' + escapeHtml(ADMIN_MEMBER_MSG.loading) + '</div>';
 
     let data;
     try {
@@ -1695,13 +1695,13 @@ async function openDetail(userIdx, defaultTab) {
         data = await res.json();
     } catch (error) {
         document.getElementById('modalBody').innerHTML =
-            '<div style="text-align:center;padding:40px;color:#f87171;">' + escapeHtml(ADMIN_MEMBER_MSG.fetchError) + '</div>';
+            '<div class="adm-context-empty is-error">' + escapeHtml(ADMIN_MEMBER_MSG.fetchError) + '</div>';
         return;
     }
 
     if (!data.success) {
         document.getElementById('modalBody').innerHTML =
-            '<div style="text-align:center;padding:40px;color:#f87171;">' + escapeHtml(data.message || ADMIN_MEMBER_MSG.error) + '</div>';
+            '<div class="adm-context-empty is-error">' + escapeHtml(data.message || ADMIN_MEMBER_MSG.error) + '</div>';
         return;
     }
 
@@ -1728,22 +1728,22 @@ async function openDetail(userIdx, defaultTab) {
         + '<button class="adm-tab ' + (activeTab === 'chatbot' ? 'active' : '') + '" onclick="switchTab(\'chatbot\', this)">챗봇 링크 (' + chatbotLinkClicks.length + ')</button>'
         + '<button class="adm-tab ' + (activeTab === 'actions' ? 'active' : '') + '" onclick="switchTab(\'actions\', this)">' + ADMIN_MEMBER_MSG.actionsTab + '</button>'
         + '</div>'
-        + '<div id="tab-info" style="display:' + (activeTab === 'info' ? '' : 'none') + ';"></div>'
-        + '<div id="tab-hist" style="display:' + (activeTab === 'hist' ? '' : 'none') + ';"></div>'
-        + '<div id="tab-security" style="display:' + (activeTab === 'security' ? '' : 'none') + ';"></div>'
-        + '<div id="tab-emails" style="display:' + (activeTab === 'emails' ? '' : 'none') + ';"></div>'
-        + '<div id="tab-activity" style="display:' + (activeTab === 'activity' ? '' : 'none') + ';"></div>'
-        + '<div id="tab-blocks" style="display:' + (activeTab === 'blocks' ? '' : 'none') + ';"></div>'
-        + '<div id="tab-chatbot" style="display:' + (activeTab === 'chatbot' ? '' : 'none') + ';"></div>'
-        + '<div id="tab-actions" style="display:' + (activeTab === 'actions' ? '' : 'none') + ';"></div>';
+        + '<div id="tab-info" class="adm-tab-panel" ' + (activeTab === 'info' ? '' : 'hidden') + '></div>'
+        + '<div id="tab-hist" class="adm-tab-panel" ' + (activeTab === 'hist' ? '' : 'hidden') + '></div>'
+        + '<div id="tab-security" class="adm-tab-panel" ' + (activeTab === 'security' ? '' : 'hidden') + '></div>'
+        + '<div id="tab-emails" class="adm-tab-panel" ' + (activeTab === 'emails' ? '' : 'hidden') + '></div>'
+        + '<div id="tab-activity" class="adm-tab-panel" ' + (activeTab === 'activity' ? '' : 'hidden') + '></div>'
+        + '<div id="tab-blocks" class="adm-tab-panel" ' + (activeTab === 'blocks' ? '' : 'hidden') + '></div>'
+        + '<div id="tab-chatbot" class="adm-tab-panel" ' + (activeTab === 'chatbot' ? '' : 'hidden') + '></div>'
+        + '<div id="tab-actions" class="adm-tab-panel" ' + (activeTab === 'actions' ? '' : 'hidden') + '></div>';
 
     document.getElementById('tab-info').innerHTML = buildInfoTab(m);
     document.getElementById('tab-hist').innerHTML = buildHistTab(h);
     document.getElementById('tab-security').innerHTML = buildSecurityRows(securityAudits);
     document.getElementById('tab-emails').innerHTML = ''
-        + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">'
-        + '<div><div style="font-weight:700;margin-bottom:10px;">' + '${msg_admin_context_tab_emailRequests_js}' + '</div>' + buildEmailRequestRows(emailRequests) + '</div>'
-        + '<div><div style="font-weight:700;margin-bottom:10px;">' + '${msg_admin_context_tab_emailTokens_js}' + '</div>' + buildEmailTokenRows(emailTokens) + '</div>'
+        + '<div class="adm-context-two-col">'
+        + '<div><div class="adm-context-panel-title">' + '${msg_admin_context_tab_emailRequests_js}' + '</div>' + buildEmailRequestRows(emailRequests) + '</div>'
+        + '<div><div class="adm-context-panel-title">' + '${msg_admin_context_tab_emailTokens_js}' + '</div>' + buildEmailTokenRows(emailTokens) + '</div>'
         + '</div>';
     document.getElementById('tab-activity').innerHTML = buildActivityRows(activityLogs);
     document.getElementById('tab-blocks').innerHTML = buildBlockRows(recentBlocks);
@@ -1766,7 +1766,7 @@ function buildInfoTab(m) {
         + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_context_memberNo_js}' + '</div><div class="detail-value">#' + escapeHtml(m.userIdx) + '</div></div>'
         + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_context_userId_js}' + '</div><div class="detail-value">' + formatNullable(m.userId) + '</div></div>'
         + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_context_nickname_js}' + '</div><div class="detail-value">' + formatNullable(m.nickname) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_context_email_js}' + '</div><div class="detail-value" style="font-size:12px;">' + formatNullable(m.userEmail) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_context_email_js}' + '</div><div class="detail-value is-small">' + formatNullable(m.userEmail) + '</div></div>'
         + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_members_accountStatus_js}' + '</div><div class="detail-value">' + statusBadge + '</div></div>'
         + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_common_role_js}' + '</div><div class="detail-value">' + roleBadge + '</div></div>'
         + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_context_nationality_js}' + '</div><div class="detail-value">' + formatNullable(m.nationality) + '</div></div>'
@@ -1774,31 +1774,31 @@ function buildInfoTab(m) {
         + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_members_emailVerified_js}' + '</div><div class="detail-value">' + formatBooleanBadge(m.emailVerified) + '</div></div>'
         + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_members_emailLoginEnabled_js}' + '</div><div class="detail-value">' + formatBooleanBadge(m.emailLoginEnabled) + '</div></div>'
         + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_members_passwordLoginEnabled_js}' + '</div><div class="detail-value">' + formatBooleanBadge(m.passwordEnabled) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_context_createdAt_js}' + '</div><div class="detail-value" style="font-size:12px;">' + formatDateTime(m.createdAt) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${msg_admin_context_createdAt_js}' + '</div><div class="detail-value is-small">' + formatDateTime(m.createdAt) + '</div></div>'
         + '</div>'
-        + '<div class="detail-item" style="margin-top:12px;">'
+        + '<div class="detail-item adm-context-social-item">'
         + '<div class="detail-label">' + '${msg_admin_members_socialLinked_js}' + '</div>'
-        + '<div class="detail-value" style="margin-top:4px;">' + socialHtml + '</div>'
+        + '<div class="detail-value adm-context-social-value">' + socialHtml + '</div>'
         + '</div>'
-        + '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">'
-        + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
-        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '${msg_admin_members_loginSuccess_js}' + '</div>'
-        + '<div style="font-size:20px;font-weight:700;color:#4ade80;margin-top:4px;">' + escapeHtml(m.loginSuccessCount ?? 0) + '</div>'
+        + '<div class="adm-context-metric-grid">'
+        + '<div class="adm-context-metric">'
+        + '<div class="adm-context-metric-label">' + '${msg_admin_members_loginSuccess_js}' + '</div>'
+        + '<div class="adm-context-metric-value is-success">' + escapeHtml(m.loginSuccessCount ?? 0) + '</div>'
         + '</div>'
-        + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
-        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '${msg_admin_members_loginFailure_js}' + '</div>'
-        + '<div style="font-size:20px;font-weight:700;color:#f87171;margin-top:4px;">' + escapeHtml(m.loginFailCount ?? 0) + '</div>'
+        + '<div class="adm-context-metric">'
+        + '<div class="adm-context-metric-label">' + '${msg_admin_members_loginFailure_js}' + '</div>'
+        + '<div class="adm-context-metric-value is-danger">' + escapeHtml(m.loginFailCount ?? 0) + '</div>'
         + '</div>'
-        + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;">'
-        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '${msg_admin_context_lastLogin_js}' + '</div>'
-        + '<div style="font-size:12px;font-weight:600;color:#94a3b8;margin-top:4px;">' + escapeHtml(lastLoginText) + '</div>'
+        + '<div class="adm-context-metric">'
+        + '<div class="adm-context-metric-label">' + '${msg_admin_context_lastLogin_js}' + '</div>'
+        + '<div class="adm-context-metric-time">' + escapeHtml(lastLoginText) + '</div>'
         + '</div>'
         + '</div>';
 }
 
 function buildHistTab(history) {
     if (!history.length) {
-        return '<div style="text-align:center;padding:32px;color:#475569;">' + '${msg_admin_context_empty_logins_js}' + '</div>';
+        return '<div class="adm-context-empty">' + '${msg_admin_context_empty_logins_js}' + '</div>';
     }
 
     const methodMap = {
@@ -1818,12 +1818,12 @@ function buildHistTab(history) {
             + '<td>' + escapeHtml(methodMap[item.loginMethod] || item.loginMethod || '—') + '</td>'
             + '<td class="' + (ok ? 'h-success' : 'h-fail') + '">' + (ok ? '✅ ' + '${msg_admin_logs_success_js}' : '❌ ' + '${msg_admin_logs_failure_js}') + '</td>'
             + '<td>' + escapeHtml(item.failReason || '—') + '</td>'
-            + '<td style="font-size:11px;color:#475569;">' + escapeHtml(item.ipAddress || '—') + '</td>'
+            + '<td class="adm-context-ip-cell">' + escapeHtml(item.ipAddress || '—') + '</td>'
             + '</tr>';
     });
 
     return ''
-        + '<div style="overflow-x:auto;max-height:340px;overflow-y:auto;">'
+        + '<div class="adm-context-table-scroll">'
         + '<table class="history-table">'
         + '<thead><tr><th>' + '${msg_admin_common_time_js}' + '</th><th>' + '${msg_admin_logs_provider_js}' + '</th><th>' + '${msg_admin_logs_success_js}' + '</th><th>' + '${msg_admin_logs_failReason_js}' + '</th><th>${msg_admin_common_ip_js}</th></tr></thead>'
         + '<tbody>' + rows + '</tbody>'
@@ -1834,9 +1834,9 @@ function buildHistTab(history) {
 function switchTab(tab, btn) {
     document.querySelectorAll('#detailModal .adm-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
-    ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'actions'].forEach(function(name) {
+    ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'chatbot', 'actions'].forEach(function(name) {
         const el = document.getElementById('tab-' + name);
-        if (el) el.style.display = tab === name ? '' : 'none';
+        if (el) el.hidden = tab !== name;
     });
 }
 
