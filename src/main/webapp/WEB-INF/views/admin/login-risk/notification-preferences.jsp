@@ -37,29 +37,36 @@
         <div class="adm-alert success">${message}</div>
     </c:if>
 
-    <form method="post" class="adm-card">
-        <div class="adm-card-header">
-            <div class="adm-card-title">${msg_security_admin_notifications_category}</div>
+    <form method="post" class="adm-card adm-notification-card">
+        <div class="adm-card-header adm-notification-card-head">
+            <div>
+                <div class="adm-card-title">${msg_security_admin_notifications_category}</div>
+                <div class="adm-page-muted">${msg_security_admin_notifications_desc}</div>
+            </div>
+            <div class="adm-notification-card-actions">
+                <button class="adm-btn primary" type="submit">${msg_security_admin_common_save}</button>
+            </div>
         </div>
         <div class="adm-card-body">
-            <c:forEach var="p" items="${preferences}">
-                <label class="adm-check" style="display:block;margin:12px 0;">
-                    <input type="checkbox" name="enabledCategories" value="${p.notificationCategory}" ${p.enabled ? 'checked' : ''}>
-                    <strong>${p.notificationCategory}</strong>
-                    <span class="adm-muted">
-                        <c:choose>
-                            <c:when test="${p.notificationCategory == 'LOGIN_RISK'}">${msg_security_admin_notifications_loginRisk}</c:when>
-                            <c:when test="${p.notificationCategory == 'BUSINESS_APPLICATION'}">${msg_security_admin_notifications_business}</c:when>
-                            <c:when test="${p.notificationCategory == 'REPORT'}">${msg_security_admin_notifications_report}</c:when>
-                            <c:when test="${p.notificationCategory == 'INQUIRY'}">${msg_security_admin_notifications_inquiry}</c:when>
-                            <c:when test="${p.notificationCategory == 'BLOCK_REVIEW'}">${msg_security_admin_notifications_blockReview}</c:when>
-                            <c:otherwise>${msg_security_admin_notifications_etc}</c:otherwise>
-                        </c:choose>
-                    </span>
-                </label>
-            </c:forEach>
-            <div class="adm-actions" style="margin-top:16px;">
-                <button class="adm-btn primary" type="submit">${msg_security_admin_common_save}</button>
+            <div class="adm-notification-grid">
+                <c:forEach var="p" items="${preferences}">
+                    <label class="adm-check adm-notification-option">
+                        <input type="checkbox" name="enabledCategories" value="${p.notificationCategory}" ${p.enabled ? 'checked' : ''}>
+                        <span class="adm-notification-option-body">
+                            <span class="adm-notification-option-title"><c:out value="${p.notificationCategory}"/></span>
+                            <span class="adm-notification-option-desc">
+                                <c:choose>
+                                    <c:when test="${p.notificationCategory == 'LOGIN_RISK'}">${msg_security_admin_notifications_loginRisk}</c:when>
+                                    <c:when test="${p.notificationCategory == 'BUSINESS_APPLICATION'}">${msg_security_admin_notifications_business}</c:when>
+                                    <c:when test="${p.notificationCategory == 'REPORT'}">${msg_security_admin_notifications_report}</c:when>
+                                    <c:when test="${p.notificationCategory == 'INQUIRY'}">${msg_security_admin_notifications_inquiry}</c:when>
+                                    <c:when test="${p.notificationCategory == 'BLOCK_REVIEW'}">${msg_security_admin_notifications_blockReview}</c:when>
+                                    <c:otherwise>${msg_security_admin_notifications_etc}</c:otherwise>
+                                </c:choose>
+                            </span>
+                        </span>
+                    </label>
+                </c:forEach>
             </div>
         </div>
     </form>

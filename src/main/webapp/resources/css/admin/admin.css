@@ -4977,3 +4977,95 @@ body.sa-light .adm-governance-page .adm-provider-health-provider {
         width: auto;
     }
 }
+
+/* Admin notification preferences */
+.adm-governance-page .adm-notification-card {
+    overflow: visible;
+    border-radius: 8px;
+}
+
+.adm-governance-page .adm-notification-card-head {
+    align-items: center;
+}
+
+.adm-governance-page .adm-notification-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+}
+
+.adm-governance-page .adm-notification-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+}
+
+.adm-governance-page .adm-notification-option {
+    display: grid !important;
+    grid-template-columns: 18px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    min-height: 78px;
+    margin: 0 !important;
+    padding: 12px;
+    border: 1px solid rgba(148,163,184,.16);
+    border-radius: 8px;
+    background: rgba(15,23,42,.34);
+}
+
+.adm-governance-page .adm-notification-option input {
+    margin-top: 3px;
+}
+
+.adm-governance-page .adm-notification-option-body {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.adm-governance-page .adm-notification-option-title {
+    overflow: hidden;
+    color: #f8fafc;
+    font-size: 13px;
+    font-weight: 800;
+    text-overflow: ellipsis;
+}
+
+.adm-governance-page .adm-notification-option-desc {
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.45;
+}
+
+body.sa-light .adm-governance-page .adm-notification-option {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+body.sa-light .adm-governance-page .adm-notification-option-title {
+    color: #0f172a;
+}
+
+body.sa-light .adm-governance-page .adm-notification-option-desc {
+    color: #64748b;
+}
+
+@media (max-width: 640px) {
+    .adm-governance-page .adm-notification-card-head {
+        align-items: stretch;
+    }
+
+    .adm-governance-page .adm-notification-card-actions {
+        justify-content: flex-start;
+    }
+
+    .adm-governance-page .adm-notification-card-actions .adm-btn {
+        width: auto;
+    }
+
+    .adm-governance-page .adm-notification-grid {
+        grid-template-columns: 1fr;
+    }
+}
