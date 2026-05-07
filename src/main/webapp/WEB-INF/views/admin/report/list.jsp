@@ -30,6 +30,7 @@
 <spring:message var="msg_admin_reports_reason_other" code="admin.reports.reason.other"/>
 <spring:message var="msg_admin_reports_searchLabel" code="admin.reports.searchLabel"/>
 <spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_reports_listTitle" code="admin.reports.listTitle"/>
 <spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
 <spring:message var="msg_admin_reports_reportCount" code="admin.reports.reportCount"/>
@@ -55,7 +56,7 @@
 <c:set var="pageTitle" value="${msg_admin_reports_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-report-page">
 
     <%-- ── 통계 카드 ── --%>
     <div class="adm-summary-grid">
@@ -78,10 +79,10 @@
     </div>
 
     <%-- ── 필터 바 ── --%>
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-report-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/reports">
-                <div class="adm-filter-bar">
+                <div class="adm-filter-bar adm-report-filterbar">
 
                     <div>
                         <div class="adm-filter-label">${msg_admin_common_status}</div>
@@ -118,28 +119,40 @@
                         </select>
                     </div>
 
-                    <div style="flex:1;min-width:200px;">
+                    <div class="adm-report-search-field">
                         <div class="adm-filter-label">${msg_admin_reports_searchLabel}</div>
-                        <div class="adm-search-box">
+                        <div class="adm-search-box adm-report-search-box">
                             <span class="adm-search-ico">🔍</span>
                             <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${msg_admin_reports_searchPlaceholder}">
                         </div>
                     </div>
 
-                    <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
+                    <div class="adm-report-filter-actions">
+                        <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/reports">${msg_admin_common_reset}</a>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
     <%-- ── 목록 테이블 ── --%>
-    <div class="adm-card">
+    <div class="adm-card adm-report-list-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">${msg_admin_reports_listTitle}</div>
-            <div style="font-size:12px;color:#64748b;">${msg_admin_common_totalCount}</div>
+            <div class="adm-card-title">${msg_admin_reports_listTitle}<span class="adm-section-total-inline">${msg_admin_common_totalCount}</span></div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table">
+            <table class="adm-table adm-report-table">
+                <colgroup>
+                    <col class="adm-report-col-id">
+                    <col class="adm-report-col-count">
+                    <col>
+                    <col class="adm-report-col-reporter">
+                    <col class="adm-report-col-reason">
+                    <col class="adm-report-col-date">
+                    <col class="adm-report-col-date">
+                    <col class="adm-report-col-status">
+                </colgroup>
                 <thead>
                 <tr>
                     <th>${msg_admin_common_id}</th>
@@ -154,20 +167,17 @@
                 </thead>
                 <tbody>
                 <c:forEach items="${reportList}" var="r">
-                    <tr class="rpt-admin-row" data-id="${r.reportId}" style="cursor:pointer;"
-                        onmouseenter="this.style.background='rgba(255,255,255,.04)'"
-                        onmouseleave="this.style.background=''"
-                    >
+                    <tr class="rpt-admin-row" data-id="${r.reportId}">
                         <td>#${r.reportId}</td>
 
                         <%-- 신고수: 3건 이상이면 빨간 강조 --%>
                         <td>
                             <c:choose>
                                 <c:when test="${r.targetReportCount >= 3}">
-                                    <span style="color:#f87171;font-weight:700;">🔴 ${r.targetReportCount}${msg_admin_common_countSuffix}</span>
+                                    <span class="adm-report-count is-hot">🔴 ${r.targetReportCount}${msg_admin_common_countSuffix}</span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span style="color:#94a3b8;">${r.targetReportCount}${msg_admin_common_countSuffix}</span>
+                                    <span class="adm-report-count">${r.targetReportCount}${msg_admin_common_countSuffix}</span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -194,7 +204,7 @@
                                     <c:otherwise>${r.targetType}</c:otherwise>
                                 </c:choose>
                                 <c:if test="${r.targetStatus eq 'DELETED'}">
-                                    <span class="adm-inline-danger" style="margin-left:4px;">
+                                    <span class="adm-inline-danger adm-report-inline-danger">
                                         <c:choose>
                                             <c:when test="${r.targetType eq 'review'}">(${msg_admin_reports_targetBlocked})</c:when>
                                             <c:otherwise>(${msg_admin_reports_targetDeleted})</c:otherwise>
@@ -211,7 +221,7 @@
                         <td>
                             <c:if test="${r.userIdx == 18}">
                                 <div>
-                                    <span style="display:inline-block;padding:2px 8px;background:#ede9fe;color:#6d28d9;border-radius:999px;font-size:11px;font-weight:600;margin-bottom:4px;"
+                                    <span class="adm-report-ai-badge"
                                           title="Perspective API 민감도 분석에 의해 자동 감지된 신고">
                                         🤖 AI 자동감지
                                     </span>
@@ -221,10 +231,10 @@
                                     class="adm-cell-link js-open-member-context"
                                     data-user-idx="${r.userIdx}"
                                     onclick="event.stopPropagation();">
-                                <span style="font-weight:700;color:#93c5fd;">${r.nickname}</span>
+                                <span class="adm-report-member-name">${r.nickname}</span>
                                 <span class="adm-cell-link-note">@${r.userId}</span>
                                 <c:if test="${r.accountStatus == 'BLOCKED'}">
-                                    <span class="adm-cell-link-note" style="color:#fca5a5;">${msg_admin_reports_accountBlocked}</span>
+                                    <span class="adm-cell-link-note adm-report-blocked-note">${msg_admin_reports_accountBlocked}</span>
                                 </c:if>
                             </button>
                         </td>
@@ -234,7 +244,7 @@
                             <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}&jump=report-processing-actions"
                                class="adm-cell-link"
                                onclick="event.stopPropagation();">
-                                <span style="font-size:12px;">
+                                <span class="adm-report-reason-text">
                                     <c:choose>
                                         <c:when test="${r.reason eq 'spam'}">${msg_admin_reports_reason_spam}</c:when>
                                         <c:when test="${r.reason eq 'abuse'}">${msg_admin_reports_reason_abuse}</c:when>
@@ -244,7 +254,7 @@
                                         <c:when test="${r.reason eq 'other'}">${msg_admin_reports_reason_other}</c:when>
                                         <c:when test="${r.reason eq 'user'}">${msg_admin_reports_reason_user}</c:when>
                                         <c:when test="${not empty r.reason}">${r.reason}</c:when>
-                                        <c:otherwise><span style="color:#64748b;">—</span></c:otherwise>
+                                        <c:otherwise><span class="adm-report-muted">—</span></c:otherwise>
                                     </c:choose>
                                 </span>
                                 <span class="adm-cell-link-note">${msg_admin_common_viewDetail}</span>
@@ -270,7 +280,7 @@
                                         <c:when test="${not empty r.resolvedAt}">
                                             <fmt:formatDate value="${r.resolvedAt}" type="both" dateStyle="short" timeStyle="short"/>
                                         </c:when>
-                                        <c:otherwise><span style="color:#64748b;">—</span></c:otherwise>
+                                        <c:otherwise><span class="adm-report-muted">—</span></c:otherwise>
                                     </c:choose>
                                 </span>
                             </a>
@@ -296,7 +306,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty reportList}">
-                    <tr><td colspan="8" style="text-align:center;padding:40px;color:#475569;">${msg_admin_common_noResults}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="8" class="adm-local-empty-cell">${msg_admin_common_noResults}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -320,7 +330,7 @@
     </div>
 
     <%-- ── 유저 화면 바로가기 ── --%>
-    <div style="margin-top:16px;padding:0 10px;">
+    <div class="adm-report-site-link">
         <a class="adm-nav-item adm-nav-ext" href="${pageContext.request.contextPath}/report/list" target="_blank">
             <span class="adm-nav-icon">↗️</span> ${msg_admin_reports_viewSite}
         </a>
