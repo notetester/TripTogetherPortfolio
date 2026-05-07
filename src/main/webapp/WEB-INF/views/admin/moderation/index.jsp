@@ -26,6 +26,7 @@
 <spring:message var="msg_admin_moderation_blurAfterCount" code="admin.moderation.blurAfterCount"/>
 <spring:message var="msg_admin_common_save" code="admin.common.save"/>
 <spring:message var="msg_admin_moderation_resetDefaults" code="admin.moderation.resetDefaults"/>
+<spring:message var="msg_admin_moderation_totalCountDisplay" code="admin.common.totalCountFormat" arguments="5"/>
 <c:set var="activeMenu" value="moderation"/>
 
 
@@ -47,6 +48,12 @@
     </div>
 
     <div class="adm-card adm-moderation-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">
+                ${msg_admin_moderation_pageTitle}
+                <span class="adm-section-total-inline">${msg_admin_moderation_totalCountDisplay}</span>
+            </div>
+        </div>
         <div class="adm-card-body">
             <form id="moderationForm" class="adm-moderation-form">
                 <section class="adm-moderation-section adm-moderation-section-wide">
@@ -64,45 +71,59 @@
                 <section class="adm-moderation-section">
                     <div class="adm-moderation-section-title">${msg_admin_moderation_postSpamTitle}</div>
                     <div class="adm-moderation-rule-row">
-                        <input type="number" name="postWindowMinutes" min="1" max="1440"
-                               value="${policy.postWindowMinutes}" class="adm-input adm-moderation-number"/>
-                        <span>${msg_admin_moderation_minutesWithin}</span>
-                        <input type="number" name="postMaxCount" min="1" max="100"
-                               value="${policy.postMaxCount}" class="adm-input adm-moderation-number"/>
-                        <span>${msg_admin_moderation_blockAfterCount}</span>
+                        <label class="adm-moderation-number-chip">
+                            <input type="number" name="postWindowMinutes" min="1" max="1440"
+                                   value="${policy.postWindowMinutes}" class="adm-input adm-moderation-number"/>
+                            <span>${msg_admin_moderation_minutesWithin}</span>
+                        </label>
+                        <label class="adm-moderation-number-chip">
+                            <input type="number" name="postMaxCount" min="1" max="100"
+                                   value="${policy.postMaxCount}" class="adm-input adm-moderation-number"/>
+                            <span>${msg_admin_moderation_blockAfterCount}</span>
+                        </label>
                     </div>
                 </section>
 
                 <section class="adm-moderation-section">
                     <div class="adm-moderation-section-title">${msg_admin_moderation_commentSpamTitle}</div>
                     <div class="adm-moderation-rule-row">
-                        <input type="number" name="commentWindowMinutes" min="1" max="1440"
-                               value="${policy.commentWindowMinutes}" class="adm-input adm-moderation-number"/>
-                        <span>${msg_admin_moderation_minutesWithin}</span>
-                        <input type="number" name="commentMaxCount" min="1" max="100"
-                               value="${policy.commentMaxCount}" class="adm-input adm-moderation-number"/>
-                        <span>${msg_admin_moderation_blockAfterCount}</span>
+                        <label class="adm-moderation-number-chip">
+                            <input type="number" name="commentWindowMinutes" min="1" max="1440"
+                                   value="${policy.commentWindowMinutes}" class="adm-input adm-moderation-number"/>
+                            <span>${msg_admin_moderation_minutesWithin}</span>
+                        </label>
+                        <label class="adm-moderation-number-chip">
+                            <input type="number" name="commentMaxCount" min="1" max="100"
+                                   value="${policy.commentMaxCount}" class="adm-input adm-moderation-number"/>
+                            <span>${msg_admin_moderation_blockAfterCount}</span>
+                        </label>
                     </div>
                 </section>
 
                 <section class="adm-moderation-section">
                     <div class="adm-moderation-section-title">${msg_admin_moderation_inquirySpamTitle}</div>
                     <div class="adm-moderation-rule-row">
-                        <input type="number" name="inquiryWindowMinutes" min="1" max="1440"
-                               value="${policy.inquiryWindowMinutes}" class="adm-input adm-moderation-number"/>
-                        <span>${msg_admin_moderation_minutesWithin}</span>
-                        <input type="number" name="inquiryMaxCount" min="1" max="100"
-                               value="${policy.inquiryMaxCount}" class="adm-input adm-moderation-number"/>
-                        <span>${msg_admin_moderation_blockAfterCount}</span>
+                        <label class="adm-moderation-number-chip">
+                            <input type="number" name="inquiryWindowMinutes" min="1" max="1440"
+                                   value="${policy.inquiryWindowMinutes}" class="adm-input adm-moderation-number"/>
+                            <span>${msg_admin_moderation_minutesWithin}</span>
+                        </label>
+                        <label class="adm-moderation-number-chip">
+                            <input type="number" name="inquiryMaxCount" min="1" max="100"
+                                   value="${policy.inquiryMaxCount}" class="adm-input adm-moderation-number"/>
+                            <span>${msg_admin_moderation_blockAfterCount}</span>
+                        </label>
                     </div>
                 </section>
 
                 <section class="adm-moderation-section">
                     <div class="adm-moderation-section-title">${msg_admin_moderation_reportThresholdTitle}</div>
                     <div class="adm-moderation-rule-row adm-moderation-rule-row-short">
-                        <input type="number" name="reportThreshold" min="1" max="100"
-                               value="${policy.reportThreshold}" class="adm-input adm-moderation-number"/>
-                        <span>${msg_admin_moderation_blurAfterCount}</span>
+                        <label class="adm-moderation-number-chip">
+                            <input type="number" name="reportThreshold" min="1" max="100"
+                                   value="${policy.reportThreshold}" class="adm-input adm-moderation-number"/>
+                            <span>${msg_admin_moderation_blurAfterCount}</span>
+                        </label>
                     </div>
                 </section>
 
@@ -117,6 +138,14 @@
 
 <script>
 var ctx = '${pageContext.request.contextPath}';
+
+function notifyModeration(message, type) {
+    if (window.adm_toast) {
+        adm_toast(message, type || 'success');
+    } else {
+        alert(message);
+    }
+}
 
 function saveModeration() {
     var form = document.getElementById('moderationForm');
@@ -134,12 +163,12 @@ function saveModeration() {
     }).then(function(r) { return r.json(); })
       .then(function(d) {
         if (d.success) {
-            alert(adminModerationSaved);
+            notifyModeration(adminModerationSaved);
             location.reload();
         } else {
-            alert(d.message || adminModerationSaveFailed);
+            notifyModeration(d.message || adminModerationSaveFailed, 'error');
         }
-    }).catch(function() { alert(adminModerationRequestFailed); });
+    }).catch(function() { notifyModeration(adminModerationRequestFailed, 'error'); });
 }
 
 function resetDefaults() {
