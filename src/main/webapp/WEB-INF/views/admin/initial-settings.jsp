@@ -22,7 +22,7 @@
 
 <%@ include file="layout.jsp" %>
 
-<div class="adm-content adm-governance-page">
+<div class="adm-content adm-governance-page adm-initial-page">
     <div class="adm-page-head">
         <div>
             <h1>${msg_admin_initialSettings_title}</h1>
@@ -44,42 +44,50 @@
         <div class="adm-alert danger"><c:out value="${error}"/></div>
     </c:if>
 
-    <div class="adm-card" style="margin-bottom:16px;">
-        <div class="adm-card-header">
-            <div>
-                <div class="adm-card-title">${msg_admin_initialSettings_exportTitle}</div>
-                <div class="adm-muted">${msg_admin_initialSettings_exportDesc}</div>
-            </div>
-        </div>
-        <div class="adm-card-body">
-            <a class="adm-btn primary" href="${pageContext.request.contextPath}/admin/initial-settings/export">
-                ${msg_admin_initialSettings_exportButton}
-            </a>
-            <div class="adm-muted" style="margin-top:10px;line-height:1.7;">
-                ${msg_admin_initialSettings_exportScope}
-            </div>
-        </div>
-    </div>
-
-    <div class="adm-card">
-        <div class="adm-card-header">
-            <div>
-                <div class="adm-card-title">${msg_admin_initialSettings_importTitle}</div>
-                <div class="adm-muted">${msg_admin_initialSettings_importDesc}</div>
-            </div>
-        </div>
-        <div class="adm-card-body">
-            <form method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/admin/initial-settings/import">
-                <label>${msg_admin_initialSettings_importFile}
-                    <input class="adm-input" type="file" name="file" accept="application/json,.json" required>
-                </label>
-                <div class="adm-actions" style="margin-top:12px;">
-                    <button class="adm-btn primary" type="submit">${msg_admin_initialSettings_importButton}</button>
+    <div class="adm-initial-grid">
+        <section class="adm-card adm-initial-card">
+            <div class="adm-card-header">
+                <div>
+                    <div class="adm-card-title">${msg_admin_initialSettings_exportTitle}</div>
+                    <div class="adm-muted">${msg_admin_initialSettings_exportDesc}</div>
                 </div>
-            </form>
-            <div class="adm-muted" style="margin-top:10px;line-height:1.7;">
-                ${msg_admin_initialSettings_importNotice}
             </div>
-        </div>
+            <div class="adm-card-body adm-initial-card-body">
+                <div class="adm-initial-main-action">
+                    <a class="adm-btn adm-btn-primary" href="${pageContext.request.contextPath}/admin/initial-settings/export">
+                        ${msg_admin_initialSettings_exportButton}
+                    </a>
+                </div>
+                <div class="adm-initial-note">
+                    ${msg_admin_initialSettings_exportScope}
+                </div>
+            </div>
+        </section>
+
+        <section class="adm-card adm-initial-card">
+            <div class="adm-card-header">
+                <div>
+                    <div class="adm-card-title">${msg_admin_initialSettings_importTitle}</div>
+                    <div class="adm-muted">${msg_admin_initialSettings_importDesc}</div>
+                </div>
+            </div>
+            <div class="adm-card-body adm-initial-card-body">
+                <form class="adm-initial-import-form"
+                      method="post"
+                      enctype="multipart/form-data"
+                      action="${pageContext.request.contextPath}/admin/initial-settings/import">
+                    <label class="adm-initial-file-field">
+                        <span>${msg_admin_initialSettings_importFile}</span>
+                        <input class="adm-input" type="file" name="file" accept="application/json,.json" required>
+                    </label>
+                    <div class="adm-initial-main-action">
+                        <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_initialSettings_importButton}</button>
+                    </div>
+                </form>
+                <div class="adm-initial-note">
+                    ${msg_admin_initialSettings_importNotice}
+                </div>
+            </div>
+        </section>
     </div>
 </div>

@@ -6046,6 +6046,97 @@ body.sa-light .adm-runtime-snapshot-pre {
     }
 }
 
+/* Initial settings import/export */
+.adm-initial-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    align-items: stretch;
+}
+
+.adm-initial-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: visible;
+}
+
+.adm-initial-card .adm-card-header {
+    flex: 0 0 auto;
+}
+
+.adm-initial-card-body {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 12px;
+    height: 100%;
+}
+
+.adm-initial-import-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-initial-file-field {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.adm-initial-main-action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 0;
+}
+
+.adm-initial-main-action .adm-btn {
+    white-space: nowrap;
+}
+
+.adm-initial-note {
+    align-self: stretch;
+    padding: 12px 14px;
+    border: 1px solid rgba(148, 163, 184, .16);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, .34);
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.65;
+}
+
+body.sa-light .adm-initial-file-field {
+    color: #334155;
+}
+
+body.sa-light .adm-initial-note {
+    border-color: #e2e8f0;
+    background: #f8fafc;
+    color: #64748b;
+}
+
+@media (max-width: 960px) {
+    .adm-initial-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .adm-initial-import-form {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-initial-main-action,
+    .adm-initial-main-action .adm-btn {
+        width: 100%;
+    }
+}
+
 /* Login risk policy settings */
 .adm-governance-page .adm-policy-guide-card,
 .adm-governance-page .adm-login-policy-card {
