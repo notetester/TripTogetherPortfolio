@@ -2734,17 +2734,21 @@ body.sa-light .adm-admin-list-selection {
     border-top: 1px solid rgba(30, 41, 59, .86);
     border-bottom: 1px solid rgba(30, 41, 59, .86);
     background: rgba(15, 23, 42, .22);
+    padding: 10px 14px;
 }
 .adm-section-list-filter {
-    flex: 1 1 520px;
+    flex: 1 1 640px;
     min-width: 280px;
 }
 .adm-section-list-filter .adm-select {
     width: auto;
     min-width: 128px;
 }
+.adm-section-list-mode .adm-select {
+    min-width: 112px;
+}
 .adm-section-list-search {
-    flex: 1 1 220px;
+    flex: 1 1 320px;
     min-width: 180px;
 }
 .adm-section-list-size {
@@ -2774,6 +2778,26 @@ body.sa-light .adm-section-list-toolbar {
 body.sa-light .adm-section-list-size,
 body.sa-light .adm-section-list-page-info {
     color: #64748b;
+}
+.adm-admin-list-table td {
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+.adm-admin-list-table .adm-cell-link {
+    min-height: 0;
+    gap: 2px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+.adm-admin-list-server-table .adm-cell-link-note {
+    display: none;
+}
+.adm-admin-list-server-table .adm-cell-link:hover .adm-cell-link-note,
+.adm-admin-list-server-table .adm-cell-link:focus-visible .adm-cell-link-note {
+    display: block;
+}
+.adm-admin-list-table .adm-export-control {
+    margin-left: 0;
 }
 @media (max-width: 900px) {
     .adm-section-list-toolbar {
@@ -3965,4 +3989,116 @@ body.sa-light .adm-governance-page .waf-detail-value {
         flex-direction: column;
         align-items: stretch;
     }
+}
+
+/* 관리자 전체 UX 정돈: 보안/정책/설정 화면을 회원·차단 관리 밀도에 맞춤 */
+.adm-governance-page {
+    --adm-radius-lg: 10px;
+    --adm-radius-md: 8px;
+    max-width: min(100%, 1680px);
+    padding-left: clamp(18px, 2vw, 28px);
+    padding-right: clamp(18px, 2vw, 28px);
+}
+
+.adm-governance-page .adm-page-head {
+    margin-bottom: 14px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #111827;
+    box-shadow: none;
+}
+
+.adm-governance-page .adm-page-head h1 {
+    font-size: 22px;
+    letter-spacing: 0;
+}
+
+.adm-governance-page .adm-page-desc,
+.adm-governance-page .adm-page-head p {
+    margin-top: 4px;
+    line-height: 1.5;
+}
+
+.adm-governance-page .adm-card {
+    border-radius: 10px;
+    box-shadow: none;
+}
+
+.adm-governance-page .adm-card-header,
+.adm-governance-page .adm-card-head {
+    padding: 14px 16px;
+    align-items: center;
+    background: rgba(15, 23, 42, .36);
+}
+
+.adm-governance-page .adm-card-body {
+    padding: 16px;
+}
+
+.adm-governance-page .adm-form-grid,
+.adm-governance-page .policy-form-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: 12px !important;
+}
+
+.adm-governance-page .adm-input,
+.adm-governance-page .adm-select,
+.adm-governance-page textarea.adm-input,
+.adm-governance-page select.adm-input,
+.adm-governance-page input.adm-input {
+    min-height: 36px;
+    border-radius: 8px;
+    padding: 8px 10px;
+}
+
+.adm-governance-page textarea.adm-input {
+    min-height: 76px;
+}
+
+.adm-governance-page .adm-btn,
+.adm-governance-page a.adm-btn,
+.adm-governance-page button.adm-btn {
+    min-height: 34px;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: none;
+}
+
+.adm-governance-page .adm-card-body > label.adm-check {
+    width: 100%;
+    display: flex !important;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0 0 8px !important;
+    min-height: 0;
+    padding: 10px 12px;
+    border: 1px solid rgba(148,163,184,.16);
+    border-radius: 8px;
+    background: rgba(15,23,42,.34);
+}
+
+.adm-governance-page .adm-card-body > label.adm-check input {
+    margin-top: 2px;
+}
+
+.adm-governance-page .adm-card-body > label.adm-check strong {
+    flex: 0 0 180px;
+    min-width: 0;
+    word-break: break-word;
+}
+
+.adm-governance-page .adm-card-body > label.adm-check .adm-muted {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+body.sa-light .adm-governance-page .adm-page-head,
+body.sa-light .adm-governance-page .adm-card-header,
+body.sa-light .adm-governance-page .adm-card-head {
+    background: #ffffff;
+}
+
+body.sa-light .adm-governance-page .adm-card-body > label.adm-check {
+    background: #f8fafc;
+    border-color: #e2e8f0;
 }

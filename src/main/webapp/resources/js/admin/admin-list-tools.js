@@ -19,6 +19,12 @@
         filterReset: '필터 초기화',
         pageSize: '표시',
         pageSizeAll: '전체',
+        loadMode: '처리 방식',
+        loadCurrent: '페이지 로드',
+        loadFull: '전체 로드',
+        loadFullHint: '전체 로드 시 최대 500건까지 서버에서 다시 불러옵니다.',
+        displayCurrent: '현재 화면',
+        displayAll: '전체 표시',
         prev: '이전',
         next: '다음',
         pageInfo: '{0}건 중 {1}건 표시 · {2}/{3}쪽',
@@ -261,6 +267,11 @@
         toolbar.dataset.tableId = table.id;
         toolbar.innerHTML =
             '<div class="adm-local-toolbar-group adm-section-list-filter">'
+            + '<label class="adm-section-list-size adm-section-list-mode"><span>' + TEXT.loadMode + '</span>'
+            + '<select class="adm-select js-admin-list-mode">'
+            + '<option value="page">' + TEXT.displayCurrent + '</option>'
+            + '<option value="full">' + TEXT.displayAll + '</option>'
+            + '</select></label>'
             + '<select class="adm-select js-admin-list-field" title="현재 화면 기준 필드"></select>'
             + '<div class="adm-search-box adm-section-list-search">'
             + '<span class="adm-search-ico">🔎</span>'
@@ -309,6 +320,21 @@
             options.push('<option value="' + idx + '">' + escapeHtml(label) + '</option>');
         });
         select.innerHTML = options.join('');
+    }
+
+    function configureLoadMode(table, toolbar) {
+        const mode = toolbar.querySelector('.js-admin-list-mode');
+        if (!mode) return;
+        if (table.dataset.adminListServerSort === 'true') {
+            const size = Number(new URLSearchParams(window.location.search).get('size') || 30);
+            const pageSize = toolbar.querySelector('.js-admin-list-page-size');
+            mode.innerHTML = '<option value="page">' + TEXT.loadCurrent + '</option><option value="full">' + TEXT.loadFull + '</option>';
+            mode.value = size >= 500 ? 'full' : 'page';
+            mode.title = TEXT.loadFullHint;
+            if (pageSize && size >= 500) pageSize.value = 'all';
+        } else {
+            mode.innerHTML = '<option value="page">' + TEXT.displayCurrent + '</option><option value="full">' + TEXT.displayAll + '</option>';
+        }
     }
 
     function normalizeManualSelection(table) {
@@ -472,6 +498,18 @@
         window.location.href = url.toString();
     }
 
+    function applyServerLoadMode(mode) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', '1');
+        if (mode === 'full') {
+            url.searchParams.set('size', '500');
+        } else {
+            const currentSize = Number(url.searchParams.get('size') || 30);
+            if (!currentSize || currentSize > 100) url.searchParams.set('size', '30');
+        }
+        window.location.href = url.toString();
+    }
+
     function hasServerManagedSort(table) {
         return tableHeaders(table).some(function (th) {
             return th.hasAttribute('data-sort') || !!th.getAttribute('onclick');
@@ -576,6 +614,7 @@
         const headers = tableHeaders(table);
         if (hasServerManagedSort(table)) {
             table.dataset.adminListServerSort = 'true';
+            table.classList.add('adm-admin-list-server-table');
             updateSortIndicators(table);
             return;
         }
@@ -662,6 +701,18 @@
         });
 
         toolbar.addEventListener('change', function (event) {
+            if (event.target.matches('.js-admin-list-mode')) {
+                const state = getState(table);
+                if (table.dataset.adminListServerSort === 'true') {
+                    applyServerLoadMode(event.target.value);
+                    return;
+                }
+                const pageSize = toolbar.querySelector('.js-admin-list-page-size');
+                if (pageSize) pageSize.value = event.target.value === 'full' ? 'all' : '20';
+                state.page = 1;
+                renderTable(table);
+                return;
+            }
             if (event.target.matches('.js-admin-list-field, .js-admin-list-page-size')) {
                 const state = getState(table);
                 state.page = 1;
@@ -698,6 +749,7 @@
         if (!isEnhanceableTable(table)) return;
         ensureTableId(table, index);
         table.dataset.adminListToolsEnhanced = 'true';
+        table.classList.add('adm-admin-list-table');
 
         captureState(table);
         const toolbar = insertToolbar(table);
@@ -706,6 +758,7 @@
         enhanceSelection(table);
         populateFieldSelect(table, toolbar);
         enhanceSorting(table);
+        configureLoadMode(table, toolbar);
         bindToolbar(table, toolbar);
         bindSelection(table);
         renderTable(table);
