@@ -69,7 +69,7 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-courses-page">
 
     <%-- ── 통계 카드 ── --%>
     <div class="adm-summary-grid">
@@ -96,10 +96,10 @@
     </div>
 
     <%-- ── 필터 바 ── --%>
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-courses-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/courses" id="searchForm">
-                <div class="adm-filter-bar" style="flex-wrap:wrap;gap:12px;">
+                <div class="adm-filter-bar adm-courses-filterbar">
                     <div>
                         <div class="adm-filter-label">${msg_admin_courses_list_filter_status}</div>
                         <select class="adm-select" name="status">
@@ -132,10 +132,10 @@
                             <option value="startDate" ${search.sortBy=='startDate' ?'selected':''}>${msg_admin_courses_list_sort_startDate}</option>
                         </select>
                     </div>
-                    <div style="flex:1;min-width:220px;">
+                    <div class="adm-courses-search-field">
                         <div class="adm-filter-label">${msg_admin_common_search}</div>
-                        <div style="display:flex;gap:6px;">
-                            <select class="adm-select" name="searchType" style="width:120px;">
+                        <div class="adm-courses-search-row">
+                            <select class="adm-select adm-courses-search-type" name="searchType">
                                 <option value="all"         ${search.searchType=='all'         ?'selected':''}>${msg_admin_common_all}</option>
                                 <option value="title"       ${search.searchType=='title'       ?'selected':''}>${msg_admin_courses_list_search_title}</option>
                                 <option value="destination" ${search.searchType=='destination' ?'selected':''}>${msg_admin_courses_list_search_destination}</option>
@@ -143,10 +143,10 @@
                                 <option value="userId"      ${search.searchType=='userId'      ?'selected':''}>${msg_admin_common_userId}</option>
                             </select>
                             <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}"
-                                   placeholder="${msg_admin_courses_list_filter_keywordPlaceholder}" style="flex:1;">
+                                   placeholder="${msg_admin_courses_list_filter_keywordPlaceholder}">
                         </div>
                     </div>
-                    <div style="display:flex;align-items:flex-end;gap:6px;">
+                    <div class="adm-courses-filter-actions">
                         <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_search}</button>
                         <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/courses">${msg_admin_common_reset}</a>
                     </div>
@@ -156,44 +156,58 @@
     </div>
 
     <%-- ── 목록 테이블 ── --%>
-    <div class="adm-card">
+    <div class="adm-card adm-courses-list-card">
         <div class="adm-card-head">
-            <div style="display:flex;align-items:center;gap:12px;">
+            <div class="adm-courses-list-title">
                 <div class="adm-card-title">${msg_admin_courses_list_title}</div>
                 <div class="adm-muted-note">${msg_admin_courses_list_total} ${total}${msg_admin_common_countSuffix}</div>
             </div>
             <%-- 일괄 처리 버튼 --%>
-            <div id="bulkBar" style="display:none;gap:8px;align-items:center;">
-                <span id="bulkCount" style="font-size:12px;color:#94a3b8;"></span>
-                <button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;"
+            <div id="bulkBar" class="adm-courses-bulk-bar" hidden>
+                <span id="bulkCount" class="adm-courses-bulk-count"></span>
+                <button class="adm-btn adm-btn-ghost adm-courses-danger-btn"
                         onclick="bulkAction('delete')">${msg_admin_courses_list_action_bulkDelete}</button>
-                <button class="adm-btn adm-btn-ghost" style="color:#34d399;border-color:#34d399;"
+                <button class="adm-btn adm-btn-ghost adm-courses-success-btn"
                         onclick="bulkAction('restore')">${msg_admin_courses_list_action_bulkRestore}</button>
             </div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table">
+            <table class="adm-table adm-courses-table">
+                <colgroup>
+                    <col class="adm-courses-col-check">
+                    <col class="adm-courses-col-id">
+                    <col class="adm-courses-col-author">
+                    <col>
+                    <col class="adm-courses-col-destination">
+                    <col class="adm-courses-col-period">
+                    <col class="adm-courses-col-spots">
+                    <col class="adm-courses-col-source">
+                    <col class="adm-courses-col-visibility">
+                    <col class="adm-courses-col-status">
+                    <col class="adm-courses-col-date">
+                    <col class="adm-courses-col-action">
+                </colgroup>
                 <thead>
                 <tr>
-                    <th style="width:36px;"><input type="checkbox" id="checkAll"></th>
-                    <th style="width:60px;">ID</th>
+                    <th><input type="checkbox" id="checkAll"></th>
+                    <th>ID</th>
                     <th>${msg_admin_courses_list_table_author}</th>
                     <th>${msg_admin_courses_list_table_title}</th>
                     <th>${msg_admin_courses_list_table_destination}</th>
-                    <th style="width:145px;">${msg_admin_courses_list_table_period}</th>
-                    <th style="width:50px;">${msg_admin_courses_list_table_spots}</th>
-                    <th style="width:60px;">${msg_admin_courses_list_table_source}</th>
-                    <th style="width:60px;">${msg_admin_courses_list_table_visibility}</th>
-                    <th style="width:70px;">${msg_admin_common_accountStatus}</th>
-                    <th style="width:130px;">${msg_admin_courses_list_table_createdAt}</th>
-                    <th style="width:120px;">${msg_admin_common_action}</th>
+                    <th>${msg_admin_courses_list_table_period}</th>
+                    <th>${msg_admin_courses_list_table_spots}</th>
+                    <th>${msg_admin_courses_list_table_source}</th>
+                    <th>${msg_admin_courses_list_table_visibility}</th>
+                    <th>${msg_admin_common_accountStatus}</th>
+                    <th>${msg_admin_courses_list_table_createdAt}</th>
+                    <th>${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="p">
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${p.planId}"></td>
-                        <td style="color:#64748b;font-size:12px;">
+                        <td class="adm-courses-id-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}/admin/courses/${p.planId}">#${p.planId}</a>
                         </td>
@@ -201,14 +215,12 @@
                         <%-- 작성자 --%>
                         <td>
                             <button type="button"
-                                    class="adm-inline-link js-open-member-context"
-                                    data-user-idx="${p.userIdx}"
-                                    style="font-weight:600;font-size:13px;color:#7dd3fc;">${p.nickname}</button>
+                                    class="adm-inline-link adm-courses-author-name js-open-member-context"
+                                    data-user-idx="${p.userIdx}">${p.nickname}</button>
                             <div>
                                 <button type="button"
-                                        class="adm-inline-link js-open-member-context"
-                                        data-user-idx="${p.userIdx}"
-                                        style="font-size:11px;color:#64748b;">${p.userId}</button>
+                                        class="adm-inline-link adm-courses-author-id js-open-member-context"
+                                        data-user-idx="${p.userIdx}">${p.userId}</button>
                             </div>
                             <c:if test="${p.accountStatus == 'BLOCKED'}">
                                 <span class="adm-inline-danger">${msg_admin_courses_list_accountBlocked}</span>
@@ -227,68 +239,68 @@
                         </td>
 
                         <%-- 여행지 --%>
-                        <td style="font-size:12px;color:#cbd5e1;">
+                        <td class="adm-courses-destination-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${not empty p.destination}">${p.destination}</c:when>
-                                <c:otherwise><span style="color:#475569;">${msg_admin_common_dash}</span></c:otherwise>
+                                <c:otherwise><span class="adm-courses-muted">${msg_admin_common_dash}</span></c:otherwise>
                             </c:choose>
                             </a>
                         </td>
 
                         <%-- 일정 --%>
-                        <td style="font-size:11px;color:#94a3b8;white-space:nowrap;">
+                        <td class="adm-courses-period-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${not empty p.startDate}">
                                     <fmt:formatDate value="${p.startDate}" pattern="yyyy.MM.dd"/> ~ <fmt:formatDate value="${p.endDate}" pattern="MM.dd"/>
                                 </c:when>
-                                <c:otherwise><span style="color:#475569;">${msg_admin_common_dash}</span></c:otherwise>
+                                <c:otherwise><span class="adm-courses-muted">${msg_admin_common_dash}</span></c:otherwise>
                             </c:choose>
                             </a>
                         </td>
 
                         <%-- 스팟 수 --%>
-                        <td style="text-align:center;">
+                        <td class="adm-courses-spot-count-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${p.spotCount > 0}">
-                                    <span style="color:#7dd3fc;font-weight:600;">${p.spotCount}</span>
+                                    <span class="adm-courses-count-value">${p.spotCount}</span>
                                 </c:when>
-                                <c:otherwise><span style="color:#475569;">0</span></c:otherwise>
+                                <c:otherwise><span class="adm-courses-muted">0</span></c:otherwise>
                             </c:choose>
                             </a>
                         </td>
 
                         <%-- 유형 --%>
-                        <td style="font-size:12px;">
+                        <td class="adm-courses-source-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${p.planSource == 'AI'}">
-                                    <span style="color:#a78bfa;font-weight:600;">${msg_admin_courses_source_ai}</span>
+                                    <span class="adm-courses-source-ai">${msg_admin_courses_source_ai}</span>
                                 </c:when>
                                 <c:when test="${p.planSource == 'MANUAL'}">
-                                    <span style="color:#94a3b8;">${msg_admin_courses_source_manual}</span>
+                                    <span class="adm-courses-source-manual">${msg_admin_courses_source_manual}</span>
                                 </c:when>
-                                <c:otherwise><span style="color:#64748b;">${p.planSource}</span></c:otherwise>
+                                <c:otherwise><span class="adm-courses-muted">${p.planSource}</span></c:otherwise>
                             </c:choose>
                             </a>
                         </td>
 
                         <%-- 공개 --%>
-                        <td style="font-size:12px;">
+                        <td class="adm-courses-visibility-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${p.isPublic == 1}">
-                                    <span style="color:#34d399;">${msg_admin_courses_visibility_public}</span>
+                                    <span class="adm-courses-public">${msg_admin_courses_visibility_public}</span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span style="color:#64748b;">${msg_admin_courses_visibility_private}</span>
+                                    <span class="adm-courses-muted">${msg_admin_courses_visibility_private}</span>
                                 </c:otherwise>
                             </c:choose>
                             </a>
@@ -309,7 +321,7 @@
                         </td>
 
                         <%-- 등록일 --%>
-                        <td style="font-size:11px;color:#64748b;white-space:nowrap;">
+                        <td class="adm-courses-date-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                                 <fmt:formatDate value="${p.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
@@ -338,7 +350,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="12" style="text-align:center;padding:40px;color:#475569;">${msg_admin_courses_list_empty}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="12" class="adm-local-empty-cell">${msg_admin_courses_list_empty}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -394,10 +406,10 @@ function updateBulkBar() {
     var checked = document.querySelectorAll('.row-check:checked');
     var bar = document.getElementById('bulkBar');
     if (checked.length > 0) {
-        bar.style.display = 'flex';
+        bar.hidden = false;
         document.getElementById('bulkCount').textContent = formatCourseListMessage(COURSE_LIST_MESSAGES.bulkSelected, checked.length);
     } else {
-        bar.style.display = 'none';
+        bar.hidden = true;
     }
 }
 
