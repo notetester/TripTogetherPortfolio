@@ -33,9 +33,9 @@
 <spring:message var="msg_admin_courses_detail_field_createdAt" code="admin.courses.detail.field.createdAt"/>
 <spring:message var="msg_admin_courses_detail_field_updatedAt" code="admin.courses.detail.field.updatedAt"/>
 <spring:message var="msg_admin_courses_detail_spots_title" code="admin.courses.detail.spots.title"/>
-<spring:message var="msg_admin_courses_detail_spots_total" code="admin.courses.detail.spots.total"/>
 <spring:message var="msg_admin_courses_detail_spots_empty" code="admin.courses.detail.spots.empty"/>
 <spring:message var="msg_admin_courses_detail_spots_noName" code="admin.courses.detail.spots.noName"/>
+<spring:message var="msg_admin_courses_detail_spotsTotalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(spots)}"/>
 <c:set var="pageTitle" value="${msg_admin_courses_detail_pageTitle}"/>
 <c:set var="activeMenu" value="courses"/>
 
@@ -43,8 +43,18 @@
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content adm-courses-page adm-courses-detail-page">
+    <c:url var="courseBackUrl" value="/admin/courses">
+        <c:if test="${not empty param.page}"><c:param name="page" value="${param.page}"/></c:if>
+        <c:if test="${not empty param.size}"><c:param name="size" value="${param.size}"/></c:if>
+        <c:if test="${not empty param.status}"><c:param name="status" value="${param.status}"/></c:if>
+        <c:if test="${not empty param.planSource}"><c:param name="planSource" value="${param.planSource}"/></c:if>
+        <c:if test="${not empty param.isPublic}"><c:param name="isPublic" value="${param.isPublic}"/></c:if>
+        <c:if test="${not empty param.sortBy}"><c:param name="sortBy" value="${param.sortBy}"/></c:if>
+        <c:if test="${not empty param.searchType}"><c:param name="searchType" value="${param.searchType}"/></c:if>
+        <c:if test="${not empty param.keyword}"><c:param name="keyword" value="${param.keyword}"/></c:if>
+    </c:url>
     <div class="adm-courses-detail-backrow">
-        <a href="${pageContext.request.contextPath}/admin/courses" class="adm-back-link">${msg_admin_courses_detail_backToList}</a>
+        <a href="${courseBackUrl}" class="adm-back-link">${msg_admin_courses_detail_backToList}</a>
     </div>
 
     <c:if test="${empty plan}">
@@ -86,8 +96,14 @@
                 <div class="adm-courses-detail-info-grid">
                     <div class="adm-courses-detail-field">
                         <div class="adm-filter-label">${msg_admin_courses_detail_field_author}</div>
-                        <div class="adm-courses-author-name">${plan.nickname}</div>
-                        <div class="adm-courses-author-id">${plan.userId}</div>
+                        <button type="button"
+                                class="adm-inline-link adm-courses-author-name js-open-member-context"
+                                data-user-idx="${plan.userIdx}">${plan.nickname}</button>
+                        <div>
+                            <button type="button"
+                                    class="adm-inline-link adm-courses-author-id js-open-member-context"
+                                    data-user-idx="${plan.userIdx}">${plan.userId}</button>
+                        </div>
                         <c:if test="${plan.accountStatus == 'BLOCKED'}">
                             <span class="adm-inline-danger">${msg_admin_courses_detail_accountBlocked}</span>
                         </c:if>
@@ -164,8 +180,10 @@
         <%-- ── 스팟 목록 ── --%>
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">${msg_admin_courses_detail_spots_title}</div>
-                <div class="adm-muted-note">${msg_admin_courses_detail_spots_total} ${fn:length(spots)}${msg_admin_common_countSuffix}</div>
+                <div class="adm-card-title">
+                    ${msg_admin_courses_detail_spots_title}
+                    <span class="adm-section-total-inline">${msg_admin_courses_detail_spotsTotalCountDisplay}</span>
+                </div>
             </div>
 
             <c:if test="${empty spots}">

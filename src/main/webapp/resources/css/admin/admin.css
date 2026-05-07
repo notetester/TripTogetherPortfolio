@@ -10333,6 +10333,10 @@ body.sa-light .adm-package-requested-line {
     overflow: visible;
 }
 
+.adm-courses-list-card {
+    overflow: visible;
+}
+
 .adm-filter-bar.adm-courses-filterbar {
     display: grid;
     grid-template-columns: repeat(4, minmax(116px, .5fr)) minmax(340px, 1.45fr) auto;
@@ -10386,11 +10390,25 @@ body.sa-light .adm-package-requested-line {
     border-color: #34d399;
 }
 
-.adm-courses-list-title {
-    display: flex;
+.adm-courses-list-head {
     align-items: center;
-    gap: 12px;
+}
+
+.adm-courses-list-controls {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-left: auto;
     min-width: 0;
+}
+
+.adm-courses-size-select {
+    min-width: 112px;
+}
+
+.adm-courses-local-pagination {
+    border-top: 1px solid rgba(148, 163, 184, .14);
 }
 
 .adm-courses-table {

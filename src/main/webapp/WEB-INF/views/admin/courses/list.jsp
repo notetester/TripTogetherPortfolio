@@ -48,6 +48,13 @@
 <spring:message var="msg_admin_courses_list_total" code="admin.courses.list.total"/>
 <spring:message var="msg_admin_courses_list_action_bulkDelete" code="admin.courses.list.action.bulkDelete"/>
 <spring:message var="msg_admin_courses_list_action_bulkRestore" code="admin.courses.list.action.bulkRestore"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
+<spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100"/>
+<spring:message var="msg_admin_courses_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${total}"/>
+<spring:message var="msg_admin_courses_currentCountDisplay" code="admin.common.currentCountFormat" arguments="${fn:length(list)}"/>
 <spring:message var="msg_admin_courses_list_table_author" code="admin.courses.list.table.author"/>
 <spring:message var="msg_admin_courses_list_table_title" code="admin.courses.list.table.title"/>
 <spring:message var="msg_admin_courses_list_table_destination" code="admin.courses.list.table.destination"/>
@@ -99,6 +106,7 @@
     <div class="adm-card adm-courses-filter-card">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/courses" id="searchForm">
+                <input type="hidden" name="size" value="${search.size}"/>
                 <div class="adm-filter-bar adm-courses-filterbar">
                     <div>
                         <div class="adm-filter-label">${msg_admin_courses_list_filter_status}</div>
@@ -157,22 +165,29 @@
 
     <%-- ── 목록 테이블 ── --%>
     <div class="adm-card adm-courses-list-card">
-        <div class="adm-card-head">
-            <div class="adm-courses-list-title">
-                <div class="adm-card-title">${msg_admin_courses_list_title}</div>
-                <div class="adm-muted-note">${msg_admin_courses_list_total} ${total}${msg_admin_common_countSuffix}</div>
+        <div class="adm-card-head adm-courses-list-head">
+            <div class="adm-card-title">
+                ${msg_admin_courses_list_title}
+                <span class="adm-section-total-inline">${msg_admin_courses_totalCountDisplay}</span>
             </div>
-            <%-- 일괄 처리 버튼 --%>
-            <div id="bulkBar" class="adm-courses-bulk-bar" hidden>
-                <span id="bulkCount" class="adm-courses-bulk-count"></span>
-                <button class="adm-btn adm-btn-ghost adm-courses-danger-btn"
-                        onclick="bulkAction('delete')">${msg_admin_courses_list_action_bulkDelete}</button>
-                <button class="adm-btn adm-btn-ghost adm-courses-success-btn"
-                        onclick="bulkAction('restore')">${msg_admin_courses_list_action_bulkRestore}</button>
+            <div class="adm-courses-list-controls">
+                <select class="adm-select adm-courses-size-select" onchange="goCoursePageSize(this.value)">
+                    <option value="20" ${search.size == 20 ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
+                    <option value="50" ${search.size == 50 ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
+                    <option value="100" ${search.size == 100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
+                </select>
+                <%-- 일괄 처리 버튼 --%>
+                <div id="bulkBar" class="adm-courses-bulk-bar" hidden>
+                    <span id="bulkCount" class="adm-courses-bulk-count"></span>
+                    <button class="adm-btn adm-btn-ghost adm-courses-danger-btn"
+                            onclick="bulkAction('delete')">${msg_admin_courses_list_action_bulkDelete}</button>
+                    <button class="adm-btn adm-btn-ghost adm-courses-success-btn"
+                            onclick="bulkAction('restore')">${msg_admin_courses_list_action_bulkRestore}</button>
+                </div>
             </div>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table adm-courses-table">
+            <table class="adm-table adm-courses-table" data-admin-list-ignore="true">
                 <colgroup>
                     <col class="adm-courses-col-check">
                     <col class="adm-courses-col-id">
@@ -205,11 +220,22 @@
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="p">
+                    <c:url var="courseDetailUrl" value="/admin/courses/${p.planId}">
+                        <c:param name="source" value="list"/>
+                        <c:param name="page" value="${paging.currentPage}"/>
+                        <c:param name="size" value="${search.size}"/>
+                        <c:param name="status" value="${search.status}"/>
+                        <c:param name="planSource" value="${search.planSource}"/>
+                        <c:param name="isPublic" value="${search.isPublic}"/>
+                        <c:param name="sortBy" value="${search.sortBy}"/>
+                        <c:param name="searchType" value="${search.searchType}"/>
+                        <c:param name="keyword" value="${search.keyword}"/>
+                    </c:url>
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${p.planId}"></td>
                         <td class="adm-courses-id-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">#${p.planId}</a>
+                               href="${courseDetailUrl}">#${p.planId}</a>
                         </td>
 
                         <%-- 작성자 --%>
@@ -229,7 +255,7 @@
 
                         <%-- 제목 --%>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/courses/${p.planId}"
+                            <a href="${courseDetailUrl}"
                                class="adm-link-title" title="${p.title}">
                                 <c:choose>
                                     <c:when test="${fn:length(p.title) > 24}">${fn:substring(p.title, 0, 24)}…</c:when>
@@ -241,7 +267,7 @@
                         <%-- 여행지 --%>
                         <td class="adm-courses-destination-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
+                               href="${courseDetailUrl}">
                             <c:choose>
                                 <c:when test="${not empty p.destination}">${p.destination}</c:when>
                                 <c:otherwise><span class="adm-courses-muted">${msg_admin_common_dash}</span></c:otherwise>
@@ -252,7 +278,7 @@
                         <%-- 일정 --%>
                         <td class="adm-courses-period-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
+                               href="${courseDetailUrl}">
                             <c:choose>
                                 <c:when test="${not empty p.startDate}">
                                     <fmt:formatDate value="${p.startDate}" pattern="yyyy.MM.dd"/> ~ <fmt:formatDate value="${p.endDate}" pattern="MM.dd"/>
@@ -265,7 +291,7 @@
                         <%-- 스팟 수 --%>
                         <td class="adm-courses-spot-count-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
+                               href="${courseDetailUrl}">
                             <c:choose>
                                 <c:when test="${p.spotCount > 0}">
                                     <span class="adm-courses-count-value">${p.spotCount}</span>
@@ -278,7 +304,7 @@
                         <%-- 유형 --%>
                         <td class="adm-courses-source-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
+                               href="${courseDetailUrl}">
                             <c:choose>
                                 <c:when test="${p.planSource == 'AI'}">
                                     <span class="adm-courses-source-ai">${msg_admin_courses_source_ai}</span>
@@ -294,7 +320,7 @@
                         <%-- 공개 --%>
                         <td class="adm-courses-visibility-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
+                               href="${courseDetailUrl}">
                             <c:choose>
                                 <c:when test="${p.isPublic == 1}">
                                     <span class="adm-courses-public">${msg_admin_courses_visibility_public}</span>
@@ -310,11 +336,11 @@
                         <td>
                             <c:choose>
                                 <c:when test="${p.isDeleted == 0}">
-                                    <a href="${pageContext.request.contextPath}/admin/courses/${p.planId}"
+                                    <a href="${courseDetailUrl}"
                                        class="adm-cell-link adm-cell-link--inline status-badge ACTIVE">${msg_admin_common_active}</a>
                                 </c:when>
                                 <c:otherwise>
-                                    <a href="${pageContext.request.contextPath}/admin/courses/${p.planId}"
+                                    <a href="${courseDetailUrl}"
                                        class="adm-cell-link adm-cell-link--inline status-badge DELETED">${msg_admin_courses_status_deleted}</a>
                                 </c:otherwise>
                             </c:choose>
@@ -323,7 +349,7 @@
                         <%-- 등록일 --%>
                         <td class="adm-courses-date-cell">
                             <a class="adm-cell-link adm-cell-link--inline"
-                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
+                               href="${courseDetailUrl}">
                                 <fmt:formatDate value="${p.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
                             </a>
                         </td>
@@ -357,20 +383,17 @@
         </div>
 
         <%-- 페이지네이션 --%>
-        <c:if test="${paging.totalPage > 1}">
-            <div class="adm-paging">
-                <c:if test="${paging.prev}">
-                    <button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button>
-                </c:if>
-                <c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="pg">
-                    <button class="adm-page-btn ${pg == paging.currentPage ? 'active' : ''}" onclick="goPage(${pg})">${pg}</button>
-                </c:forEach>
-                <c:if test="${paging.next}">
-                    <button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button>
-                </c:if>
-                <span class="adm-page-info">${paging.currentPage} / ${paging.totalPage}</span>
+        <c:set var="courseTotalPage" value="${paging.totalPage < 1 ? 1 : paging.totalPage}"/>
+        <div class="adm-local-pagination adm-courses-local-pagination">
+            <div class="adm-local-page-info">
+                ${msg_admin_courses_totalCountDisplay} / ${msg_admin_courses_currentCountDisplay}
             </div>
-        </c:if>
+            <div class="adm-local-page-actions">
+                <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage <= 1 ? 'disabled' : ''} onclick="goPage(${paging.currentPage - 1})">${msg_admin_common_prev}</button>
+                <span class="adm-local-page-state">${paging.currentPage} / ${courseTotalPage}</span>
+                <button type="button" class="adm-btn adm-btn-ghost" ${paging.currentPage >= courseTotalPage ? 'disabled' : ''} onclick="goPage(${paging.currentPage + 1})">${msg_admin_common_next}</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -453,6 +476,13 @@ function bulkAction(action) {
 function goPage(page) {
     var params = new URLSearchParams(window.location.search);
     params.set('page', page);
+    location.href = ctx + '/admin/courses?' + params.toString();
+}
+
+function goCoursePageSize(size) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('size', size);
+    params.set('page', '1');
     location.href = ctx + '/admin/courses?' + params.toString();
 }
 </script>
