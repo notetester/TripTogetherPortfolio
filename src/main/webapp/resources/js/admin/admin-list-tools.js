@@ -48,6 +48,7 @@
     const SKIP_PATHS = ['/admin/blocks', '/admin/members', '/admin/business-applications'];
 
     const tableStates = new WeakMap();
+    let enhanceTimer = null;
 
     function ready(fn) {
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
@@ -855,5 +856,25 @@
         Array.from(document.querySelectorAll(SELECTOR)).forEach(enhanceTable);
     }
 
-    ready(enhanceAll);
+    function scheduleEnhance() {
+        if (shouldSkipPage()) return;
+        window.clearTimeout(enhanceTimer);
+        enhanceTimer = window.setTimeout(enhanceAll, 80);
+    }
+
+    ready(function () {
+        enhanceAll();
+        if (!window.MutationObserver || !document.body) return;
+        const observer = new MutationObserver(function (mutations) {
+            const hasTableMutation = mutations.some(function (mutation) {
+                return Array.from(mutation.addedNodes || []).some(function (node) {
+                    if (!node || node.nodeType !== 1) return false;
+                    return (node.matches && node.matches('table, .adm-table-wrap'))
+                        || (node.querySelector && node.querySelector(SELECTOR));
+                });
+            });
+            if (hasTableMutation) scheduleEnhance();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
 })();
