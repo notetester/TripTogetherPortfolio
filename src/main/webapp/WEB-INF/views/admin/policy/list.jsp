@@ -55,8 +55,8 @@
 <c:set var="pageTitle" value="${msg_admin_policy_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content adm-governance-page">
-    <div class="adm-card" style="margin-bottom:20px;">
+<div class="adm-content adm-governance-page adm-policy-page">
+    <div class="adm-card adm-policy-overview-shell">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_admin_policy_centerTitle}</div>
         </div>
@@ -110,7 +110,7 @@
                      data-config-json="${fn:escapeXml(policy.configJson)}"
                      data-schedule-type="${policy.scheduleType}"
                      data-schedule-interval="${policy.scheduleIntervalHours}"
-                    data-schedule-day="${policy.scheduleDayOfMonth}"
+                     data-schedule-day="${policy.scheduleDayOfMonth}"
                      data-schedule-time="${policy.scheduleTime}">
                     <div class="adm-card-head">
                         <div>
@@ -129,11 +129,11 @@
                     </div>
                     <div class="adm-card-body">
                         <div class="policy-form-grid">
-                            <div class="policy-config-dormant" style="display:none;">
+                            <div class="policy-config-dormant" hidden>
                                 <div class="adm-filter-label">${msg_admin_policy_inactiveDays}</div>
                                 <input class="adm-input js-policy-inactive-days" type="number" min="30" step="1">
                             </div>
-                            <div class="policy-config-level" style="display:none;">
+                            <div class="policy-config-level" hidden>
                                 <div class="adm-filter-label">${msg_admin_policy_levelScope}</div>
                                 <label class="policy-inline-check">
                                     <input class="js-policy-only-active" type="checkbox">
@@ -142,7 +142,7 @@
                             </div>
                             <div>
                                 <div class="adm-filter-label">${msg_admin_policy_scheduleType}</div>
-                                <select class="adm-select js-policy-schedule-type" style="width:100%;">
+                                <select class="adm-select js-policy-schedule-type">
                                     <option value="DAILY_TIME">${msg_admin_policy_schedule_daily}</option>
                                     <option value="INTERVAL_HOURS">${msg_admin_policy_schedule_interval}</option>
                                     <option value="MONTHLY_DAY_TIME">${msg_admin_policy_schedule_monthly}</option>
@@ -169,16 +169,15 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="policy-config-json-wrap" style="margin-top:14px;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">
+                        <div class="policy-config-json-wrap">
+                            <div class="policy-config-json-head">
                                 <div class="adm-filter-label">${msg_admin_policy_configJson}</div>
                                 <button type="button" class="adm-btn adm-btn-ghost js-policy-format-json">${msg_admin_policy_formatJson}</button>
                             </div>
                             <textarea class="adm-input js-policy-config-json"
                                       rows="8"
-                                      spellcheck="false"
-                                      style="font-family:Consolas,Monaco,monospace;line-height:1.45;resize:vertical;"><c:out value="${policy.configJson}"/></textarea>
-                            <div class="adm-card-subtitle" style="margin-top:6px;">${msg_admin_policy_configJsonHelp}</div>
+                                      spellcheck="false"><c:out value="${policy.configJson}"/></textarea>
+                            <div class="adm-card-subtitle policy-config-json-help">${msg_admin_policy_configJsonHelp}</div>
                         </div>
                         <div class="policy-card-foot">
                             <div class="policy-card-foot-note">
@@ -192,7 +191,7 @@
                                     </c:choose>
                                 </span>
                             </div>
-                            <div style="display:flex;gap:8px;">
+                            <div class="policy-card-save-actions">
                                 <button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('${policy.policyCode}', this)">${msg_admin_policy_save}</button>
                             </div>
                         </div>
@@ -290,9 +289,9 @@ function prettyPolicyJson(value) {
 
 function togglePolicyScheduleFields(card) {
     const scheduleType = card.querySelector('.js-policy-schedule-type').value;
-    card.querySelector('.js-policy-interval-wrap').style.display = scheduleType === 'INTERVAL_HOURS' ? '' : 'none';
-    card.querySelector('.js-policy-day-wrap').style.display = scheduleType === 'MONTHLY_DAY_TIME' ? '' : 'none';
-    card.querySelector('.js-policy-time-wrap').style.display = scheduleType === 'MANUAL' ? 'none' : '';
+    card.querySelector('.js-policy-interval-wrap').hidden = scheduleType !== 'INTERVAL_HOURS';
+    card.querySelector('.js-policy-day-wrap').hidden = scheduleType !== 'MONTHLY_DAY_TIME';
+    card.querySelector('.js-policy-time-wrap').hidden = scheduleType === 'MANUAL';
 }
 
 function hydratePolicyCard(card) {
@@ -309,11 +308,11 @@ function hydratePolicyCard(card) {
     timeInput.value = card.dataset.scheduleTime || '03:00';
 
     if (policyCode === 'DORMANT_ACCOUNT_POLICY') {
-        card.querySelector('.policy-config-dormant').style.display = '';
+        card.querySelector('.policy-config-dormant').hidden = false;
         card.querySelector('.js-policy-inactive-days').value = config.inactiveDays || 365;
     }
     if (policyCode === 'MEMBER_LEVEL_SETTLEMENT_POLICY') {
-        card.querySelector('.policy-config-level').style.display = '';
+        card.querySelector('.policy-config-level').hidden = false;
         card.querySelector('.js-policy-only-active').checked = config.onlyActiveMembers !== false;
     }
 
