@@ -72,7 +72,7 @@
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
-    <div class="adm-card adm-audit-filter-card adm-security-audit-filter-card">
+    <div class="adm-card adm-audit-filter-card adm-security-audit-filter-card adm-overflow-visible">
         <div class="adm-card-body">
             <form id="securitySearchForm" method="get" action="${pageContext.request.contextPath}/admin/security">
                 <div class="adm-filter-bar adm-audit-filterbar adm-security-audit-filterbar">
@@ -127,7 +127,7 @@
         </div>
     </div>
 
-    <div class="adm-card adm-managed-section-card js-security-section-card" data-section="securityAudits" data-enhanced="true">
+    <div class="adm-card adm-managed-section-card js-security-section-card adm-overflow-visible" data-section="securityAudits" data-enhanced="true">
         <div class="adm-card-head">
             <div class="adm-card-title">
                 ${msg_admin_security_historyTitle}
@@ -151,7 +151,7 @@
 
         <div class="adm-local-toolbar adm-managed-local-toolbar">
             <div class="adm-local-toolbar-group adm-managed-toolbar-actions">
-                <button type="button" class="adm-dash-sort-reset js-security-sort-reset" id="securitySortResetBtn" style="display:none;" onclick="resetSecuritySort()"></button>
+                <button type="button" class="adm-dash-sort-reset js-security-sort-reset adm-is-hidden" id="securitySortResetBtn" onclick="resetSecuritySort()"></button>
                 <select class="adm-select js-security-section-mode" id="securityModeSelect" title="${msg_admin_blocks_mode_label}">
                     <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
                     <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
@@ -164,7 +164,7 @@
             </div>
         </div>
 
-        <div id="securityBulkBar" class="adm-audit-bulk-bar" style="display:none;">
+        <div id="securityBulkBar" class="adm-audit-bulk-bar adm-is-hidden">
             <span><strong id="securityBulkCount">0</strong>${msg_admin_common_selectedCount}</span>
             <button type="button" class="adm-btn adm-btn-ghost" onclick="clearSecuritySelection()">${msg_admin_common_clearSelection}</button>
         </div>
@@ -345,7 +345,7 @@ function updateSecuritySortIndicators() {
     const resetBtn = document.getElementById('securitySortResetBtn');
     if (resetBtn) {
         resetBtn.textContent = SECURITY_MSG.dashSortReset;
-        resetBtn.style.display = securitySectionState.sortBy ? '' : 'none';
+        resetBtn.classList.toggle('adm-is-hidden', !securitySectionState.sortBy);
     }
 }
 function updateSecurityTotal(total) {
@@ -622,7 +622,10 @@ function updateSecuritySelectionState() {
     const checked = getSecurityCheckedBoxes();
     const n = checked.length;
     const bar = document.getElementById('securityBulkBar');
-    if (bar) bar.style.display = n > 0 ? 'flex' : 'none';
+    if (bar) {
+        bar.classList.toggle('adm-is-hidden', n === 0);
+        bar.classList.toggle('is-active', n > 0);
+    }
     const count = document.getElementById('securityBulkCount');
     if (count) count.textContent = n;
     const selectedBtn = document.getElementById('securityExportSelectedBtn');
