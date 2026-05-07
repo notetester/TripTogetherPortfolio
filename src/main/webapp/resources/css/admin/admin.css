@@ -6185,3 +6185,131 @@ body.sa-light .adm-governance-page .sync-meta {
         width: auto;
     }
 }
+
+/* Audit list filters */
+.adm-audit-filter-card {
+    margin-bottom: 12px;
+    overflow: visible;
+    border-radius: 8px;
+}
+
+.adm-filter-bar.adm-audit-filterbar {
+    display: grid;
+    grid-template-columns: minmax(280px, 1.4fr) repeat(5, minmax(118px, .72fr)) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-audit-filterbar > div,
+.adm-audit-filterbar .adm-audit-search-box {
+    min-width: 0;
+}
+
+.adm-audit-filterbar .adm-audit-search-box {
+    width: auto;
+}
+
+.adm-audit-filterbar .adm-select,
+.adm-audit-filterbar .adm-input {
+    width: 100%;
+}
+
+.adm-audit-filter-actions {
+    display: flex;
+    align-items: end;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.adm-audit-export-format,
+.adm-audit-size-select {
+    width: 92px;
+}
+
+.adm-managed-section-card .adm-section-head-actions {
+    flex-wrap: wrap;
+}
+
+.adm-local-empty-cell {
+    padding: 32px;
+    color: #64748b;
+    text-align: center;
+}
+
+.adm-audit-row-detail-modal {
+    width: 100%;
+    max-width: 560px;
+}
+
+.adm-audit-row-detail-body {
+    max-height: 72vh;
+    overflow-y: auto;
+    padding: 20px 24px;
+}
+
+.adm-audit-row-detail-list {
+    margin: 0;
+}
+
+.adm-audit-row-detail-key {
+    margin-top: 12px;
+    margin-bottom: 2px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
+.adm-audit-row-detail-value {
+    margin: 0;
+    padding: 6px 10px;
+    color: #e2e8f0;
+    font-size: 13px;
+    word-break: break-all;
+    border-radius: 4px;
+    background: #0f1520;
+}
+
+body.sa-light .adm-audit-row-detail-value {
+    color: #0f172a;
+    background: #f8fafc;
+}
+
+@media (max-width: 1540px) {
+    .adm-filter-bar.adm-audit-filterbar {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .adm-audit-filterbar .adm-audit-search-box {
+        grid-column: span 2;
+    }
+
+    .adm-audit-filter-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 900px) {
+    .adm-filter-bar.adm-audit-filterbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .adm-audit-filterbar .adm-audit-search-box {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 640px) {
+    .adm-filter-bar.adm-audit-filterbar {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-audit-filterbar .adm-audit-search-box {
+        grid-column: auto;
+    }
+
+    .adm-audit-filter-actions .adm-btn {
+        width: auto;
+    }
+}

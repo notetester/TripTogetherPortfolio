@@ -72,11 +72,11 @@
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-audit-filter-card adm-login-audit-filter-card">
         <div class="adm-card-body">
             <form id="loginSearchForm" method="get" action="${pageContext.request.contextPath}/admin/logins">
-                <div class="adm-filter-bar">
-                    <div class="adm-search-box" style="flex:1;min-width:220px;">
+                <div class="adm-filter-bar adm-audit-filterbar adm-login-audit-filterbar">
+                    <div class="adm-search-box adm-audit-search-box">
                         <div class="adm-filter-label">${msg_admin_common_search}</div>
                         <span class="adm-search-ico">🔍</span>
                         <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}" placeholder="${msg_admin_logs_searchPlaceholder}">
@@ -127,7 +127,7 @@
                             <option value="GOOGLE" ${search.loginMethod=='GOOGLE'?'selected':''}>${msg_admin_logs_provider_google}</option>
                         </select>
                     </div>
-                    <div style="display:flex;align-items:flex-end;gap:8px;">
+                    <div class="adm-audit-filter-actions">
                         <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
                         <button type="button" class="adm-btn adm-btn-ghost" onclick="resetLoginFilters()">${msg_admin_common_reset}</button>
                     </div>
@@ -149,7 +149,7 @@
                 <span id="loginTotalLabel" class="adm-section-total-inline">${msg_admin_common_totalCount}</span>
             </div>
             <div class="adm-section-head-actions">
-                <select class="adm-select" id="loginExportFormat" style="width:90px;">
+                <select class="adm-select adm-audit-export-format" id="loginExportFormat">
                     <option value="csv">CSV</option>
                     <option value="excel">Excel</option>
                 </select>
@@ -170,7 +170,7 @@
                     <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
                     <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
                 </select>
-                <select class="adm-select js-login-page-size" id="loginSizeSelect" style="width:90px;" onchange="changeLoginSize(this.value)">
+                <select class="adm-select js-login-page-size adm-audit-size-select" id="loginSizeSelect" onchange="changeLoginSize(this.value)">
                     <option value="30" ${search.size==30 ? 'selected' : ''}>${msg_admin_common_pageSize_30}</option>
                     <option value="50" ${search.size==50 ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
                     <option value="100" ${search.size==100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
@@ -234,13 +234,13 @@
 </div>
 
 <div id="rowDetailModal" class="adm-modal-overlay" onclick="this.classList.remove('open')">
-    <div class="adm-modal" style="max-width:560px;width:100%;" onclick="event.stopPropagation()">
+    <div class="adm-modal adm-audit-row-detail-modal" onclick="event.stopPropagation()">
         <div class="adm-modal-head">
             <div class="adm-modal-title" id="rowDetailModalTitle"></div>
             <button class="adm-modal-close" onclick="document.getElementById('rowDetailModal').classList.remove('open')">✕</button>
         </div>
-        <div class="adm-modal-body" style="padding:20px 24px;max-height:72vh;overflow-y:auto;">
-            <dl id="rowDetailModalContent" style="margin:0;"></dl>
+        <div class="adm-modal-body adm-audit-row-detail-body">
+            <dl id="rowDetailModalContent" class="adm-audit-row-detail-list"></dl>
         </div>
     </div>
 </div>
@@ -458,7 +458,7 @@ function markLoginOriginalIndices(rows) {
 }
 
 function renderLoginEmptyRow() {
-    return '<tr class="adm-local-empty"><td colspan="13" style="text-align:center;color:#64748b;padding:32px;">' + escapeHtml(ADMIN_LOGIN_MSG.noResults) + '</td></tr>';
+    return '<tr class="adm-local-empty"><td colspan="13" class="adm-local-empty-cell">' + escapeHtml(ADMIN_LOGIN_MSG.noResults) + '</td></tr>';
 }
 
 async function renderServerLogins(pageOverride) {
@@ -786,10 +786,10 @@ function showRowDetail(title, fields) {
         var label = pair[0], value = pair[1];
         if (!value || value === '' || value === '-') return;
         var dt = document.createElement('dt');
-        dt.style.cssText = 'font-size:11px;color:#64748b;margin-top:12px;margin-bottom:2px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;';
+        dt.className = 'adm-audit-row-detail-key';
         dt.textContent = label;
         var dd = document.createElement('dd');
-        dd.style.cssText = 'font-size:13px;color:#e2e8f0;word-break:break-all;margin:0;padding:6px 10px;background:#0f1520;border-radius:4px;';
+        dd.className = 'adm-audit-row-detail-value';
         dd.textContent = value;
         content.appendChild(dt);
         content.appendChild(dd);
