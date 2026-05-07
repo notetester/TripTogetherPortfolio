@@ -14,6 +14,7 @@
 <spring:message var="msg_admin_runtimeSettings_historyKey" code="admin.runtimeSettings.historyKey"/>
 <spring:message var="msg_admin_runtimeSettings_includeInactive" code="admin.runtimeSettings.includeInactive"/>
 <spring:message var="msg_admin_common_search" code="admin.common.search"/>
+<spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_runtimeSettings_createTitle" code="admin.runtimeSettings.createTitle"/>
 <spring:message var="msg_admin_runtimeSettings_createDesc" code="admin.runtimeSettings.createDesc"/>
 <spring:message var="msg_admin_runtimeSettings_key" code="admin.runtimeSettings.key"/>
@@ -46,6 +47,9 @@
 <%@ include file="layout.jsp" %>
 
 <div class="adm-content adm-governance-page adm-runtime-page">
+    <spring:message var="msg_admin_runtimeSettings_totalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(settings)}"/>
+    <spring:message var="msg_admin_runtimeSettings_historyTotalCountDisplay" code="admin.common.totalCountFormat" arguments="${fn:length(histories)}"/>
+
     <div class="adm-page-head">
         <div>
             <h1>${msg_admin_runtimeSettings_title}</h1>
@@ -75,6 +79,9 @@
         </div>
         <div class="adm-actions adm-runtime-actions">
             <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_search}</button>
+            <c:if test="${not empty settingGroup or not empty keyword or not empty historyKey or includeInactive}">
+                <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/runtime-settings">${msg_admin_common_reset}</a>
+            </c:if>
         </div>
     </form>
 
@@ -87,6 +94,18 @@
         </div>
         <div class="adm-card-body">
             <form method="post" action="${pageContext.request.contextPath}/admin/runtime-settings">
+                <c:if test="${not empty settingGroup}">
+                    <input type="hidden" name="returnSettingGroup" value="${fn:escapeXml(settingGroup)}">
+                </c:if>
+                <c:if test="${not empty keyword}">
+                    <input type="hidden" name="returnKeyword" value="${fn:escapeXml(keyword)}">
+                </c:if>
+                <c:if test="${not empty historyKey}">
+                    <input type="hidden" name="returnHistoryKey" value="${fn:escapeXml(historyKey)}">
+                </c:if>
+                <c:if test="${includeInactive}">
+                    <input type="hidden" name="returnIncludeInactive" value="true">
+                </c:if>
                 <div class="adm-runtime-form-grid">
                     <label class="adm-runtime-field">${msg_admin_runtimeSettings_key}
                         <input class="adm-input" type="text" name="settingKey" required>
@@ -128,7 +147,31 @@
         </div>
     </div>
 
+    <div class="adm-card adm-runtime-summary-card">
+        <div class="adm-card-header">
+            <div>
+                <div class="adm-card-title">
+                    ${msg_admin_runtimeSettings_title}
+                    <span class="adm-section-total-inline">${msg_admin_runtimeSettings_totalCountDisplay}</span>
+                </div>
+                <div class="adm-muted">${msg_admin_runtimeSettings_desc}</div>
+            </div>
+        </div>
+    </div>
+
     <c:forEach var="s" items="${settings}">
+        <c:url var="runtimeSettingHistoryUrl" value="/admin/runtime-settings">
+            <c:if test="${not empty settingGroup}">
+                <c:param name="settingGroup" value="${settingGroup}"/>
+            </c:if>
+            <c:if test="${not empty keyword}">
+                <c:param name="keyword" value="${keyword}"/>
+            </c:if>
+            <c:if test="${includeInactive}">
+                <c:param name="includeInactive" value="on"/>
+            </c:if>
+            <c:param name="historyKey" value="${s.settingKey}"/>
+        </c:url>
         <form method="post" action="${pageContext.request.contextPath}/admin/runtime-settings/${s.settingIdx}" class="adm-card adm-runtime-setting-card">
             <div class="adm-card-header">
                 <div>
@@ -142,6 +185,18 @@
                 </div>
             </div>
             <div class="adm-card-body">
+                <c:if test="${not empty settingGroup}">
+                    <input type="hidden" name="returnSettingGroup" value="${fn:escapeXml(settingGroup)}">
+                </c:if>
+                <c:if test="${not empty keyword}">
+                    <input type="hidden" name="returnKeyword" value="${fn:escapeXml(keyword)}">
+                </c:if>
+                <c:if test="${not empty historyKey}">
+                    <input type="hidden" name="returnHistoryKey" value="${fn:escapeXml(historyKey)}">
+                </c:if>
+                <c:if test="${includeInactive}">
+                    <input type="hidden" name="returnIncludeInactive" value="true">
+                </c:if>
                 <input type="hidden" name="settingKey" value="${fn:escapeXml(s.settingKey)}">
                 <div class="adm-runtime-form-grid adm-runtime-setting-grid">
                     <label class="adm-runtime-field">${msg_admin_runtimeSettings_group}
@@ -168,22 +223,25 @@
                 </div>
                 <div class="adm-actions adm-runtime-actions">
                     <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_save}</button>
-                    <a class="adm-btn" href="${pageContext.request.contextPath}/admin/runtime-settings?historyKey=${fn:escapeXml(s.settingKey)}">${msg_admin_runtimeSettings_viewHistory}</a>
+                    <a class="adm-btn" href="${runtimeSettingHistoryUrl}">${msg_admin_runtimeSettings_viewHistory}</a>
                 </div>
             </div>
         </form>
     </c:forEach>
 
-    <div class="adm-card">
+    <div class="adm-card adm-runtime-history-card">
         <div class="adm-card-header">
             <div>
-                <div class="adm-card-title">${msg_admin_runtimeSettings_historyTitle}</div>
+                <div class="adm-card-title">
+                    ${msg_admin_runtimeSettings_historyTitle}
+                    <span class="adm-section-total-inline">${msg_admin_runtimeSettings_historyTotalCountDisplay}</span>
+                </div>
                 <div class="adm-muted">${msg_admin_runtimeSettings_historyDesc}</div>
             </div>
         </div>
         <div class="adm-card-body">
             <div class="adm-table-wrap">
-                <table class="adm-table adm-runtime-history-table">
+                <table class="adm-table adm-runtime-history-table" data-admin-list-ignore="true">
                     <thead>
                     <tr>
                         <th>${msg_admin_runtimeSettings_version}</th>

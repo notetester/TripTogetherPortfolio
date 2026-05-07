@@ -6619,6 +6619,8 @@ body.sa-light .adm-governance-page .adm-notification-option-code {
 /* Runtime settings admin */
 .adm-runtime-filter-card,
 .adm-runtime-create-card,
+.adm-runtime-summary-card,
+.adm-runtime-history-card,
 .adm-runtime-setting-card {
     margin-bottom: 16px;
     overflow: visible;

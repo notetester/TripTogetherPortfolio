@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.config.RuntimeSettingService;
 import org.triptogether.config.RuntimeSettingVO;
@@ -44,6 +45,10 @@ public class AdminRuntimeSettingController {
                          @RequestParam(value = "secret", required = false) String secret,
                          @RequestParam(value = "editable", required = false) String editable,
                          @RequestParam(value = "active", required = false) String active,
+                         @RequestParam(value = "returnSettingGroup", required = false) String returnSettingGroup,
+                         @RequestParam(value = "returnKeyword", required = false) String returnKeyword,
+                         @RequestParam(value = "returnHistoryKey", required = false) String returnHistoryKey,
+                         @RequestParam(value = "returnIncludeInactive", required = false) String returnIncludeInactive,
                          HttpSession session,
                          RedirectAttributes redirectAttributes,
                          Locale locale) {
@@ -52,7 +57,7 @@ public class AdminRuntimeSettingController {
         setting.setActive(active != null);
         runtimeSettingService.saveRuntimeSetting(setting, currentAdminIdx(session));
         redirectAttributes.addFlashAttribute("message", msg(locale, "admin.runtimeSettings.flash.saved"));
-        return "redirect:/admin/runtime-settings";
+        return redirectRuntimeSettings(returnSettingGroup, returnKeyword, returnHistoryKey, returnIncludeInactive != null);
     }
 
     @PostMapping("/{settingIdx}")
@@ -61,6 +66,10 @@ public class AdminRuntimeSettingController {
                          @RequestParam(value = "secret", required = false) String secret,
                          @RequestParam(value = "editable", required = false) String editable,
                          @RequestParam(value = "active", required = false) String active,
+                         @RequestParam(value = "returnSettingGroup", required = false) String returnSettingGroup,
+                         @RequestParam(value = "returnKeyword", required = false) String returnKeyword,
+                         @RequestParam(value = "returnHistoryKey", required = false) String returnHistoryKey,
+                         @RequestParam(value = "returnIncludeInactive", required = false) String returnIncludeInactive,
                          HttpSession session,
                          RedirectAttributes redirectAttributes,
                          Locale locale) {
@@ -70,7 +79,27 @@ public class AdminRuntimeSettingController {
         setting.setActive(active != null);
         runtimeSettingService.saveRuntimeSetting(setting, currentAdminIdx(session));
         redirectAttributes.addFlashAttribute("message", msg(locale, "admin.runtimeSettings.flash.saved"));
-        return "redirect:/admin/runtime-settings";
+        return redirectRuntimeSettings(returnSettingGroup, returnKeyword, returnHistoryKey, returnIncludeInactive != null);
+    }
+
+    private String redirectRuntimeSettings(String settingGroup,
+                                           String keyword,
+                                           String historyKey,
+                                           boolean includeInactive) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/admin/runtime-settings");
+        if (settingGroup != null && !settingGroup.isBlank()) {
+            builder.queryParam("settingGroup", settingGroup);
+        }
+        if (keyword != null && !keyword.isBlank()) {
+            builder.queryParam("keyword", keyword);
+        }
+        if (includeInactive) {
+            builder.queryParam("includeInactive", "on");
+        }
+        if (historyKey != null && !historyKey.isBlank()) {
+            builder.queryParam("historyKey", historyKey);
+        }
+        return "redirect:" + builder.toUriString();
     }
 
     private Long currentAdminIdx(HttpSession session) {
