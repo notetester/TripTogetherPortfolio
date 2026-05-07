@@ -816,24 +816,24 @@
 </div>
 
 <%-- URL 별 클릭자 목록 모달 --%>
-<div id="clickersModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:#fff;width:780px;max-width:92vw;max-height:82vh;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
-        <div style="padding:16px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;gap:12px;">
-            <h3 id="clickersModalTitle" style="margin:0;font-size:15px;flex:1;word-break:break-all;">URL 클릭자 목록</h3>
-            <button type="button" class="adm-btn adm-btn-ghost" onclick="document.getElementById('clickersModal').style.display='none'">닫기</button>
+<div id="clickersModal" class="adm-ai-message-modal" hidden>
+    <div class="adm-ai-message-dialog adm-ai-clickers-dialog">
+        <div class="adm-ai-message-head">
+            <h3 id="clickersModalTitle" class="adm-ai-message-title adm-ai-modal-title-break">URL 클릭자 목록</h3>
+            <button type="button" class="adm-btn adm-btn-ghost" onclick="document.getElementById('clickersModal').hidden = true">닫기</button>
         </div>
-        <div id="clickersModalBody" style="padding:16px;overflow-y:auto;flex:1;"></div>
+        <div id="clickersModalBody" class="adm-ai-message-body"></div>
     </div>
 </div>
 
 <%-- 대화 메시지 조회 모달 --%>
-<div id="msgModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:#fff;width:700px;max-width:90vw;max-height:80vh;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
-        <div style="padding:16px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
-            <h3 id="msgModalTitle" style="margin:0;font-size:16px;">${msg_admin_aiHelper_chatbot_modal_title}</h3>
-            <button type="button" class="adm-btn adm-btn-ghost" onclick="document.getElementById('msgModal').style.display='none'">${msg_admin_common_close}</button>
+<div id="msgModal" class="adm-ai-message-modal" hidden>
+    <div class="adm-ai-message-dialog">
+        <div class="adm-ai-message-head">
+            <h3 id="msgModalTitle" class="adm-ai-message-title">${msg_admin_aiHelper_chatbot_modal_title}</h3>
+            <button type="button" class="adm-btn adm-btn-ghost" onclick="document.getElementById('msgModal').hidden = true">${msg_admin_common_close}</button>
         </div>
-        <div id="msgModalBody" style="padding:16px;overflow-y:auto;flex:1;"></div>
+        <div id="msgModalBody" class="adm-ai-message-body"></div>
     </div>
 </div>
 
@@ -879,42 +879,42 @@
 
             const msgHtml = (data.messages || []).map(function (m) {
                 const role = m.role === 'user' ? chatbotMessages.roleUser : chatbotMessages.roleAi;
-                const color = m.role === 'user' ? '#1d4ed8' : '#0f766e';
-                const flag = m.isInappropriate ? ' ⚠️' : '';
+                const roleClass = m.role === 'user' ? 'is-user' : 'is-ai';
+                const flag = m.isInappropriate ? '<span class="adm-ai-inappropriate-badge">inappropriate</span>' : '';
                 const body = m.role === 'assistant'
                     ? renderAssistantContent(m.content)
-                    : '<div style="font-size:13px;margin-top:4px;white-space:pre-wrap;">' + escHtml(m.content || '') + '</div>';
+                    : '<div class="adm-ai-message-content">' + escHtml(m.content || '') + '</div>';
                 const clicks = m.role === 'assistant' ? (clicksByMsg[String(m.messageId)] || []) : [];
                 const badge = clicks.length > 0
-                    ? '<span style="margin-left:6px;display:inline-block;font-size:10px;font-weight:700;color:#1d4ed8;background:#dbeafe;padding:1px 7px;border-radius:10px;">👆 ' + clicks.length + '</span>'
+                    ? '<span class="adm-ai-click-badge">클릭 ' + clicks.length + '</span>'
                     : '';
                 let perMsgDetail = '';
                 if (clicks.length > 0) {
-                    perMsgDetail = '<div style="margin-top:8px;padding:6px 8px;background:#eff6ff;border-radius:6px;">' +
-                                   '<div style="font-size:10px;color:#1d4ed8;font-weight:700;margin-bottom:4px;">이 메시지의 클릭 이력</div>';
+                    perMsgDetail = '<div class="adm-ai-click-detail">' +
+                                   '<div class="adm-ai-click-detail-title">이 메시지의 클릭 이력</div>';
                     clicks.forEach(function (c) {
-                        perMsgDetail += '<div style="font-size:11px;color:#334155;">• ' +
+                        perMsgDetail += '<div class="adm-ai-click-detail-row">' +
                                         escHtml(c.label || '-') +
-                                        ' <span style="color:#64748b;font-family:monospace;">' + escHtml(c.url || '') + '</span>' +
-                                        ' <span style="color:#94a3b8;">(' + escHtml(formatClickTime(c.clickedAt)) + ')</span>' +
+                                        ' <span class="adm-ai-click-url">' + escHtml(c.url || '') + '</span>' +
+                                        ' <span class="adm-ai-click-time">(' + escHtml(formatClickTime(c.clickedAt)) + ')</span>' +
                                         '</div>';
                     });
                     perMsgDetail += '</div>';
                 }
-                return '<div style="margin-bottom:12px;padding:10px;border-left:3px solid ' + color + ';background:#f8fafc;">' +
-                       '<div style="font-size:11px;color:' + color + ';font-weight:600;">' + role + flag + badge + '</div>' +
+                return '<div class="adm-ai-message-item ' + roleClass + '">' +
+                       '<div class="adm-ai-message-meta">' + role + flag + badge + '</div>' +
                        body +
                        perMsgDetail +
                        '</div>';
             }).join('');
 
-            const summary = '<div style="margin-bottom:12px;font-size:12px;color:#64748b;">' +
-                            '총 메시지 <strong style="color:#1e293b;">' + (data.messages || []).length + '</strong>건 · ' +
-                            '링크 클릭 <strong style="color:#1d4ed8;">' + totalClicks + '</strong>건' +
+            const summary = '<div class="adm-ai-message-summary">' +
+                            '총 메시지 <strong>' + (data.messages || []).length + '</strong>건 · ' +
+                            '링크 클릭 <strong>' + totalClicks + '</strong>건' +
                             '</div>';
 
-            document.getElementById('msgModalBody').innerHTML = summary + (msgHtml || '<div>' + chatbotMessages.emptyMessages + '</div>');
-            document.getElementById('msgModal').style.display = 'flex';
+            document.getElementById('msgModalBody').innerHTML = summary + (msgHtml || '<div class="adm-local-empty-cell">' + chatbotMessages.emptyMessages + '</div>');
+            document.getElementById('msgModal').hidden = false;
         } catch (e) { alert(chatbotMessages.viewError); }
     };
 
@@ -934,31 +934,31 @@
             const rows = (data.clickers || []);
             if (rows.length === 0) {
                 document.getElementById('clickersModalBody').innerHTML =
-                    '<div style="padding:40px;text-align:center;color:#94a3b8;">클릭 이력이 없습니다.</div>';
+                    '<div class="adm-local-empty-cell">클릭 이력이 없습니다.</div>';
             } else {
-                let html = '<table class="adm-table" style="width:100%;font-size:12px;">' +
+                let html = '<table class="adm-table adm-ai-table adm-ai-clickers-table">' +
                            '<thead><tr>' +
                            '<th>시각</th><th>유저</th><th>세션</th><th>IP</th><th>대화</th><th>메시지</th>' +
                            '</tr></thead><tbody>';
                 rows.forEach(function (r) {
                     const userText = r.userIdx
-                        ? (escHtml(r.nickname || '') + ' <span style="color:#94a3b8;font-size:10px;">#' + r.userIdx + '</span>')
-                        : '<span style="color:#94a3b8;">게스트</span>';
-                    const anon = r.anonSessionId ? ('<span style="color:#64748b;font-family:monospace;font-size:10px;">' + escHtml(String(r.anonSessionId).substring(0, 12)) + '…</span>') : '-';
+                        ? (escHtml(r.nickname || '') + ' <span class="adm-ai-subtext">#' + r.userIdx + '</span>')
+                        : '<span class="adm-ai-muted">게스트</span>';
+                    const anon = r.anonSessionId ? ('<span class="adm-ai-mono adm-ai-subtext">' + escHtml(String(r.anonSessionId).substring(0, 12)) + '…</span>') : '-';
                     html += '<tr>' +
-                            '<td style="white-space:nowrap;">' + escHtml(formatClickTime(r.clickedAt)) + '</td>' +
+                            '<td class="adm-ai-nowrap">' + escHtml(formatClickTime(r.clickedAt)) + '</td>' +
                             '<td>' + userText + '</td>' +
                             '<td>' + anon + '</td>' +
-                            '<td style="font-family:monospace;">' + escHtml(r.ipAddress || '-') + '</td>' +
+                            '<td class="adm-ai-mono">' + escHtml(r.ipAddress || '-') + '</td>' +
                             '<td>#' + escHtml(r.conversationId) + '</td>' +
                             '<td>#' + escHtml(r.messageId) + '</td>' +
                             '</tr>';
                 });
                 html += '</tbody></table>';
-                html = '<div style="font-size:12px;color:#64748b;margin-bottom:10px;">총 <strong style="color:#1d4ed8;">' + rows.length + '</strong>건 (최대 100)</div>' + html;
+                html = '<div class="adm-ai-small-total">총 <strong>' + rows.length + '</strong>건 (최대 100)</div>' + html;
                 document.getElementById('clickersModalBody').innerHTML = html;
             }
-            document.getElementById('clickersModal').style.display = 'flex';
+            document.getElementById('clickersModal').hidden = false;
         } catch (e) { alert('조회 중 오류'); }
     };
 
@@ -974,36 +974,36 @@
         } catch (e) {}
 
         if (!parsed) {
-            return '<div style="font-size:13px;margin-top:4px;white-space:pre-wrap;">' + escHtml(raw) + '</div>';
+            return '<div class="adm-ai-message-content">' + escHtml(raw) + '</div>';
         }
 
-        let out = '<div style="font-size:13px;margin-top:4px;white-space:pre-wrap;">' + escHtml(parsed.message) + '</div>';
+        let out = '<div class="adm-ai-message-content">' + escHtml(parsed.message) + '</div>';
 
         if (parsed.inappropriate === true) {
-            out += '<div style="margin-top:6px;display:inline-block;font-size:11px;font-weight:700;color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;padding:2px 8px;border-radius:10px;">⚠️ inappropriate</div>';
+            out += '<div class="adm-ai-inappropriate-badge is-block">inappropriate</div>';
         }
 
         if (Array.isArray(parsed.links) && parsed.links.length > 0) {
-            out += '<div style="margin-top:8px;font-size:11px;color:#64748b;font-weight:600;">🔗 제시된 링크</div>';
-            out += '<div style="margin-top:4px;display:flex;flex-direction:column;gap:3px;">';
+            out += '<div class="adm-ai-link-list-title">제시된 링크</div>';
+            out += '<div class="adm-ai-link-list">';
             parsed.links.forEach(function (l) {
                 const label = escHtml(l.label || '');
                 const url = escHtml(l.url || '');
                 const icon = escHtml(l.icon || '→');
-                out += '<div style="font-size:12px;">' +
-                       '<span style="margin-right:4px;">' + icon + '</span>' +
-                       '<span style="color:#1e293b;font-weight:500;">' + label + '</span>' +
-                       '<span style="margin-left:6px;color:#94a3b8;font-family:monospace;font-size:11px;">' + url + '</span>' +
+                out += '<div class="adm-ai-link-row">' +
+                       '<span class="adm-ai-link-icon">' + icon + '</span>' +
+                       '<span class="adm-ai-link-label">' + label + '</span>' +
+                       '<span class="adm-ai-link-url">' + url + '</span>' +
                        '</div>';
             });
             out += '</div>';
         }
 
         if (Array.isArray(parsed.quickReplies) && parsed.quickReplies.length > 0) {
-            out += '<div style="margin-top:8px;font-size:11px;color:#64748b;font-weight:600;">💬 빠른 답변</div>';
-            out += '<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;">';
+            out += '<div class="adm-ai-link-list-title">빠른 답변</div>';
+            out += '<div class="adm-ai-quick-list">';
             parsed.quickReplies.forEach(function (q) {
-                out += '<span style="font-size:11px;background:#eff6ff;color:#1d4ed8;border:1px solid #dbeafe;padding:2px 8px;border-radius:10px;">' +
+                out += '<span class="adm-ai-quick-pill">' +
                        escHtml(q) + '</span>';
             });
             out += '</div>';
