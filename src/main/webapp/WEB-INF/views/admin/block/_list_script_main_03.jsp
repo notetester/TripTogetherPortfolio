@@ -325,6 +325,7 @@ function exportBlockSection(section, scope) {
         const csv = [headers].concat(body).map(row => row.map(csvEscape).join(',')).join('\n');
         downloadBlob('\ufeff' + csv, filename + '.csv', 'text/csv;charset=utf-8');
     }
+    if (typeof closeAllBlockExportDropdowns === 'function') closeAllBlockExportDropdowns();
 }
 
 function csvEscape(value) {

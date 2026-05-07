@@ -11,7 +11,7 @@ id="bat-exportFormat" class="adm-select js-block-export-format adm-block-export-
                         onclick="toggleBlockExportDropdown('bat-exportDropdown')">
                     ${msg_admin_common_export} ▾
                 </button>
-                <div id="bat-exportDropdown" class="adm-export-dropdown adm-block-export-dropdown is-hidden">
+                <div id="bat-exportDropdown" class="adm-export-dropdown adm-block-export-dropdown">
                     <button type="button" class="adm-export-item" onclick="exportBlockData('batches','all')">${msg_admin_common_exportAll}</button>
                     <button type="button" class="adm-export-item" onclick="exportBlockData('batches','filtered')">${msg_admin_common_exportFiltered}</button>
                     <button type="button" class="adm-export-item js-block-export-selected" data-section="batches" id="bat-exportSelectedBtn" disabled onclick="exportBlockData('batches','selected')">${msg_admin_common_exportSelected} (<span id="bat-selectedCount">0</span>)</button>

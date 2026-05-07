@@ -11,7 +11,7 @@ id="ipr-exportFormat" class="adm-select js-block-export-format adm-block-export-
                             onclick="toggleBlockExportDropdown('ipr-exportDropdown')">
                         ${msg_admin_common_export} ▾
                     </button>
-                    <div id="ipr-exportDropdown" class="adm-export-dropdown adm-block-export-dropdown is-hidden">
+                    <div id="ipr-exportDropdown" class="adm-export-dropdown adm-block-export-dropdown">
                         <button type="button" class="adm-export-item" onclick="exportBlockData('ip-rules','all')">${msg_admin_common_exportAll}</button>
                         <button type="button" class="adm-export-item" onclick="exportBlockData('ip-rules','filtered')">${msg_admin_common_exportFiltered}</button>
                         <button type="button" class="adm-export-item js-block-export-selected" data-section="ip-rules" id="ipr-exportSelectedBtn" disabled onclick="exportBlockData('ip-rules','selected')">${msg_admin_common_exportSelected} (<span id="ipr-selectedCount">0</span>)</button>

@@ -222,7 +222,6 @@
         flex-wrap: wrap;
     }
 
-    .adm-block-export-dropdown.is-hidden,
     .adm-block-bulkbar.is-hidden,
     .adm-dash-sort-reset.is-hidden,
     .js-dashboard-panel.is-hidden,
@@ -314,9 +313,24 @@
 
 <script>
 function toggleBlockExportDropdown(id) {
-    const dropdown = document.getElementById(id);
-    if (dropdown) dropdown.classList.toggle('is-hidden');
+    const target = document.getElementById(id);
+    if (!target) return;
+    document.querySelectorAll('.adm-block-export-dropdown.open').forEach(function (other) {
+        if (other !== target) other.classList.remove('open');
+    });
+    target.classList.toggle('open');
 }
+
+function closeAllBlockExportDropdowns() {
+    document.querySelectorAll('.adm-block-export-dropdown.open').forEach(function (d) {
+        d.classList.remove('open');
+    });
+}
+
+document.addEventListener('click', function (e) {
+    if (e.target.closest('.adm-block-export-wrap')) return;
+    closeAllBlockExportDropdowns();
+});
 </script>
 
 <jsp:include page="_list_script_01.jsp"/>

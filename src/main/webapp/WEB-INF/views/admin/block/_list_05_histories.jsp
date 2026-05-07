@@ -11,7 +11,7 @@ id="hist-exportFormat" class="adm-select js-block-export-format adm-block-export
                         onclick="toggleBlockExportDropdown('hist-exportDropdown')">
                     ${msg_admin_common_export} ▾
                 </button>
-                <div id="hist-exportDropdown" class="adm-export-dropdown adm-block-export-dropdown is-hidden">
+                <div id="hist-exportDropdown" class="adm-export-dropdown adm-block-export-dropdown">
                     <button type="button" class="adm-export-item" onclick="exportBlockData('histories','all')">${msg_admin_common_exportAll}</button>
                     <button type="button" class="adm-export-item" onclick="exportBlockData('histories','filtered')">${msg_admin_common_exportFiltered}</button>
                     <button type="button" class="adm-export-item js-block-export-selected" data-section="histories" id="hist-exportSelectedBtn" disabled onclick="exportBlockData('histories','selected')">${msg_admin_common_exportSelected} (<span id="hist-selectedCount">0</span>)</button>

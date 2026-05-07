@@ -11,7 +11,7 @@ id="ub-exportFormat" class="adm-select js-block-export-format adm-block-export-f
                         onclick="toggleBlockExportDropdown('ub-exportDropdown')">
                     ${msg_admin_common_export} ▾
                 </button>
-                <div id="ub-exportDropdown" class="adm-export-dropdown adm-block-export-dropdown is-hidden">
+                <div id="ub-exportDropdown" class="adm-export-dropdown adm-block-export-dropdown">
                     <button type="button" class="adm-export-item" onclick="exportBlockData('user-blocks','all')">${msg_admin_common_exportAll}</button>
                     <button type="button" class="adm-export-item" onclick="exportBlockData('user-blocks','filtered')">${msg_admin_common_exportFiltered}</button>
                     <button type="button" class="adm-export-item js-block-export-selected" data-section="user-blocks" id="ub-exportSelectedBtn" disabled onclick="exportBlockData('user-blocks','selected')">${msg_admin_common_exportSelected} (<span id="ub-selectedCount">0</span>)</button>
