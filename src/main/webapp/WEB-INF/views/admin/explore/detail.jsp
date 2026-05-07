@@ -63,40 +63,42 @@
 <c:set var="pageTitle" value="${msg_admin_explore_detail_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
-    <a class="adm-back-link" href="${pageContext.request.contextPath}/admin/explore">
-        ${msg_admin_explore_detail_backToList}
-    </a>
+<div class="adm-content adm-explore-page adm-explore-detail-page">
+    <div class="adm-explore-detail-backrow">
+        <a class="adm-back-link" href="${pageContext.request.contextPath}/admin/explore">
+            ${msg_admin_explore_detail_backToList}
+        </a>
+    </div>
 
-    <div class="adm-card" style="margin-top:16px;margin-bottom:20px;">
+    <div class="adm-card adm-explore-detail-card">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_admin_explore_detail_title}</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/detail/${spot.spotIdx}" target="_blank">${msg_admin_explore_detail_userView}</a>
-                <button type="button" class="adm-btn" onclick="toggleEditForm()">${msg_admin_common_edit}</button>
+            <div class="adm-explore-detail-actions">
+                <a class="adm-btn adm-btn-ghost adm-link-button adm-explore-detail-btn" href="${pageContext.request.contextPath}/detail/${spot.spotIdx}" target="_blank">${msg_admin_explore_detail_userView}</a>
+                <button type="button" class="adm-btn adm-explore-detail-btn" onclick="toggleEditForm()">${msg_admin_common_edit}</button>
                 <c:if test="${spot.displayStatus != 'DELETED'}">
-                    <button class="adm-btn adm-btn-ghost" type="button" data-id="${spot.spotIdx}" onclick="deleteSpot(this)">${msg_admin_common_delete}</button>
+                    <button class="adm-btn adm-btn-ghost adm-explore-detail-btn adm-explore-danger-btn" type="button" data-id="${spot.spotIdx}" onclick="deleteSpot(this)">${msg_admin_common_delete}</button>
                 </c:if>
             </div>
         </div>
-        <div class="adm-card-body" style="display:grid;grid-template-columns:280px 1fr;gap:24px;">
-            <div>
+        <div class="adm-card-body adm-explore-detail-overview">
+            <div class="adm-explore-detail-media">
                 <c:choose>
                     <c:when test="${not empty spot.thumbUrl}">
-                        <img src="${spot.thumbUrl}" alt="${fn:escapeXml(spot.name)}" style="width:100%;height:220px;object-fit:cover;border-radius:14px;border:1px solid #cbd5e1;">
+                        <img class="adm-explore-detail-image" src="${spot.thumbUrl}" alt="${fn:escapeXml(spot.name)}">
                     </c:when>
                     <c:otherwise>
-                        <div class="adm-image-placeholder" style="width:100%;height:220px;border-radius:14px;display:flex;align-items:center;justify-content:center;">
+                        <div class="adm-image-placeholder adm-explore-detail-image adm-explore-detail-image-empty">
                             ${msg_admin_explore_detail_imageEmpty}
                         </div>
                     </c:otherwise>
                 </c:choose>
             </div>
-            <div style="display:grid;gap:12px;">
-                <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start;">
+            <div class="adm-explore-detail-info">
+                <div class="adm-explore-detail-title-row">
                     <div>
                         <div class="adm-summary-label">${msg_admin_explore_detail_spotName}</div>
-                        <div class="adm-field-value" style="font-size:22px;font-weight:700;">${fn:escapeXml(spot.name)}</div>
+                        <div class="adm-field-value adm-explore-detail-name">${fn:escapeXml(spot.name)}</div>
                     </div>
                     <span class="status-badge ${spot.displayStatus}">
                         <c:choose>
@@ -105,56 +107,54 @@
                         </c:choose>
                     </span>
                 </div>
-                <div class="adm-summary-grid" style="grid-template-columns:repeat(2, minmax(0, 1fr));margin-bottom:0;">
-                    <div class="adm-card" style="padding:14px;">
+                <div class="adm-explore-detail-field-grid">
+                    <div class="adm-explore-detail-field">
                         <div class="adm-summary-label">${msg_admin_explore_detail_author}</div>
                         <button type="button"
-                                class="adm-inline-link js-open-member-context"
-                                data-user-idx="${spot.userIdx}"
-                                style="font-size:14px;margin-top:4px;font-weight:700;color:#93c5fd;">
+                                class="adm-inline-link adm-explore-author-name js-open-member-context"
+                                data-user-idx="${spot.userIdx}">
                             ${fn:escapeXml(spot.nickname)}
                         </button>
-                        <div class="adm-muted-inline" style="margin-top:2px;">
+                        <div class="adm-explore-author-sub">
                             <button type="button"
-                                    class="adm-inline-link js-open-member-context"
-                                    data-user-idx="${spot.userIdx}"
-                                    style="font-size:12px;color:#94a3b8;">
+                                    class="adm-inline-link adm-explore-author-id js-open-member-context"
+                                    data-user-idx="${spot.userIdx}">
                                 ${fn:escapeXml(spot.userId)}
                             </button>
                         </div>
                     </div>
-                    <div class="adm-card" style="padding:14px;">
+                    <div class="adm-explore-detail-field">
                         <div class="adm-summary-label">${msg_admin_explore_detail_region}</div>
-                        <div class="adm-field-value" style="font-size:14px;margin-top:4px;">${fn:escapeXml(spot.region)}</div>
+                        <div class="adm-field-value adm-explore-field-value">${fn:escapeXml(spot.region)}</div>
                     </div>
-                    <div class="adm-card" style="padding:14px;">
+                    <div class="adm-explore-detail-field">
                         <div class="adm-summary-label">${msg_admin_explore_detail_spotId}</div>
-                        <div class="adm-field-value-sub" style="font-size:13px;margin-top:4px;">${fn:escapeXml(spot.spotId)}</div>
+                        <div class="adm-field-value-sub adm-explore-field-sub">${fn:escapeXml(spot.spotId)}</div>
                     </div>
-                    <div class="adm-card" style="padding:14px;">
+                    <div class="adm-explore-detail-field">
                         <div class="adm-summary-label">${msg_admin_explore_detail_ratingReviews}</div>
-                        <div class="adm-field-value" style="font-size:14px;margin-top:4px;"><fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/> / ${msg_admin_explore_detail_reviewCount}</div>
+                        <div class="adm-field-value adm-explore-field-value"><fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/> / ${msg_admin_explore_detail_reviewCount}</div>
                     </div>
-                    <div class="adm-card" style="padding:14px;">
+                    <div class="adm-explore-detail-field">
                         <div class="adm-summary-label">${msg_admin_explore_detail_likeTags}</div>
-                        <div class="adm-field-value" style="font-size:14px;margin-top:4px;">${msg_admin_explore_detail_likeTagsValue}</div>
+                        <div class="adm-field-value adm-explore-field-value">${msg_admin_explore_detail_likeTagsValue}</div>
                     </div>
                 </div>
-                <div class="adm-card" style="padding:14px;">
+                <div class="adm-explore-detail-field">
                     <div class="adm-summary-label">${msg_admin_explore_detail_address}</div>
-                    <div class="adm-field-value" style="font-size:14px;margin-top:4px;">${fn:escapeXml(spot.address)}</div>
+                    <div class="adm-field-value adm-explore-field-value">${fn:escapeXml(spot.address)}</div>
                 </div>
-                <div class="adm-card" style="padding:14px;">
+                <div class="adm-explore-detail-field">
                     <div class="adm-summary-label">${msg_admin_explore_detail_coordinates}</div>
-                    <div class="adm-field-value-sub" style="font-size:13px;margin-top:4px;">${msg_admin_explore_detail_coordinatesValue}</div>
+                    <div class="adm-field-value-sub adm-explore-field-sub">${msg_admin_explore_detail_coordinatesValue}</div>
                 </div>
-                <div class="adm-card" style="padding:14px;">
+                <div class="adm-explore-detail-field">
                     <div class="adm-summary-label">${msg_admin_explore_detail_description}</div>
-                    <div class="adm-field-value" style="font-size:14px;margin-top:4px;line-height:1.7;">${fn:escapeXml(spot.description)}</div>
+                    <div class="adm-field-value adm-explore-field-value adm-explore-description-value">${fn:escapeXml(spot.description)}</div>
                 </div>
-                <div class="adm-card" style="padding:14px;">
-                    <div class="adm-summary-label" style="margin-bottom:8px;">${msg_admin_explore_detail_tags}</div>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <div class="adm-explore-detail-field">
+                    <div class="adm-summary-label adm-explore-tags-label">${msg_admin_explore_detail_tags}</div>
+                    <div class="adm-explore-tags">
                         <c:forEach items="${tags}" var="tag">
                             <span class="adm-nav-badge adm-tag-badge">${fn:escapeXml(tag)}</span>
                         </c:forEach>
@@ -167,19 +167,19 @@
         </div>
     </div>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-explore-detail-card">
         <div class="adm-card-head">
             <div class="adm-card-title">${msg_admin_explore_detail_editTitle}</div>
             <div class="adm-muted-inline">${msg_admin_explore_detail_editSub}</div>
         </div>
         <div class="adm-card-body">
             <c:if test="${not empty adminEditError}">
-                <div class="adm-warning-box" style="margin-bottom:16px;">
+                <div class="adm-warning-box adm-explore-edit-alert">
                     ${fn:escapeXml(adminEditError)}
                 </div>
             </c:if>
             <c:if test="${not empty adminEditSuccess}">
-                <div class="adm-card" style="margin-bottom:16px;padding:12px 14px;background:#ecfdf5;border:1px solid #86efac;color:#166534;">
+                <div class="adm-explore-success-box">
                     ${fn:escapeXml(adminEditSuccess)}
                 </div>
             </c:if>
@@ -188,8 +188,9 @@
                   method="post"
                   action="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}/update"
                   enctype="multipart/form-data"
-                  style="display:none;">
-                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;">
+                  class="adm-explore-edit-form"
+                  hidden>
+                <div class="adm-explore-edit-grid">
                     <div>
                         <label for="spotName" class="adm-filter-label">${msg_admin_explore_detail_spotName}</label>
                         <input type="text" id="spotName" name="name" maxlength="100" value="${fn:escapeXml(adminEditForm.name)}" required class="adm-input">
@@ -198,7 +199,7 @@
                         <label for="spotRegion" class="adm-filter-label">${msg_admin_explore_detail_region}</label>
                         <input type="text" id="spotRegion" name="region" maxlength="100" value="${fn:escapeXml(adminEditForm.region)}" required class="adm-input">
                     </div>
-                    <div style="grid-column:1 / -1;">
+                    <div class="adm-explore-edit-full">
                         <label for="spotAddress" class="adm-filter-label">${msg_admin_explore_detail_address}</label>
                         <input type="text" id="spotAddress" name="address" maxlength="255" value="${fn:escapeXml(adminEditForm.address)}" required class="adm-input">
                     </div>
@@ -210,23 +211,23 @@
                         <label for="spotLongitude" class="adm-filter-label">${msg_admin_explore_detail_longitude}</label>
                         <input type="number" id="spotLongitude" name="longitude" step="0.000001" value="${adminEditForm.longitude}" required class="adm-input">
                     </div>
-                    <div style="grid-column:1 / -1;">
+                    <div class="adm-explore-edit-full">
                         <label for="spotDescription" class="adm-filter-label">${msg_admin_explore_detail_description}</label>
-                        <textarea id="spotDescription" name="description" maxlength="2000" required class="adm-input" style="min-height:140px;resize:vertical;">${fn:escapeXml(adminEditForm.description)}</textarea>
+                        <textarea id="spotDescription" name="description" maxlength="2000" required class="adm-input adm-explore-edit-textarea">${fn:escapeXml(adminEditForm.description)}</textarea>
                     </div>
-                    <div style="grid-column:1 / -1;">
+                    <div class="adm-explore-edit-full">
                         <label for="spotImage" class="adm-filter-label">${msg_admin_explore_detail_imageReplace}</label>
                         <input type="file" id="spotImage" name="image" accept=".jpg,.jpeg,.png,.gif,.webp" class="adm-input">
                         <div class="adm-muted-note">${msg_admin_explore_detail_imageReplaceSub}</div>
                     </div>
-                    <div style="grid-column:1 / -1;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <div class="adm-explore-edit-full">
+                        <div class="adm-explore-edit-section-head">
                             <label class="adm-filter-label">${msg_admin_explore_detail_tagSelect}</label>
                             <span class="adm-muted-inline">${msg_admin_explore_detail_tagLimit}</span>
                         </div>
-                        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <div class="adm-explore-tag-options">
                             <c:forEach var="tag" items="${writeTagList}">
-                                <label style="display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;color:#334155;">
+                                <label class="adm-explore-tag-option">
                                     <input type="checkbox" name="tags" value="${fn:escapeXml(tag)}"
                                            <c:forEach var="selectedTag" items="${adminEditForm.tags}"><c:if test="${selectedTag == tag}">checked</c:if></c:forEach>>
                                     <span>${fn:escapeXml(tag)}</span>
@@ -235,7 +236,7 @@
                         </div>
                     </div>
                 </div>
-                <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
+                <div class="adm-explore-edit-actions">
                     <button type="button" class="adm-btn adm-btn-ghost" onclick="closeEditForm()">${msg_admin_common_cancel}</button>
                     <button type="submit" class="adm-btn">${msg_admin_common_save}</button>
                 </div>
@@ -249,16 +250,25 @@
             <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/explore/reviews?searchType=name&keyword=${spot.name}">${msg_admin_explore_detail_reviewsManageAll}</a>
         </div>
         <div class="adm-table-wrap">
-            <table class="adm-table">
+            <table class="adm-table adm-explore-table adm-explore-detail-reviews-table">
+                <colgroup>
+                    <col class="adm-explore-col-id">
+                    <col class="adm-explore-col-author">
+                    <col class="adm-explore-col-rating">
+                    <col>
+                    <col class="adm-explore-col-status">
+                    <col class="adm-explore-col-date-wide">
+                    <col class="adm-explore-col-review-action">
+                </colgroup>
                 <thead>
                 <tr>
-                    <th style="width:70px;">${msg_admin_explore_detail_reviewId}</th>
-                    <th style="width:120px;">${msg_admin_explore_detail_reviewAuthor}</th>
-                    <th style="width:90px;">${msg_admin_explore_detail_reviewRating}</th>
+                    <th>${msg_admin_explore_detail_reviewId}</th>
+                    <th>${msg_admin_explore_detail_reviewAuthor}</th>
+                    <th>${msg_admin_explore_detail_reviewRating}</th>
                     <th>${msg_admin_explore_detail_reviewContent}</th>
-                    <th style="width:90px;">${msg_admin_common_status}</th>
-                    <th style="width:110px;">${msg_admin_explore_detail_reviewCreatedAt}</th>
-                    <th style="width:90px;">${msg_admin_common_action}</th>
+                    <th>${msg_admin_common_status}</th>
+                    <th>${msg_admin_explore_detail_reviewCreatedAt}</th>
+                    <th>${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -267,22 +277,20 @@
                         <td class="adm-muted-inline">#${review.reviewIdx}</td>
                         <td>
                             <button type="button"
-                                    class="adm-inline-link js-open-member-context"
-                                    data-user-idx="${review.userIdx}"
-                                    style="font-size:13px;font-weight:700;color:#93c5fd;">
+                                    class="adm-inline-link adm-explore-author-name js-open-member-context"
+                                    data-user-idx="${review.userIdx}">
                                 ${fn:escapeXml(review.nickname)}
                             </button>
                             <div class="adm-muted-inline">
                                 <button type="button"
-                                        class="adm-inline-link js-open-member-context"
-                                        data-user-idx="${review.userIdx}"
-                                        style="font-size:12px;color:#94a3b8;">
+                                        class="adm-inline-link adm-explore-author-id js-open-member-context"
+                                        data-user-idx="${review.userIdx}">
                                     ${fn:escapeXml(review.userId)}
                                 </button>
                             </div>
                         </td>
-                        <td style="font-size:12px;color:#d97706;">${review.rating}/5</td>
-                        <td style="font-size:13px;line-height:1.6;">
+                        <td><span class="adm-explore-rating-value">${review.rating}/5</span></td>
+                        <td class="adm-explore-review-content-cell">
                             ${fn:escapeXml(review.content)}
                             <c:if test="${not empty review.content}">
                                 <div class="adm-tr-inline js-admin-translation-widget"
@@ -305,14 +313,14 @@
                         <td class="adm-muted-inline"><fmt:formatDate value="${review.createdAtDate}" type="date" dateStyle="short"/></td>
                         <td>
                             <c:if test="${review.displayStatus != 'BLOCKED'}">
-                                <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${review.reviewIdx}" onclick="blockReview(this)">${msg_admin_explore_reviews_action_block}</button>
+                                <button class="adm-row-btn danger" type="button" data-id="${review.reviewIdx}" onclick="blockReview(this)">${msg_admin_explore_reviews_action_block}</button>
                             </c:if>
                         </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty reviews}">
-                    <tr>
-                        <td colspan="7" style="text-align:center;padding:40px;color:#475569;">${msg_admin_explore_detail_reviewEmpty}</td>
+                    <tr class="adm-local-empty">
+                        <td colspan="7" class="adm-local-empty-cell">${msg_admin_explore_detail_reviewEmpty}</td>
                     </tr>
                 </c:if>
                 </tbody>
@@ -334,17 +342,17 @@ var hasEditMessage = ${not empty adminEditError or not empty adminEditSuccess ? 
 var shouldOpenEditForm = ${openEditForm ? 'true' : 'false'};
 
 if (spotEditForm && (hasEditMessage || shouldOpenEditForm)) {
-    spotEditForm.style.display = 'block';
+    spotEditForm.hidden = false;
 }
 
 function toggleEditForm() {
     if (!spotEditForm) return;
-    spotEditForm.style.display = spotEditForm.style.display === 'none' ? 'block' : 'none';
+    spotEditForm.hidden = !spotEditForm.hidden;
 }
 
 function closeEditForm() {
     if (!spotEditForm) return;
-    spotEditForm.style.display = 'none';
+    spotEditForm.hidden = true;
 }
 
 if (spotEditForm) {
