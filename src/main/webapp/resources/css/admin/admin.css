@@ -3964,6 +3964,62 @@ body.sa-light .adm-fin-guide { color: #475569; }
     font-size: 12px;
 }
 
+.adm-finance-back-link {
+    display: inline-flex;
+    margin-bottom: 16px;
+}
+
+.adm-finance-user-hero-card {
+    margin-bottom: 16px;
+    padding: 20px;
+}
+
+.adm-finance-user-hero-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.adm-finance-user-name {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.adm-finance-user-meta {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.adm-finance-history-card {
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.adm-finance-table-scroll {
+    padding: 0;
+    overflow-x: auto;
+}
+
+.adm-finance-wallet-history-table,
+.adm-finance-payment-history-table {
+    width: 100%;
+    min-width: 760px;
+}
+
+.adm-finance-signed-amount {
+    font-weight: 700;
+}
+
+.adm-finance-signed-amount.is-positive {
+    color: #22c55e;
+}
+
+.adm-finance-signed-amount.is-negative {
+    color: #f87171;
+}
+
 .adm-finance-refund-table-card {
     margin-bottom: 24px;
 }
@@ -4116,6 +4172,14 @@ body.sa-light .adm-finance-grade-pill {
 body.sa-light .adm-finance-status-blocked {
     color: #b91c1c;
     background: #fee2e2;
+}
+
+body.sa-light .adm-finance-signed-amount.is-positive {
+    color: #15803d;
+}
+
+body.sa-light .adm-finance-signed-amount.is-negative {
+    color: #b91c1c;
 }
 
 @media (max-width: 1280px) {

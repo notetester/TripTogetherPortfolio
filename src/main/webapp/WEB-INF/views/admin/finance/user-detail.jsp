@@ -29,21 +29,20 @@
 <c:set var="pageTitle">${msg_admin_finance_userDetail_title}</c:set>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content adm-finance-page">
 
     <%-- 공통 탭바 --%>
     <%@ include file="_tabs.jsp" %>
 
-    <a href="${pageContext.request.contextPath}/admin/finance" class="adm-btn adm-btn-ghost"
-       style="margin-bottom:16px;display:inline-block;">
+    <a href="${pageContext.request.contextPath}/admin/finance" class="adm-btn adm-btn-ghost adm-finance-back-link">
         ← ${msg_admin_finance_userDetail_backToList}
     </a>
 
     <%-- 사용자 기본 정보 --%>
-    <div class="adm-card" style="padding:20px;margin-bottom:16px;">
-        <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
-            <div style="font-size:18px;font-weight:700;"><c:out value="${user.nickname}"/></div>
-            <span style="font-size:11px;padding:2px 8px;border-radius:999px;background:#f1f5f9;color:#475569;">
+    <div class="adm-card adm-finance-user-hero-card">
+        <div class="adm-finance-user-hero-main">
+            <div class="adm-finance-user-name"><c:out value="${user.nickname}"/></div>
+            <span class="adm-finance-grade-pill">
                 ${user.memberGrade}
             </span>
             <c:choose>
@@ -51,81 +50,89 @@
                     <span class="adm-badge adm-badge-green">${msg_admin_finance_users_status_active}</span>
                 </c:when>
                 <c:when test="${user.accountStatus eq 'BLOCKED'}">
-                    <span class="adm-badge" style="background:#fee2e2;color:#b91c1c;">${msg_admin_finance_users_status_blocked}</span>
+                    <span class="adm-badge adm-finance-status-blocked">${msg_admin_finance_users_status_blocked}</span>
                 </c:when>
                 <c:otherwise>
                     <span class="adm-badge">${user.accountStatus}</span>
                 </c:otherwise>
             </c:choose>
         </div>
-        <div style="font-size:13px;color:#64748b;">
+        <div class="adm-finance-user-meta">
             ID: ${user.userIdx} · <c:out value="${user.userEmail}"/>
         </div>
     </div>
 
     <%-- 자산 카드 --%>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;">
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
+    <div class="adm-finance-balance-grid">
+        <div class="adm-card adm-finance-stat-card adm-finance-stat-card-main">
+            <div class="adm-finance-stat-label">
                 💰 ${msg_admin_finance_userDetail_cash}
             </div>
-            <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
+            <div class="adm-fin-num adm-finance-stat-value">
                 <fmt:formatNumber value="${user.cashBalance}" pattern="#,###"/>
             </div>
         </div>
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
+        <div class="adm-card adm-finance-stat-card adm-finance-stat-card-main">
+            <div class="adm-finance-stat-label">
                 ✈️ ${msg_admin_finance_userDetail_mileage}
             </div>
-            <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
+            <div class="adm-fin-num adm-finance-stat-value">
                 <fmt:formatNumber value="${user.mileageBalance}" pattern="#,###"/>
             </div>
         </div>
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
+        <div class="adm-card adm-finance-stat-card adm-finance-stat-card-main">
+            <div class="adm-finance-stat-label">
                 ⭐ ${msg_admin_finance_userDetail_point}
             </div>
-            <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
+            <div class="adm-fin-num adm-finance-stat-value">
                 <fmt:formatNumber value="${user.pointBalance}" pattern="#,###"/>
             </div>
         </div>
     </div>
 
     <%-- 자산 변동 이력 --%>
-    <div class="adm-card" style="margin-bottom:20px;">
-        <div style="padding:16px;border-bottom:1px solid #e2e8f0;font-weight:600;">
-            ${msg_admin_finance_userDetail_walletHistory}
+    <div class="adm-card adm-finance-history-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">${msg_admin_finance_userDetail_walletHistory}</div>
         </div>
-        <div style="padding:0;overflow-x:auto;">
+        <div class="adm-finance-table-scroll">
             <c:choose>
                 <c:when test="${empty walletHistory}">
-                    <div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px;">
+                    <div class="adm-local-empty-cell">
                         ${msg_admin_finance_userDetail_walletHistoryEmpty}
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <table class="adm-table" style="width:100%;">
+                    <table class="adm-table adm-finance-wallet-history-table">
+                        <colgroup>
+                            <col class="adm-finance-col-time">
+                            <col class="adm-finance-col-method">
+                            <col class="adm-finance-col-status-wide">
+                            <col class="adm-finance-col-amount">
+                            <col class="adm-finance-col-amount">
+                            <col>
+                        </colgroup>
                         <thead>
                             <tr>
-                                <th style="width:160px;">${msg_admin_finance_userDetail_col_changedAt}</th>
-                                <th style="width:90px;">${msg_admin_finance_userDetail_col_assetType}</th>
-                                <th style="width:110px;">${msg_admin_finance_userDetail_col_changeType}</th>
-                                <th style="width:130px;text-align:right;">${msg_admin_finance_userDetail_col_amount}</th>
-                                <th style="width:130px;text-align:right;">${msg_admin_finance_userDetail_col_balanceAfter}</th>
+                                <th>${msg_admin_finance_userDetail_col_changedAt}</th>
+                                <th>${msg_admin_finance_userDetail_col_assetType}</th>
+                                <th>${msg_admin_finance_userDetail_col_changeType}</th>
+                                <th class="adm-align-right">${msg_admin_finance_userDetail_col_amount}</th>
+                                <th class="adm-align-right">${msg_admin_finance_userDetail_col_balanceAfter}</th>
                                 <th>${msg_admin_finance_userDetail_col_detail}</th>
                             </tr>
                         </thead>
                         <tbody>
                             <c:forEach var="h" items="${walletHistory}">
                                 <tr>
-                                    <td style="font-size:12px;color:#475569;">${h.createdAt}</td>
-                                    <td><span style="font-size:11px;padding:2px 8px;border-radius:999px;background:#f1f5f9;">${h.assetType}</span></td>
-                                    <td style="font-size:12px;">${h.changeType}</td>
-                                    <td style="text-align:right;${h.amount >= 0 ? 'color:#15803d;' : 'color:#b91c1c;'}">
+                                    <td class="adm-finance-time-cell">${h.createdAt}</td>
+                                    <td><span class="adm-finance-grade-pill">${h.assetType}</span></td>
+                                    <td class="adm-finance-reason-cell">${h.changeType}</td>
+                                    <td class="adm-align-right adm-finance-signed-amount ${h.amount >= 0 ? 'is-positive' : 'is-negative'}">
                                         <c:if test="${h.amount > 0}">+</c:if><fmt:formatNumber value="${h.amount}" pattern="#,###"/>
                                     </td>
-                                    <td style="text-align:right;font-weight:600;"><fmt:formatNumber value="${h.balanceAfter}" pattern="#,###"/></td>
-                                    <td style="font-size:12px;color:#64748b;"><c:out value="${h.detailMessage}"/></td>
+                                    <td class="adm-align-right adm-finance-amount-strong"><fmt:formatNumber value="${h.balanceAfter}" pattern="#,###"/></td>
+                                    <td class="adm-finance-desc-cell"><c:out value="${h.detailMessage}"/></td>
                                 </tr>
                             </c:forEach>
                         </tbody>
@@ -136,36 +143,42 @@
     </div>
 
     <%-- 결제 이력 --%>
-    <div class="adm-card">
-        <div style="padding:16px;border-bottom:1px solid #e2e8f0;font-weight:600;">
-            ${msg_admin_finance_userDetail_paymentHistory}
+    <div class="adm-card adm-finance-history-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">${msg_admin_finance_userDetail_paymentHistory}</div>
         </div>
-        <div style="padding:0;overflow-x:auto;">
+        <div class="adm-finance-table-scroll">
             <c:choose>
                 <c:when test="${empty paymentHistory}">
-                    <div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px;">
+                    <div class="adm-local-empty-cell">
                         ${msg_admin_finance_userDetail_paymentHistoryEmpty}
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <table class="adm-table" style="width:100%;">
+                    <table class="adm-table adm-finance-payment-history-table">
+                        <colgroup>
+                            <col class="adm-finance-col-time">
+                            <col>
+                            <col>
+                            <col class="adm-finance-col-amount">
+                        </colgroup>
                         <thead>
                             <tr>
-                                <th style="width:160px;">${msg_admin_finance_userDetail_col_changedAt}</th>
+                                <th>${msg_admin_finance_userDetail_col_changedAt}</th>
                                 <th>${msg_admin_finance_userDetail_col_method}</th>
                                 <th>${msg_admin_finance_userDetail_col_status}</th>
-                                <th style="width:130px;text-align:right;">${msg_admin_finance_userDetail_col_amount}</th>
+                                <th class="adm-align-right">${msg_admin_finance_userDetail_col_amount}</th>
                             </tr>
                         </thead>
                         <tbody>
                             <c:forEach var="p" items="${paymentHistory}">
                                 <tr>
-                                    <td style="font-size:12px;color:#475569;">${p.createdAt}</td>
-                                    <td style="font-size:12px;">${p.paymentMethod}</td>
+                                    <td class="adm-finance-time-cell">${p.createdAt}</td>
+                                    <td class="adm-finance-reason-cell">${p.paymentMethod}</td>
                                     <td>
-                                        <span style="font-size:11px;padding:2px 8px;border-radius:999px;background:#f1f5f9;">${p.paymentStatus}</span>
+                                        <span class="adm-finance-grade-pill">${p.paymentStatus}</span>
                                     </td>
-                                    <td style="text-align:right;font-weight:600;"><fmt:formatNumber value="${p.amount}" pattern="#,###"/></td>
+                                    <td class="adm-align-right adm-finance-amount-strong"><fmt:formatNumber value="${p.amount}" pattern="#,###"/></td>
                                 </tr>
                             </c:forEach>
                         </tbody>
