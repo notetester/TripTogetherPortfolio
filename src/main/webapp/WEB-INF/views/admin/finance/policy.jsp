@@ -44,35 +44,33 @@
 <%@ include file="../layout.jsp" %>
 
 
-<div class="adm-content">
+<div class="adm-content adm-finance-page">
 
     <%-- 공통 탭바 --%>
     <%@ include file="_tabs.jsp" %>
 
     <%-- 메시지 토스트 --%>
     <c:if test="${not empty policyMessage}">
-        <div class="adm-card" style="padding:12px 16px;margin-bottom:12px;border-left:4px solid #22c55e;">
+        <div class="adm-card adm-finance-alert is-success">
             <c:out value="${policyMessage}"/>
         </div>
     </c:if>
     <c:if test="${not empty policyError}">
-        <div class="adm-card" style="padding:12px 16px;margin-bottom:12px;border-left:4px solid #ef4444;">
+        <div class="adm-card adm-finance-alert is-error">
             <c:out value="${policyError}"/>
         </div>
     </c:if>
 
     <%-- 탭 (한도 / 적립률) --%>
-    <div class="adm-card" style="padding:0;margin-bottom:16px;">
-        <div style="display:flex;border-bottom:1px solid #334155;">
-            <button type="button" class="adm-btn adm-btn-ghost adm-fin-policy-tab"
+    <div class="adm-card adm-finance-policy-tabs-card">
+        <div class="adm-finance-policy-tabs">
+            <button type="button" class="adm-finance-policy-tab"
                     id="adm-fin-tab-limit"
-                    style="border:0;border-radius:0;padding:12px 20px;border-bottom:2px solid transparent;"
                     onclick="admFinSwitchPolicyTab('limit')">
                 💰 ${msg_admin_finance_policy_tab_limit}
             </button>
-            <button type="button" class="adm-btn adm-btn-ghost adm-fin-policy-tab"
+            <button type="button" class="adm-finance-policy-tab"
                     id="adm-fin-tab-reward"
-                    style="border:0;border-radius:0;padding:12px 20px;border-bottom:2px solid transparent;"
                     onclick="admFinSwitchPolicyTab('reward')">
                 ✨ ${msg_admin_finance_policy_tab_reward}
             </button>
@@ -82,20 +80,28 @@
     <%-- 한도 정책 탭 --%>
     <section data-tab-panel="limit">
 
-        <div class="adm-card adm-fin-guide" style="padding:14px 18px;margin-bottom:16px;font-size:13px;">
+        <div class="adm-card adm-fin-guide adm-finance-guide-card">
             ${msg_admin_finance_policy_limit_guide}
         </div>
 
-        <div class="adm-card" style="padding:0;overflow-x:auto;">
-            <table class="adm-table" style="width:100%;">
+        <div class="adm-card adm-finance-table-card adm-finance-policy-table-card">
+            <table class="adm-table adm-finance-policy-limit-table">
+                <colgroup>
+                    <col class="adm-finance-col-grade-wide">
+                    <col class="adm-finance-col-policy-number">
+                    <col class="adm-finance-col-policy-number">
+                    <col class="adm-finance-col-policy-number">
+                    <col class="adm-finance-col-status">
+                    <col class="adm-finance-col-action-wide">
+                </colgroup>
                 <thead>
                 <tr>
-                    <th style="width:120px;">${msg_admin_finance_policy_limit_col_grade}</th>
-                    <th style="width:160px;text-align:right;">${msg_admin_finance_policy_limit_col_single}</th>
-                    <th style="width:160px;text-align:right;">${msg_admin_finance_policy_limit_col_daily}</th>
-                    <th style="width:160px;text-align:right;">${msg_admin_finance_policy_limit_col_monthly}</th>
-                    <th style="width:90px;">${msg_admin_finance_policy_limit_col_active}</th>
-                    <th style="width:120px;">${msg_admin_finance_policy_limit_col_action}</th>
+                    <th>${msg_admin_finance_policy_limit_col_grade}</th>
+                    <th class="adm-align-right">${msg_admin_finance_policy_limit_col_single}</th>
+                    <th class="adm-align-right">${msg_admin_finance_policy_limit_col_daily}</th>
+                    <th class="adm-align-right">${msg_admin_finance_policy_limit_col_monthly}</th>
+                    <th>${msg_admin_finance_policy_limit_col_active}</th>
+                    <th>${msg_admin_finance_policy_limit_col_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -110,33 +116,33 @@
                                 <input type="hidden" name="memberGrade" value="${g}"/>
                                 <span class="adm-badge"><spring:message var="msg_admin_finance_grade_g" code="admin.finance.grade.${g}"/>${msg_admin_finance_grade_g}</span>
                             </td>
-                            <td style="text-align:right;">
+                            <td class="adm-align-right">
                                 <input type="number" name="singleLimit" min="0" step="1"
                                        value="${row != null ? row.singleLimit : ''}"
                                        placeholder="${msg_admin_finance_policy_limit_placeholder_unlimited}"
-                                       class="adm-input" style="width:140px;text-align:right;padding:6px 8px;font-size:13px;"/>
+                                       class="adm-input adm-finance-policy-number-input"/>
                             </td>
-                            <td style="text-align:right;">
+                            <td class="adm-align-right">
                                 <input type="number" name="dailyLimit" min="0" step="1"
                                        value="${row != null ? row.dailyLimit : ''}"
                                        placeholder="${msg_admin_finance_policy_limit_placeholder_unlimited}"
-                                       class="adm-input" style="width:140px;text-align:right;padding:6px 8px;font-size:13px;"/>
+                                       class="adm-input adm-finance-policy-number-input"/>
                             </td>
-                            <td style="text-align:right;">
+                            <td class="adm-align-right">
                                 <input type="number" name="monthlyLimit" min="0" step="1"
                                        value="${row != null ? row.monthlyLimit : ''}"
                                        placeholder="${msg_admin_finance_policy_limit_placeholder_unlimited}"
-                                       class="adm-input" style="width:140px;text-align:right;padding:6px 8px;font-size:13px;"/>
+                                       class="adm-input adm-finance-policy-number-input"/>
                             </td>
                             <td>
-                                <label style="display:inline-flex;align-items:center;gap:6px;">
+                                <label class="adm-finance-check-inline">
                                     <input type="checkbox" name="isActive" value="true"
                                            ${row == null or row.isActive ? 'checked' : ''}/>
-                                    <span style="font-size:12px;">${msg_admin_finance_policy_limit_toggle_on}</span>
+                                    <span>${msg_admin_finance_policy_limit_toggle_on}</span>
                                 </label>
                             </td>
                             <td>
-                                <button type="submit" class="adm-btn adm-btn-primary" style="padding:6px 12px;font-size:12px;">
+                                <button type="submit" class="adm-btn adm-btn-primary adm-finance-save-btn">
                                     ${msg_admin_finance_policy_limit_save}
                                 </button>
                             </td>
@@ -147,7 +153,7 @@
             </table>
         </div>
 
-        <div style="font-size:12px;color:#94a3b8;padding:12px 4px;line-height:1.6;">
+        <div class="adm-finance-policy-note">
             <strong>※ ${msg_admin_finance_policy_limit_note_title}</strong><br/>
             - ${msg_admin_finance_policy_limit_note_empty}<br/>
             - ${msg_admin_finance_policy_limit_note_failopen}<br/>
@@ -156,50 +162,59 @@
     </section>
 
     <%-- 적립률 정책 탭 --%>
-    <section data-tab-panel="reward" style="display:none;">
+    <section data-tab-panel="reward" hidden>
 
-        <div class="adm-card adm-fin-guide" style="padding:14px 18px;margin-bottom:16px;font-size:13px;">
+        <div class="adm-card adm-fin-guide adm-finance-guide-card">
             ${msg_admin_finance_policy_reward_guide}
         </div>
 
-        <div class="adm-card" style="padding:0;overflow-x:auto;margin-bottom:14px;">
-            <table class="adm-table" style="width:100%;">
+        <div class="adm-card adm-finance-table-card adm-finance-policy-reward-table-card">
+            <table class="adm-table adm-finance-policy-reward-table">
+                <colgroup>
+                    <col class="adm-finance-col-event">
+                    <col class="adm-finance-col-grade">
+                    <col class="adm-finance-col-method">
+                    <col class="adm-finance-col-policy-small">
+                    <col class="adm-finance-col-policy-small">
+                    <col>
+                    <col class="adm-finance-col-status">
+                </colgroup>
                 <thead>
                 <tr>
-                    <th style="width:200px;white-space:nowrap;">${msg_admin_finance_policy_reward_col_event}</th>
-                    <th style="width:90px;">${msg_admin_finance_policy_reward_col_grade}</th>
-                    <th style="width:90px;">${msg_admin_finance_policy_reward_col_rewardType}</th>
-                    <th style="width:110px;text-align:right;">${msg_admin_finance_policy_reward_col_rate}</th>
-                    <th style="width:110px;text-align:right;">${msg_admin_finance_policy_reward_col_fixed}</th>
+                    <th>${msg_admin_finance_policy_reward_col_event}</th>
+                    <th>${msg_admin_finance_policy_reward_col_grade}</th>
+                    <th>${msg_admin_finance_policy_reward_col_rewardType}</th>
+                    <th class="adm-align-right">${msg_admin_finance_policy_reward_col_rate}</th>
+                    <th class="adm-align-right">${msg_admin_finance_policy_reward_col_fixed}</th>
                     <th>${msg_admin_finance_policy_reward_col_description}</th>
-                    <th style="width:70px;">${msg_admin_finance_policy_reward_col_active}</th>
+                    <th>${msg_admin_finance_policy_reward_col_active}</th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:choose>
                     <c:when test="${empty rewardPolicies}">
-                        <tr><td colspan="7" style="text-align:center;padding:36px;color:#94a3b8;">
+                        <tr class="adm-local-empty"><td colspan="7" class="adm-local-empty-cell">
                             ${msg_admin_finance_policy_reward_empty}
                         </td></tr>
                     </c:when>
                     <c:otherwise>
                         <c:forEach var="r" items="${rewardPolicies}">
                             <tr>
-                                <td style="white-space:nowrap;">
-                                    <span style="font-size:13px;">
+                                <td class="adm-finance-event-cell">
+                                    <span class="adm-finance-event-name">
                                         <spring:message var="msg_admin_finance_rewardEvent_r_eventType_text_r_eventType" code="admin.finance.rewardEvent.${r.eventType}" text="${r.eventType}"/>${msg_admin_finance_rewardEvent_r_eventType_text_r_eventType}
                                     </span>
-                                    <div style="font-size:10px;color:#94a3b8;font-family:monospace;">${r.eventType}</div>
+                                    <div class="adm-finance-event-code">${r.eventType}</div>
                                 </td>
                                 <td><span class="adm-badge"><spring:message var="msg_admin_finance_grade_r_memberGrade" code="admin.finance.grade.${r.memberGrade}"/>${msg_admin_finance_grade_r_memberGrade}</span></td>
                                 <td><spring:message var="msg_admin_finance_rewardType_r_rewardType" code="admin.finance.rewardType.${r.rewardType}"/>${msg_admin_finance_rewardType_r_rewardType}</td>
-                                <td style="text-align:right;">
+                                <td class="adm-align-right">
                                     <c:if test="${r.rewardRate != null}"><fmt:formatNumber value="${r.rewardRate}" pattern="#,##0.00"/>%</c:if>
                                 </td>
-                                <td style="text-align:right;">
+                                <td class="adm-align-right">
                                     <c:if test="${r.rewardFixed != null}"><fmt:formatNumber value="${r.rewardFixed}" pattern="#,###"/></c:if>
                                 </td>
-                                <td style="font-size:12px;color:#94a3b8;"><c:out value="${r.description}"/></td>
+                                <td class="adm-finance-desc-cell"><c:out value="${r.description}"/></td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${r.isActive}"><span class="adm-badge adm-badge-green">${msg_admin_finance_policy_reward_active_on}</span></c:when>
@@ -215,60 +230,59 @@
         </div>
 
         <%-- 신규 등록 / 갱신 폼 --%>
-        <div class="adm-card" style="padding:16px 18px;">
-            <h4 style="margin:0 0 12px 0;font-size:14px;">${msg_admin_finance_policy_reward_upsert_title}</h4>
+        <div class="adm-card adm-finance-reward-form-card">
+            <h4 class="adm-finance-reward-form-title">${msg_admin_finance_policy_reward_upsert_title}</h4>
             <form method="post" action="${pageContext.request.contextPath}/admin/finance/policy/reward"
-                  style="display:grid;grid-template-columns:repeat(6, 1fr);gap:10px;align-items:end;">
+                  class="adm-finance-reward-form">
                 <div>
-                    <label style="font-size:11px;display:block;margin-bottom:4px;">${msg_admin_finance_policy_reward_col_event}</label>
+                    <label class="adm-finance-field-label">${msg_admin_finance_policy_reward_col_event}</label>
                     <input type="text" name="eventType" required maxlength="50"
-                           class="adm-input" placeholder="CASH_CHARGE_BONUS"
-                           style="width:100%;padding:6px 8px;font-size:12px;"/>
+                           class="adm-input adm-finance-compact-input" placeholder="CASH_CHARGE_BONUS"/>
                 </div>
                 <div>
-                    <label style="font-size:11px;display:block;margin-bottom:4px;">${msg_admin_finance_policy_reward_col_grade}</label>
-                    <select name="memberGrade" class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;">
+                    <label class="adm-finance-field-label">${msg_admin_finance_policy_reward_col_grade}</label>
+                    <select name="memberGrade" class="adm-select adm-finance-compact-input">
                         <c:forEach var="g" items="${['ALL','BRONZE','SILVER','GOLD','DIAMOND','PLATINUM']}">
                             <option value="${g}"><spring:message var="msg_admin_finance_grade_g" code="admin.finance.grade.${g}"/>${msg_admin_finance_grade_g}</option>
                         </c:forEach>
                     </select>
                 </div>
                 <div>
-                    <label style="font-size:11px;display:block;margin-bottom:4px;">${msg_admin_finance_policy_reward_col_rewardType}</label>
-                    <select name="rewardType" required class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;">
+                    <label class="adm-finance-field-label">${msg_admin_finance_policy_reward_col_rewardType}</label>
+                    <select name="rewardType" required class="adm-select adm-finance-compact-input">
                         <c:forEach var="t" items="${['MILEAGE','POINT']}">
                             <option value="${t}"><spring:message var="msg_admin_finance_rewardType_t" code="admin.finance.rewardType.${t}"/>${msg_admin_finance_rewardType_t}</option>
                         </c:forEach>
                     </select>
                 </div>
                 <div>
-                    <label style="font-size:11px;display:block;margin-bottom:4px;">${msg_admin_finance_policy_reward_col_rate} (%)</label>
+                    <label class="adm-finance-field-label">${msg_admin_finance_policy_reward_col_rate} (%)</label>
                     <input type="number" name="rewardRate" step="0.01" min="0" max="100"
-                           class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;text-align:right;"/>
+                           class="adm-input adm-finance-compact-input adm-align-right"/>
                 </div>
                 <div>
-                    <label style="font-size:11px;display:block;margin-bottom:4px;">${msg_admin_finance_policy_reward_col_fixed}</label>
+                    <label class="adm-finance-field-label">${msg_admin_finance_policy_reward_col_fixed}</label>
                     <input type="number" name="rewardFixed" step="1" min="0"
-                           class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;text-align:right;"/>
+                           class="adm-input adm-finance-compact-input adm-align-right"/>
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
-                    <label style="display:inline-flex;align-items:center;gap:4px;font-size:12px;">
+                <div class="adm-finance-reward-actions">
+                    <label class="adm-finance-check-inline">
                         <input type="checkbox" name="isActive" value="true" checked/>
                         ${msg_admin_finance_policy_reward_active_on}
                     </label>
-                    <button type="submit" class="adm-btn adm-btn-primary" style="padding:6px 18px;font-size:12px;">
+                    <button type="submit" class="adm-btn adm-btn-primary adm-finance-save-btn">
                         ${msg_admin_finance_policy_reward_upsert_button}
                     </button>
                 </div>
-                <div style="grid-column:1/-1;">
-                    <label style="font-size:11px;display:block;margin-bottom:4px;">${msg_admin_finance_policy_reward_col_description}</label>
+                <div class="adm-finance-reward-description-field">
+                    <label class="adm-finance-field-label">${msg_admin_finance_policy_reward_col_description}</label>
                     <input type="text" name="description" maxlength="255"
-                           class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;"/>
+                           class="adm-input adm-finance-compact-input"/>
                 </div>
             </form>
         </div>
 
-        <div style="font-size:12px;color:#94a3b8;padding:12px 4px;line-height:1.6;">
+        <div class="adm-finance-policy-note">
             <strong>※ ${msg_admin_finance_policy_reward_note_title}</strong><br/>
             - ${msg_admin_finance_policy_reward_note_either}<br/>
             - ${msg_admin_finance_policy_reward_note_fallback}<br/>
@@ -281,12 +295,12 @@
         var KEY = 'adm-fin-policy-tab';
         function show(tab){
             document.querySelectorAll('[data-tab-panel]').forEach(function(p){
-                p.style.display = p.getAttribute('data-tab-panel') === tab ? '' : 'none';
+                p.hidden = p.getAttribute('data-tab-panel') !== tab;
             });
             ['limit','reward'].forEach(function(t){
                 var btn = document.getElementById('adm-fin-tab-' + t);
                 if (!btn) return;
-                btn.style.borderBottomColor = (t === tab) ? '#3b82f6' : 'transparent';
+                btn.classList.toggle('is-active', t === tab);
             });
             try { localStorage.setItem(KEY, tab); } catch(e) {}
         }

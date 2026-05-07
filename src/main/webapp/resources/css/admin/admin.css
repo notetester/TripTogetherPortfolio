@@ -3677,6 +3677,152 @@ body.sa-light .adm-fin-guide { color: #475569; }
     font-size: 11px;
 }
 
+.adm-finance-policy-tabs-card {
+    margin-bottom: 16px;
+    padding: 0;
+    overflow-x: auto;
+}
+
+.adm-finance-policy-tabs {
+    display: flex;
+    min-width: max-content;
+    border-bottom: 1px solid #334155;
+}
+
+.adm-finance-policy-tab {
+    min-height: 44px;
+    padding: 12px 20px;
+    color: #94a3b8;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    cursor: pointer;
+}
+
+.adm-finance-policy-tab.is-active {
+    color: #60a5fa;
+    border-bottom-color: #3b82f6;
+}
+
+.adm-finance-policy-table-card,
+.adm-finance-policy-reward-table-card {
+    margin-bottom: 14px;
+}
+
+.adm-finance-policy-limit-table,
+.adm-finance-policy-reward-table {
+    width: 100%;
+    min-width: 820px;
+}
+
+.adm-finance-col-grade-wide {
+    width: 120px;
+}
+
+.adm-finance-col-policy-number {
+    width: 160px;
+}
+
+.adm-finance-col-policy-small {
+    width: 110px;
+}
+
+.adm-finance-col-event {
+    width: 200px;
+}
+
+.adm-finance-policy-number-input {
+    width: 140px;
+    padding: 6px 8px;
+    font-size: 13px;
+    text-align: right;
+}
+
+.adm-finance-check-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.adm-finance-save-btn {
+    min-height: 30px;
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.adm-finance-policy-note {
+    padding: 12px 4px;
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.adm-finance-event-cell {
+    white-space: nowrap;
+}
+
+.adm-finance-event-name {
+    font-size: 13px;
+}
+
+.adm-finance-event-code {
+    color: #94a3b8;
+    font-family: monospace;
+    font-size: 10px;
+}
+
+.adm-finance-desc-cell {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.adm-finance-reward-form-card {
+    padding: 16px 18px;
+}
+
+.adm-finance-reward-form-title {
+    margin: 0 0 12px;
+    font-size: 14px;
+    letter-spacing: 0;
+}
+
+.adm-finance-reward-form {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-finance-field-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.adm-finance-compact-input {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 12px;
+}
+
+.adm-finance-reward-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.adm-finance-reward-description-field {
+    grid-column: 1 / -1;
+}
+
 .adm-finance-section-title {
     margin: 24px 0 10px;
     font-size: 15px;
@@ -3934,6 +4080,18 @@ body.sa-light .adm-fin-tab.is-active {
     color: #2563eb;
 }
 
+body.sa-light .adm-finance-policy-tabs {
+    border-bottom-color: #e2e8f0;
+}
+
+body.sa-light .adm-finance-policy-tab {
+    color: #64748b;
+}
+
+body.sa-light .adm-finance-policy-tab.is-active {
+    color: #2563eb;
+}
+
 body.sa-light .adm-finance-summary-value.is-positive {
     color: #15803d;
 }
@@ -3977,6 +4135,14 @@ body.sa-light .adm-finance-status-blocked {
         grid-template-columns: minmax(240px, 1fr) auto;
     }
 
+    .adm-finance-reward-form {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .adm-finance-reward-actions {
+        justify-content: flex-start;
+    }
+
     .adm-finance-filter-total {
         grid-column: 1 / -1;
         justify-self: start;
@@ -3994,6 +4160,10 @@ body.sa-light .adm-finance-status-blocked {
     }
 
     .adm-finance-refund-filterbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .adm-finance-reward-form {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -4015,7 +4185,8 @@ body.sa-light .adm-finance-status-blocked {
     .adm-finance-summary-grid,
     .adm-finance-policy-mini-grid,
     .adm-finance-user-filterbar,
-    .adm-finance-refund-filterbar {
+    .adm-finance-refund-filterbar,
+    .adm-finance-reward-form {
         grid-template-columns: 1fr;
     }
 
