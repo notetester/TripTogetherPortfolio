@@ -478,7 +478,10 @@
             const active = state.sortIndex === idx;
             th.classList.toggle('sorted', active);
             const ico = th.querySelector('.sort-ico-generic');
-            if (ico) ico.textContent = active ? (state.sortDir === 'ASC' ? '▲' : '▼') : '↕';
+            if (ico) {
+                ico.textContent = active ? (state.sortDir === 'ASC' ? '▲' : '▼') : '';
+                ico.style.color = active ? (state.sortDir === 'ASC' ? '#ef4444' : '#3b82f6') : '';
+            }
         });
         const toolbar = document.querySelector('.js-admin-list-tools-toolbar[data-table-id="' + table.id + '"]');
         const reset = toolbar ? toolbar.querySelector('.js-admin-list-sort-reset') : null;
@@ -573,7 +576,7 @@
             th.style.cursor = 'pointer';
             th.style.userSelect = 'none';
             if (!th.querySelector('.sort-ico-generic')) {
-                th.insertAdjacentHTML('beforeend', ' <span class="sort-ico-generic">↕</span>');
+                th.insertAdjacentHTML('beforeend', ' <span class="sort-ico-generic" aria-hidden="true"></span>');
             }
             th.addEventListener('click', function (event) {
                 if (event.target.closest('button, a, input, select, label')) return;

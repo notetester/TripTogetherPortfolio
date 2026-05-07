@@ -57,6 +57,8 @@
 <spring:message var="msg_admin_layout_section_main" code="admin.layout.section.main"/>
 <spring:message var="msg_admin_layout_menu_dashboard" code="admin.layout.menu.dashboard"/>
 <spring:message var="msg_admin_layout_section_members" code="admin.layout.section.members"/>
+<spring:message var="msg_admin_layout_section_memberAuth" code="admin.layout.section.memberAuth"/>
+<spring:message var="msg_admin_layout_section_blocking" code="admin.layout.section.blocking"/>
 <spring:message var="msg_admin_layout_menu_members" code="admin.layout.menu.members"/>
 <spring:message var="msg_admin_layout_menu_businessApplications" code="admin.layout.menu.businessApplications"/>
 <spring:message var="msg_admin_layout_menu_blocks" code="admin.layout.menu.blocks"/>
@@ -75,6 +77,7 @@
 <spring:message var="msg_security_admin_nav_assessments" code="security.admin.nav.assessments"/>
 <spring:message var="msg_security_admin_nav_securityAssessments" code="security.admin.nav.securityAssessments"/>
 <spring:message var="msg_security_admin_nav_securityReviews" code="security.admin.nav.securityReviews"/>
+<spring:message var="msg_security_admin_nav_appealPolicy" code="security.admin.nav.appealPolicy"/>
 <spring:message var="msg_security_admin_nav_providerConfigs" code="security.admin.nav.providerConfigs"/>
 <spring:message var="msg_security_admin_nav_providerHealth" code="security.admin.nav.providerHealth"/>
 <spring:message var="msg_security_admin_nav_wafSync" code="security.admin.nav.wafSync"/>
@@ -150,12 +153,12 @@
                 <span class="adm-nav-icon">📊</span> ${msg_admin_layout_menu_dashboard}
             </a>
 
-            <%-- 회원 관리 --%>
-            <c:if test="${hasMemberAdmin or hasAnyBlockAdmin or hasFinanceAdmin or hasFinanceOperator or hasFinancePolicyAdmin}">
-            <div class="adm-nav-group" data-group="members">
-                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('members')">
+            <%-- 회원 / 인증 --%>
+            <c:if test="${hasMemberAdmin or hasAuditAdmin}">
+            <div class="adm-nav-group" data-group="member-auth">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('member-auth')">
                     <span class="adm-nav-group-caret">▸</span>
-                    <span class="adm-nav-group-title">${msg_admin_layout_section_members}</span>
+                    <span class="adm-nav-group-title">${msg_admin_layout_section_memberAuth}</span>
                 </button>
                 <div class="adm-nav-group-body">
                     <c:if test="${hasMemberAdmin}">
@@ -166,14 +169,64 @@
                         <span class="adm-nav-icon">🏢</span> ${msg_admin_layout_menu_businessApplications}
                     </a>
                     </c:if>
+                    <c:if test="${hasAuditAdmin}">
+                    <a class="adm-nav-item ${activeMenu=='emailVerifications'?'active':''}" href="${pageContext.request.contextPath}/admin/email-verifications">
+                        <span class="adm-nav-icon">📧</span> ${msg_admin_layout_menu_emailRequests}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='emailTokens'?'active':''}" href="${pageContext.request.contextPath}/admin/email-tokens">
+                        <span class="adm-nav-icon">🔗</span> ${msg_admin_layout_menu_emailTokens}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='securityProviderConfigs'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">
+                        <span class="adm-nav-icon">🔌</span> ${msg_security_admin_nav_providerConfigs}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='providerHealthHistory'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/provider-health-history">
+                        <span class="adm-nav-icon">🩺</span> ${msg_security_admin_nav_providerHealth}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='adminNotificationPreferences'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences">
+                        <span class="adm-nav-icon">🔔</span> ${msg_security_admin_nav_notificationPreferences}
+                    </a>
+                    </c:if>
+                </div>
+            </div>
+            </c:if>
+
+            <%-- 차단 / 리스크 --%>
+            <c:if test="${hasAnyBlockAdmin or hasAuditAdmin}">
+            <div class="adm-nav-group" data-group="blocking">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('blocking')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">${msg_admin_layout_section_blocking}</span>
+                </button>
+                <div class="adm-nav-group-body">
                     <c:if test="${hasAnyBlockAdmin}">
                     <a class="adm-nav-item ${activeMenu=='blocks'?'active':''}" href="${pageContext.request.contextPath}/admin/blocks">
                         <span class="adm-nav-icon">⛔</span> ${msg_admin_layout_menu_blocks}
                     </a>
                     </c:if>
-                    <c:if test="${hasFinanceAdmin or hasFinanceOperator or hasFinancePolicyAdmin}">
-                    <a class="adm-nav-item ${activeMenu=='finance'?'active':''}" href="${pageContext.request.contextPath}/admin/finance">
-                        <span class="adm-nav-icon">💰</span> ${msg_admin_layout_menu_finance}
+                    <c:if test="${hasAuditAdmin}">
+                    <a class="adm-nav-item ${activeMenu=='loginRiskPolicies'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/policies">
+                        <span class="adm-nav-icon">⚙️</span> ${msg_security_admin_nav_policies}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='loginRiskReviews'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/reviews">
+                        <span class="adm-nav-icon">🧯</span> ${msg_security_admin_nav_loginReviews}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='loginRiskAssessments'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/assessments">
+                        <span class="adm-nav-icon">🧠</span> ${msg_security_admin_nav_assessments}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='securityRiskAssessments'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">
+                        <span class="adm-nav-icon">🛡️</span> ${msg_security_admin_nav_securityAssessments}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='securityReviews'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">
+                        <span class="adm-nav-icon">🧾</span> ${msg_security_admin_nav_securityReviews}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='securityAppealPolicy'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/appeal-policy">
+                        <span class="adm-nav-icon">📜</span> ${msg_security_admin_nav_appealPolicy}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='securityAppeals'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/appeals">
+                        <span class="adm-nav-icon">📮</span> ${msg_security_admin_nav_appeals}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='securityWafSync'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/waf-sync">
+                        <span class="adm-nav-icon">🌐</span> ${msg_security_admin_nav_wafSync}
                     </a>
                     </c:if>
                 </div>
@@ -194,66 +247,26 @@
                     <a class="adm-nav-item ${activeMenu=='security'?'active':''}" href="${pageContext.request.contextPath}/admin/security">
                         <span class="adm-nav-icon">🛡️</span> ${msg_admin_layout_menu_security}
                     </a>
-                    <a class="adm-nav-item ${activeMenu=='emailTokens'?'active':''}" href="${pageContext.request.contextPath}/admin/email-tokens">
-                        <span class="adm-nav-icon">🔗</span> ${msg_admin_layout_menu_emailTokens}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='emailVerifications'?'active':''}" href="${pageContext.request.contextPath}/admin/email-verifications">
-                        <span class="adm-nav-icon">📧</span> ${msg_admin_layout_menu_emailRequests}
-                    </a>
                     <a class="adm-nav-item ${activeMenu=='activityLogs'?'active':''}" href="${pageContext.request.contextPath}/admin/activity-logs">
                         <span class="adm-nav-icon">🧭</span> ${msg_admin_layout_menu_activityLogs}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='loginRiskPolicies'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/policies">
-                        <span class="adm-nav-icon">⚙️</span> ${msg_security_admin_nav_policies}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='runtimeSettings'?'active':''}" href="${pageContext.request.contextPath}/admin/runtime-settings">
-                        <span class="adm-nav-icon">🧩</span> ${msg_admin_layout_menu_runtimeSettings}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='initialSettings'?'active':''}" href="${pageContext.request.contextPath}/admin/initial-settings">
-                        <span class="adm-nav-icon">📦</span> ${msg_admin_layout_menu_initialSettings}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='policyHistory'?'active':''}" href="${pageContext.request.contextPath}/admin/policy-history">
-                        <span class="adm-nav-icon">🧾</span> ${msg_admin_layout_menu_policyHistory}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='loginRiskReviews'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/reviews">
-                        <span class="adm-nav-icon">🧯</span> ${msg_security_admin_nav_loginReviews}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='loginRiskAssessments'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/assessments">
-                        <span class="adm-nav-icon">🧠</span> ${msg_security_admin_nav_assessments}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='securityRiskAssessments'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">
-                        <span class="adm-nav-icon">🛡️</span> ${msg_security_admin_nav_securityAssessments}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='securityReviews'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">
-                        <span class="adm-nav-icon">🧾</span> ${msg_security_admin_nav_securityReviews}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='securityProviderConfigs'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">
-                        <span class="adm-nav-icon">🔌</span> ${msg_security_admin_nav_providerConfigs}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='providerHealthHistory'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/provider-health-history">
-                        <span class="adm-nav-icon">🩺</span> ${msg_security_admin_nav_providerHealth}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='securityWafSync'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/waf-sync">
-                        <span class="adm-nav-icon">🌐</span> ${msg_security_admin_nav_wafSync}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='securityAppeals'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/appeals">
-                        <span class="adm-nav-icon">📮</span> ${msg_security_admin_nav_appeals}
-                    </a>
-                    <a class="adm-nav-item ${activeMenu=='adminNotificationPreferences'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences">
-                        <span class="adm-nav-icon">🔔</span> ${msg_security_admin_nav_notificationPreferences}
                     </a>
                 </div>
             </div>
             </c:if>
 
             <%-- 운영 --%>
-            <c:if test="${hasInquiryAdmin or hasReportAdmin}">
+            <c:if test="${hasInquiryAdmin or hasReportAdmin or hasFinanceAdmin or hasFinanceOperator or hasFinancePolicyAdmin}">
             <div class="adm-nav-group" data-group="operations">
                 <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('operations')">
                     <span class="adm-nav-group-caret">▸</span>
                     <span class="adm-nav-group-title">${msg_admin_layout_section_operations}</span>
                 </button>
                 <div class="adm-nav-group-body">
+                    <c:if test="${hasFinanceAdmin or hasFinanceOperator or hasFinancePolicyAdmin}">
+                    <a class="adm-nav-item ${activeMenu=='finance'?'active':''}" href="${pageContext.request.contextPath}/admin/finance">
+                        <span class="adm-nav-icon">💰</span> ${msg_admin_layout_menu_finance}
+                    </a>
+                    </c:if>
                     <c:if test="${hasInquiryAdmin}">
                     <a class="adm-nav-item ${activeMenu=='inquiries'?'active':''}" href="${pageContext.request.contextPath}/admin/inquiries">
                         <span class="adm-nav-icon">📩</span> ${msg_admin_layout_menu_inquiries}
@@ -326,13 +339,24 @@
             </c:if>
 
             <%-- 시스템 --%>
-            <c:if test="${hasOpsPolicyAdmin or hasContentModerationAdmin or isSuperAdmin}">
+            <c:if test="${hasOpsPolicyAdmin or hasContentModerationAdmin or hasAuditAdmin or isSuperAdmin}">
             <div class="adm-nav-group" data-group="system">
                 <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('system')">
                     <span class="adm-nav-group-caret">▸</span>
                     <span class="adm-nav-group-title">${msg_admin_layout_section_system}</span>
                 </button>
                 <div class="adm-nav-group-body">
+                    <c:if test="${hasAuditAdmin}">
+                    <a class="adm-nav-item ${activeMenu=='runtimeSettings'?'active':''}" href="${pageContext.request.contextPath}/admin/runtime-settings">
+                        <span class="adm-nav-icon">🧩</span> ${msg_admin_layout_menu_runtimeSettings}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='initialSettings'?'active':''}" href="${pageContext.request.contextPath}/admin/initial-settings">
+                        <span class="adm-nav-icon">📦</span> ${msg_admin_layout_menu_initialSettings}
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='policyHistory'?'active':''}" href="${pageContext.request.contextPath}/admin/policy-history">
+                        <span class="adm-nav-icon">🧾</span> ${msg_admin_layout_menu_policyHistory}
+                    </a>
+                    </c:if>
                     <c:if test="${hasOpsPolicyAdmin}">
                     <a class="adm-nav-item ${activeMenu=='policies'?'active':''}" href="${pageContext.request.contextPath}/admin/policies">
                         <span class="adm-nav-icon">⚙️</span> ${msg_admin_layout_menu_policies}

@@ -307,7 +307,10 @@ document.querySelectorAll('th[data-sort]').forEach(function(th) {
     if (th.getAttribute('data-sort') === curSortField) {
         th.classList.add('sorted');
         var ico = th.querySelector('.sort-ico');
-        if (ico) ico.textContent = curSortDir === 'ASC' ? '▲' : '▼';
+        if (ico) {
+            ico.textContent = curSortDir === 'ASC' ? '▲' : '▼';
+            ico.style.color = curSortDir === 'ASC' ? '#ef4444' : '#3b82f6';
+        }
     }
 });
 
