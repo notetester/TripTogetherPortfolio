@@ -7577,6 +7577,14 @@ body.sa-light .adm-governance-page .adm-security-review-summary span {
 }
 
 /* External risk assessment list */
+.adm-governance-page.adm-external-assessment-page {
+    max-width: min(100%, 1600px);
+}
+
+.adm-governance-page .adm-external-assessment-page-actions .adm-btn {
+    white-space: nowrap;
+}
+
 .adm-governance-page .adm-external-assessment-filter-card,
 .adm-governance-page .adm-external-assessment-list-card {
     overflow: visible;
@@ -7603,6 +7611,15 @@ body.sa-light .adm-governance-page .adm-security-review-summary span {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.adm-governance-page .adm-external-assessment-filter-actions .adm-btn {
+    white-space: nowrap;
+}
+
+.adm-governance-page .adm-external-assessment-table {
+    min-width: 1160px;
 }
 
 .adm-governance-page .adm-external-assessment-table td {
