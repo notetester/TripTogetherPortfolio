@@ -5408,3 +5408,97 @@ body.sa-light .adm-governance-page .adm-external-assessment-primary {
         width: auto;
     }
 }
+
+/* Security risk assessment list */
+.adm-governance-page .adm-security-assessment-filter-card,
+.adm-governance-page .adm-security-assessment-list-card {
+    overflow: visible;
+    border-radius: 8px;
+}
+
+.adm-governance-page .adm-security-assessment-filter-card {
+    margin-bottom: 12px;
+}
+
+.adm-governance-page .adm-security-assessment-filterbar {
+    display: grid;
+    grid-template-columns: minmax(170px, .85fr) minmax(180px, .95fr) minmax(130px, .7fr) minmax(150px, .75fr) minmax(260px, 1.35fr) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.adm-governance-page .adm-security-assessment-filterbar label,
+.adm-governance-page .adm-security-assessment-keyword-field {
+    min-width: 0;
+}
+
+.adm-governance-page .adm-security-assessment-filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.adm-governance-page .adm-security-assessment-table td {
+    vertical-align: top;
+}
+
+.adm-governance-page .adm-security-assessment-primary {
+    font-weight: 800;
+    color: #dbeafe;
+}
+
+.adm-governance-page .adm-security-assessment-evidence {
+    max-width: 440px;
+    overflow-wrap: anywhere;
+    line-height: 1.45;
+}
+
+.adm-governance-page .adm-security-assessment-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-width: 170px;
+}
+
+.adm-governance-page .adm-security-assessment-row-actions form {
+    margin: 0;
+}
+
+.adm-governance-page .adm-security-assessment-row-actions .adm-btn {
+    min-height: 30px;
+    padding: 6px 9px;
+    white-space: nowrap;
+}
+
+body.sa-light .adm-governance-page .adm-security-assessment-primary {
+    color: #0f172a;
+}
+
+@media (max-width: 1320px) {
+    .adm-governance-page .adm-security-assessment-filterbar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .adm-governance-page .adm-security-assessment-keyword-field {
+        grid-column: span 2;
+    }
+
+    .adm-governance-page .adm-security-assessment-filter-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+    .adm-governance-page .adm-security-assessment-filterbar {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-governance-page .adm-security-assessment-keyword-field {
+        grid-column: auto;
+    }
+
+    .adm-governance-page .adm-security-assessment-filter-actions .adm-btn {
+        width: auto;
+    }
+}
