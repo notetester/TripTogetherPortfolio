@@ -226,6 +226,7 @@
                 <tbody>
                 <c:forEach items="${list}" var="comment">
                     <c:url var="communityCommentPostUrl" value="/admin/community/posts/${comment.postId}">
+                        <c:param name="source" value="comments"/>
                         <c:param name="page" value="${paging.currentPage}"/>
                         <c:param name="size" value="${search.size}"/>
                         <c:param name="status" value="${search.status}"/>
@@ -351,7 +352,7 @@
                         <%-- 액션 --%>
                         <td>
                             <c:choose>
-                                <c:when test="${comment.commentStatus != 'BLOCKED'}">
+                                <c:when test="${comment.commentStatus == 'ACTIVE'}">
                                     <div class="adm-row-actions">
                                         <button class="adm-row-btn danger"
                                                 type="button"
@@ -370,13 +371,16 @@
                                         </div>
                                     </div>
                                 </c:when>
-                                <c:otherwise>
+                                <c:when test="${comment.commentStatus == 'BLOCKED'}">
                                     <div class="adm-row-actions is-single">
                                         <button class="adm-row-btn danger"
                                                 type="button"
                                                 data-id="${comment.commentId}"
                                                 onclick="actionComment(this.getAttribute('data-id'), 'delete')">${msg_admin_community_action_delete}</button>
                                     </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="adm-muted-inline">-</span>
                                 </c:otherwise>
                             </c:choose>
                         </td>

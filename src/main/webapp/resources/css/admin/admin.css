@@ -9421,6 +9421,10 @@ body.sa-light .adm-report-deleted-badge {
 
 .adm-community-detail-backrow {
     margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .adm-community-empty-state {
@@ -9452,6 +9456,11 @@ body.sa-light .adm-report-deleted-badge {
 
 .adm-community-detail-page .adm-split-layout {
     grid-template-columns: minmax(0, 2.1fr) minmax(286px, .78fr);
+}
+
+.adm-community-detail-page .adm-card-head {
+    align-items: center;
+    gap: 12px;
 }
 
 .adm-community-detail-head-actions {
@@ -9594,6 +9603,10 @@ body.sa-light .adm-report-deleted-badge {
 
 .adm-community-comment-actions {
     flex-shrink: 0;
+}
+
+.adm-community-comment-actions.adm-muted-inline {
+    align-self: center;
 }
 
 .adm-community-comment-content {

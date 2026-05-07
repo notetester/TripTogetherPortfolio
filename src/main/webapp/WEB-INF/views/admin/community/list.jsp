@@ -242,6 +242,7 @@
                 <tbody>
                 <c:forEach items="${list}" var="p">
                     <c:url var="communityPostDetailUrl" value="/admin/community/posts/${p.postId}">
+                        <c:param name="source" value="posts"/>
                         <c:param name="page" value="${paging.currentPage}"/>
                         <c:param name="size" value="${search.size}"/>
                         <c:param name="status" value="${search.status}"/>
@@ -362,7 +363,7 @@
                         <%-- 액션 --%>
                         <td>
                             <c:choose>
-                                <c:when test="${p.postStatus != 'BLOCKED'}">
+                                <c:when test="${p.postStatus == 'ACTIVE'}">
                                     <div class="adm-row-actions">
                                         <button class="adm-row-btn danger"
                                                 type="button"
@@ -383,7 +384,7 @@
                                         </c:if>
                                     </div>
                                 </c:when>
-                                <c:when test="${p.postStatus != 'DELETED'}">
+                                <c:when test="${p.postStatus == 'BLOCKED'}">
                                     <div class="adm-row-actions is-single">
                                         <button class="adm-row-btn danger"
                                                 type="button"

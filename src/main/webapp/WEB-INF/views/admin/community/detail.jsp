@@ -75,8 +75,33 @@
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content adm-community-page adm-community-detail-page">
+    <c:choose>
+        <c:when test="${param.source == 'comments'}">
+            <c:url var="communityBackUrl" value="/admin/community/comments">
+                <c:if test="${not empty param.page}"><c:param name="page" value="${param.page}"/></c:if>
+                <c:if test="${not empty param.size}"><c:param name="size" value="${param.size}"/></c:if>
+                <c:if test="${not empty param.status}"><c:param name="status" value="${param.status}"/></c:if>
+                <c:if test="${not empty param.flagged}"><c:param name="flagged" value="${param.flagged}"/></c:if>
+                <c:if test="${not empty param.sortBy}"><c:param name="sortBy" value="${param.sortBy}"/></c:if>
+                <c:if test="${not empty param.searchType}"><c:param name="searchType" value="${param.searchType}"/></c:if>
+                <c:if test="${not empty param.keyword}"><c:param name="keyword" value="${param.keyword}"/></c:if>
+            </c:url>
+        </c:when>
+        <c:otherwise>
+            <c:url var="communityBackUrl" value="/admin/community">
+                <c:if test="${not empty param.page}"><c:param name="page" value="${param.page}"/></c:if>
+                <c:if test="${not empty param.size}"><c:param name="size" value="${param.size}"/></c:if>
+                <c:if test="${not empty param.status}"><c:param name="status" value="${param.status}"/></c:if>
+                <c:if test="${not empty param.postType}"><c:param name="postType" value="${param.postType}"/></c:if>
+                <c:if test="${not empty param.flagged}"><c:param name="flagged" value="${param.flagged}"/></c:if>
+                <c:if test="${not empty param.sortBy}"><c:param name="sortBy" value="${param.sortBy}"/></c:if>
+                <c:if test="${not empty param.searchType}"><c:param name="searchType" value="${param.searchType}"/></c:if>
+                <c:if test="${not empty param.keyword}"><c:param name="keyword" value="${param.keyword}"/></c:if>
+            </c:url>
+        </c:otherwise>
+    </c:choose>
     <div class="adm-community-detail-backrow">
-        <a href="${pageContext.request.contextPath}/admin/community"
+        <a href="${communityBackUrl}"
            class="adm-back-link">← ${msg_admin_community_detail_backToList}</a>
     </div>
 
@@ -116,17 +141,17 @@
                                     <c:otherwise>${post.postStatus}</c:otherwise>
                                 </c:choose>
                             </span>
-                            <c:if test="${post.postStatus != 'DELETED'}">
+                            <c:if test="${post.postStatus == 'ACTIVE'}">
                                 <a href="${pageContext.request.contextPath}/community/${post.postId}"
                                    target="_blank"
                                    class="adm-btn adm-btn-ghost adm-link-button adm-community-detail-btn">${msg_admin_community_detail_viewOriginal}</a>
                             </c:if>
-                            <c:if test="${post.postStatus != 'BLOCKED'}">
+                            <c:if test="${post.postStatus == 'ACTIVE'}">
                                 <button class="adm-btn adm-btn-ghost adm-community-detail-btn adm-community-danger-btn"
                                         data-id="${post.postId}"
                                         onclick="actionPost(this.getAttribute('data-id'), 'block')">${msg_admin_community_action_block}</button>
                             </c:if>
-                            <c:if test="${post.postStatus != 'DELETED'}">
+                            <c:if test="${post.postStatus == 'ACTIVE' || post.postStatus == 'BLOCKED'}">
                                 <button class="adm-btn adm-btn-ghost adm-community-detail-btn adm-community-muted-btn"
                                         data-id="${post.postId}"
                                         onclick="actionPost(this.getAttribute('data-id'), 'delete')">${msg_admin_community_action_delete}</button>
@@ -188,7 +213,7 @@
                         </c:when>
                         <c:otherwise>
                             <div class="adm-table-wrap">
-                                <table class="adm-table adm-community-report-history-table">
+                                <table class="adm-table adm-community-report-history-table" data-admin-list-ignore="true">
                                     <thead>
                                     <tr>
                                         <th>${msg_admin_community_detail_reportId}</th>
@@ -314,6 +339,7 @@
                                                     <c:choose>
                                                         <c:when test="${comment.commentStatus == 'ACTIVE'}">${msg_admin_community_status_active}</c:when>
                                                         <c:when test="${comment.commentStatus == 'BLOCKED'}">${msg_admin_community_status_blocked}</c:when>
+                                                        <c:when test="${comment.commentStatus == 'DELETED'}">${msg_admin_community_status_deleted}</c:when>
                                                         <c:otherwise>${comment.commentStatus}</c:otherwise>
                                                     </c:choose>
                                                 </span>
@@ -323,7 +349,7 @@
                                             </div>
                                             <%-- 댓글 액션 --%>
                                             <c:choose>
-                                                <c:when test="${comment.commentStatus != 'BLOCKED'}">
+                                                <c:when test="${comment.commentStatus == 'ACTIVE'}">
                                                     <div class="adm-row-actions adm-community-comment-actions">
                                                         <button class="adm-row-btn danger"
                                                                 type="button"
@@ -342,13 +368,16 @@
                                                         </div>
                                                     </div>
                                                 </c:when>
-                                                <c:otherwise>
+                                                <c:when test="${comment.commentStatus == 'BLOCKED'}">
                                                     <div class="adm-row-actions is-single adm-community-comment-actions">
                                                         <button class="adm-row-btn danger"
                                                                 type="button"
                                                                 data-id="${comment.commentId}"
                                                                 onclick="actionComment(this.getAttribute('data-id'), 'delete')">${msg_admin_community_action_delete}</button>
                                                     </div>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="adm-muted-inline adm-community-comment-actions">-</span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </div>
@@ -435,8 +464,12 @@
                                 </div>
                             </c:if>
 
+                            <c:url var="communityAuthorMemberUrl" value="/admin/members">
+                                <c:param name="searchType" value="userId"/>
+                                <c:param name="keyword" value="${post.userId}"/>
+                            </c:url>
                             <div class="adm-meta-actions adm-action-stack">
-                                <a href="${pageContext.request.contextPath}/admin/members?searchType=userId&keyword=${post.userId}"
+                                <a href="${communityAuthorMemberUrl}"
                                    class="adm-btn adm-btn-ghost adm-link-button adm-community-detail-btn">
                                     ${msg_admin_common_memberInfoView}
                                 </a>
