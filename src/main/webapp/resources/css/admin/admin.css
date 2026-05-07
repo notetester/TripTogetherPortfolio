@@ -6316,6 +6316,149 @@ body.sa-light .adm-policy-history-field {
     }
 }
 
+/* Moderation policy */
+.adm-moderation-page .adm-page-head {
+    align-items: center;
+}
+
+.adm-moderation-updated {
+    display: grid;
+    gap: 4px;
+    min-width: 180px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: right;
+}
+
+.adm-moderation-updated span {
+    color: #e2e8f0;
+    font-weight: 700;
+}
+
+.adm-moderation-card {
+    overflow: visible;
+}
+
+.adm-moderation-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.adm-moderation-section {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid rgba(148, 163, 184, .16);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, .30);
+}
+
+.adm-moderation-section-wide {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 220px);
+    align-items: end;
+}
+
+.adm-moderation-section-head {
+    min-width: 0;
+}
+
+.adm-moderation-section-title {
+    color: #f8fafc;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.adm-moderation-select {
+    width: 100%;
+}
+
+.adm-moderation-rule-row {
+    display: grid;
+    grid-template-columns: 84px auto 84px minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
+    min-width: 0;
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.adm-moderation-rule-row-short {
+    grid-template-columns: 84px minmax(0, 1fr);
+}
+
+.adm-moderation-number {
+    width: 84px;
+    text-align: right;
+}
+
+.adm-moderation-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(148, 163, 184, .16);
+}
+
+body.sa-light .adm-moderation-updated {
+    color: #64748b;
+}
+
+body.sa-light .adm-moderation-updated span,
+body.sa-light .adm-moderation-section-title {
+    color: #0f172a;
+}
+
+body.sa-light .adm-moderation-section {
+    border-color: #e2e8f0;
+    background: #f8fafc;
+}
+
+body.sa-light .adm-moderation-rule-row {
+    color: #334155;
+}
+
+body.sa-light .adm-moderation-actions {
+    border-top-color: #e2e8f0;
+}
+
+@media (max-width: 980px) {
+    .adm-moderation-form {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-moderation-section-wide {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-moderation-updated {
+        text-align: left;
+    }
+}
+
+@media (max-width: 560px) {
+    .adm-moderation-rule-row,
+    .adm-moderation-rule-row-short {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-moderation-number,
+    .adm-moderation-actions .adm-btn {
+        width: 100%;
+    }
+
+    .adm-moderation-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
+
 /* Login risk policy settings */
 .adm-governance-page .adm-policy-guide-card,
 .adm-governance-page .adm-login-policy-card {

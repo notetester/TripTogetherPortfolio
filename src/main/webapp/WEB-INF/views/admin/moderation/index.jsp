@@ -32,86 +32,81 @@
 <c:set var="pageTitle" value="${msg_admin_moderation_pageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
-
-    <div class="adm-card" style="max-width:680px;">
-        <div class="adm-card-head">
-            <div class="adm-card-title">${msg_admin_moderation_pageTitle}</div>
-            <div style="font-size:12px;color:#64748b;">
-                <c:if test="${not empty policy.updatedAt}">
-                    ${msg_admin_moderation_updatedAt} <fmt:formatDate value="${policy.updatedAtDate}" type="both" dateStyle="short" timeStyle="short"/>
-                </c:if>
-            </div>
+<div class="adm-content adm-governance-page adm-moderation-page">
+    <div class="adm-page-head">
+        <div>
+            <h1>${msg_admin_moderation_pageTitle}</h1>
+            <p class="adm-page-desc">${msg_admin_moderation_toxicityDescription}</p>
         </div>
+        <c:if test="${not empty policy.updatedAt}">
+            <div class="adm-moderation-updated">
+                ${msg_admin_moderation_updatedAt}
+                <span><fmt:formatDate value="${policy.updatedAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
+            </div>
+        </c:if>
+    </div>
 
+    <div class="adm-card adm-moderation-card">
         <div class="adm-card-body">
-            <form id="moderationForm" style="display:flex;flex-direction:column;gap:24px;">
-
-                <%-- ▸ 악성 콘텐츠 감지 --%>
-                <div>
-                    <div style="font-size:13px;font-weight:600;margin-bottom:6px;">
-                        ${msg_admin_moderation_toxicityTitle}
+            <form id="moderationForm" class="adm-moderation-form">
+                <section class="adm-moderation-section adm-moderation-section-wide">
+                    <div class="adm-moderation-section-head">
+                        <div class="adm-moderation-section-title">${msg_admin_moderation_toxicityTitle}</div>
+                        <div class="adm-muted">${msg_admin_moderation_toxicityDescription}</div>
                     </div>
-                    <div style="font-size:12px;color:#64748b;margin-bottom:10px;">
-                        ${msg_admin_moderation_toxicityDescription}
-                    </div>
-                    <select name="toxicityLevel" class="adm-input" style="max-width:220px;">
+                    <select name="toxicityLevel" class="adm-select adm-moderation-select">
                         <option value="STRICT" ${policy.toxicityLevel eq 'STRICT' ? 'selected' : ''}>${msg_admin_moderation_level_strict}</option>
                         <option value="NORMAL" ${policy.toxicityLevel eq 'NORMAL' ? 'selected' : ''}>${msg_admin_moderation_level_normal}</option>
                         <option value="LOOSE"  ${policy.toxicityLevel eq 'LOOSE'  ? 'selected' : ''}>${msg_admin_moderation_level_loose}</option>
                     </select>
-                </div>
+                </section>
 
-                <%-- ▸ 게시글 도배 --%>
-                <div>
-                    <div style="font-size:13px;font-weight:600;margin-bottom:6px;">${msg_admin_moderation_postSpamTitle}</div>
-                    <div style="display:flex;gap:8px;align-items:center;font-size:13px;">
+                <section class="adm-moderation-section">
+                    <div class="adm-moderation-section-title">${msg_admin_moderation_postSpamTitle}</div>
+                    <div class="adm-moderation-rule-row">
                         <input type="number" name="postWindowMinutes" min="1" max="1440"
-                               value="${policy.postWindowMinutes}" class="adm-input" style="width:80px;"/>
-                        ${msg_admin_moderation_minutesWithin}
+                               value="${policy.postWindowMinutes}" class="adm-input adm-moderation-number"/>
+                        <span>${msg_admin_moderation_minutesWithin}</span>
                         <input type="number" name="postMaxCount" min="1" max="100"
-                               value="${policy.postMaxCount}" class="adm-input" style="width:80px;"/>
-                        ${msg_admin_moderation_blockAfterCount}
+                               value="${policy.postMaxCount}" class="adm-input adm-moderation-number"/>
+                        <span>${msg_admin_moderation_blockAfterCount}</span>
                     </div>
-                </div>
+                </section>
 
-                <%-- ▸ 댓글 도배 --%>
-                <div>
-                    <div style="font-size:13px;font-weight:600;margin-bottom:6px;">${msg_admin_moderation_commentSpamTitle}</div>
-                    <div style="display:flex;gap:8px;align-items:center;font-size:13px;">
+                <section class="adm-moderation-section">
+                    <div class="adm-moderation-section-title">${msg_admin_moderation_commentSpamTitle}</div>
+                    <div class="adm-moderation-rule-row">
                         <input type="number" name="commentWindowMinutes" min="1" max="1440"
-                               value="${policy.commentWindowMinutes}" class="adm-input" style="width:80px;"/>
-                        ${msg_admin_moderation_minutesWithin}
+                               value="${policy.commentWindowMinutes}" class="adm-input adm-moderation-number"/>
+                        <span>${msg_admin_moderation_minutesWithin}</span>
                         <input type="number" name="commentMaxCount" min="1" max="100"
-                               value="${policy.commentMaxCount}" class="adm-input" style="width:80px;"/>
-                        ${msg_admin_moderation_blockAfterCount}
+                               value="${policy.commentMaxCount}" class="adm-input adm-moderation-number"/>
+                        <span>${msg_admin_moderation_blockAfterCount}</span>
                     </div>
-                </div>
+                </section>
 
-                <%-- ▸ 문의 도배 --%>
-                <div>
-                    <div style="font-size:13px;font-weight:600;margin-bottom:6px;">${msg_admin_moderation_inquirySpamTitle}</div>
-                    <div style="display:flex;gap:8px;align-items:center;font-size:13px;">
+                <section class="adm-moderation-section">
+                    <div class="adm-moderation-section-title">${msg_admin_moderation_inquirySpamTitle}</div>
+                    <div class="adm-moderation-rule-row">
                         <input type="number" name="inquiryWindowMinutes" min="1" max="1440"
-                               value="${policy.inquiryWindowMinutes}" class="adm-input" style="width:80px;"/>
-                        ${msg_admin_moderation_minutesWithin}
+                               value="${policy.inquiryWindowMinutes}" class="adm-input adm-moderation-number"/>
+                        <span>${msg_admin_moderation_minutesWithin}</span>
                         <input type="number" name="inquiryMaxCount" min="1" max="100"
-                               value="${policy.inquiryMaxCount}" class="adm-input" style="width:80px;"/>
-                        ${msg_admin_moderation_blockAfterCount}
+                               value="${policy.inquiryMaxCount}" class="adm-input adm-moderation-number"/>
+                        <span>${msg_admin_moderation_blockAfterCount}</span>
                     </div>
-                </div>
+                </section>
 
-                <%-- ▸ 신고 누적 BLUR 임계값 --%>
-                <div>
-                    <div style="font-size:13px;font-weight:600;margin-bottom:6px;">${msg_admin_moderation_reportThresholdTitle}</div>
-                    <div style="display:flex;gap:8px;align-items:center;font-size:13px;">
+                <section class="adm-moderation-section">
+                    <div class="adm-moderation-section-title">${msg_admin_moderation_reportThresholdTitle}</div>
+                    <div class="adm-moderation-rule-row adm-moderation-rule-row-short">
                         <input type="number" name="reportThreshold" min="1" max="100"
-                               value="${policy.reportThreshold}" class="adm-input" style="width:80px;"/>
-                        ${msg_admin_moderation_blurAfterCount}
+                               value="${policy.reportThreshold}" class="adm-input adm-moderation-number"/>
+                        <span>${msg_admin_moderation_blurAfterCount}</span>
                     </div>
-                </div>
+                </section>
 
-                <div style="display:flex;gap:8px;border-top:1px solid #1e2736;padding-top:16px;">
+                <div class="adm-moderation-actions">
                     <button type="button" class="adm-btn adm-btn-primary" onclick="saveModeration()">${msg_admin_common_save}</button>
                     <button type="button" class="adm-btn adm-btn-ghost" onclick="resetDefaults()">${msg_admin_moderation_resetDefaults}</button>
                 </div>
