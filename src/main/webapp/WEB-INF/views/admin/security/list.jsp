@@ -72,11 +72,11 @@
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card adm-audit-filter-card adm-security-audit-filter-card">
         <div class="adm-card-body">
             <form id="securitySearchForm" method="get" action="${pageContext.request.contextPath}/admin/security">
-                <div class="adm-filter-bar">
-                    <div class="adm-search-box" style="flex:1;min-width:220px;">
+                <div class="adm-filter-bar adm-audit-filterbar adm-security-audit-filterbar">
+                    <div class="adm-search-box adm-audit-search-box">
                         <div class="adm-filter-label">${msg_admin_common_search}</div>
                         <span class="adm-search-ico">🔍</span>
                         <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}" placeholder="${msg_admin_security_searchPlaceholder}">
@@ -111,7 +111,7 @@
                             <option value="COMPLETE" ${search.eventStage=='COMPLETE'?'selected':''}>${msg_admin_security_stage_complete}</option>
                         </select>
                     </div>
-                    <div style="display:flex;align-items:flex-end;gap:8px;">
+                    <div class="adm-audit-filter-actions">
                         <button class="adm-btn adm-btn-primary" type="submit">${msg_admin_common_searchButton}</button>
                         <button class="adm-btn adm-btn-ghost" type="button" onclick="resetSecurityFilters()">${msg_admin_common_reset}</button>
                     </div>
@@ -134,7 +134,7 @@
                 <span id="securityTotalLabel" class="adm-section-total-inline">${msg_admin_common_totalCount}</span>
             </div>
             <div class="adm-section-head-actions">
-                <select class="adm-select" id="securityExportFormat" style="width:90px;">
+                <select class="adm-select adm-audit-export-format" id="securityExportFormat">
                     <option value="csv">CSV</option>
                     <option value="excel">Excel</option>
                 </select>
@@ -156,7 +156,7 @@
                     <option value="client" title="${msg_admin_blocks_mode_tipClient}">${msg_admin_blocks_mode_client}</option>
                     <option value="server" title="${msg_admin_blocks_mode_tipServer}">${msg_admin_blocks_mode_server}</option>
                 </select>
-                <select class="adm-select js-security-page-size" id="securitySizeSelect" style="width:90px;" onchange="changeSecuritySize(this.value)">
+                <select class="adm-select js-security-page-size adm-audit-size-select" id="securitySizeSelect" onchange="changeSecuritySize(this.value)">
                     <option value="30" ${search.size==30 ? 'selected' : ''}>${msg_admin_common_pageSize_30}</option>
                     <option value="50" ${search.size==50 ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
                     <option value="100" ${search.size==100 ? 'selected' : ''}>${msg_admin_common_pageSize_100}</option>
@@ -226,8 +226,8 @@
             <div class="adm-modal-title" id="securityDetailModalTitle">${msg_admin_security_historyTitle}</div>
             <button class="adm-modal-close" type="button" onclick="closeSecurityDetailModal()">✕</button>
         </div>
-        <div class="adm-modal-body" id="securityDetailModalContent" style="padding:20px 24px;max-height:72vh;overflow-y:auto;"></div>
-        <div class="adm-modal-foot" style="justify-content:flex-end;">
+        <div class="adm-modal-body adm-audit-row-detail-body" id="securityDetailModalContent"></div>
+        <div class="adm-modal-foot adm-audit-modal-foot">
             <button class="adm-btn adm-btn-ghost" type="button" onclick="closeSecurityDetailModal()">${msg_admin_common_close}</button>
         </div>
     </div>
@@ -404,7 +404,7 @@ function markSecurityOriginalIndices(rows) {
     });
 }
 function renderSecurityEmptyRow() {
-    return '<tr class="adm-local-empty"><td colspan="13" style="text-align:center;color:#64748b;padding:32px;">' + escapeSecurityHtml(SECURITY_MSG.noResults) + '</td></tr>';
+    return '<tr class="adm-local-empty"><td colspan="13" class="adm-local-empty-cell">' + escapeSecurityHtml(SECURITY_MSG.noResults) + '</td></tr>';
 }
 async function renderServerSecurity(pageOverride) {
     securitySectionState.mode = 'SERVER';
