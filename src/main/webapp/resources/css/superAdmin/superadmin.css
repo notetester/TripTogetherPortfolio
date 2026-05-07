@@ -34,6 +34,68 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 /* ── 유저 검색 결과 행 ── */
 .sa-user-row { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border:1px solid #e2e8f0; border-radius:6px; margin-bottom:8px; }
 .sa-user-row:hover { background:#f8fafc; }
+.sa-user-primary,
+.sa-member-name { font-weight:600; }
+.sa-user-meta,
+.sa-member-id,
+.sa-muted-text { color:#94a3b8; font-size:12px; }
+.sa-empty-cell { text-align:center; padding:40px; color:#94a3b8; }
+.sa-empty-cell.is-compact { padding:20px; }
+.sa-empty-cell.is-danger { color:#ef4444; }
+.sa-table-card-body { padding:0; }
+.sa-check-head { width:40px; text-align:center; }
+.sa-check-cell { text-align:center; }
+.sa-muted-cell { color:#94a3b8; font-size:12px; }
+.sa-row-actions { display:flex; align-items:center; gap:6px; flex-wrap:nowrap; }
+.sa-muted-button { color:#94a3b8; }
+.sa-modal-sm { width:520px; max-width:95vw; }
+.sa-modal-md { width:680px; max-width:95vw; }
+.sa-modal-scroll { max-height:70vh; overflow-y:auto; }
+.sa-modal-search-row { display:flex; gap:8px; margin-bottom:16px; }
+.sa-modal-search-row .adm-input { flex:1; min-width:0; }
+.sa-modal-description { margin-bottom:12px; color:#64748b; font-size:13px; line-height:1.6; white-space:pre-line; }
+.sa-members-filter-card { margin-bottom:20px; }
+.sa-members-filterbar { align-items:flex-end; gap:10px; }
+.sa-members-keyword-field { flex:1 1 320px; min-width:220px; }
+.sa-members-search-row { display:flex; gap:6px; }
+.sa-members-search-type { flex:0 0 100px; }
+.sa-members-search-box { flex:1 1 auto; min-width:0; }
+.sa-members-filter-field { flex:0 0 140px; }
+.sa-members-status-field { flex:0 0 110px; }
+.sa-members-filter-field .adm-select,
+.sa-members-status-field .adm-select { width:100%; }
+.sa-members-filter-actions { display:flex; align-items:flex-end; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+.sa-inline-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.sa-inline-row.is-top { margin-top:8px; margin-bottom:0; }
+.sa-inline-row .adm-select,
+.sa-perm-code-select { flex:1; min-width:0; }
+.sa-code-badge { font-size:12px; border-radius:4px; padding:1px 6px; }
+.sa-code-badge.is-green { background:#d1fae5; color:#065f46; }
+.sa-code-badge.is-blue { background:#e0e7ff; color:#4338ca; }
+.sa-section-title.is-spaced { margin-top:16px; }
+.sa-section-title.is-tight { margin-bottom:8px; }
+.sa-help-text { margin:4px 0 8px; color:#94a3b8; font-size:12px; line-height:1.5; }
+.sa-audit-table-spaced { margin-bottom:20px; }
+
+@media (max-width: 1100px) {
+    .sa-members-filterbar { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); }
+    .sa-members-keyword-field,
+    .sa-members-filter-field,
+    .sa-members-status-field,
+    .sa-members-filter-actions { flex:initial; }
+}
+
+@media (max-width: 700px) {
+    .sa-members-filterbar,
+    .sa-members-search-row { grid-template-columns:1fr; display:grid; }
+    .sa-members-search-type,
+    .sa-members-filter-actions .adm-btn,
+    .sa-modal-search-row .adm-btn { width:100%; }
+    .sa-members-filter-actions,
+    .sa-modal-search-row,
+    .sa-row-actions { align-items:stretch; flex-direction:column; }
+    .sa-row-actions .adm-btn { width:100%; }
+}
 
 /* ── 편집 폼 ── */
 .sa-form-grid  { display:grid; grid-template-columns:repeat(2, 1fr); gap:16px; }

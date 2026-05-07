@@ -121,34 +121,34 @@
 
 <%@ include file="../layout.jsp" %>
 
-<div class="adm-content">
+<div class="adm-content sa-members-page">
 
     <%-- ══════════════════════════════════════════
          검색 바
     ══════════════════════════════════════════ --%>
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card sa-members-filter-card">
         <div class="adm-card-body">
             <form id="searchForm" method="get" action="${pageContext.request.contextPath}/superAdmin/members">
-                <div class="adm-filter-bar">
-                    <div style="flex:1;min-width:220px;">
+                <div class="adm-filter-bar sa-members-filterbar">
+                    <div class="sa-members-keyword-field">
                         <div class="adm-filter-label">${msg_superAdmin_member_list_filter_search}</div>
-                        <div style="display:flex;gap:6px;">
-                            <select class="adm-select" name="searchType" style="width:100px;">
+                        <div class="sa-members-search-row">
+                            <select class="adm-select sa-members-search-type" name="searchType">
                                 <option value="all"      ${search.searchType=='all'      ? 'selected' : ''}>${msg_superAdmin_member_list_search_all}</option>
                                 <option value="userId"   ${search.searchType=='userId'   ? 'selected' : ''}>${msg_superAdmin_member_list_search_userId}</option>
                                 <option value="nickname" ${search.searchType=='nickname' ? 'selected' : ''}>${msg_superAdmin_member_list_search_nickname}</option>
                                 <option value="email"    ${search.searchType=='email'    ? 'selected' : ''}>${msg_superAdmin_member_list_search_email}</option>
                             </select>
-                            <div class="adm-search-box" style="flex:1;">
+                            <div class="adm-search-box sa-members-search-box">
                                 <span class="adm-search-ico">🔍</span>
                                 <input class="adm-input" type="text" name="keyword"
                                        value="${fn:escapeXml(search.keyword)}" placeholder="${msg_superAdmin_member_list_filter_searchPlaceholder}">
                             </div>
                         </div>
                     </div>
-                    <div style="flex:0 0 auto;">
+                    <div class="sa-members-filter-field">
                         <div class="adm-filter-label">${msg_superAdmin_member_list_filter_department}</div>
-                        <select class="adm-select" name="filterDepartment" style="width:140px;">
+                        <select class="adm-select" name="filterDepartment">
                             <option value="">${msg_admin_common_all}</option>
                             <c:forEach var="dept" items="${['커뮤니티운영팀','여행서비스팀','고객지원팀','플랫폼개발팀','인프라팀','AI팀','마케팅팀','재무팀','인사팀','법무팀','사업개발팀','보안팀','개인정보보호팀']}" varStatus="s">
                                 <c:set var="deptLabelCode" value="superAdmin.member.edit.option.department.${s.index}"/>
@@ -158,18 +158,18 @@
                             </c:forEach>
                         </select>
                     </div>
-                    <div style="flex:0 0 auto;">
+                    <div class="sa-members-filter-field">
                         <div class="adm-filter-label">${msg_superAdmin_member_list_filter_permissionCode}</div>
-                        <select class="adm-select" name="filterPermissionCode" style="width:140px;">
+                        <select class="adm-select" name="filterPermissionCode">
                             <option value="">${msg_admin_common_all}</option>
                             <c:forEach var="pc" items="${permissionCodePolicies}">
                                 <option value="${fn:escapeXml(pc.adminPermissionCode)}" <c:if test="${search.filterPermissionCode == pc.adminPermissionCode}">selected</c:if>>${fn:escapeXml(pc.displayName)}</option>
                             </c:forEach>
                         </select>
                     </div>
-                    <div style="flex:0 0 auto;">
+                    <div class="sa-members-status-field">
                         <div class="adm-filter-label">${msg_superAdmin_member_list_filter_accountStatus}</div>
-                        <select class="adm-select" name="filterAccountStatus" style="width:110px;">
+                        <select class="adm-select" name="filterAccountStatus">
                             <option value="">${msg_admin_common_all}</option>
                             <option value="ACTIVE"  <c:if test="${search.filterAccountStatus == 'ACTIVE'}">selected</c:if>>${msg_admin_status_ACTIVE}</option>
                             <option value="BLOCKED" <c:if test="${search.filterAccountStatus == 'BLOCKED'}">selected</c:if>>${msg_admin_status_BLOCKED}</option>
@@ -177,7 +177,7 @@
                             <option value="DELETED" <c:if test="${search.filterAccountStatus == 'DELETED'}">selected</c:if>>${msg_admin_status_DELETED}</option>
                         </select>
                     </div>
-                    <div style="display:flex;align-items:flex-end;gap:8px;">
+                    <div class="sa-members-filter-actions">
                         <button type="submit" class="adm-btn adm-btn-primary">${msg_admin_common_search}</button>
                         <a href="${pageContext.request.contextPath}/superAdmin/members" class="adm-btn adm-btn-ghost">${msg_admin_common_reset}</a>
                         <button type="button" class="adm-btn adm-btn-ghost" onclick="openGrantModal()">${msg_superAdmin_member_list_card_grantButton}</button>
@@ -191,11 +191,11 @@
          관리자 테이블
     ══════════════════════════════════════════ --%>
     <div class="adm-card">
-        <div class="adm-card-body" style="padding:0;">
+        <div class="adm-card-body sa-table-card-body">
             <table class="adm-table">
                 <thead>
                     <tr>
-                        <th style="width:40px;text-align:center;">
+                        <th class="sa-check-head">
                             <input type="checkbox" class="sa-cb" id="cbAll" onclick="toggleAll(this)">
                         </th>
                         <th>${msg_superAdmin_member_list_table_member}</th>
@@ -211,19 +211,19 @@
                 <tbody>
                 <c:choose>
                     <c:when test="${empty adminList}">
-                        <tr><td colspan="9" style="text-align:center;padding:40px;color:#94a3b8;">${msg_superAdmin_member_list_result_empty}</td></tr>
+                        <tr><td colspan="9" class="sa-empty-cell">${msg_superAdmin_member_list_result_empty}</td></tr>
                     </c:when>
                     <c:otherwise>
                         <c:forEach var="m" items="${adminList}">
                         <tr>
-                            <td style="text-align:center;">
+                            <td class="sa-check-cell">
                                 <input type="checkbox" class="sa-cb row-cb"
                                        data-idx="${m.userIdx}" data-nickname="${m.nickname}"
                                        onchange="onRowCbChange()">
                             </td>
                             <td>
-                                <div style="font-weight:600;">${m.nickname}</div>
-                                <div style="font-size:12px;color:#94a3b8;">${m.userId}</div>
+                                <div class="sa-member-name">${m.nickname}</div>
+                                <div class="sa-member-id">${m.userId}</div>
                             </td>
                             <td>${m.userEmail}</td>
                             <td>${not empty m.adminTitle ? m.adminTitle : '-'}</td>
@@ -237,7 +237,7 @@
                                     <c:when test="${not empty m.adminPermissionCode}">
                                         <span class="adm-badge adm-badge-blue">${m.adminPermissionCode}</span>
                                     </c:when>
-                                    <c:otherwise><span style="color:#94a3b8;">${msg_superAdmin_member_list_detail_codeSelectClear}</span></c:otherwise>
+                                    <c:otherwise><span class="sa-muted-text">${msg_superAdmin_member_list_detail_codeSelectClear}</span></c:otherwise>
                                 </c:choose>
                             </td>
                             <td>
@@ -249,7 +249,7 @@
                             </td>
                             <td><fmt:formatDate value="${m.createdAtDate}" pattern="yyyy-MM-dd"/></td>
                             <td>
-                                <div style="display:flex;gap:6px;">
+                                <div class="sa-row-actions">
                                     <button class="adm-btn adm-btn-sm adm-btn-ghost"
                                             data-id="${m.userIdx}"
                                             onclick="openDetailModal(this.getAttribute('data-id'))">${msg_superAdmin_member_list_action_permission}</button>
@@ -289,31 +289,31 @@
     <span class="sa-bulk-count" id="bulkCount">0</span> <span id="bulkCountLabel">${msg_superAdmin_member_list_bulk_selectedFormat}</span>
     <button class="adm-btn adm-btn-sm adm-btn-primary" onclick="openBulkPermModal()">${msg_superAdmin_member_list_bulk_button}</button>
     <button class="adm-btn adm-btn-sm adm-btn-danger"  onclick="bulkRevoke()">${msg_superAdmin_member_list_bulk_revoke}</button>
-    <button class="adm-btn adm-btn-sm adm-btn-ghost"   onclick="clearSelection()" style="color:#94a3b8;">${msg_superAdmin_member_list_bulk_cancel}</button>
+    <button class="adm-btn adm-btn-sm adm-btn-ghost sa-muted-button" onclick="clearSelection()">${msg_superAdmin_member_list_bulk_cancel}</button>
 </div>
 
 <%-- ══════════════════════════════════════════
      상세 / 권한 모달
 ══════════════════════════════════════════ --%>
 <div class="adm-modal-overlay" id="detailModal">
-    <div class="adm-modal" style="width:680px;max-width:95vw;">
+    <div class="adm-modal sa-modal-md">
         <div class="adm-modal-head">
             <div class="adm-modal-title" id="detailModalTitle">${msg_superAdmin_member_list_detail_title}</div>
             <button class="adm-modal-close" onclick="closeModal('detailModal')">✕</button>
         </div>
-        <div class="adm-modal-body" style="max-height:70vh;overflow-y:auto;">
+        <div class="adm-modal-body sa-modal-scroll">
             <div class="sa-tabs">
                 <button class="sa-tab-btn active" onclick="switchTab('info',this)">${msg_superAdmin_member_list_detail_tabInfo}</button>
                 <button class="sa-tab-btn"        onclick="switchTab('audit',this)">${msg_superAdmin_member_list_detail_audit}</button>
             </div>
             <div class="sa-tab-panel active" id="tabInfo">
                 <div id="detailModalBody">
-                    <div style="text-align:center;padding:40px;color:#94a3b8;">${msg_superAdmin_member_list_detail_loading}</div>
+                    <div class="sa-empty-cell">${msg_superAdmin_member_list_detail_loading}</div>
                 </div>
             </div>
             <div class="sa-tab-panel" id="tabAudit">
                 <div id="auditBody">
-                    <div style="text-align:center;padding:40px;color:#94a3b8;">${msg_superAdmin_member_list_detail_loading}</div>
+                    <div class="sa-empty-cell">${msg_superAdmin_member_list_detail_loading}</div>
                 </div>
             </div>
         </div>
@@ -328,13 +328,13 @@
      관리자 등록 모달
 ══════════════════════════════════════════ --%>
 <div class="adm-modal-overlay" id="grantModal">
-    <div class="adm-modal" style="width:520px;max-width:95vw;">
+    <div class="adm-modal sa-modal-sm">
         <div class="adm-modal-head">
             <div class="adm-modal-title">${msg_superAdmin_member_list_grant_modalTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('grantModal')">✕</button>
         </div>
         <div class="adm-modal-body">
-            <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <div class="sa-modal-search-row">
                 <input class="adm-input" id="grantSearchInput" type="text" placeholder="${msg_superAdmin_member_list_grant_searchPlaceholder}">
                 <button class="adm-btn adm-btn-primary" onclick="searchUsers()">${msg_admin_common_search}</button>
             </div>
@@ -350,13 +350,13 @@
      일괄 권한 설정 모달
 ══════════════════════════════════════════ --%>
 <div class="adm-modal-overlay" id="bulkPermModal">
-    <div class="adm-modal" style="width:520px;max-width:95vw;">
+    <div class="adm-modal sa-modal-sm">
         <div class="adm-modal-head">
             <div class="adm-modal-title">${msg_superAdmin_member_list_bulk_applyTitle}</div>
             <button class="adm-modal-close" onclick="closeModal('bulkPermModal')">✕</button>
         </div>
         <div class="adm-modal-body">
-            <div style="font-size:13px;color:#64748b;margin-bottom:12px; white-space:pre-line;">${msg_superAdmin_member_list_bulk_applyDescription}</div>
+            <div class="sa-modal-description">${msg_superAdmin_member_list_bulk_applyDescription}</div>
             <div id="bulkPermList"></div>
         </div>
         <div class="adm-modal-foot">
@@ -454,19 +454,19 @@ function buildGroupAssignSection(adminGroups) {
     var currentCodes = (adminGroups || []).map(function(g){ return g.groupCode; });
     var currentHtml = (adminGroups && adminGroups.length > 0)
         ? adminGroups.map(function(g){
-            return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-                '<span class="adm-badge adm-badge-green" style="font-size:12px;">' + g.displayName + '</span>' +
+            return '<div class="sa-inline-row">' +
+                '<span class="adm-badge adm-badge-green sa-code-badge">' + g.displayName + '</span>' +
                 '<button class="adm-btn adm-btn-sm adm-btn-danger" ' +
                     'data-gcode="' + g.groupCode + '" ' +
                     'onclick="revokeGroup(this.getAttribute(\'data-gcode\'))">' + MEMBER_LIST_MESSAGES.actionRevoke + '</button>' +
                 '</div>';
           }).join('')
-        : '<div style="color:#94a3b8;font-size:13px;margin-bottom:8px;">' + MEMBER_LIST_MESSAGES.groupNoData + '</div>';
+        : '<div class="sa-help-text">' + MEMBER_LIST_MESSAGES.groupNoData + '</div>';
 
     var assignableGroups = GROUP_LIST.filter(function(g){ return !currentCodes.includes(g.code); });
     var assignHtml = assignableGroups.length > 0
-        ? '<div style="display:flex;gap:8px;margin-top:8px;">' +
-          '<select class="adm-select" id="grpAssignSel" style="flex:1;">' +
+        ? '<div class="sa-inline-row is-top">' +
+          '<select class="adm-select" id="grpAssignSel">' +
           '<option value="">' + MEMBER_LIST_MESSAGES.groupSelectPlaceholder + '</option>' +
           assignableGroups.map(function(g){ return '<option value="' + g.code + '">' + g.name + '</option>'; }).join('') +
           '</select>' +
@@ -530,9 +530,9 @@ function switchTab(tab, btn) {
     document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
 
     if (tab === 'info') {
-        document.getElementById('savePermBtn').style.display = '';
+        document.getElementById('savePermBtn').hidden = false;
     } else {
-        document.getElementById('savePermBtn').style.display = 'none';
+        document.getElementById('savePermBtn').hidden = true;
         loadAuditLog();
     }
 }
@@ -542,9 +542,9 @@ function openDetailModal(userIdx) {
     currentUserIdx = userIdx;
     activeCodes    = [];
     document.getElementById('detailModal').classList.add('open');
-    document.getElementById('detailModalBody').innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;">' + MEMBER_LIST_MESSAGES.loading + '</div>';
-    document.getElementById('auditBody').innerHTML       = '<div style="text-align:center;padding:40px;color:#94a3b8;">' + MEMBER_LIST_MESSAGES.loading + '</div>';
-    document.getElementById('savePermBtn').style.display = '';
+    document.getElementById('detailModalBody').innerHTML = '<div class="sa-empty-cell">' + MEMBER_LIST_MESSAGES.loading + '</div>';
+    document.getElementById('auditBody').innerHTML       = '<div class="sa-empty-cell">' + MEMBER_LIST_MESSAGES.loading + '</div>';
+    document.getElementById('savePermBtn').hidden = false;
     document.querySelectorAll('.sa-tab-btn').forEach((b,i) => b.classList.toggle('active', i===0));
     document.querySelectorAll('.sa-tab-panel').forEach((p,i) => p.classList.toggle('active', i===0));
 
@@ -629,15 +629,15 @@ function renderDetailModal(m, policies, adminGroups) {
             '<div class="sa-detail-row"><span class="sa-detail-label">' + MEMBER_LIST_MESSAGES.fieldDepartment + '</span><span>' + (m.adminDepartment || '-') + '</span></div>' +
             '<div class="sa-detail-row"><span class="sa-detail-label">' + MEMBER_LIST_MESSAGES.fieldTeam + '</span><span>' + (m.adminTeam || '-') + '</span></div>' +
         '</div>' +
-        '<div class="sa-section-title" style="margin-top:16px;">' + MEMBER_LIST_MESSAGES.codeSection + '</div>' +
+        '<div class="sa-section-title is-spaced">' + MEMBER_LIST_MESSAGES.codeSection + '</div>' +
         '<div class="sa-perm-code-row">' +
-            '<select class="adm-select sa-perm-code-select" id="permCodeSelect" style="flex:1;">' + codeOptions + '</select>' +
+            '<select class="adm-select sa-perm-code-select" id="permCodeSelect">' + codeOptions + '</select>' +
             '<button class="adm-btn adm-btn-primary" onclick="savePermissionCode(' + m.userIdx + ')">' + MEMBER_LIST_MESSAGES.codeSave + '</button>' +
         '</div>' +
-        '<div style="font-size:12px;color:#94a3b8;margin-top:4px;margin-bottom:8px;">' + MEMBER_LIST_MESSAGES.codeHint + '</div>' +
+        '<div class="sa-help-text">' + MEMBER_LIST_MESSAGES.codeHint + '</div>' +
         buildGroupAssignSection(adminGroups) +
-        '<div class="sa-section-title" style="margin-top:16px;">' + MEMBER_LIST_MESSAGES.permissionSection + '</div>' +
-        '<div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">' + MEMBER_LIST_MESSAGES.permissionHint + '</div>' +
+        '<div class="sa-section-title is-spaced">' + MEMBER_LIST_MESSAGES.permissionSection + '</div>' +
+        '<div class="sa-help-text">' + MEMBER_LIST_MESSAGES.permissionHint + '</div>' +
         '<div class="sa-perm-list">' + permHtml + '</div>';
 }
 
@@ -678,15 +678,15 @@ function loadAuditLog() {
                         : '<span class="sa-status-inactive">' + MEMBER_LIST_MESSAGES.auditStatusRevoked + '</span>';
                     var at = l.grantedAt ? new Date(l.grantedAt).toLocaleString('ko-KR') : '-';
                     return '<tr>' +
-                        '<td><span class="sa-perm-code" style="background:#d1fae5;color:#065f46;border-radius:4px;padding:1px 6px;">' + (l.groupCode || '') + '</span></td>' +
+                        '<td><span class="sa-perm-code sa-code-badge is-green">' + (l.groupCode || '') + '</span></td>' +
                         '<td>' + (l.displayName || '-') + '</td>' +
                         '<td>' + status + '</td>' +
                         '<td>' + (l.grantedByNickname || '-') + '</td>' +
-                        '<td style="font-size:12px;color:#94a3b8;">' + at + '</td>' +
+                        '<td class="sa-muted-cell">' + at + '</td>' +
                         '</tr>';
                 }).join('');
-                html += '<div class="sa-section-title" style="margin-bottom:8px;">' + MEMBER_LIST_MESSAGES.auditGroupTitle + '</div>' +
-                    '<table class="sa-audit-table" style="margin-bottom:20px;">' +
+                html += '<div class="sa-section-title is-tight">' + MEMBER_LIST_MESSAGES.auditGroupTitle + '</div>' +
+                    '<table class="sa-audit-table sa-audit-table-spaced">' +
                     '<thead><tr><th>' + MEMBER_LIST_MESSAGES.auditHeaderGroupCode + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderGroupName + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderStatus + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderActor + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderDate + '</th></tr></thead>' +
                     '<tbody>' + gRows + '</tbody></table>';
             }
@@ -701,21 +701,21 @@ function loadAuditLog() {
                     var grantedBy = l.grantedByNickname || '-';
                     var updatedAt = l.updatedAt ? new Date(l.updatedAt).toLocaleString('ko-KR') : '-';
                     return '<tr>' +
-                        '<td><span class="sa-perm-code" style="background:#e0e7ff;color:#4338ca;border-radius:4px;padding:1px 6px;">' + (l.permissionCode || '') + '</span></td>' +
+                        '<td><span class="sa-perm-code sa-code-badge is-blue">' + (l.permissionCode || '') + '</span></td>' +
                         '<td>' + (l.displayName || '-') + '</td>' +
                         '<td>' + status + '</td>' +
                         '<td>' + grantedBy + '</td>' +
-                        '<td style="font-size:12px;color:#94a3b8;">' + updatedAt + '</td>' +
+                        '<td class="sa-muted-cell">' + updatedAt + '</td>' +
                         '</tr>';
                 }).join('');
-                html += '<div class="sa-section-title" style="margin-bottom:8px;">' + MEMBER_LIST_MESSAGES.auditPermissionTitle + '</div>' +
+                html += '<div class="sa-section-title is-tight">' + MEMBER_LIST_MESSAGES.auditPermissionTitle + '</div>' +
                     '<table class="sa-audit-table">' +
                     '<thead><tr><th>' + MEMBER_LIST_MESSAGES.auditHeaderCode + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderPermissionName + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderStatus + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderActor + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderDate + '</th></tr></thead>' +
                     '<tbody>' + pRows + '</tbody></table>';
             }
 
             document.getElementById('auditBody').innerHTML = html ||
-                '<div style="text-align:center;padding:40px;color:#94a3b8;">' + MEMBER_LIST_MESSAGES.auditEmpty + '</div>';
+                '<div class="sa-empty-cell">' + MEMBER_LIST_MESSAGES.auditEmpty + '</div>';
         });
 }
 
@@ -770,10 +770,10 @@ function searchUsers() {
     const keyword = document.getElementById('grantSearchInput').value.trim();
     const resultEl = document.getElementById('grantSearchResult');
     if (!keyword) {
-        resultEl.innerHTML = '<div style="color:#94a3b8;text-align:center;padding:20px;">' + MEMBER_LIST_MESSAGES.grantSearchRequired + '</div>';
+        resultEl.innerHTML = '<div class="sa-empty-cell is-compact">' + MEMBER_LIST_MESSAGES.grantSearchRequired + '</div>';
         return;
     }
-    resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;">' + MEMBER_LIST_MESSAGES.grantSearching + '</div>';
+    resultEl.innerHTML = '<div class="sa-empty-cell is-compact">' + MEMBER_LIST_MESSAGES.grantSearching + '</div>';
     fetch(CTX + '/superAdmin/users/search?keyword=' + encodeURIComponent(keyword) + '&pageSize=20')
         .then(r => {
             if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -781,14 +781,14 @@ function searchUsers() {
         })
         .then(data => {
             if (!data.users || data.users.length === 0) {
-                resultEl.innerHTML = '<div style="color:#94a3b8;text-align:center;padding:20px;">' + MEMBER_LIST_MESSAGES.grantEmpty + '</div>';
+                resultEl.innerHTML = '<div class="sa-empty-cell is-compact">' + MEMBER_LIST_MESSAGES.grantEmpty + '</div>';
                 return;
             }
             resultEl.innerHTML = data.users.map(function(u) {
                 return '<div class="sa-user-row">' +
                     '<div>' +
-                        '<div style="font-weight:600;">' + (u.nickname || '') + '</div>' +
-                        '<div style="font-size:12px;color:#94a3b8;">' + (u.userId || '') + ' · ' + (u.userEmail || '') + '</div>' +
+                        '<div class="sa-user-primary">' + (u.nickname || '') + '</div>' +
+                        '<div class="sa-user-meta">' + (u.userId || '') + ' · ' + (u.userEmail || '') + '</div>' +
                     '</div>' +
                     '<button class="adm-btn adm-btn-sm adm-btn-primary"' +
                         ' data-id="' + u.userIdx + '"' +
@@ -798,7 +798,7 @@ function searchUsers() {
             }).join('');
         })
         .catch(err => {
-            resultEl.innerHTML = '<div style="color:#ef4444;text-align:center;padding:20px;">' + MEMBER_LIST_MESSAGES.grantErrorPrefix + ' ' + err.message + '</div>';
+            resultEl.innerHTML = '<div class="sa-empty-cell is-compact is-danger">' + MEMBER_LIST_MESSAGES.grantErrorPrefix + ' ' + err.message + '</div>';
         });
 }
 
@@ -879,7 +879,7 @@ function openBulkPermModal() {
                 '</div>' +
                 '</label>';
           }).join('')
-        : '<div style="color:#94a3b8;text-align:center;padding:20px;">' + MEMBER_LIST_MESSAGES.bulkEmptyPolicies + '</div>';
+        : '<div class="sa-empty-cell is-compact">' + MEMBER_LIST_MESSAGES.bulkEmptyPolicies + '</div>';
 
     // allPolicies가 비어있으면 서버에서 불러오기
     if (allPolicies.length === 0) {
