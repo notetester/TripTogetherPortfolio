@@ -38,8 +38,13 @@ import org.triptogether.auth.risk.WafSyncProvider;
 import org.triptogether.auth.risk.WafSyncResult;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -425,6 +430,10 @@ public class LoginRiskPolicyService {
         return loginRiskPolicyMapper.findProviderConfigs();
     }
 
+    public SecurityAssessmentProviderConfigVO getProviderConfigByIdx(Long providerIdx) {
+        return loginRiskPolicyMapper.findProviderConfigByIdx(providerIdx);
+    }
+
     @Transactional
     public void updateProviderConfig(SecurityAssessmentProviderConfigVO config) {
         updateProviderConfig(config, null);
@@ -434,6 +443,15 @@ public class LoginRiskPolicyService {
     public void updateProviderConfig(SecurityAssessmentProviderConfigVO config, Long actorUserIdx) {
         SecurityAssessmentProviderConfigVO before = loginRiskPolicyMapper.findProviderConfigByIdx(config.getProviderIdx());
         String beforeSnapshot = toProviderConfigSnapshot(before);
+        config.setUpdatedByUserIdx(actorUserIdx);
+        if (before != null) {
+            if (config.getProviderCode() == null || config.getProviderCode().isBlank()) {
+                config.setProviderCode(before.getProviderCode());
+            }
+            if (config.getProviderKind() == null || config.getProviderKind().isBlank()) {
+                config.setProviderKind(before.getProviderKind());
+            }
+        }
         loginRiskPolicyMapper.updateProviderConfig(config);
         SecurityAssessmentProviderConfigVO after = loginRiskPolicyMapper.findProviderConfigByIdx(config.getProviderIdx());
         SecurityAssessmentProviderConfigVO effective = after == null ? config : after;
@@ -466,10 +484,277 @@ public class LoginRiskPolicyService {
         return loginRiskPolicyMapper.findProviderHealthCheckHistories(emptyToNull(providerCode), safeLimit);
     }
 
+    public ProviderConfigSearchResult searchProviderConfigs(ProviderConfigFilter filter) {
+        Map<String, Object> map = filter.toFilterMap();
+        int total = loginRiskPolicyMapper.countProviderConfigs(map);
+        List<SecurityAssessmentProviderConfigVO> rows = loginRiskPolicyMapper.searchProviderConfigs(map);
+        return new ProviderConfigSearchResult(rows, total, filter.page, filter.pageSize);
+    }
+
+    public List<SecurityAssessmentProviderConfigVO> exportProviderConfigs(ProviderConfigFilter filter) {
+        Map<String, Object> map = filter.toFilterMap();
+        map.put("pageSize", null);
+        map.put("offset", 0);
+        return loginRiskPolicyMapper.searchProviderConfigs(map);
+    }
+
+    @Transactional
+    public SecurityAssessmentProviderConfigVO createProviderConfig(SecurityAssessmentProviderConfigVO config, Long actorUserIdx) {
+        if (config.getProviderCode() == null || config.getProviderCode().isBlank()) {
+            config.setProviderCode(generateProviderCode(config.getProviderKind()));
+        } else if (loginRiskPolicyMapper.countProviderConfigByCode(config.getProviderCode()) > 0) {
+            throw new IllegalArgumentException(msg("ko", "security.provider.code.duplicate"));
+        }
+        if (config.getProviderKind() == null || config.getProviderKind().isBlank()) {
+            throw new IllegalArgumentException(msg("ko", "security.provider.kind.required"));
+        }
+        if (config.getProviderName() == null || config.getProviderName().isBlank()) {
+            throw new IllegalArgumentException(msg("ko", "security.provider.name.required"));
+        }
+        if (config.getTimeoutMillis() == null || config.getTimeoutMillis() <= 0) {
+            config.setTimeoutMillis(3000);
+        }
+        if (config.getFailOpen() == null) {
+            config.setFailOpen(1);
+        }
+        if (config.getPriority() == null) {
+            config.setPriority(100);
+        }
+        if (config.getHealthCheckIntervalSec() == null || config.getHealthCheckIntervalSec() <= 0) {
+            config.setHealthCheckIntervalSec(300);
+        }
+        if (config.getRetryCount() == null || config.getRetryCount() < 0) {
+            config.setRetryCount(0);
+        }
+        if (config.getRetryBackoffMs() == null || config.getRetryBackoffMs() < 0) {
+            config.setRetryBackoffMs(500);
+        }
+        if (config.getNextHealthCheckAt() == null) {
+            config.setNextHealthCheckAt(LocalDateTime.now().plusSeconds((long)(Math.random() * config.getHealthCheckIntervalSec())));
+        }
+        config.setCreatedByUserIdx(actorUserIdx);
+        config.setUpdatedByUserIdx(actorUserIdx);
+
+        loginRiskPolicyMapper.insertProviderConfig(config);
+
+        SecurityAssessmentProviderConfigVO after = loginRiskPolicyMapper.findProviderConfigByIdx(config.getProviderIdx());
+        SecurityAssessmentProviderConfigVO effective = after == null ? config : after;
+        loginRiskPolicyMapper.insertProviderConfigHistory(
+                effective.getProviderIdx(),
+                effective.getProviderCode(),
+                effective.getProviderKind(),
+                "CREATE",
+                actorUserIdx,
+                "{}",
+                toProviderConfigSnapshot(effective)
+        );
+        loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
+                "PROVIDER_CONFIG_CREATE",
+                actorUserIdx,
+                "PROVIDER",
+                effective.getProviderCode(),
+                "SECURITY_ASSESSMENT_PROVIDER_CONFIG",
+                effective.getProviderIdx(),
+                "SECURITY.PROVIDER.CONFIG_CREATE",
+                jsonArg("providerIdx", effective.getProviderIdx(), "kind", effective.getProviderKind()),
+                "code=" + effective.getProviderCode() + ", kind=" + effective.getProviderKind()
+        );
+        return effective;
+    }
+
+    @Transactional
+    public void softDeleteProviderConfig(Long providerIdx, Long actorUserIdx) {
+        SecurityAssessmentProviderConfigVO before = loginRiskPolicyMapper.findProviderConfigByIdx(providerIdx);
+        if (before == null || before.getDeletedAt() != null) {
+            return;
+        }
+        loginRiskPolicyMapper.softDeleteProviderConfig(providerIdx, actorUserIdx);
+        loginRiskPolicyMapper.insertProviderConfigHistory(
+                providerIdx,
+                before.getProviderCode(),
+                before.getProviderKind(),
+                "SOFT_DELETE",
+                actorUserIdx,
+                toProviderConfigSnapshot(before),
+                "{}"
+        );
+        loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
+                "PROVIDER_CONFIG_DELETE",
+                actorUserIdx,
+                "PROVIDER",
+                before.getProviderCode(),
+                "SECURITY_ASSESSMENT_PROVIDER_CONFIG",
+                providerIdx,
+                "SECURITY.PROVIDER.CONFIG_DELETE",
+                jsonArg("providerIdx", providerIdx, "code", before.getProviderCode()),
+                "soft delete code=" + before.getProviderCode()
+        );
+    }
+
+    @Transactional
+    public void restoreProviderConfig(Long providerIdx, Long actorUserIdx) {
+        SecurityAssessmentProviderConfigVO before = loginRiskPolicyMapper.findProviderConfigByIdx(providerIdx);
+        if (before == null || before.getDeletedAt() == null) {
+            return;
+        }
+        loginRiskPolicyMapper.restoreProviderConfig(providerIdx, actorUserIdx);
+        SecurityAssessmentProviderConfigVO after = loginRiskPolicyMapper.findProviderConfigByIdx(providerIdx);
+        loginRiskPolicyMapper.insertProviderConfigHistory(
+                providerIdx,
+                before.getProviderCode(),
+                before.getProviderKind(),
+                "RESTORE",
+                actorUserIdx,
+                toProviderConfigSnapshot(before),
+                toProviderConfigSnapshot(after == null ? before : after)
+        );
+        loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
+                "PROVIDER_CONFIG_RESTORE",
+                actorUserIdx,
+                "PROVIDER",
+                before.getProviderCode(),
+                "SECURITY_ASSESSMENT_PROVIDER_CONFIG",
+                providerIdx,
+                "SECURITY.PROVIDER.CONFIG_RESTORE",
+                jsonArg("providerIdx", providerIdx, "code", before.getProviderCode()),
+                "restore code=" + before.getProviderCode()
+        );
+    }
+
+    @Transactional
+    public int bulkUpdateProviderEnabled(List<Long> idxList, boolean enabled, Long actorUserIdx) {
+        if (idxList == null || idxList.isEmpty()) return 0;
+        int affected = 0;
+        for (Long idx : idxList) {
+            SecurityAssessmentProviderConfigVO before = loginRiskPolicyMapper.findProviderConfigByIdx(idx);
+            if (before == null || before.getDeletedAt() != null) continue;
+            if (before.isEnabled() == enabled) continue;
+            before.setEnabled(enabled);
+            before.setUpdatedByUserIdx(actorUserIdx);
+            loginRiskPolicyMapper.updateProviderConfig(before);
+            SecurityAssessmentProviderConfigVO after = loginRiskPolicyMapper.findProviderConfigByIdx(idx);
+            loginRiskPolicyMapper.insertProviderConfigHistory(
+                    idx,
+                    before.getProviderCode(),
+                    before.getProviderKind(),
+                    enabled ? "BULK_ENABLE" : "BULK_DISABLE",
+                    actorUserIdx,
+                    toProviderConfigSnapshot(before),
+                    toProviderConfigSnapshot(after == null ? before : after)
+            );
+            affected++;
+        }
+        return affected;
+    }
+
+    @Transactional
+    public int bulkSoftDeleteProviderConfigs(List<Long> idxList, Long actorUserIdx) {
+        if (idxList == null || idxList.isEmpty()) return 0;
+        int affected = 0;
+        for (Long idx : idxList) {
+            SecurityAssessmentProviderConfigVO before = loginRiskPolicyMapper.findProviderConfigByIdx(idx);
+            if (before == null || before.getDeletedAt() != null) continue;
+            softDeleteProviderConfig(idx, actorUserIdx);
+            affected++;
+        }
+        return affected;
+    }
+
+    @Transactional
+    public int bulkRestoreProviderConfigs(List<Long> idxList, Long actorUserIdx) {
+        if (idxList == null || idxList.isEmpty()) return 0;
+        int affected = 0;
+        for (Long idx : idxList) {
+            SecurityAssessmentProviderConfigVO before = loginRiskPolicyMapper.findProviderConfigByIdx(idx);
+            if (before == null || before.getDeletedAt() == null) continue;
+            restoreProviderConfig(idx, actorUserIdx);
+            affected++;
+        }
+        return affected;
+    }
+
+    @Transactional
+    public int bulkCheckProviderHealth(List<Long> idxList, Long actorUserIdx) {
+        if (idxList == null || idxList.isEmpty()) return 0;
+        int affected = 0;
+        for (Long idx : idxList) {
+            try {
+                checkProviderHealth(idx, actorUserIdx);
+                affected++;
+            } catch (Exception ignored) {}
+        }
+        return affected;
+    }
+
+    private String generateProviderCode(String kind) {
+        String prefix = (kind == null || kind.isBlank()) ? "PROVIDER" : kind.toUpperCase(Locale.ROOT);
+        for (int i = 0; i < 5; i++) {
+            String suffix = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase(Locale.ROOT);
+            String candidate = (prefix + "_" + suffix);
+            if (candidate.length() > 80) candidate = candidate.substring(0, 80);
+            if (loginRiskPolicyMapper.countProviderConfigByCode(candidate) == 0) {
+                return candidate;
+            }
+        }
+        return prefix + "_" + System.currentTimeMillis();
+    }
+
+    public static class ProviderConfigFilter {
+        public String keyword;
+        public String kind;
+        public String status;
+        public String enabled;
+        public String failOpen;
+        public String category;
+        public String triggerEvent;
+        public boolean includeDeleted;
+        public boolean onlyDeleted;
+        public String sort;
+        public int page = 1;
+        public int pageSize = 20;
+        public List<Long> idxList;
+
+        public Map<String, Object> toFilterMap() {
+            Map<String, Object> m = new HashMap<>();
+            m.put("keyword", emptyToNull(keyword));
+            m.put("kind", emptyToNull(kind));
+            m.put("status", emptyToNull(status));
+            m.put("enabled", emptyToNull(enabled));
+            m.put("failOpen", emptyToNull(failOpen));
+            m.put("category", emptyToNull(category));
+            m.put("triggerEvent", emptyToNull(triggerEvent));
+            m.put("includeDeleted", includeDeleted);
+            m.put("onlyDeleted", onlyDeleted);
+            m.put("sort", emptyToNull(sort));
+            m.put("idxList", (idxList == null || idxList.isEmpty()) ? null : idxList);
+            int safePage = page < 1 ? 1 : page;
+            int safeSize = pageSize;
+            if (safeSize <= 0) {
+                m.put("pageSize", null);
+                m.put("offset", 0);
+            } else {
+                m.put("pageSize", safeSize);
+                m.put("offset", (safePage - 1) * safeSize);
+            }
+            return m;
+        }
+
+        private static String emptyToNull(String value) {
+            return (value == null || value.isBlank()) ? null : value.trim();
+        }
+    }
+
+    public record ProviderConfigSearchResult(List<SecurityAssessmentProviderConfigVO> rows,
+                                             int total,
+                                             int page,
+                                             int pageSize) {
+    }
+
     @Scheduled(fixedDelayString = "${security.provider.healthcheck.fixed-delay-ms:300000}")
     @Transactional
     public void runProviderHealthCheckOnce() {
-        List<SecurityAssessmentProviderConfigVO> providers = loginRiskPolicyMapper.findProviderConfigsForHealthCheck();
+        LocalDateTime now = LocalDateTime.now();
+        List<SecurityAssessmentProviderConfigVO> providers = loginRiskPolicyMapper.findProviderConfigsDueForHealthCheck(now);
         for (SecurityAssessmentProviderConfigVO provider : providers) {
             String beforeStatus = provider.getStatus();
             ProviderHealth health = evaluateProviderHealth(provider);
@@ -485,6 +770,9 @@ public class LoginRiskPolicyService {
                     null,
                     healthDetail
             );
+            int interval = provider.getHealthCheckIntervalSec() != null && provider.getHealthCheckIntervalSec() > 0
+                    ? provider.getHealthCheckIntervalSec() : 300;
+            loginRiskPolicyMapper.updateProviderNextHealthCheckAt(provider.getProviderIdx(), now.plusSeconds(interval));
         }
     }
 
@@ -1052,7 +1340,20 @@ public class LoginRiskPolicyService {
                 + jsonPair("timeoutMillis", provider.getTimeoutMillis()) + ","
                 + jsonPair("failOpen", provider.getFailOpen()) + ","
                 + jsonPair("status", provider.getStatus()) + ","
-                + jsonPair("description", provider.getDescription())
+                + jsonPair("description", provider.getDescription()) + ","
+                + jsonPair("priority", provider.getPriority()) + ","
+                + jsonPair("healthCheckIntervalSec", provider.getHealthCheckIntervalSec()) + ","
+                + jsonPair("usageCategories", provider.getUsageCategories()) + ","
+                + jsonPair("triggerEvents", provider.getTriggerEvents()) + ","
+                + jsonPair("requestMethod", provider.getRequestMethod()) + ","
+                + jsonPair("requestHeadersJson", provider.getRequestHeadersJson()) + ","
+                + jsonPair("requestTemplateJson", provider.getRequestTemplateJson()) + ","
+                + jsonPair("responseMappingJson", provider.getResponseMappingJson()) + ","
+                + jsonPair("maxConcurrent", provider.getMaxConcurrent()) + ","
+                + jsonPair("ratePerMinute", provider.getRatePerMinute()) + ","
+                + jsonPair("retryCount", provider.getRetryCount()) + ","
+                + jsonPair("retryBackoffMs", provider.getRetryBackoffMs()) + ","
+                + jsonPair("tags", provider.getTags())
                 + "}";
     }
 

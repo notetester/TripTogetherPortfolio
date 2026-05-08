@@ -240,10 +240,10 @@
     <sql id="ProviderConfigSearchWhere">
         WHERE 1 = 1
         <choose>
-            <when test="filters.includeDeleted == true and filters.onlyDeleted == true">
+            <when test="filters.onlyDeleted">
                 AND p.deleted_at IS NOT NULL
             </when>
-            <when test="filters.includeDeleted == true">
+            <when test="filters.includeDeleted">
                 <!-- 삭제 포함: 조건 없음 -->
             </when>
             <otherwise>

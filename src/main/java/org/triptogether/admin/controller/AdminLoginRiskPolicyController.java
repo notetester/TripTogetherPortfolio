@@ -1,8 +1,13 @@
 package org.triptogether.admin.controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.springframework.context.MessageSource;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +19,18 @@ import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.SecurityAppealPolicyVO;
 import org.triptogether.auth.vo.UsersVO;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin/login-risk")
@@ -224,10 +237,73 @@ public class AdminLoginRiskPolicyController {
 
     @GetMapping("/provider-configs")
     public String providerConfigs(Model model) {
-        model.addAttribute("providers", loginRiskPolicyService.getProviderConfigs());
         model.addAttribute("activeMenu", "securityProviderConfigs");
         model.addAttribute("pageTitleCode", "security.admin.provider.title");
         return "admin/login-risk/provider-configs";
+    }
+
+    @GetMapping("/provider-configs/api")
+    @ResponseBody
+    public Map<String, Object> searchProviderConfigsApi(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "kind", required = false) String kind,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "enabled", required = false) String enabled,
+            @RequestParam(value = "failOpen", required = false) String failOpen,
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "triggerEvent", required = false) String triggerEvent,
+            @RequestParam(value = "includeDeleted", required = false, defaultValue = "false") boolean includeDeleted,
+            @RequestParam(value = "onlyDeleted", required = false, defaultValue = "false") boolean onlyDeleted,
+            @RequestParam(value = "sort", required = false, defaultValue = "priority_desc") String sort,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize) {
+        LoginRiskPolicyService.ProviderConfigFilter filter = new LoginRiskPolicyService.ProviderConfigFilter();
+        filter.keyword = keyword;
+        filter.kind = kind;
+        filter.status = status;
+        filter.enabled = enabled;
+        filter.failOpen = failOpen;
+        filter.category = category;
+        filter.triggerEvent = triggerEvent;
+        filter.includeDeleted = includeDeleted;
+        filter.onlyDeleted = onlyDeleted;
+        filter.sort = sort;
+        filter.page = Math.max(1, page);
+        filter.pageSize = Math.max(0, Math.min(pageSize, 500));
+
+        LoginRiskPolicyService.ProviderConfigSearchResult result = loginRiskPolicyService.searchProviderConfigs(filter);
+        Map<String, Object> body = new HashMap<>();
+        body.put("rows", result.rows());
+        body.put("total", result.total());
+        body.put("page", result.page());
+        body.put("pageSize", result.pageSize());
+        int totalPage = filter.pageSize <= 0 ? 1 : Math.max(1, (int) Math.ceil((double) result.total() / filter.pageSize));
+        body.put("totalPage", totalPage);
+        return body;
+    }
+
+    @GetMapping("/provider-configs/{providerIdx}/api")
+    @ResponseBody
+    public SecurityAssessmentProviderConfigVO getProviderConfigApi(@PathVariable Long providerIdx) {
+        return loginRiskPolicyService.getProviderConfigByIdx(providerIdx);
+    }
+
+    @PostMapping("/provider-configs")
+    public String createProviderConfig(SecurityAssessmentProviderConfigVO config,
+                                       @RequestParam(value = "enabled", required = false) String enabled,
+                                       @RequestParam(value = "failOpen", required = false) Integer failOpen,
+                                       HttpSession session,
+                                       RedirectAttributes redirectAttributes,
+                                       Locale locale) {
+        config.setEnabled(enabled != null);
+        config.setFailOpen(failOpen == null ? 1 : failOpen);
+        try {
+            SecurityAssessmentProviderConfigVO saved = loginRiskPolicyService.createProviderConfig(config, currentAdminIdx(session));
+            redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.providerCreated") + " : " + saved.getProviderCode());
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/admin/login-risk/provider-configs";
     }
 
     @PostMapping("/provider-configs/{providerIdx}")
@@ -246,6 +322,26 @@ public class AdminLoginRiskPolicyController {
         return "redirect:/admin/login-risk/provider-configs";
     }
 
+    @PostMapping("/provider-configs/{providerIdx}/delete")
+    public String softDeleteProviderConfig(@PathVariable Long providerIdx,
+                                           HttpSession session,
+                                           RedirectAttributes redirectAttributes,
+                                           Locale locale) {
+        loginRiskPolicyService.softDeleteProviderConfig(providerIdx, currentAdminIdx(session));
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.providerDeleted"));
+        return "redirect:/admin/login-risk/provider-configs";
+    }
+
+    @PostMapping("/provider-configs/{providerIdx}/restore")
+    public String restoreProviderConfig(@PathVariable Long providerIdx,
+                                        HttpSession session,
+                                        RedirectAttributes redirectAttributes,
+                                        Locale locale) {
+        loginRiskPolicyService.restoreProviderConfig(providerIdx, currentAdminIdx(session));
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.providerRestored"));
+        return "redirect:/admin/login-risk/provider-configs";
+    }
+
     @PostMapping("/provider-configs/{providerIdx}/check")
     public String checkProviderConfig(@PathVariable Long providerIdx,
                                       HttpSession session,
@@ -254,6 +350,187 @@ public class AdminLoginRiskPolicyController {
         loginRiskPolicyService.checkProviderHealth(providerIdx, currentAdminIdx(session));
         redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.providerChecked"));
         return "redirect:/admin/login-risk/provider-configs";
+    }
+
+    @PostMapping("/provider-configs/bulk")
+    @ResponseBody
+    public Map<String, Object> bulkProviderConfigs(@RequestParam("action") String action,
+                                                   @RequestParam(value = "ids", required = false) String idsCsv,
+                                                   HttpSession session) {
+        List<Long> ids = parseIds(idsCsv);
+        Long actor = currentAdminIdx(session);
+        int affected = 0;
+        switch (action == null ? "" : action) {
+            case "enable" -> affected = loginRiskPolicyService.bulkUpdateProviderEnabled(ids, true, actor);
+            case "disable" -> affected = loginRiskPolicyService.bulkUpdateProviderEnabled(ids, false, actor);
+            case "delete" -> affected = loginRiskPolicyService.bulkSoftDeleteProviderConfigs(ids, actor);
+            case "restore" -> affected = loginRiskPolicyService.bulkRestoreProviderConfigs(ids, actor);
+            case "check" -> affected = loginRiskPolicyService.bulkCheckProviderHealth(ids, actor);
+            default -> { /* unknown action */ }
+        }
+        Map<String, Object> body = new HashMap<>();
+        body.put("affected", affected);
+        body.put("requested", ids.size());
+        body.put("action", action);
+        return body;
+    }
+
+    @GetMapping("/provider-configs/export")
+    public ResponseEntity<byte[]> exportProviderConfigs(
+            @RequestParam(value = "scope", required = false, defaultValue = "filtered") String scope,
+            @RequestParam(value = "format", required = false, defaultValue = "csv") String format,
+            @RequestParam(value = "selectedIds", required = false) String selectedIds,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "kind", required = false) String kind,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "enabled", required = false) String enabled,
+            @RequestParam(value = "failOpen", required = false) String failOpen,
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "triggerEvent", required = false) String triggerEvent,
+            @RequestParam(value = "includeDeleted", required = false, defaultValue = "false") boolean includeDeleted,
+            @RequestParam(value = "onlyDeleted", required = false, defaultValue = "false") boolean onlyDeleted,
+            @RequestParam(value = "sort", required = false, defaultValue = "priority_desc") String sort) {
+        try {
+            LoginRiskPolicyService.ProviderConfigFilter filter = new LoginRiskPolicyService.ProviderConfigFilter();
+            filter.sort = sort;
+            filter.pageSize = 0;
+            if ("all".equals(scope)) {
+                filter.includeDeleted = true;
+            } else if ("selected".equals(scope)) {
+                filter.idxList = parseIds(selectedIds);
+                filter.includeDeleted = true;
+                if (filter.idxList.isEmpty()) {
+                    return ResponseEntity.badRequest().build();
+                }
+            } else {
+                filter.keyword = keyword;
+                filter.kind = kind;
+                filter.status = status;
+                filter.enabled = enabled;
+                filter.failOpen = failOpen;
+                filter.category = category;
+                filter.triggerEvent = triggerEvent;
+                filter.includeDeleted = includeDeleted;
+                filter.onlyDeleted = onlyDeleted;
+            }
+            List<SecurityAssessmentProviderConfigVO> data = loginRiskPolicyService.exportProviderConfigs(filter);
+            if ("excel".equalsIgnoreCase(format)) {
+                byte[] bytes = buildProviderConfigExcel(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"provider-configs.xlsx\"")
+                        .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(bytes);
+            }
+            byte[] bytes = buildProviderConfigCsv(data);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"provider-configs.csv\"")
+                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                    .body(bytes);
+        } catch (Exception e) {
+            log.error("Provider 설정 내보내기 실패", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private static final String[] PROVIDER_EXPORT_HEADERS = {
+            "providerIdx","providerCode","providerKind","providerName","enabled","status","priority",
+            "endpointUrl","apiKeyRef","modelName","timeoutMillis","failOpen","requestMethod",
+            "usageCategories","triggerEvents","maxConcurrent","ratePerMinute","retryCount","retryBackoffMs",
+            "healthCheckIntervalSec","nextHealthCheckAt","lastCheckedAt","tags","description",
+            "currentVersionNo","createdAt","updatedAt","deletedAt"
+    };
+
+    private byte[] buildProviderConfigCsv(List<SecurityAssessmentProviderConfigVO> data) {
+        StringBuilder sb = new StringBuilder("﻿");
+        sb.append(String.join(",", PROVIDER_EXPORT_HEADERS)).append('\n');
+        for (SecurityAssessmentProviderConfigVO p : data) {
+            sb.append(csvRowOf(p)).append('\n');
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private String csvRowOf(SecurityAssessmentProviderConfigVO p) {
+        Object[] cols = providerExportColumns(p);
+        StringBuilder row = new StringBuilder();
+        for (int i = 0; i < cols.length; i++) {
+            if (i > 0) row.append(',');
+            row.append(csvVal(cols[i]));
+        }
+        return row.toString();
+    }
+
+    private byte[] buildProviderConfigExcel(List<SecurityAssessmentProviderConfigVO> data) throws Exception {
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            var sheet = wb.createSheet("providers");
+            var hRow = sheet.createRow(0);
+            for (int i = 0; i < PROVIDER_EXPORT_HEADERS.length; i++) {
+                hRow.createCell(i).setCellValue(PROVIDER_EXPORT_HEADERS[i]);
+            }
+            int r = 1;
+            for (SecurityAssessmentProviderConfigVO p : data) {
+                Object[] cols = providerExportColumns(p);
+                var row = sheet.createRow(r++);
+                for (int i = 0; i < cols.length; i++) {
+                    row.createCell(i).setCellValue(cols[i] == null ? "" : String.valueOf(cols[i]));
+                }
+            }
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private Object[] providerExportColumns(SecurityAssessmentProviderConfigVO p) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return new Object[]{
+                p.getProviderIdx(),
+                p.getProviderCode(),
+                p.getProviderKind(),
+                p.getProviderName(),
+                p.isEnabled() ? "1" : "0",
+                p.getStatus(),
+                p.getPriority(),
+                p.getEndpointUrl(),
+                p.getApiKeyRef(),
+                p.getModelName(),
+                p.getTimeoutMillis(),
+                p.getFailOpen(),
+                p.getRequestMethod(),
+                p.getUsageCategories(),
+                p.getTriggerEvents(),
+                p.getMaxConcurrent(),
+                p.getRatePerMinute(),
+                p.getRetryCount(),
+                p.getRetryBackoffMs(),
+                p.getHealthCheckIntervalSec(),
+                p.getNextHealthCheckAt() == null ? "" : p.getNextHealthCheckAt().format(fmt),
+                p.getLastCheckedAt() == null ? "" : p.getLastCheckedAt().format(fmt),
+                p.getTags(),
+                p.getDescription(),
+                p.getCurrentVersionNo(),
+                p.getCreatedAt() == null ? "" : p.getCreatedAt().format(fmt),
+                p.getUpdatedAt() == null ? "" : p.getUpdatedAt().format(fmt),
+                p.getDeletedAt() == null ? "" : p.getDeletedAt().format(fmt)
+        };
+    }
+
+    private String csvVal(Object value) {
+        if (value == null) return "";
+        String s = String.valueOf(value);
+        boolean needsQuote = s.contains(",") || s.contains("\"") || s.contains("\n") || s.contains("\r");
+        if (needsQuote) {
+            return "\"" + s.replace("\"", "\"\"") + "\"";
+        }
+        return s;
+    }
+
+    private List<Long> parseIds(String idsCsv) {
+        if (idsCsv == null || idsCsv.isBlank()) return Collections.emptyList();
+        return Arrays.stream(idsCsv.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty() && s.matches("\\d+"))
+                .map(Long::parseLong)
+                .distinct()
+                .toList();
     }
 
 
