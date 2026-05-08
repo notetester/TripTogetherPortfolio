@@ -181,7 +181,7 @@
                     <th class="js-email-sort" data-sort="expiresAt" onclick="sortBy('expiresAt')">${msg_admin_context_expiresAt}</th>
                     <th class="js-email-sort" data-sort="ip" onclick="sortBy('ip')">${msg_admin_common_ip}</th>
                     <th class="js-email-sort" data-sort="requestId" onclick="sortBy('requestId')">${msg_admin_context_requestId}</th>
-                    <th></th>
+                    <th onclick="openFirstEmailRequestDetail()">${msg_admin_common_viewDetail}</th>
                 </tr>
                 </thead>
                 <tbody id="emailRequestRowsBody">
@@ -210,7 +210,7 @@
                         <td class="adm-email-check-cell">
                             <input type="checkbox" class="adm-check js-email-row-check" value="${item.emailVerificationRequestIdx}" aria-label="행 선택">
                         </td>
-                        <td>
+                        <td class="adm-email-action-cell" onclick="openEmailRequestCellAction(event, this)">
                             <button type="button" class="adm-cell-link"
                                     data-date="${itemDateFilter}"
                                     onclick="filterByDate(this.dataset.date)">
@@ -218,7 +218,7 @@
                                 <span class="adm-cell-link-note">${msg_admin_common_sameDate}</span>
                             </button>
                         </td>
-                        <td>
+                        <td class="adm-email-action-cell" onclick="openEmailRequestCellAction(event, this)">
                             <c:choose>
                                 <c:when test="${not empty item.userIdx}">
                                     <button type="button"
@@ -238,7 +238,7 @@
                                 </c:otherwise>
                             </c:choose>
                         </td>
-                        <td>
+                        <td class="adm-email-action-cell" onclick="openEmailRequestCellAction(event, this)">
                             <button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="${item.purpose}" onclick="applySelectFilter(this)">
                                 <span><c:choose>
                                     <c:when test="${item.purpose == 'PROFILE_EMAIL'}">${msg_admin_emailRequests_purpose_profileEmail}</c:when>
@@ -250,13 +250,13 @@
                                 <span class="adm-cell-link-note">${msg_admin_common_sameValue}</span>
                             </button>
                         </td>
-                        <td>
+                        <td class="adm-email-action-cell" onclick="openEmailRequestCellAction(event, this)">
                             <button type="button" class="adm-cell-link" data-keyword="${item.pendingEmail}" onclick="applyKeywordFilter(this)">
                                 <span><c:out value="${item.pendingEmail}"/></span>
                                 <span class="adm-cell-link-note">${msg_admin_common_sameEmail}</span>
                             </button>
                         </td>
-                        <td>
+                        <td class="adm-email-action-cell" onclick="openEmailRequestCellAction(event, this)">
                             <button type="button" class="adm-cell-link" data-param-name="status" data-param-value="${item.status}" onclick="applySelectFilter(this)">
                                 <span class="status-badge ${item.status}">
                                     <c:choose>
@@ -270,7 +270,7 @@
                                 </span>
                             </button>
                         </td>
-                        <td>
+                        <td class="adm-email-action-cell" onclick="openEmailRequestCellAction(event, this)">
                             <c:choose>
                                 <c:when test="${not empty item.verifiedAtDate}">
                                     <button type="button" class="adm-cell-link"
@@ -283,7 +283,7 @@
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
                         </td>
-                        <td>
+                        <td class="adm-email-action-cell" onclick="openEmailRequestCellAction(event, this)">
                             <c:choose>
                                 <c:when test="${not empty item.appliedAtDate}">
                                     <button type="button" class="adm-cell-link"
@@ -296,7 +296,7 @@
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
                         </td>
-                        <td>
+                        <td class="adm-email-action-cell" onclick="openEmailRequestCellAction(event, this)">
                             <c:choose>
                                 <c:when test="${not empty item.expiredAtDate}">
                                     <button type="button" class="adm-cell-link"
@@ -309,7 +309,7 @@
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
                         </td>
-                        <td>
+                        <td class="adm-email-action-cell" onclick="openEmailRequestCellAction(event, this)">
                             <c:choose>
                                 <c:when test="${not empty item.ipAddress}">
                                     <button type="button"
@@ -323,7 +323,7 @@
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
                         </td>
-                        <td>
+                        <td class="adm-email-action-cell" onclick="openEmailRequestCellAction(event, this)">
                             <button type="button"
                                     class="adm-cell-link"
                                     data-keyword="${empty item.flowTraceId ? item.requestId : item.flowTraceId}"
@@ -334,7 +334,7 @@
                                 </c:if>
                             </button>
                         </td>
-                        <td>
+                        <td class="adm-email-action-cell" onclick="openEmailRequestCellAction(event, this)">
                             <button type="button" class="adm-row-btn detail"
                                     data-time="${itemTimeDisplay}"
                                     data-user="${fn:escapeXml(item.nickname)} (@${fn:escapeXml(item.userId)})"
@@ -704,6 +704,29 @@ function exportSelectedEmailRequests() {
     }
     var dropdown = document.getElementById('emailExportDropdown');
     if (dropdown) dropdown.classList.remove('open');
+}
+function emailRequestDetailButton(row) {
+    return row ? row.querySelector('.adm-row-btn.detail') : null;
+}
+function openEmailRequestRowDetail(row) {
+    var detail = emailRequestDetailButton(row);
+    if (detail) openVerificationDetail(detail);
+}
+function openFirstEmailRequestDetail() {
+    openEmailRequestRowDetail(document.querySelector('#emailRequestRowsBody .js-email-row'));
+}
+function openEmailRequestCellAction(event, cell) {
+    if (event && event.target && event.target.closest('button, a, input, select, textarea, label')) {
+        return true;
+    }
+    var primary = cell ? cell.querySelector('button.adm-cell-link, button.adm-inline-link, button.adm-row-btn.detail') : null;
+    if (primary) primary.click();
+    else openEmailRequestRowDetail(cell ? cell.closest('.js-email-row') : null);
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    return false;
 }
 function openVerificationDetail(btn) {
     var d = btn.dataset;

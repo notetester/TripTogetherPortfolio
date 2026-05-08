@@ -202,7 +202,7 @@
                     <th class="js-business-sort" data-sort="company" onclick="businessSortBy('company')">${msg_admin_business_column_companyInfo}</th>
                     <th class="js-business-sort" data-sort="status" onclick="businessSortBy('status')">${msg_admin_common_status}</th>
                     <th class="js-business-sort" data-sort="createdAt" onclick="businessSortBy('createdAt')">${msg_admin_business_column_appliedAt}</th>
-                    <th>${msg_admin_business_column_review}</th>
+                    <th onclick="openFirstBusinessColumnAction('review')">${msg_admin_business_column_review}</th>
                 </tr>
                 </thead>
                 <tbody id="businessRowsBody">
@@ -522,6 +522,44 @@ function businessDetailSection(title, fields, options) {
 function closeBusinessApplicationDetailModal() {
     const modal = document.getElementById('businessApplicationDetailModal');
     if (modal) modal.classList.remove('open');
+}
+function businessOpenDetailForRow(row, focusKey) {
+    if (!row) return;
+    if (focusKey === 'applicant') {
+        const userIdx = row.dataset.userIdx;
+        if (userIdx) openAdminMemberContext(userIdx, 'actions');
+        return;
+    }
+    if (focusKey === 'review') {
+        if (row.dataset.status === 'PENDING') {
+            focusBusinessReviewActions(row.dataset.applicationIdx);
+            return;
+        }
+        focusKey = 'status';
+    }
+    const trigger = row.querySelector('.js-open-business-detail') || row.querySelector('.adm-cell-link');
+    if (!trigger) return;
+    const previousFocus = trigger.getAttribute('data-default-focus');
+    if (focusKey) trigger.setAttribute('data-default-focus', focusKey);
+    openBusinessApplicationDetail(trigger);
+    if (previousFocus == null) trigger.removeAttribute('data-default-focus');
+    else trigger.setAttribute('data-default-focus', previousFocus);
+}
+function openFirstBusinessColumnAction(focusKey) {
+    const row = document.querySelector('#businessRowsBody .js-business-row');
+    businessOpenDetailForRow(row, focusKey);
+}
+function openBusinessCellAction(event, cell, focusKey) {
+    if (event && event.target && event.target.closest('button, a, input, select, textarea, label, form, .js-admin-translation-widget')) {
+        return true;
+    }
+    const row = cell ? cell.closest('.js-business-row') : null;
+    businessOpenDetailForRow(row, focusKey);
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    return false;
 }
 function openBusinessApplicationDetail(trigger) {
     const row = trigger ? trigger.closest('.js-business-row') : null;

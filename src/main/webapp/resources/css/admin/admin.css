@@ -3446,6 +3446,9 @@ body.sa-light .adm-admin-list-overflow-panel {
     font-size: 10px;
     font-weight: 900;
 }
+.adm-member-section-table th[onclick] {
+    cursor: pointer;
+}
 .adm-member-section-table tbody.is-loading {
     opacity: .55;
     pointer-events: none;
@@ -3791,6 +3794,13 @@ body.sa-light .adm-member-section-table th.js-member-sort.sorted {
     font-size: 10px;
     font-weight: 900;
 }
+.adm-business-section-table th[onclick],
+.adm-business-section-table td.adm-business-action-cell {
+    cursor: pointer;
+}
+.adm-business-section-table td.adm-business-action-cell:hover {
+    background: rgba(59, 130, 246, .06);
+}
 .adm-business-section-table tbody.is-loading {
     opacity: .55;
     pointer-events: none;
@@ -3804,6 +3814,9 @@ body.sa-light .adm-managed-section-card .adm-local-pagination {
 body.sa-light .adm-business-bulkbar.is-active {
     border-color: rgba(37, 99, 235, .34);
     background: #eff6ff;
+}
+body.sa-light .adm-business-section-table td.adm-business-action-cell:hover {
+    background: rgba(37, 99, 235, .06);
 }
 body.sa-light .adm-business-tool {
     color: #475569;
@@ -4065,6 +4078,13 @@ body.sa-light .adm-business-section-table th.js-business-sort.sorted {
     font-size: 10px;
     font-weight: 900;
 }
+.adm-email-section-table th[onclick],
+.adm-email-section-table td.adm-email-action-cell {
+    cursor: pointer;
+}
+.adm-email-section-table td.adm-email-action-cell:hover {
+    background: rgba(59, 130, 246, .06);
+}
 .adm-email-member-link {
     color: #93c5fd;
     font-weight: 700;
@@ -4138,6 +4158,9 @@ body.sa-light .adm-email-member-link,
 body.sa-light .adm-email-ip-text,
 body.sa-light .adm-email-section-table th.js-email-sort.sorted {
     color: #2563eb;
+}
+body.sa-light .adm-email-section-table td.adm-email-action-cell:hover {
+    background: rgba(37, 99, 235, .06);
 }
 body.sa-light .adm-email-muted-link,
 body.sa-light .adm-email-request-id,
@@ -6543,6 +6566,25 @@ body.sa-light .adm-governance-page .provider-detail-close {
     vertical-align: top;
 }
 
+.adm-governance-page .adm-provider-health-table th[onclick],
+.adm-governance-page .adm-provider-health-action-cell {
+    cursor: pointer;
+}
+
+.adm-governance-page .adm-provider-health-action-cell:hover {
+    background: rgba(59, 130, 246, .06);
+}
+
+.adm-governance-page .adm-provider-health-table th.sorted {
+    color: #93c5fd;
+}
+
+.adm-governance-page .adm-provider-health-table .sort-ico {
+    margin-left: 4px;
+    font-size: 10px;
+    font-weight: 900;
+}
+
 .adm-governance-page .adm-provider-health-table {
     min-width: 980px;
 }
@@ -6565,6 +6607,14 @@ body.sa-light .adm-governance-page .provider-detail-close {
 
 body.sa-light .adm-governance-page .adm-provider-health-provider {
     color: #1d4ed8;
+}
+
+body.sa-light .adm-governance-page .adm-provider-health-action-cell:hover {
+    background: rgba(37, 99, 235, .06);
+}
+
+body.sa-light .adm-governance-page .adm-provider-health-table th.sorted {
+    color: #2563eb;
 }
 
 @media (max-width: 900px) {

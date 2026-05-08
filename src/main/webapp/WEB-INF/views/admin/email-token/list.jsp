@@ -167,7 +167,7 @@
           <th class="js-email-token-sort" data-sort="usedAt" onclick="sortBy('usedAt')">${msg_admin_emailTokens_usedAt}</th>
           <th class="js-email-token-sort" data-sort="expiresAt" onclick="sortBy('expiresAt')">${msg_admin_context_expiresAt}</th>
           <th class="js-email-token-sort" data-sort="requestId" onclick="sortBy('requestId')">${msg_admin_context_requestId}</th>
-          <th></th>
+          <th onclick="openFirstEmailTokenDetail()">${msg_admin_common_viewDetail}</th>
         </tr></thead>
         <tbody id="emailTokenRowsBody">
         <c:forEach items="${list}" var="item" varStatus="st">
@@ -191,7 +191,7 @@
             <td class="adm-email-check-cell">
               <input type="checkbox" class="adm-check js-email-token-row-check" value="${item.verifyIdx}" aria-label="행 선택">
             </td>
-            <td>
+            <td class="adm-email-action-cell" onclick="openEmailTokenCellAction(event, this)">
               <button type="button" class="adm-cell-link"
                       data-date="${itemDateFilter}"
                       onclick="filterByDate(this.dataset.date)">
@@ -199,7 +199,7 @@
                 <span class="adm-cell-link-note">${msg_admin_common_sameDate}</span>
               </button>
             </td>
-            <td>
+            <td class="adm-email-action-cell" onclick="openEmailTokenCellAction(event, this)">
               <c:choose>
                 <c:when test="${not empty item.userIdx}">
                   <button type="button" class="adm-inline-link js-open-member-context adm-email-member-link" data-user-idx="${item.userIdx}" data-default-tab="emailTokens"><c:out value="${item.nickname}"/></button>
@@ -211,7 +211,7 @@
                 </c:otherwise>
               </c:choose>
             </td>
-            <td>
+            <td class="adm-email-action-cell" onclick="openEmailTokenCellAction(event, this)">
               <button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="${item.purpose}" onclick="applySelectFilter(this)">
                 <span><c:choose>
                   <c:when test="${item.purpose == 'PROFILE_EMAIL'}">${msg_admin_emailRequests_purpose_profileEmail}</c:when>
@@ -223,13 +223,13 @@
                 <span class="adm-cell-link-note">${msg_admin_common_sameValue}</span>
               </button>
             </td>
-            <td>
+            <td class="adm-email-action-cell" onclick="openEmailTokenCellAction(event, this)">
               <button type="button" class="adm-cell-link" data-keyword="${item.email}" onclick="applyKeywordFilter(this)">
                 <span><c:out value="${item.email}"/></span>
                 <span class="adm-cell-link-note">${msg_admin_common_sameEmail}</span>
               </button>
             </td>
-            <td>
+            <td class="adm-email-action-cell" onclick="openEmailTokenCellAction(event, this)">
               <button type="button" class="adm-cell-link" data-param-name="used" data-param-value="${item.used ? 'USED' : 'UNUSED'}" onclick="applySelectFilter(this)">
                 <span><c:choose>
                   <c:when test="${item.used}">${msg_admin_context_used}</c:when>
@@ -238,7 +238,7 @@
                 <span class="adm-cell-link-note">${msg_admin_common_sameValue}</span>
               </button>
             </td>
-            <td>
+            <td class="adm-email-action-cell" onclick="openEmailTokenCellAction(event, this)">
               <c:choose>
                 <c:when test="${not empty item.usedAtDate}">
                   <button type="button" class="adm-cell-link"
@@ -251,7 +251,7 @@
                 <c:otherwise>-</c:otherwise>
               </c:choose>
             </td>
-            <td>
+            <td class="adm-email-action-cell" onclick="openEmailTokenCellAction(event, this)">
               <c:choose>
                 <c:when test="${not empty item.expiredAtDate}">
                   <button type="button" class="adm-cell-link"
@@ -264,7 +264,7 @@
                 <c:otherwise>-</c:otherwise>
               </c:choose>
             </td>
-            <td>
+            <td class="adm-email-action-cell" onclick="openEmailTokenCellAction(event, this)">
               <button type="button" class="adm-cell-link"
                       data-keyword="${empty item.flowTraceId ? item.requestId : item.flowTraceId}"
                       onclick="openRelatedHistory('email-verifications', this)">
@@ -274,7 +274,7 @@
                 </c:if>
               </button>
             </td>
-            <td>
+            <td class="adm-email-action-cell" onclick="openEmailTokenCellAction(event, this)">
               <button type="button" class="adm-row-btn detail"
                       data-time="${itemTimeDisplay}"
                       data-user="${fn:escapeXml(item.nickname)} (@${fn:escapeXml(item.userId)})"
@@ -623,6 +623,29 @@ function exportSelectedEmailTokens() {
   }
   var dropdown = document.getElementById('emailTokenExportDropdown');
   if (dropdown) dropdown.classList.remove('open');
+}
+function emailTokenDetailButton(row) {
+  return row ? row.querySelector('.adm-row-btn.detail') : null;
+}
+function openEmailTokenRowDetail(row) {
+  var detail = emailTokenDetailButton(row);
+  if (detail) openTokenDetail(detail);
+}
+function openFirstEmailTokenDetail() {
+  openEmailTokenRowDetail(document.querySelector('#emailTokenRowsBody .js-email-token-row'));
+}
+function openEmailTokenCellAction(event, cell) {
+  if (event && event.target && event.target.closest('button, a, input, select, textarea, label')) {
+    return true;
+  }
+  var primary = cell ? cell.querySelector('button.adm-cell-link, button.adm-inline-link, button.adm-row-btn.detail') : null;
+  if (primary) primary.click();
+  else openEmailTokenRowDetail(cell ? cell.closest('.js-email-token-row') : null);
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  return false;
 }
 function openTokenDetail(btn) {
   var d = btn.dataset;

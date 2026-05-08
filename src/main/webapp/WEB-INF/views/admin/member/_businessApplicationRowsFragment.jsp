@@ -51,7 +51,7 @@
         <td class="adm-business-check-cell">
             <input type="checkbox" class="adm-check js-business-row-check" value="${app.applicationIdx}" onchange="updateBusinessBulkBar()">
         </td>
-        <td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'applicant')">
             <button type="button"
                     class="adm-cell-link js-open-member-context"
                     data-user-idx="${app.userIdx}"
@@ -66,7 +66,7 @@
                 <span class="adm-cell-link-note">${msg_admin_business_currentRole}</span>
             </button>
         </td>
-        <td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'role')">
             <button type="button"
                     class="adm-cell-link js-open-business-detail"
                     data-default-focus="role">
@@ -80,7 +80,7 @@
                 <span class="adm-cell-link-note">${msg_admin_common_viewDetail}</span>
             </button>
         </td>
-        <td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'company')">
             <button type="button"
                     class="adm-cell-link js-open-business-detail"
                     data-default-focus="company">
@@ -108,7 +108,7 @@
                      data-source-text="${fn:escapeXml(app.description)}"></div>
             </c:if>
         </td>
-        <td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'status')">
             <button type="button"
                     class="adm-cell-link js-open-business-detail"
                     data-default-focus="status"
@@ -139,7 +139,7 @@
                      data-source-text="${fn:escapeXml(app.rejectReason)}"></div>
             </c:if>
         </td>
-        <td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'date')">
             <button type="button"
                     class="adm-cell-link js-open-business-detail"
                     data-default-focus="date"
@@ -148,7 +148,7 @@
                 <span class="adm-cell-link-note">${msg_admin_common_viewDetail}</span>
             </button>
         </td>
-        <td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'review')">
             <c:choose>
                 <c:when test="${app.applicationStatus eq 'PENDING'}">
                     <div class="business-review-actions js-business-review-actions" id="business-review-actions-${app.applicationIdx}">

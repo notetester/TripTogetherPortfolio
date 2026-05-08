@@ -38,6 +38,7 @@
 <spring:message var="msg_admin_common_applying_js" code="admin.common.applying" javaScriptEscape="true"/>
 <spring:message var="msg_admin_context_toast_saveBlockSuccess_js" code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>
 <spring:message var="msg_admin_context_memberTitle_js" code="admin.context.memberTitle" javaScriptEscape="true"/>
+<spring:message var="msg_admin_members_detail" code="admin.members.detail"/>
 <spring:message var="msg_admin_members_detailTitleSuffix_js" code="admin.members.detailTitleSuffix" javaScriptEscape="true"/>
 <spring:message var="msg_admin_members_action_emailTitle_js" code="admin.members.action.emailTitle" javaScriptEscape="true"/>
 <spring:message var="msg_admin_members_emailPlaceholder_js" code="admin.members.emailPlaceholder" javaScriptEscape="true"/>
@@ -402,7 +403,7 @@
                     <th class="js-member-sort" data-sort="createdAt" onclick="memberSortBy('createdAt')">
                         ${msg_admin_context_createdAt}
                     </th>
-                    <th></th>
+                    <th onclick="openFirstMemberDetail('actions')">${msg_admin_members_detail}</th>
                 </tr>
                 </thead>
                 <tbody id="memberRowsBody">
@@ -1570,6 +1571,11 @@ function buildActionTab(m) {
 }
 
 /* ── 회원 상세 모달 ── */
+function openFirstMemberDetail(defaultTab) {
+    const row = document.querySelector('#memberRowsBody .js-member-row');
+    const userIdx = row ? row.dataset.userIdx : null;
+    if (userIdx) openDetail(userIdx, defaultTab || 'actions');
+}
 async function openDetail(userIdx, defaultTab, focusSection) {
     document.getElementById('detailModal').classList.add('open');
     document.getElementById('modalBody').innerHTML =
