@@ -299,6 +299,9 @@
       text-align: center;
       color: #94a3b8;
   }
+  .adm-providerAdv-page .pa-muted {
+    color:#94a3b8;
+  }
   .adm-providerAdv-page .chip {
       display: inline-flex;
       align-items: center;
@@ -825,14 +828,14 @@
                     <tr>
                         <th class="pa-check-col"><input type="checkbox" id="pa-selAll" class="pa-check-input"></th>
                         <th data-sort="priority_desc">${msg_colPriority}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th>${msg_colKind}</th>
+                        <th data-sort="kind_asc">${msg_colKind}<span class="sort-ico" aria-hidden="true"></span></th>
                         <th data-sort="name_asc">${msg_colName}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th>${msg_colCode}</th>
-                        <th>${msg_colCategory}</th>
-                        <th>${msg_colStatus}</th>
-                        <th>${msg_colEnabled}</th>
+                        <th data-sort="code_asc">${msg_colCode}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-sort="category_asc">${msg_colCategory}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-sort="status_asc">${msg_colStatus}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-sort="enabled_desc">${msg_colEnabled}<span class="sort-ico" aria-hidden="true"></span></th>
                         <th data-sort="last_checked_desc">${msg_colLastCheck}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th>${msg_colNextCheck}</th>
+                        <th data-sort="next_check_asc">${msg_colNextCheck}<span class="sort-ico" aria-hidden="true"></span></th>
                         <th>${msg_colActions}</th>
                     </tr>
                 </thead>
@@ -1102,7 +1105,7 @@
         const html = state.rows.map(row => {
             const isDeleted = !!row.deletedAt;
             const cats = (row.usageCategories || '').split(',').filter(s => s.trim()).map(c =>
-                '<span class="chip">' + escHtml(c.trim()) + '</span>').join('');
+                '<span class="chip">' + escHtml(c.trim()) + '</span>').join('') || '<span class="pa-muted">-</span>';
             const checked = state.selected.has(row.providerIdx) ? 'checked' : '';
             return '' +
                 '<tr class="' + (isDeleted ? 'row-deleted' : '') + '" data-idx="' + row.providerIdx + '">' +

@@ -287,12 +287,24 @@
         <choose>
             <when test="filters.sort == 'priority_asc'">ORDER BY p.priority ASC, p.provider_kind ASC, p.provider_code ASC</when>
             <when test="filters.sort == 'priority_desc'">ORDER BY p.priority DESC, p.provider_kind ASC, p.provider_code ASC</when>
+            <when test="filters.sort == 'kind_asc'">ORDER BY p.provider_kind ASC, p.provider_code ASC, p.provider_idx ASC</when>
+            <when test="filters.sort == 'kind_desc'">ORDER BY p.provider_kind DESC, p.provider_code DESC, p.provider_idx DESC</when>
             <when test="filters.sort == 'name_asc'">ORDER BY p.provider_name ASC, p.provider_idx ASC</when>
             <when test="filters.sort == 'name_desc'">ORDER BY p.provider_name DESC, p.provider_idx DESC</when>
+            <when test="filters.sort == 'code_asc'">ORDER BY p.provider_code ASC, p.provider_idx ASC</when>
+            <when test="filters.sort == 'code_desc'">ORDER BY p.provider_code DESC, p.provider_idx DESC</when>
+            <when test="filters.sort == 'category_asc'">ORDER BY (p.usage_categories IS NULL OR p.usage_categories = '') ASC, p.usage_categories ASC, p.provider_code ASC</when>
+            <when test="filters.sort == 'category_desc'">ORDER BY (p.usage_categories IS NULL OR p.usage_categories = '') ASC, p.usage_categories DESC, p.provider_code DESC</when>
+            <when test="filters.sort == 'status_asc'">ORDER BY p.status ASC, p.provider_code ASC, p.provider_idx ASC</when>
+            <when test="filters.sort == 'status_desc'">ORDER BY p.status DESC, p.provider_code DESC, p.provider_idx DESC</when>
+            <when test="filters.sort == 'enabled_asc'">ORDER BY p.is_enabled ASC, p.provider_code ASC, p.provider_idx ASC</when>
+            <when test="filters.sort == 'enabled_desc'">ORDER BY p.is_enabled DESC, p.provider_code ASC, p.provider_idx ASC</when>
             <when test="filters.sort == 'updated_asc'">ORDER BY p.updated_at ASC, p.provider_idx ASC</when>
             <when test="filters.sort == 'updated_desc'">ORDER BY p.updated_at DESC, p.provider_idx DESC</when>
             <when test="filters.sort == 'last_checked_asc'">ORDER BY p.last_checked_at IS NULL, p.last_checked_at ASC, p.provider_idx ASC</when>
             <when test="filters.sort == 'last_checked_desc'">ORDER BY p.last_checked_at IS NULL, p.last_checked_at DESC, p.provider_idx DESC</when>
+            <when test="filters.sort == 'next_check_asc'">ORDER BY p.next_health_check_at IS NULL, p.next_health_check_at ASC, p.provider_idx ASC</when>
+            <when test="filters.sort == 'next_check_desc'">ORDER BY p.next_health_check_at IS NULL, p.next_health_check_at DESC, p.provider_idx DESC</when>
             <otherwise>ORDER BY p.priority DESC, p.provider_kind ASC, p.provider_code ASC</otherwise>
         </choose>
     </sql>
