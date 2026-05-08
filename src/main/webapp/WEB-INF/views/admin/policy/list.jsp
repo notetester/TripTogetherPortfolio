@@ -123,13 +123,13 @@
                 <table class="adm-table adm-policy-table">
                     <thead>
                     <tr>
-                        <th>${msg_admin_policy_centerTitle}</th>
-                        <th>${msg_admin_common_status}</th>
-                        <th>${msg_admin_policy_scheduleType}</th>
-                        <th>${msg_admin_policy_nextExecute}</th>
-                        <th>${msg_admin_policy_lastExecute}</th>
-                        <th>${msg_admin_policy_lastMessage}</th>
-                        <th>${msg_admin_common_detail}</th>
+                        <th onclick="policyThClick(this)">${msg_admin_policy_centerTitle}</th>
+                        <th onclick="policyThClick(this)">${msg_admin_common_status}</th>
+                        <th onclick="policyThClick(this)">${msg_admin_policy_scheduleType}</th>
+                        <th onclick="policyThClick(this)">${msg_admin_policy_nextExecute}</th>
+                        <th onclick="policyThClick(this)">${msg_admin_policy_lastExecute}</th>
+                        <th onclick="policyThClick(this)">${msg_admin_policy_lastMessage}</th>
+                        <th onclick="policyThClick(this)">${msg_admin_common_detail}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -547,6 +547,19 @@ async function runPolicyNow(policyCode, button) {
         button.disabled = false;
         button.textContent = originalText;
     }
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function policyThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href]');
+    if (target) { target.click(); return; }
+    var anyBtn = firstRow.querySelector('button.js-policy-modal-open, button, a[href]');
+    if (anyBtn) anyBtn.click();
 }
 </script>
 

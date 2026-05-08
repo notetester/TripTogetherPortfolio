@@ -98,12 +98,12 @@
                 <table class="adm-table adm-policy-history-table" data-admin-list-ignore="true">
                     <thead>
                     <tr>
-                        <th>${msg_admin_policyHistory_changedAt}</th>
-                        <th>${msg_admin_policyHistory_sourceType}</th>
-                        <th>${msg_admin_policyHistory_itemKey}</th>
-                        <th>${msg_admin_policyHistory_changeType}</th>
-                        <th>${msg_admin_policyHistory_actor}</th>
-                        <th>${msg_admin_policyHistory_snapshot}</th>
+                        <th onclick="phThClick(this)">${msg_admin_policyHistory_changedAt}</th>
+                        <th onclick="phThClick(this)">${msg_admin_policyHistory_sourceType}</th>
+                        <th onclick="phThClick(this)">${msg_admin_policyHistory_itemKey}</th>
+                        <th onclick="phThClick(this)">${msg_admin_policyHistory_changeType}</th>
+                        <th onclick="phThClick(this)">${msg_admin_policyHistory_actor}</th>
+                        <th onclick="phThClick(this)">${msg_admin_policyHistory_snapshot}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -182,6 +182,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 (snapshot 컬럼은 그 행의 펼치기 버튼으로) ── */
+function phThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href]');
+    if (target) { target.click(); return; }
+    var anyBtn = firstRow.querySelector('button, a[href]');
+    if (anyBtn) anyBtn.click();
+}
 </script>
 
 <%@ include file="layout-close.jsp" %>

@@ -167,14 +167,14 @@
                 <table class="adm-table adm-runtime-settings-table">
                     <thead>
                     <tr>
-                        <th>${msg_admin_runtimeSettings_group}</th>
-                        <th>${msg_admin_runtimeSettings_key}</th>
-                        <th>${msg_admin_runtimeSettings_displayName}</th>
-                        <th>${msg_admin_runtimeSettings_valueType}</th>
-                        <th>${msg_admin_runtimeSettings_value}</th>
-                        <th>${msg_admin_runtimeSettings_updatedAt}</th>
-                        <th>${msg_admin_common_status}</th>
-                        <th>${msg_admin_common_detail}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_runtimeSettings_group}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_runtimeSettings_key}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_runtimeSettings_displayName}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_runtimeSettings_valueType}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_runtimeSettings_value}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_runtimeSettings_updatedAt}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_common_status}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_common_detail}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -330,12 +330,12 @@
                 <table class="adm-table adm-runtime-history-table" data-admin-list-ignore="true">
                     <thead>
                     <tr>
-                        <th>${msg_admin_runtimeSettings_version}</th>
-                        <th>${msg_admin_runtimeSettings_key}</th>
-                        <th>${msg_admin_runtimeSettings_changeType}</th>
-                        <th>${msg_admin_runtimeSettings_actor}</th>
-                        <th>${msg_admin_runtimeSettings_changedAt}</th>
-                        <th>${msg_admin_runtimeSettings_snapshot}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_runtimeSettings_version}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_runtimeSettings_key}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_runtimeSettings_changeType}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_runtimeSettings_actor}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_runtimeSettings_changedAt}</th>
+                        <th onclick="rsThClick(this)">${msg_admin_runtimeSettings_snapshot}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -402,6 +402,19 @@
         }
     });
 })();
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function rsThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href]');
+    if (target) { target.click(); return; }
+    var anyBtn = firstRow.querySelector('button.js-runtime-detail, button[data-modal-id], button, a[href]');
+    if (anyBtn) anyBtn.click();
+}
 </script>
 
 <%@ include file="layout-close.jsp" %>

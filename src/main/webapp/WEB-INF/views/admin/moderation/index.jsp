@@ -90,10 +90,10 @@
                 <table class="adm-table adm-moderation-rule-table">
                     <thead>
                     <tr>
-                        <th>정책</th>
-                        <th>현재 기준</th>
-                        <th>탐지 창</th>
-                        <th>처리</th>
+                        <th onclick="modThClick(this, 0)">정책</th>
+                        <th onclick="modThClick(this, 1)">현재 기준</th>
+                        <th onclick="modThClick(this, 2)">탐지 창</th>
+                        <th onclick="modThClick(this, 3)">처리</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -279,6 +279,19 @@ var adminModerationSaved = '${fn:escapeXml(msg_admin_moderation_saved)}';
 var adminModerationSaveFailed = '${fn:escapeXml(msg_admin_moderation_saveFailed)}';
 var adminModerationRequestFailed = '${fn:escapeXml(msg_admin_moderation_requestFailed)}';
 var adminModerationConfirmReset = '${fn:escapeXml(msg_admin_moderation_confirmReset)}';
+
+/* ── 헤더 클릭: 정적 기준표 → 편집 폼의 첫 입력으로 포커스 ── */
+function modThClick(th, idx) {
+    var form = document.getElementById('moderationForm');
+    if (!form) return;
+    var inputs = form.querySelectorAll('select, input[type="number"]');
+    var target = idx === 0 ? inputs[0] : (idx === 1 ? inputs[0] : (idx === 2 ? form.querySelector('input[name="postWindowMinutes"]') : form.querySelector('input[name="postMaxCount"]')));
+    if (!target) target = inputs[0];
+    if (target) {
+        target.scrollIntoView({behavior:'smooth', block:'center'});
+        target.focus();
+    }
+}
 </script>
 
 <%@ include file="../layout-close.jsp" %>
