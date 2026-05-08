@@ -14,6 +14,11 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+
+-- team1_db 데이터베이스 구조 내보내기
+CREATE DATABASE IF NOT EXISTS `team1_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `team1_db`;
+
 -- 테이블 team1_db.AD_CAMPAIGN 구조 내보내기
 CREATE TABLE IF NOT EXISTS `AD_CAMPAIGN` (
   `ad_id` bigint NOT NULL AUTO_INCREMENT,
@@ -675,7 +680,7 @@ CREATE TABLE IF NOT EXISTS `CHATBOT_CONVERSATION` (
   PRIMARY KEY (`conversation_id`),
   KEY `idx_user` (`user_idx`,`is_deleted`,`last_active` DESC),
   KEY `idx_anon` (`anon_session_id`,`is_deleted`,`last_active` DESC)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='챗봇 대화 그룹';
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='챗봇 대화 그룹';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -689,7 +694,7 @@ CREATE TABLE IF NOT EXISTS `CHATBOT_DAILY_USAGE` (
   PRIMARY KEY (`usage_id`),
   UNIQUE KEY `uk_user_period` (`user_idx`,`period_start`),
   UNIQUE KEY `uk_ip_period` (`ip_address`,`period_start`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='일일 사용량 집계';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='일일 사용량 집계';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -732,7 +737,7 @@ CREATE TABLE IF NOT EXISTS `CHATBOT_LINK_CLICK` (
   KEY `idx_msg` (`message_id`),
   CONSTRAINT `fk_chatbot_click_conv` FOREIGN KEY (`conversation_id`) REFERENCES `CHATBOT_CONVERSATION` (`conversation_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_chatbot_click_msg` FOREIGN KEY (`message_id`) REFERENCES `CHATBOT_MESSAGE` (`message_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='챗봇 링크 클릭 이력';
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='챗봇 링크 클릭 이력';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -748,7 +753,7 @@ CREATE TABLE IF NOT EXISTS `CHATBOT_MESSAGE` (
   KEY `idx_conv` (`conversation_id`,`created_at`),
   KEY `idx_inappropriate` (`is_inappropriate`,`created_at` DESC),
   CONSTRAINT `fk_chatbot_msg_conv` FOREIGN KEY (`conversation_id`) REFERENCES `CHATBOT_CONVERSATION` (`conversation_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=130 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='챗봇 메시지';
+) ENGINE=InnoDB AUTO_INCREMENT=132 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='챗봇 메시지';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1898,7 +1903,7 @@ CREATE TABLE IF NOT EXISTS `SECURITY_ACTION_AUDIT` (
   KEY `idx_saa_source` (`source_type`,`source_id`),
   KEY `idx_saa_reason_code` (`reason_code`,`created_at`),
   CONSTRAINT `fk_security_action_audit_actor` FOREIGN KEY (`actor_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 판단/검토/차단 집행 감사 로그';
+) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 판단/검토/차단 집행 감사 로그';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1971,9 +1976,39 @@ CREATE TABLE IF NOT EXISTS `SECURITY_ASSESSMENT_PROVIDER_CONFIG` (
   `last_checked_at` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL COMMENT '소프트 삭제 시각. NULL 이면 활성 상태',
+  `deleted_by_user_idx` bigint DEFAULT NULL COMMENT '소프트 삭제 수행 관리자 user_idx',
+  `created_by_user_idx` bigint DEFAULT NULL COMMENT '최초 등록 관리자 user_idx',
+  `updated_by_user_idx` bigint DEFAULT NULL COMMENT '최근 수정 관리자 user_idx',
+  `current_version_no` int NOT NULL DEFAULT '1' COMMENT '현재 설정 버전. 수정마다 +1 (이력 테이블 version_no 와 동기)',
+  `priority` int NOT NULL DEFAULT '100' COMMENT '동일 카테고리 내 호출 우선순위. 값이 클수록 우선 (DESC 정렬)',
+  `health_check_interval_sec` int NOT NULL DEFAULT '300' COMMENT 'Provider별 헬스체크 주기(초). 기본 5분',
+  `next_health_check_at` datetime DEFAULT NULL COMMENT '다음 헬스체크 예정 시각. NULL 이면 즉시 점검 대상',
+  `usage_categories` varchar(255) DEFAULT NULL COMMENT '쉼표 구분 카테고리. 어떤 흐름에서 호출할지 결정. 예: LOGIN_RISK,WAF_SYNC,CONTENT_MODERATION,IP_REPUTATION,EMAIL_REPUTATION',
+  `trigger_events` varchar(255) DEFAULT NULL COMMENT '쉼표 구분 트리거 이벤트. 예: LOGIN_ATTEMPT,SIGNUP,REPORT_CREATED,COMMUNITY_POST_CREATED',
+  `request_method` varchar(10) DEFAULT NULL COMMENT 'HTTP 메서드. NULL 이면 어댑터 기본값(보통 POST)',
+  `request_headers_json` json DEFAULT NULL COMMENT '요청 시 추가 헤더 JSON 객체. 예: {"X-Custom":"value"}',
+  `request_template_json` json DEFAULT NULL COMMENT '요청 본문 템플릿 JSON. placeholder: {{ip}}, {{userId}}, {{loginIdentifier}}, {{userAgent}}, {{requestId}}',
+  `response_mapping_json` json DEFAULT NULL COMMENT '응답 매핑. JSON Pointer 4종 키. 예: {"score":"/risk/score","label":"/risk/level","decision":"/recommendation","confidence":"/confidence"}',
+  `max_concurrent` int DEFAULT NULL COMMENT '동시 호출 최대치. NULL 이면 제한 없음 (어댑터 기본 동작)',
+  `rate_per_minute` int DEFAULT NULL COMMENT '분당 호출 한계. NULL 이면 제한 없음. 인스턴스 단위 in-memory 카운터 기반',
+  `retry_count` int NOT NULL DEFAULT '0' COMMENT '실패 시 재시도 횟수. 0 이면 재시도 없음',
+  `retry_backoff_ms` int NOT NULL DEFAULT '500' COMMENT '재시도 간 백오프 ms (선형)',
+  `tags` varchar(255) DEFAULT NULL COMMENT '운영자 자유 태그(쉼표 구분). 검색 키워드',
   PRIMARY KEY (`provider_idx`),
   UNIQUE KEY `uk_sapc_provider_code` (`provider_code`),
-  KEY `idx_sapc_enabled_kind` (`is_enabled`,`provider_kind`)
+  KEY `idx_sapc_enabled_kind` (`is_enabled`,`provider_kind`),
+  KEY `fk_sapc_deleted_by` (`deleted_by_user_idx`),
+  KEY `idx_sapc_deleted_at` (`deleted_at`),
+  KEY `idx_sapc_kind_enabled_deleted` (`provider_kind`,`is_enabled`,`deleted_at`),
+  KEY `idx_sapc_next_health` (`next_health_check_at`,`is_enabled`,`deleted_at`),
+  KEY `idx_sapc_priority_enabled` (`priority`,`is_enabled`,`deleted_at`),
+  KEY `idx_sapc_status_deleted` (`status`,`deleted_at`),
+  KEY `idx_sapc_created_by` (`created_by_user_idx`),
+  KEY `idx_sapc_updated_by` (`updated_by_user_idx`),
+  CONSTRAINT `fk_sapc_created_by` FOREIGN KEY (`created_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
+  CONSTRAINT `fk_sapc_deleted_by` FOREIGN KEY (`deleted_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
+  CONSTRAINT `fk_sapc_updated_by` FOREIGN KEY (`updated_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 판단 Provider 연결 설정';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
@@ -2021,7 +2056,7 @@ CREATE TABLE IF NOT EXISTS `SECURITY_PROVIDER_HEALTH_CHECK_HISTORY` (
   KEY `idx_sphh_actor_checked` (`actor_user_idx`,`checked_at`),
   CONSTRAINT `fk_sphh_actor` FOREIGN KEY (`actor_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_sphh_provider` FOREIGN KEY (`provider_idx`) REFERENCES `SECURITY_ASSESSMENT_PROVIDER_CONFIG` (`provider_idx`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=145 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Provider 수동/스케줄러 헬스체크 결과 이력';
+) ENGINE=InnoDB AUTO_INCREMENT=4634 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Provider 수동/스케줄러 헬스체크 결과 이력';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -2342,7 +2377,7 @@ CREATE TABLE IF NOT EXISTS `SYSTEM_POLICY_HISTORY` (
   KEY `fk_system_policy_history_changed_by` (`changed_by_user_idx`),
   CONSTRAINT `fk_system_policy_history_changed_by` FOREIGN KEY (`changed_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_system_policy_history_code` FOREIGN KEY (`policy_code`) REFERENCES `SYSTEM_POLICY` (`policy_code`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='운영 정책 변경 및 실행 이력';
+) ENGINE=InnoDB AUTO_INCREMENT=109 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='운영 정책 변경 및 실행 이력';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -2547,7 +2582,7 @@ CREATE TABLE IF NOT EXISTS `USER_ACTIVITY_LOG` (
   KEY `idx_ual_provider_created` (`activity_provider`,`created_at`),
   KEY `idx_ual_auth_event_created` (`auth_event_type`,`created_at`),
   CONSTRAINT `fk_activity_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=24303 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='회원/비회원의 일반 활동(페이지 방문, 요청 호출 등)을 기록하는 범용 활동 로그';
+) ENGINE=InnoDB AUTO_INCREMENT=25409 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='회원/비회원의 일반 활동(페이지 방문, 요청 호출 등)을 기록하는 범용 활동 로그';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -2832,7 +2867,7 @@ CREATE TABLE IF NOT EXISTS `USER_LOGIN_HISTORY` (
   KEY `idx_ulh_request_id` (`request_id`),
   KEY `idx_ulh_flow_trace_id` (`flow_trace_id`),
   CONSTRAINT `fk_login_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1676 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='로그인 시도 및 결과 이력 (보안, 감사, 통계 분석용)';
+) ENGINE=InnoDB AUTO_INCREMENT=1687 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='로그인 시도 및 결과 이력 (보안, 감사, 통계 분석용)';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
