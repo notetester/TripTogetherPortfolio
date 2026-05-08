@@ -222,21 +222,6 @@
         flex-wrap: wrap;
     }
 
-    .adm-block-section-head {
-        justify-content: space-between;
-    }
-
-    .adm-block-head-main {
-        min-width: 240px;
-        flex: 1 1 320px;
-    }
-
-    .adm-block-batch-actions {
-        flex: 0 0 auto;
-        justify-content: flex-end;
-        margin-left: auto;
-    }
-
     .adm-block-bulkbar.is-hidden,
     .adm-dash-sort-reset.is-hidden,
     .js-dashboard-panel.is-hidden,
@@ -251,8 +236,6 @@
         padding: 8px 16px;
         background: #1e3a5f;
         border-bottom: 1px solid #334155;
-        min-height: 44px;
-        flex-wrap: wrap;
     }
 
     .adm-block-bulkbar.is-floating {
@@ -294,35 +277,7 @@
         color: #1d4ed8;
     }
 
-    .adm-th-check {
-        width: 36px;
-        min-width: 36px;
-        max-width: 36px;
-        padding: 0 !important;
-        text-align: center;
-        vertical-align: middle;
-    }
-    .adm-th-check input,
-    .adm-block-check-cell input {
-        width: 15px;
-        height: 15px;
-        margin: 0;
-        accent-color: #3b82f6;
-        vertical-align: middle;
-        cursor: pointer;
-    }
-    .adm-block-check-cell {
-        width: 36px;
-        min-width: 36px;
-        max-width: 36px;
-        padding: 0 !important;
-        text-align: center;
-        vertical-align: middle;
-    }
-    .adm-block-batch-table th,
-    .adm-block-batch-table td {
-        vertical-align: middle;
-    }
+    .adm-th-check { width: 36px; }
     .adm-th-w9 { width: 9%; }
     .adm-th-w11 { width: 11%; }
     .adm-th-w12 { width: 12%; }

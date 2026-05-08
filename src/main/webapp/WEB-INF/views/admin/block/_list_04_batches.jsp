@@ -19,6 +19,10 @@ id="bat-exportFormat" class="adm-select js-block-export-format adm-block-export-
             </div>
         </div>
         <div class="adm-card-body adm-block-card-body">
+            <div id="bat-bulkBar" class="js-block-bulkbar adm-block-bulkbar is-hidden" data-section="batches">
+                <span class="adm-block-bulk-count-text"><strong id="bat-bulkCount" class="js-block-bulk-count">0</strong>${msg_admin_common_selectedCount}</span>
+                <button type="button" class="adm-btn adm-btn-ghost adm-block-clear-selection" onclick="blockClearSelection('batches')">${msg_admin_common_clearSelection}</button>
+            </div>
             <div class="adm-local-toolbar">
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-field" data-section="batches">
@@ -47,12 +51,8 @@ id="bat-exportFormat" class="adm-select js-block-export-format adm-block-export-
                     </select>
                 </div>
             </div>
-            <div id="bat-bulkBar" class="js-block-bulkbar adm-block-bulkbar is-hidden" data-section="batches">
-                <span class="adm-block-bulk-count-text"><strong id="bat-bulkCount" class="js-block-bulk-count">0</strong>${msg_admin_common_selectedCount}</span>
-                <button type="button" class="adm-btn adm-btn-ghost adm-block-clear-selection" onclick="blockClearSelection('batches')">${msg_admin_common_clearSelection}</button>
-            </div>
             <div class="adm-table-wrap">
-                <table class="adm-table adm-section-table-fixed adm-block-batch-table">
+                <table class="adm-table adm-section-table-fixed">
                     <thead><tr>
                         <th class="adm-th-check"><input type="checkbox" id="bat-checkAll" class="js-block-check-all" data-section="batches" onchange="blockToggleAll('batches')"></th>
                         <th class="js-local-sort adm-th-w20" data-sort-index="1" onclick="sectionSort('batches',1)">${msg_admin_blocks_batch}</th>

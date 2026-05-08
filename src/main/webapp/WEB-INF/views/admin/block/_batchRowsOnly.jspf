@@ -30,7 +30,7 @@
         data-priority="${b.defaultRulePriority}"
         data-status="${fn:toLowerCase(b.activeLabel)}"
         data-updated-at="${fn:toLowerCase(batchUpdatedAtText)}">
-        <td class="adm-block-check-cell"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="${b.ipBlockBatchIdx}" value="${b.ipBlockBatchIdx}" onchange="updateBlockBulkBar('batches')"></td>
+        <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="${b.ipBlockBatchIdx}" value="${b.ipBlockBatchIdx}" onchange="updateBlockBulkBar('batches')"></td>
         <td data-sort-value="${fn:toLowerCase(b.batchName)}">
             <button type="button"
                     class="adm-link-btn js-open-batch-editor"
