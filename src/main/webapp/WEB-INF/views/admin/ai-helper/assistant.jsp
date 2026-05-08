@@ -264,13 +264,13 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>${msg_admin_aiHelper_assistant_table_sessionId}</th>
-                        <th>${msg_admin_aiHelper_assistant_table_title}</th>
-                        <th>${msg_admin_aiHelper_assistant_table_user}</th>
-                        <th>${msg_admin_aiHelper_assistant_table_messageCount}</th>
-                        <th>${msg_admin_aiHelper_assistant_table_createdAt}</th>
-                        <th>${msg_admin_aiHelper_assistant_table_lastActive}</th>
-                        <th>${msg_admin_aiHelper_assistant_table_actions}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_sessionId}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_title}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_user}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_messageCount}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_createdAt}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_lastActive}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_actions}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -399,13 +399,13 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>${msg_admin_aiHelper_assistant_table_id}</th>
-                        <th>${msg_admin_aiHelper_assistant_table_session}</th>
-                        <th>${msg_admin_aiHelper_assistant_table_role}</th>
-                        <th>${msg_admin_aiHelper_assistant_table_user}</th>
-                        <th>${msg_admin_aiHelper_assistant_table_content}</th>
-                        <th>${msg_admin_common_time}</th>
-                        <th>${msg_admin_aiHelper_assistant_table_actions}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_id}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_session}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_role}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_user}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_content}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_common_time}</th>
+                        <th onclick="aiAssistThClick(this)">${msg_admin_aiHelper_assistant_table_actions}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -524,13 +524,13 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>판정 ID</th>
-                        <th>세션</th>
-                        <th>작성자</th>
-                        <th>내용</th>
-                        <th>점수</th>
-                        <th>판정시각</th>
-                        <th>액션</th>
+                        <th onclick="aiAssistThClick(this)">판정 ID</th>
+                        <th onclick="aiAssistThClick(this)">세션</th>
+                        <th onclick="aiAssistThClick(this)">작성자</th>
+                        <th onclick="aiAssistThClick(this)">내용</th>
+                        <th onclick="aiAssistThClick(this)">점수</th>
+                        <th onclick="aiAssistThClick(this)">판정시각</th>
+                        <th onclick="aiAssistThClick(this)">액션</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -642,16 +642,16 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>유형</th>
-                        <th>값</th>
-                        <th>대상 닉네임</th>
-                        <th>사유</th>
-                        <th>차단일</th>
-                        <th>만료</th>
-                        <th>상태</th>
-                        <th>처리자</th>
-                        <th>액션</th>
+                        <th onclick="aiAssistThClick(this)">ID</th>
+                        <th onclick="aiAssistThClick(this)">유형</th>
+                        <th onclick="aiAssistThClick(this)">값</th>
+                        <th onclick="aiAssistThClick(this)">대상 닉네임</th>
+                        <th onclick="aiAssistThClick(this)">사유</th>
+                        <th onclick="aiAssistThClick(this)">차단일</th>
+                        <th onclick="aiAssistThClick(this)">만료</th>
+                        <th onclick="aiAssistThClick(this)">상태</th>
+                        <th onclick="aiAssistThClick(this)">처리자</th>
+                        <th onclick="aiAssistThClick(this)">액션</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -729,13 +729,13 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>등급</th>
-                        <th title="해당 유저의 CHAT_POST(세션) 총 보유 수 한도">세션 수</th>
-                        <th>주기당 메시지 한도</th>
-                        <th title="리셋 주기">주기(일)</th>
-                        <th title="주기 시작(리셋) 시각 HH:MM">리셋 시각</th>
-                        <th title="세션 삭제 시 그 세션의 현재 주기 내 유저 메시지 수만큼 한도 환급">환급 허용</th>
-                        <th>마지막 수정자</th>
+                        <th onclick="aiAssistThClick(this)">등급</th>
+                        <th onclick="aiAssistThClick(this)" title="해당 유저의 CHAT_POST(세션) 총 보유 수 한도">세션 수</th>
+                        <th onclick="aiAssistThClick(this)">주기당 메시지 한도</th>
+                        <th onclick="aiAssistThClick(this)" title="리셋 주기">주기(일)</th>
+                        <th onclick="aiAssistThClick(this)" title="주기 시작(리셋) 시각 HH:MM">리셋 시각</th>
+                        <th onclick="aiAssistThClick(this)" title="세션 삭제 시 그 세션의 현재 주기 내 유저 메시지 수만큼 한도 환급">환급 허용</th>
+                        <th onclick="aiAssistThClick(this)">마지막 수정자</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1697,7 +1697,13 @@ function buildHistTab(history) {
     return ''
         + '<div class="adm-context-table-scroll">'
         + '<table class="history-table">'
-        + '<thead><tr><th>' + '${msg_admin_common_time_js}' + '</th><th>' + '${msg_admin_logs_provider_js}' + '</th><th>' + '${msg_admin_logs_success_js}' + '</th><th>' + '${msg_admin_logs_failReason_js}' + '</th><th>${msg_admin_common_ip_js}</th></tr></thead>'
+        + '<thead><tr>'
+        +   '<th onclick="aiAssistThClick(this)">' + '${msg_admin_common_time_js}' + '</th>'
+        +   '<th onclick="aiAssistThClick(this)">' + '${msg_admin_logs_provider_js}' + '</th>'
+        +   '<th onclick="aiAssistThClick(this)">' + '${msg_admin_logs_success_js}' + '</th>'
+        +   '<th onclick="aiAssistThClick(this)">' + '${msg_admin_logs_failReason_js}' + '</th>'
+        +   '<th onclick="aiAssistThClick(this)">${msg_admin_common_ip_js}</th>'
+        + '</tr></thead>'
         + '<tbody>' + rows + '</tbody>'
         + '</table>'
         + '</div>';
@@ -1806,6 +1812,20 @@ document.getElementById('detailModal').addEventListener('click', function (e) {
 document.getElementById('blockModal').addEventListener('click', function (e) {
     if (e.target === this) closeBlockModal();
 });
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 (모달/메인 모두 공용) ── */
+function aiAssistThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr:not(.adm-local-empty-cell):not([class~="empty"])');
+    if (!firstRow) firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href]');
+    if (target) { target.click(); return; }
+    var anyBtn = firstRow.querySelector('button, a[href]');
+    if (anyBtn) anyBtn.click();
+}
 </script>
 
 <%@ include file="../layout-close.jsp" %>

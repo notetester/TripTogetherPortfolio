@@ -289,14 +289,14 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>${msg_admin_aiHelper_chatbot_table_id}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_title}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_user}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_ip}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_messageCount}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_lastActive}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_status}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_actions}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_id}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_title}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_user}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_ip}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_messageCount}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_lastActive}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_status}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_actions}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -480,10 +480,10 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>순위</th>
-                        <th>URL</th>
-                        <th class="adm-ai-number-head">클릭 수</th>
-                        <th>분포</th>
+                        <th onclick="aiChatbotThClick(this)">순위</th>
+                        <th onclick="aiChatbotThClick(this)">URL</th>
+                        <th class="adm-ai-number-head" onclick="aiChatbotThClick(this)">클릭 수</th>
+                        <th onclick="aiChatbotThClick(this)">분포</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -543,11 +543,11 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>${msg_admin_aiHelper_chatbot_table_id}</th>
-                        <th>작성자</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_content}</th>
-                        <th>${msg_admin_common_time}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_actions}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_id}</th>
+                        <th onclick="aiChatbotThClick(this)">작성자</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_content}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_common_time}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_actions}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -650,15 +650,15 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>${msg_admin_aiHelper_chatbot_table_id}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_type}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_value}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_reason}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_blockedBy}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_blockedAt}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_expiresAt}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_status}</th>
-                        <th>${msg_admin_aiHelper_chatbot_table_actions}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_id}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_type}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_value}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_reason}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_blockedBy}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_blockedAt}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_expiresAt}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_status}</th>
+                        <th onclick="aiChatbotThClick(this)">${msg_admin_aiHelper_chatbot_table_actions}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -757,14 +757,14 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>등급</th>
-                        <th>동시 대화 수</th>
-                        <th>주기당 메시지 한도</th>
-                        <th>AI 컨텍스트 길이</th>
-                        <th title="리셋 주기">주기(일)</th>
-                        <th title="주기 시작(리셋) 시각 HH:MM">리셋 시각</th>
-                        <th title="대화 삭제 시 그 대화에서 쓴 현재 주기 내 메시지 수만큼 한도 환급">환급 허용</th>
-                        <th>마지막 수정자</th>
+                        <th onclick="aiChatbotThClick(this)">등급</th>
+                        <th onclick="aiChatbotThClick(this)">동시 대화 수</th>
+                        <th onclick="aiChatbotThClick(this)">주기당 메시지 한도</th>
+                        <th onclick="aiChatbotThClick(this)">AI 컨텍스트 길이</th>
+                        <th onclick="aiChatbotThClick(this)" title="리셋 주기">주기(일)</th>
+                        <th onclick="aiChatbotThClick(this)" title="주기 시작(리셋) 시각 HH:MM">리셋 시각</th>
+                        <th onclick="aiChatbotThClick(this)" title="대화 삭제 시 그 대화에서 쓴 현재 주기 내 메시지 수만큼 한도 환급">환급 허용</th>
+                        <th onclick="aiChatbotThClick(this)">마지막 수정자</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -966,7 +966,12 @@
             } else {
                 let html = '<table class="adm-table adm-ai-table adm-ai-clickers-table" data-admin-list-ignore="true">' +
                            '<thead><tr>' +
-                           '<th>시각</th><th>유저</th><th>세션</th><th>IP</th><th>대화</th><th>메시지</th>' +
+                           '<th onclick="aiChatbotThClick(this)">시각</th>' +
+                           '<th onclick="aiChatbotThClick(this)">유저</th>' +
+                           '<th onclick="aiChatbotThClick(this)">세션</th>' +
+                           '<th onclick="aiChatbotThClick(this)">IP</th>' +
+                           '<th onclick="aiChatbotThClick(this)">대화</th>' +
+                           '<th onclick="aiChatbotThClick(this)">메시지</th>' +
                            '</tr></thead><tbody>';
                 rows.forEach(function (r) {
                     const userText = r.userIdx
@@ -1853,7 +1858,13 @@ function buildHistTab(history) {
     return ''
         + '<div class="adm-context-table-scroll">'
         + '<table class="history-table">'
-        + '<thead><tr><th>' + '${msg_admin_common_time_js}' + '</th><th>' + '${msg_admin_logs_provider_js}' + '</th><th>' + '${msg_admin_logs_success_js}' + '</th><th>' + '${msg_admin_logs_failReason_js}' + '</th><th>${msg_admin_common_ip_js}</th></tr></thead>'
+        + '<thead><tr>'
+        +   '<th onclick="aiChatbotThClick(this)">' + '${msg_admin_common_time_js}' + '</th>'
+        +   '<th onclick="aiChatbotThClick(this)">' + '${msg_admin_logs_provider_js}' + '</th>'
+        +   '<th onclick="aiChatbotThClick(this)">' + '${msg_admin_logs_success_js}' + '</th>'
+        +   '<th onclick="aiChatbotThClick(this)">' + '${msg_admin_logs_failReason_js}' + '</th>'
+        +   '<th onclick="aiChatbotThClick(this)">${msg_admin_common_ip_js}</th>'
+        + '</tr></thead>'
         + '<tbody>' + rows + '</tbody>'
         + '</table>'
         + '</div>';
@@ -1962,6 +1973,20 @@ document.getElementById('detailModal').addEventListener('click', function (e) {
 document.getElementById('blockModal').addEventListener('click', function (e) {
     if (e.target === this) closeBlockModal();
 });
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 (모달/메인 모두 공용) ── */
+function aiChatbotThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr:not(.adm-local-empty-cell):not([class~="empty"])');
+    if (!firstRow) firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href]');
+    if (target) { target.click(); return; }
+    var anyBtn = firstRow.querySelector('button, a[href]');
+    if (anyBtn) anyBtn.click();
+}
 </script>
 
 <%@ include file="../layout-close.jsp" %>
