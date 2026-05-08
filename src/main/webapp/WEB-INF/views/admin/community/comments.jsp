@@ -211,16 +211,16 @@
                 <thead>
                 <tr>
                     <th><input type="checkbox" id="checkAll"></th>
-                    <th>${msg_admin_community_column_id}</th>
-                    <th>${msg_admin_community_column_author}</th>
-                    <th>${msg_admin_community_column_ip}</th>
-                    <th>${msg_admin_community_column_content}</th>
-                    <th>${msg_admin_community_column_originalPost}</th>
-                    <th>${msg_admin_community_column_kind}</th>
-                    <th>${msg_admin_community_column_reportCount}</th>
-                    <th>${msg_admin_common_status}</th>
-                    <th>${msg_admin_community_column_createdAt}</th>
-                    <th>${msg_admin_common_action}</th>
+                    <th onclick="commCommentThClick(this)">${msg_admin_community_column_id}</th>
+                    <th onclick="commCommentThClick(this)">${msg_admin_community_column_author}</th>
+                    <th onclick="commCommentThClick(this)">${msg_admin_community_column_ip}</th>
+                    <th onclick="commCommentThClick(this)">${msg_admin_community_column_content}</th>
+                    <th onclick="commCommentThClick(this)">${msg_admin_community_column_originalPost}</th>
+                    <th onclick="commCommentThClick(this)">${msg_admin_community_column_kind}</th>
+                    <th onclick="commCommentThClick(this)">${msg_admin_community_column_reportCount}</th>
+                    <th onclick="commCommentThClick(this)">${msg_admin_common_status}</th>
+                    <th onclick="commCommentThClick(this)">${msg_admin_community_column_createdAt}</th>
+                    <th onclick="commCommentThClick(this)">${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -579,6 +579,23 @@ function blockUserFromModal(btn) {
 function escHtml(str) {
     if (!str) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function commCommentThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    if (cell.classList && cell.classList.contains('adm-community-author-cell')) {
+        cell.click();
+        return;
+    }
+    var target = cell.querySelector('button:not(.row-check), a[href]');
+    if (target) { target.click(); return; }
+    var anyLink = firstRow.querySelector('a.adm-cell-link, a.adm-cell-link--inline');
+    if (anyLink) location.href = anyLink.getAttribute('href');
 }
 </script>
 

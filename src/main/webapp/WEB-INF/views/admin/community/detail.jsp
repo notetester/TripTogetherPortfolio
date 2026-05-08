@@ -216,12 +216,12 @@
                                 <table class="adm-table adm-community-report-history-table" data-admin-list-ignore="true">
                                     <thead>
                                     <tr>
-                                        <th>${msg_admin_community_detail_reportId}</th>
-                                        <th>${msg_admin_reports_reporter}</th>
-                                        <th>${msg_admin_common_reason}</th>
-                                        <th>${msg_admin_reports_reportedAt}</th>
-                                        <th>${msg_admin_common_status}</th>
-                                        <th>${msg_admin_reports_resolvedAt}</th>
+                                        <th onclick="commDetailThClick(this)">${msg_admin_community_detail_reportId}</th>
+                                        <th onclick="commDetailThClick(this)">${msg_admin_reports_reporter}</th>
+                                        <th onclick="commDetailThClick(this)">${msg_admin_common_reason}</th>
+                                        <th onclick="commDetailThClick(this)">${msg_admin_reports_reportedAt}</th>
+                                        <th onclick="commDetailThClick(this)">${msg_admin_common_status}</th>
+                                        <th onclick="commDetailThClick(this)">${msg_admin_reports_resolvedAt}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -537,6 +537,19 @@ function blockUser(userIdx) {
         if (d.success) { location.reload(); }
         else { alert(d.message || COMMUNITY_DETAIL_MSG.actionFailed); }
     });
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function commDetailThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button:not(.row-check), a[href]');
+    if (target) { target.click(); return; }
+    var anyLink = firstRow.querySelector('a.adm-cell-link');
+    if (anyLink) location.href = anyLink.getAttribute('href');
 }
 </script>
 
