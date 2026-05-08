@@ -90,11 +90,14 @@ id="ipr-exportFormat" class="adm-select js-block-export-format adm-block-export-
     <%@ include file="_ipRuleDetailsOnly.jspf" %>
     </div>
 
-    <div class="adm-card js-section-card adm-block-card-spaced" data-section="batches" data-enhanced="true">
-        <div class="adm-card-head">
-            <div>
+    <div class="adm-card js-section-card adm-block-card-spaced adm-block-batch-card" data-section="batches" data-enhanced="true">
+        <div class="adm-card-head adm-block-section-head adm-block-batch-head">
+            <div class="adm-block-head-main">
                 <div class="adm-card-title">${msg_admin_blocks_section_batches}</div>
                 <div class="adm-card-sub">${msg_admin_blocks_batches_sub}</div>
             </div>
-            <div class="adm-block-export-wrap">
+            <div class="adm-block-export-wrap adm-block-batch-actions">
+                <c:if test="${hasBlockPolicyAdmin}">
+                    <button class="adm-btn adm-btn-primary" type="button" onclick="openBatchModal()">${msg_admin_blocks_createBatch}</button>
+                </c:if>
                 <select
