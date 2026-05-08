@@ -171,14 +171,14 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th>${msg_admin_common_id}</th>
-                    <th>${msg_admin_reports_reportCount}</th>
-                    <th>${msg_admin_common_target}</th>
-                    <th>${msg_admin_reports_reporter}</th>
-                    <th>${msg_admin_common_reason}</th>
-                    <th>${msg_admin_reports_reportedAt}</th>
-                    <th>${msg_admin_reports_resolvedAt}</th>
-                    <th>${msg_admin_common_status}</th>
+                    <th onclick="rptThClick(this)">${msg_admin_common_id}</th>
+                    <th onclick="rptThClick(this)">${msg_admin_reports_reportCount}</th>
+                    <th onclick="rptThClick(this)">${msg_admin_common_target}</th>
+                    <th onclick="rptThClick(this)">${msg_admin_reports_reporter}</th>
+                    <th onclick="rptThClick(this)">${msg_admin_common_reason}</th>
+                    <th onclick="rptThClick(this)">${msg_admin_reports_reportedAt}</th>
+                    <th onclick="rptThClick(this)">${msg_admin_reports_resolvedAt}</th>
+                    <th onclick="rptThClick(this)">${msg_admin_common_status}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -385,6 +385,18 @@ function applyReportKeywordFilter(button) {
     params.set('keyword', button.dataset.keyword || '');
     params.set('page', '1');
     location.href = ctx + '/admin/reports?' + params.toString();
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 (없으면 행 상세) ── */
+function rptThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr.rpt-admin-row');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    var target = cell && cell.querySelector('button, a');
+    if (target) { target.click(); return; }
+    var href = firstRow.getAttribute('data-href');
+    if (href) location.href = href;
 }
 </script>
 

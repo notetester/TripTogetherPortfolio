@@ -76,14 +76,14 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>이미지</th>
-                        <th>제목</th>
-                        <th>슬롯</th>
-                        <th>링크</th>
-                        <th>기간</th>
-                        <th>노출 / 클릭</th>
-                        <th>활성</th>
-                        <th>액션</th>
+                        <th onclick="adThClick(this)">이미지</th>
+                        <th onclick="adThClick(this)">제목</th>
+                        <th onclick="adThClick(this)">슬롯</th>
+                        <th onclick="adThClick(this)">링크</th>
+                        <th onclick="adThClick(this)">기간</th>
+                        <th onclick="adThClick(this)">노출 / 클릭</th>
+                        <th onclick="adThClick(this)">활성</th>
+                        <th onclick="adThClick(this)">액션</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -220,6 +220,23 @@
         });
     });
 })();
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function adThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr[data-ad-id]');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('input[type="checkbox"], a[href], button');
+    if (target) {
+        if (target.tagName === 'INPUT' && target.type === 'checkbox') target.click();
+        else target.click();
+        return;
+    }
+    var editLink = firstRow.querySelector('a.detail');
+    if (editLink) location.href = editLink.getAttribute('href');
+}
 </script>
 
 <%@ include file="../layout-close.jsp" %>

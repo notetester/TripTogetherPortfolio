@@ -178,13 +178,13 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th>${msg_admin_common_id}</th>
-                    <th>${msg_admin_inquiry_author}</th>
-                    <th>${msg_admin_inquiry_title}</th>
-                    <th>${msg_admin_inquiry_category}</th>
-                    <th>${msg_admin_common_status}</th>
-                    <th>${msg_admin_inquiry_answer}</th>
-                    <th>${msg_admin_inquiry_createdAt}</th>
+                    <th onclick="inqThClick(this)">${msg_admin_common_id}</th>
+                    <th onclick="inqThClick(this)">${msg_admin_inquiry_author}</th>
+                    <th onclick="inqThClick(this)">${msg_admin_inquiry_title}</th>
+                    <th onclick="inqThClick(this)">${msg_admin_inquiry_category}</th>
+                    <th onclick="inqThClick(this)">${msg_admin_common_status}</th>
+                    <th onclick="inqThClick(this)">${msg_admin_inquiry_answer}</th>
+                    <th onclick="inqThClick(this)">${msg_admin_inquiry_createdAt}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -358,6 +358,18 @@ document.querySelectorAll('.adm-inq-row[data-id]').forEach(function (tr) {
         location.href = this.getAttribute('data-href');
     });
 });
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 (없으면 행 상세) ── */
+function inqThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr.adm-inq-row');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    var target = cell && cell.querySelector('button, a');
+    if (target) { target.click(); return; }
+    var href = firstRow.getAttribute('data-href');
+    if (href) location.href = href;
+}
 </script>
 
 <%@ include file="../layout-close.jsp" %>

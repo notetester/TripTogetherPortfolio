@@ -205,17 +205,17 @@
                 <thead>
                 <tr>
                     <th><input type="checkbox" id="checkAll"></th>
-                    <th>ID</th>
-                    <th>${msg_admin_courses_list_table_author}</th>
-                    <th>${msg_admin_courses_list_table_title}</th>
-                    <th>${msg_admin_courses_list_table_destination}</th>
-                    <th>${msg_admin_courses_list_table_period}</th>
-                    <th>${msg_admin_courses_list_table_spots}</th>
-                    <th>${msg_admin_courses_list_table_source}</th>
-                    <th>${msg_admin_courses_list_table_visibility}</th>
-                    <th>${msg_admin_common_accountStatus}</th>
-                    <th>${msg_admin_courses_list_table_createdAt}</th>
-                    <th>${msg_admin_common_action}</th>
+                    <th onclick="coursesThClick(this)">ID</th>
+                    <th onclick="coursesThClick(this)">${msg_admin_courses_list_table_author}</th>
+                    <th onclick="coursesThClick(this)">${msg_admin_courses_list_table_title}</th>
+                    <th onclick="coursesThClick(this)">${msg_admin_courses_list_table_destination}</th>
+                    <th onclick="coursesThClick(this)">${msg_admin_courses_list_table_period}</th>
+                    <th onclick="coursesThClick(this)">${msg_admin_courses_list_table_spots}</th>
+                    <th onclick="coursesThClick(this)">${msg_admin_courses_list_table_source}</th>
+                    <th onclick="coursesThClick(this)">${msg_admin_courses_list_table_visibility}</th>
+                    <th onclick="coursesThClick(this)">${msg_admin_common_accountStatus}</th>
+                    <th onclick="coursesThClick(this)">${msg_admin_courses_list_table_createdAt}</th>
+                    <th onclick="coursesThClick(this)">${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -484,6 +484,18 @@ function goCoursePageSize(size) {
     params.set('size', size);
     params.set('page', '1');
     location.href = ctx + '/admin/courses?' + params.toString();
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 (없으면 행 상세) ── */
+function coursesThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    var target = cell && cell.querySelector('button:not(.row-check), a[href]');
+    if (target) { target.click(); return; }
+    var anyLink = firstRow.querySelector('a.adm-cell-link, a.adm-link-title');
+    if (anyLink) location.href = anyLink.getAttribute('href');
 }
 </script>
 
