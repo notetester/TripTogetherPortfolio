@@ -78,6 +78,7 @@
 <spring:message var="js_modalEditTitle" code="security.admin.providerAdv.modal.title.edit" javaScriptEscape="true"/>
 <spring:message var="js_actSave" code="security.admin.providerAdv.modal.action.save" javaScriptEscape="true"/>
 <spring:message var="js_actCreate" code="security.admin.providerAdv.modal.action.create" javaScriptEscape="true"/>
+<spring:message var="js_exportSelected" code="security.admin.providerAdv.action.exportSelected" javaScriptEscape="true"/>
 
 <c:set var="pageTitle" value="${msg_title}"/>
 <c:set var="activeMenu" value="securityProviderConfigs"/>
@@ -85,24 +86,232 @@
 <%@ include file="../layout.jsp" %>
 
 <style>
-  .adm-providerAdv-page .adm-toolbar { display:flex; flex-wrap:wrap; gap:.5rem; align-items:flex-end; padding:.75rem; border:1px solid var(--adm-border, #ddd); border-radius:.5rem; background:var(--adm-card-bg, #fff); margin-bottom:.75rem; }
-  .adm-providerAdv-page .adm-toolbar > .field { display:flex; flex-direction:column; gap:.15rem; min-width:120px; }
-  .adm-providerAdv-page .adm-toolbar label.field-label { font-size:.78rem; opacity:.75; }
-  .adm-providerAdv-page .adm-toolbar .grow { flex:1; min-width:240px; }
-  .adm-providerAdv-page .adm-toolbar .toggle { display:inline-flex; gap:.3rem; align-items:center; }
-  .adm-providerAdv-page .adm-bulkbar { display:flex; gap:.4rem; align-items:center; padding:.5rem .75rem; background:var(--adm-warning-bg, #fff7e6); border:1px solid var(--adm-warning-border, #f0c378); border-radius:.4rem; margin-bottom:.5rem; }
-  .adm-providerAdv-page .adm-bulkbar.hidden { display:none; }
-  .adm-providerAdv-page .adm-table { width:100%; border-collapse:collapse; }
-  .adm-providerAdv-page .adm-table th, .adm-providerAdv-page .adm-table td { padding:.4rem .55rem; border-bottom:1px solid var(--adm-border, #e2e2e2); vertical-align:middle; font-size:.85rem; }
-  .adm-providerAdv-page .adm-table th { text-align:left; background:var(--adm-card-head-bg, #f6f6f6); font-weight:600; cursor:pointer; user-select:none; }
-  .adm-providerAdv-page .adm-table th.sort-asc::after { content:" ▲"; opacity:.6; }
-  .adm-providerAdv-page .adm-table th.sort-desc::after { content:" ▼"; opacity:.6; }
-  .adm-providerAdv-page .adm-table tr.row-deleted { opacity:.55; }
-  .adm-providerAdv-page .chip { display:inline-block; padding:.1rem .45rem; border-radius:.6rem; font-size:.72rem; background:#eee; color:#333; margin-right:.15rem; }
+  .adm-providerAdv-page .pa-filter-card {
+      margin-bottom: 18px;
+  }
+  .adm-providerAdv-page .pa-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-end;
+      margin-bottom: 0;
+  }
+  .adm-providerAdv-page .pa-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 132px;
+  }
+  .adm-providerAdv-page .pa-field-grow {
+      flex: 1 1 340px;
+      min-width: 240px;
+  }
+  .adm-providerAdv-page .pa-field-label {
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.2;
+  }
+  .adm-providerAdv-page .pa-search-box {
+      position: relative;
+  }
+  .adm-providerAdv-page .pa-search-box .adm-input {
+      padding-left: 34px;
+  }
+  .adm-providerAdv-page .pa-check-field {
+      min-width: 150px;
+  }
+  .adm-providerAdv-page .pa-toggle {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #cbd5e1;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+      white-space: nowrap;
+  }
+  .adm-providerAdv-page .pa-toggle input {
+      width: 16px;
+      height: 16px;
+      accent-color: #60a5fa;
+      flex: 0 0 auto;
+  }
+  .adm-providerAdv-page .pa-list-card {
+      overflow: visible;
+  }
+  .adm-providerAdv-page .pa-list-head {
+      min-height: 64px;
+  }
+  .adm-providerAdv-page .pa-total-label {
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 500;
+  }
+  .adm-providerAdv-page .pa-export-control {
+      position: relative;
+      flex: 0 0 auto;
+  }
+  .adm-providerAdv-page .pa-export-format {
+      width: 90px;
+      min-width: 90px;
+  }
+  .adm-providerAdv-page .pa-controlbar {
+      display: grid;
+      grid-template-columns: minmax(420px, 1fr) max-content;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(148, 163, 184, .14);
+      background: rgba(15, 23, 42, .42);
+  }
+  .adm-providerAdv-page .pa-bulkbar {
+      min-height: 44px;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .15s ease, border-color .15s ease, background-color .15s ease;
+  }
+  .adm-providerAdv-page .pa-bulkbar.is-active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      border-color: rgba(59, 130, 246, .56);
+      background: rgba(29, 78, 137, .48);
+  }
+  .adm-providerAdv-page .pa-selected-label {
+      flex: 0 0 auto;
+      color: #93c5fd;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+  }
+  .adm-providerAdv-page .pa-bulk-actions,
+  .adm-providerAdv-page .pa-view-tools,
+  .adm-providerAdv-page .pa-primary-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+  }
+  .adm-providerAdv-page .pa-bulk-actions {
+      flex-wrap: wrap;
+  }
+  .adm-providerAdv-page .pa-view-tools,
+  .adm-providerAdv-page .pa-primary-tools {
+      justify-content: flex-end;
+  }
+  .adm-providerAdv-page .pa-tool {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+  }
+  .adm-providerAdv-page .pa-tool-label {
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 800;
+  }
+  .adm-providerAdv-page .pa-page-size {
+      width: 96px;
+      min-width: 96px;
+  }
+  .adm-providerAdv-page .pa-overflow-menu {
+      position: relative;
+      display: none;
+      flex: 0 0 auto;
+  }
+  .adm-providerAdv-page .pa-overflow-menu.has-items {
+      display: inline-flex;
+  }
+  .adm-providerAdv-page .pa-overflow-toggle {
+      min-width: 76px;
+      font-size: 12px;
+  }
+  .adm-providerAdv-page .pa-overflow-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      z-index: 80;
+      min-width: 224px;
+      padding: 10px;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      background: #111827;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, .32);
+  }
+  .adm-providerAdv-page .pa-overflow-menu.open .pa-overflow-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+  }
+  .adm-providerAdv-page .pa-overflow-panel .pa-tool-item {
+      width: 100%;
+      justify-content: space-between;
+  }
+  .adm-providerAdv-page .pa-overflow-panel .adm-btn {
+      width: 100%;
+  }
+  .adm-providerAdv-page .pa-table-wrap {
+      border: 0;
+      border-radius: 0;
+  }
+  .adm-providerAdv-page .pa-table {
+      min-width: 1180px;
+  }
+  .adm-providerAdv-page .pa-check-col {
+      width: 42px;
+      text-align: center;
+  }
+  .adm-providerAdv-page .pa-table th {
+      cursor: default;
+  }
+  .adm-providerAdv-page .pa-table th[data-sort] {
+      cursor: pointer;
+  }
+  .adm-providerAdv-page .pa-table td {
+      vertical-align: middle;
+  }
+  .adm-providerAdv-page .pa-table tr.row-deleted {
+      opacity: .58;
+  }
+  .adm-providerAdv-page .pa-empty-cell {
+      padding: 32px 16px !important;
+      text-align: center;
+      color: #94a3b8;
+  }
+  .adm-providerAdv-page .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.2;
+      background: rgba(148, 163, 184, .14);
+      color: #cbd5e1;
+      margin: 2px 4px 2px 0;
+      white-space: nowrap;
+  }
   .adm-providerAdv-page .chip.kind-AI_MODEL { background:#dbeafe; color:#1e40af; }
   .adm-providerAdv-page .chip.kind-POLICY_AUTHORITY { background:#fef3c7; color:#854d0e; }
   .adm-providerAdv-page .chip.kind-RULE_ALGORITHM { background:#e0e7ff; color:#3730a3; }
-  .adm-providerAdv-page .chip.kind-WAF_PROVIDER, .adm-providerAdv-page .chip.kind-WAF, .adm-providerAdv-page .chip.kind-WAF_CDN { background:#fee2e2; color:#991b1b; }
+  .adm-providerAdv-page .chip.kind-WAF_PROVIDER,
+  .adm-providerAdv-page .chip.kind-WAF,
+  .adm-providerAdv-page .chip.kind-WAF_CDN { background:#fee2e2; color:#991b1b; }
   .adm-providerAdv-page .chip.kind-CONTENT_MODERATION { background:#dcfce7; color:#166534; }
   .adm-providerAdv-page .chip.kind-IP_REPUTATION { background:#fce7f3; color:#9d174d; }
   .adm-providerAdv-page .chip.kind-EMAIL_REPUTATION { background:#cffafe; color:#155e75; }
@@ -111,36 +320,342 @@
   .adm-providerAdv-page .chip.status-READY { background:#dcfce7; color:#166534; }
   .adm-providerAdv-page .chip.status-READY_NEEDS_SECRET { background:#fef3c7; color:#854d0e; }
   .adm-providerAdv-page .chip.status-ERROR { background:#fee2e2; color:#991b1b; }
-  .adm-providerAdv-page .priority-bar { display:inline-block; min-width:2.4rem; text-align:center; padding:.05rem .35rem; border-radius:.25rem; background:#e5e7eb; font-weight:600; }
-  .adm-providerAdv-page .pagination { display:flex; gap:.25rem; align-items:center; justify-content:center; padding:.6rem 0; flex-wrap:wrap; }
-  .adm-providerAdv-page .pagination .pg-btn { min-width:2rem; padding:.2rem .55rem; border:1px solid var(--adm-border, #ccc); background:#fff; cursor:pointer; border-radius:.25rem; }
-  .adm-providerAdv-page .pagination .pg-btn.active { background:#2563eb; color:#fff; border-color:#2563eb; }
-  .adm-providerAdv-page .pagination .pg-btn:disabled { opacity:.4; cursor:not-allowed; }
-  .adm-providerAdv-page .total-line { font-size:.85rem; opacity:.8; padding:.4rem 0; }
-  .adm-providerAdv-page .pa-modal { position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index:1050; }
-  .adm-providerAdv-page .pa-modal[hidden] { display:none !important; }
-  .adm-providerAdv-page .pa-card { background:#fff; max-width:920px; width:96%; max-height:92vh; overflow:auto; border-radius:.5rem; box-shadow:0 8px 30px rgba(0,0,0,.25); }
-  .adm-providerAdv-page .pa-head { display:flex; justify-content:space-between; align-items:center; padding:.75rem 1rem; border-bottom:1px solid #eee; }
-  .adm-providerAdv-page .pa-tabs { display:flex; gap:.25rem; padding:.5rem 1rem 0; flex-wrap:wrap; border-bottom:1px solid #eee; }
-  .adm-providerAdv-page .pa-tab { padding:.5rem .9rem; border:1px solid #ddd; border-bottom:none; background:#f6f6f6; cursor:pointer; border-radius:.4rem .4rem 0 0; }
-  .adm-providerAdv-page .pa-tab.active { background:#fff; font-weight:600; border-color:#2563eb; color:#2563eb; }
-  .adm-providerAdv-page .pa-body { padding:1rem; }
-  .adm-providerAdv-page .pa-pane[hidden] { display:none; }
-  .adm-providerAdv-page .pa-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:.7rem 1rem; }
-  .adm-providerAdv-page .pa-grid label { display:flex; flex-direction:column; gap:.2rem; font-size:.82rem; }
-  .adm-providerAdv-page .pa-grid label.full { grid-column:1 / -1; }
-  .adm-providerAdv-page .pa-hint { font-size:.72rem; opacity:.7; }
-  .adm-providerAdv-page .pa-foot { padding:.75rem 1rem; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.4rem; }
-  .adm-providerAdv-page .pa-error { background:#fee2e2; color:#991b1b; padding:.4rem .7rem; border-radius:.3rem; margin:.4rem 1rem 0; display:none; }
-  .adm-providerAdv-page .pa-error.show { display:block; }
-  .adm-providerAdv-page .adm-export-dropdown { position:relative; display:inline-block; }
-  .adm-providerAdv-page .adm-export-dropdown > .menu { position:absolute; top:100%; right:0; min-width:240px; padding:.4rem; background:#fff; border:1px solid #ddd; border-radius:.4rem; box-shadow:0 4px 12px rgba(0,0,0,.12); z-index:10; }
-  .adm-providerAdv-page .adm-export-dropdown:not(.open) > .menu { display:none; }
-  .adm-providerAdv-page .adm-export-dropdown .menu .row { display:flex; align-items:center; gap:.4rem; padding:.25rem .35rem; }
-  .adm-providerAdv-page .adm-export-dropdown .menu .row .lbl { flex:1; font-size:.82rem; }
-  .adm-providerAdv-page .adm-toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); background:#1f2937; color:#fff; padding:.55rem 1rem; border-radius:.4rem; z-index:1100; opacity:0; transition:opacity .2s; }
-  .adm-providerAdv-page .adm-toast.show { opacity:.95; }
-  @media (max-width: 720px) { .adm-providerAdv-page .pa-grid { grid-template-columns:1fr; } }
+  .adm-providerAdv-page .priority-bar {
+      display: inline-flex;
+      min-width: 40px;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: rgba(59, 130, 246, .15);
+      color: #bfdbfe;
+      font-weight: 800;
+  }
+  .adm-providerAdv-page .pa-row-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+  }
+  .adm-providerAdv-page .pa-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 14px 16px 16px;
+      border-top: 1px solid rgba(148, 163, 184, .14);
+      background: rgba(15, 23, 42, .42);
+  }
+  .adm-providerAdv-page .pa-pagination .pg-btn {
+      min-width: 36px;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid rgba(148, 163, 184, .24);
+      border-radius: 8px;
+      background: rgba(15, 23, 42, .82);
+      color: #cbd5e1;
+      cursor: pointer;
+      font-weight: 800;
+  }
+  .adm-providerAdv-page .pa-pagination .pg-btn.active {
+      background: #2563eb;
+      color: #fff;
+      border-color: #60a5fa;
+  }
+  .adm-providerAdv-page .pa-pagination .pg-btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+  }
+  .adm-providerAdv-page .pa-modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(2, 6, 23, .72);
+      z-index: 1050;
+  }
+  .adm-providerAdv-page .pa-modal[hidden] {
+      display: none !important;
+  }
+  .adm-providerAdv-page .pa-card {
+      width: min(960px, 96vw);
+      max-height: 92vh;
+      overflow: auto;
+      border: 1px solid rgba(148, 163, 184, .22);
+      border-radius: 14px;
+      background: #161b27;
+      box-shadow: 0 24px 60px rgba(2, 6, 23, .48);
+  }
+  .adm-providerAdv-page .pa-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(148, 163, 184, .16);
+      background: #111827;
+  }
+  .adm-providerAdv-page .pa-head h2 {
+      margin: 0;
+      color: #f8fafc;
+      font-size: 18px;
+  }
+  .adm-providerAdv-page .pa-tabs {
+      display: flex;
+      gap: 6px;
+      padding: 12px 18px 0;
+      flex-wrap: wrap;
+      border-bottom: 1px solid rgba(148, 163, 184, .16);
+  }
+  .adm-providerAdv-page .pa-tab {
+      padding: 9px 13px;
+      border: 1px solid rgba(148, 163, 184, .22);
+      border-bottom: 0;
+      border-radius: 10px 10px 0 0;
+      background: rgba(15, 23, 42, .64);
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+  }
+  .adm-providerAdv-page .pa-tab.active {
+      background: #161b27;
+      border-color: rgba(96, 165, 250, .55);
+      color: #dbeafe;
+  }
+  .adm-providerAdv-page .pa-body {
+      padding: 18px;
+  }
+  .adm-providerAdv-page .pa-pane[hidden] {
+      display: none;
+  }
+  .adm-providerAdv-page .pa-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+  }
+  .adm-providerAdv-page .pa-grid label,
+  .adm-providerAdv-page .pa-grid .pa-form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 700;
+  }
+  .adm-providerAdv-page .pa-grid label.pa-toggle {
+      min-height: 36px;
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      width: auto;
+  }
+  .adm-providerAdv-page .pa-grid label.full {
+      grid-column: 1 / -1;
+  }
+  .adm-providerAdv-page .pa-check-list {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+  }
+  .adm-providerAdv-page .pa-hint {
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.5;
+  }
+  .adm-providerAdv-page .pa-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px 18px;
+      border-top: 1px solid rgba(148, 163, 184, .16);
+      background: rgba(15, 23, 42, .42);
+  }
+  .adm-providerAdv-page .pa-foot-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+  }
+  .adm-providerAdv-page .pa-error {
+      display: none;
+      margin: 12px 18px 0;
+      padding: 10px 12px;
+      border: 1px solid rgba(239, 68, 68, .42);
+      border-radius: 10px;
+      background: rgba(127, 29, 29, .28);
+      color: #fecaca;
+      font-size: 13px;
+      font-weight: 700;
+  }
+  .adm-providerAdv-page .pa-error.show {
+      display: block;
+  }
+  .adm-providerAdv-page .pa-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      z-index: 1100;
+      max-width: min(520px, calc(100vw - 32px));
+      transform: translateX(-50%);
+      padding: 10px 16px;
+      border-radius: 10px;
+      background: #1f2937;
+      color: #fff;
+      box-shadow: 0 18px 38px rgba(2, 6, 23, .38);
+      opacity: 0;
+      transition: opacity .2s;
+  }
+  .adm-providerAdv-page .pa-toast.show {
+      opacity: .96;
+  }
+  body.sa-light .adm-providerAdv-page .pa-field-label,
+  body.sa-light .adm-providerAdv-page .pa-tool-label {
+      color: #64748b;
+  }
+  body.sa-light .adm-providerAdv-page .pa-toggle,
+  body.sa-light .adm-providerAdv-page .pa-tool,
+  body.sa-light .adm-providerAdv-page .pa-grid label,
+  body.sa-light .adm-providerAdv-page .pa-grid .pa-form-field {
+      color: #475569;
+  }
+  body.sa-light .adm-providerAdv-page .pa-controlbar,
+  body.sa-light .adm-providerAdv-page .pa-pagination,
+  body.sa-light .adm-providerAdv-page .pa-foot {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+  }
+  body.sa-light .adm-providerAdv-page .pa-bulkbar.is-active {
+      border-color: rgba(37, 99, 235, .34);
+      background: #eff6ff;
+  }
+  body.sa-light .adm-providerAdv-page .pa-total-label,
+  body.sa-light .adm-providerAdv-page .pa-hint,
+  body.sa-light .adm-providerAdv-page .pa-empty-cell {
+      color: #64748b;
+  }
+  body.sa-light .adm-providerAdv-page .pa-overflow-panel,
+  body.sa-light .adm-providerAdv-page .pa-card {
+      background: #fff;
+      border-color: #e2e8f0;
+      box-shadow: 0 16px 34px rgba(15, 23, 42, .14);
+  }
+  body.sa-light .adm-providerAdv-page .pa-head {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+  }
+  body.sa-light .adm-providerAdv-page .pa-head h2 {
+      color: #1e293b;
+  }
+  body.sa-light .adm-providerAdv-page .pa-tabs {
+      border-color: #e2e8f0;
+  }
+  body.sa-light .adm-providerAdv-page .pa-tab {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+      color: #64748b;
+  }
+  body.sa-light .adm-providerAdv-page .pa-tab.active {
+      background: #fff;
+      border-color: #60a5fa;
+      color: #2563eb;
+  }
+  body.sa-light .adm-providerAdv-page .priority-bar {
+      background: #eff6ff;
+      color: #1d4ed8;
+  }
+  body.sa-light .adm-providerAdv-page .pa-pagination .pg-btn {
+      background: #fff;
+      border-color: #e2e8f0;
+      color: #475569;
+  }
+  body.sa-light .adm-providerAdv-page .pa-pagination .pg-btn.active {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+  }
+  body.sa-light .adm-providerAdv-page .pa-toast {
+      background: #1e293b;
+  }
+  @media (max-width: 1180px) {
+      .adm-providerAdv-page .pa-controlbar {
+          grid-template-columns: 1fr;
+          align-items: stretch;
+      }
+      .adm-providerAdv-page .pa-view-tools,
+      .adm-providerAdv-page .pa-primary-tools {
+          justify-content: flex-start;
+      }
+      .adm-providerAdv-page .pa-overflow-panel {
+          left: 0;
+          right: auto;
+      }
+  }
+  @media (max-width: 767px) {
+      .adm-providerAdv-page .pa-field,
+      .adm-providerAdv-page .pa-field-grow,
+      .adm-providerAdv-page .pa-check-field {
+          flex: 1 1 100%;
+          width: 100%;
+      }
+      .adm-providerAdv-page .pa-filter-bar .adm-select,
+      .adm-providerAdv-page .pa-filter-bar .adm-input,
+      .adm-providerAdv-page .pa-filter-bar .adm-btn {
+          width: 100%;
+      }
+      .adm-providerAdv-page .pa-bulkbar:not(.is-active) {
+          display: none;
+      }
+      .adm-providerAdv-page .pa-bulkbar,
+      .adm-providerAdv-page .pa-bulk-actions,
+      .adm-providerAdv-page .pa-primary-tools,
+      .adm-providerAdv-page .pa-foot-actions {
+          flex-wrap: wrap;
+      }
+      .adm-providerAdv-page .pa-pagination {
+          justify-content: center;
+      }
+      .adm-providerAdv-page .pa-grid {
+          grid-template-columns: 1fr;
+      }
+  }
+  @media (max-width: 560px) {
+      .adm-providerAdv-page .pa-export-control,
+      .adm-providerAdv-page .pa-export-control .adm-btn,
+      .adm-providerAdv-page .pa-bulk-actions .adm-btn,
+      .adm-providerAdv-page .pa-overflow-menu,
+      .adm-providerAdv-page .pa-overflow-toggle,
+      .adm-providerAdv-page .pa-overflow-panel,
+      .adm-providerAdv-page .pa-foot-actions,
+      .adm-providerAdv-page .pa-foot-actions .adm-btn {
+          width: 100%;
+      }
+      .adm-providerAdv-page .pa-export-format,
+      .adm-providerAdv-page .pa-page-size {
+          width: 100%;
+      }
+      .adm-providerAdv-page .pa-bulkbar {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 8px;
+      }
+      .adm-providerAdv-page .pa-bulk-actions {
+          display: grid;
+          grid-template-columns: 1fr;
+      }
+      .adm-providerAdv-page .pa-modal {
+          align-items: flex-start;
+          padding: 12px;
+      }
+  }
 </style>
 
 <div class="adm-content adm-governance-page adm-providerAdv-page">
@@ -163,154 +678,165 @@
         <div class="adm-alert danger"><c:out value="${errorMessage}"/></div>
     </c:if>
 
-    <%-- Toolbar --%>
-    <div class="adm-toolbar">
-        <div class="field grow">
-            <label class="field-label" for="pa-keyword">${msg_searchPh}</label>
-            <input id="pa-keyword" class="adm-input" type="text" placeholder="${msg_searchPh}">
-        </div>
-        <div class="field">
-            <label class="field-label" for="pa-kind">${msg_filterKind}</label>
-            <select id="pa-kind" class="adm-select">
-                <option value="">${msg_filterAll}</option>
-                <option value="AI_MODEL"><spring:message code="security.admin.providerAdv.kind.AI_MODEL"/></option>
-                <option value="POLICY_AUTHORITY"><spring:message code="security.admin.providerAdv.kind.POLICY_AUTHORITY"/></option>
-                <option value="RULE_ALGORITHM"><spring:message code="security.admin.providerAdv.kind.RULE_ALGORITHM"/></option>
-                <option value="WAF_PROVIDER"><spring:message code="security.admin.providerAdv.kind.WAF_PROVIDER"/></option>
-                <option value="CONTENT_MODERATION"><spring:message code="security.admin.providerAdv.kind.CONTENT_MODERATION"/></option>
-                <option value="IP_REPUTATION"><spring:message code="security.admin.providerAdv.kind.IP_REPUTATION"/></option>
-                <option value="EMAIL_REPUTATION"><spring:message code="security.admin.providerAdv.kind.EMAIL_REPUTATION"/></option>
-                <option value="CUSTOM_WEBHOOK"><spring:message code="security.admin.providerAdv.kind.CUSTOM_WEBHOOK"/></option>
-                <option value="WAF_CDN"><spring:message code="security.admin.providerAdv.kind.WAF_CDN"/></option>
-                <option value="WAF"><spring:message code="security.admin.providerAdv.kind.WAF"/></option>
-                <option value="CDN"><spring:message code="security.admin.providerAdv.kind.CDN"/></option>
-                <option value="EDGE_SECURITY"><spring:message code="security.admin.providerAdv.kind.EDGE_SECURITY"/></option>
-            </select>
-        </div>
-        <div class="field">
-            <label class="field-label" for="pa-status">${msg_filterStatus}</label>
-            <select id="pa-status" class="adm-select">
-                <option value="">${msg_filterAll}</option>
-                <option value="DISABLED"><spring:message code="security.admin.providerAdv.status.DISABLED"/></option>
-                <option value="READY"><spring:message code="security.admin.providerAdv.status.READY"/></option>
-                <option value="READY_NEEDS_SECRET"><spring:message code="security.admin.providerAdv.status.READY_NEEDS_SECRET"/></option>
-                <option value="ERROR"><spring:message code="security.admin.providerAdv.status.ERROR"/></option>
-            </select>
-        </div>
-        <div class="field">
-            <label class="field-label" for="pa-enabled">${msg_filterEnabled}</label>
-            <select id="pa-enabled" class="adm-select">
-                <option value="">${msg_filterAll}</option>
-                <option value="1">${msg_filterEnYes}</option>
-                <option value="0">${msg_filterEnNo}</option>
-            </select>
-        </div>
-        <div class="field">
-            <label class="field-label" for="pa-category">${msg_filterCategory}</label>
-            <select id="pa-category" class="adm-select">
-                <option value="">${msg_filterAll}</option>
-                <option value="LOGIN_RISK"><spring:message code="security.admin.providerAdv.category.LOGIN_RISK"/></option>
-                <option value="WAF_SYNC"><spring:message code="security.admin.providerAdv.category.WAF_SYNC"/></option>
-                <option value="CONTENT_MODERATION"><spring:message code="security.admin.providerAdv.category.CONTENT_MODERATION"/></option>
-                <option value="IP_REPUTATION"><spring:message code="security.admin.providerAdv.category.IP_REPUTATION"/></option>
-                <option value="EMAIL_REPUTATION"><spring:message code="security.admin.providerAdv.category.EMAIL_REPUTATION"/></option>
-            </select>
-        </div>
-        <div class="field">
-            <label class="field-label" for="pa-trigger">${msg_filterTrigger}</label>
-            <select id="pa-trigger" class="adm-select">
-                <option value="">${msg_filterAll}</option>
-                <option value="LOGIN_ATTEMPT"><spring:message code="security.admin.providerAdv.triggerEvent.LOGIN_ATTEMPT"/></option>
-                <option value="SIGNUP"><spring:message code="security.admin.providerAdv.triggerEvent.SIGNUP"/></option>
-                <option value="REPORT_CREATED"><spring:message code="security.admin.providerAdv.triggerEvent.REPORT_CREATED"/></option>
-                <option value="COMMUNITY_POST_CREATED"><spring:message code="security.admin.providerAdv.triggerEvent.COMMUNITY_POST_CREATED"/></option>
-                <option value="PASSWORD_RESET"><spring:message code="security.admin.providerAdv.triggerEvent.PASSWORD_RESET"/></option>
-            </select>
-        </div>
-        <div class="field">
-            <label class="field-label">&nbsp;</label>
-            <label class="toggle"><input id="pa-includeDeleted" type="checkbox"> ${msg_filterIncludeDeleted}</label>
-        </div>
-        <div class="field">
-            <label class="field-label">&nbsp;</label>
-            <label class="toggle"><input id="pa-onlyDeleted" type="checkbox"> ${msg_filterOnlyDeleted}</label>
-        </div>
-        <div class="field">
-            <label class="field-label" for="pa-pageSize">${msg_pageSize}</label>
-            <select id="pa-pageSize" class="adm-select">
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="0">${msg_pageSizeAll}</option>
-            </select>
-        </div>
-        <div class="field">
-            <label class="field-label">&nbsp;</label>
-            <button type="button" class="adm-btn" id="pa-sortReset">${msg_sortReset}</button>
-        </div>
-        <div class="field" style="margin-left:auto;">
-            <label class="field-label">&nbsp;</label>
-            <div style="display:flex; gap:.4rem;">
-                <button type="button" class="adm-btn" id="pa-refresh">${msg_refresh}</button>
-                <button type="button" class="adm-btn primary" id="pa-openCreate">${msg_addNew}</button>
-                <div class="adm-export-dropdown" id="pa-exportDropdown">
-                    <button type="button" class="adm-btn" id="pa-exportToggle">${msg_export} ▾</button>
-                    <div class="menu">
-                        <div class="row"><span class="lbl">${msg_exportAll}</span>
-                            <button type="button" class="adm-btn" data-export-scope="all" data-export-format="csv">${msg_exportCsv}</button>
-                            <button type="button" class="adm-btn" data-export-scope="all" data-export-format="excel">${msg_exportExcel}</button>
-                        </div>
-                        <div class="row"><span class="lbl">${msg_exportFiltered}</span>
-                            <button type="button" class="adm-btn" data-export-scope="filtered" data-export-format="csv">${msg_exportCsv}</button>
-                            <button type="button" class="adm-btn" data-export-scope="filtered" data-export-format="excel">${msg_exportExcel}</button>
-                        </div>
-                        <div class="row"><span class="lbl">${msg_exportSelected}</span>
-                            <button type="button" class="adm-btn" data-export-scope="selected" data-export-format="csv">${msg_exportCsv}</button>
-                            <button type="button" class="adm-btn" data-export-scope="selected" data-export-format="excel">${msg_exportExcel}</button>
-                        </div>
+    <div class="adm-card pa-filter-card">
+        <div class="adm-card-body">
+            <div class="pa-filter-bar">
+                <div class="pa-field pa-field-grow">
+                    <label class="pa-field-label" for="pa-keyword">${msg_searchPh}</label>
+                    <div class="adm-search-box pa-search-box">
+                        <span class="adm-search-ico">🔍</span>
+                        <input id="pa-keyword" class="adm-input" type="text" placeholder="${msg_searchPh}">
                     </div>
+                </div>
+                <div class="pa-field">
+                    <label class="pa-field-label" for="pa-kind">${msg_filterKind}</label>
+                    <select id="pa-kind" class="adm-select">
+                        <option value="">${msg_filterAll}</option>
+                        <option value="AI_MODEL"><spring:message code="security.admin.providerAdv.kind.AI_MODEL"/></option>
+                        <option value="POLICY_AUTHORITY"><spring:message code="security.admin.providerAdv.kind.POLICY_AUTHORITY"/></option>
+                        <option value="RULE_ALGORITHM"><spring:message code="security.admin.providerAdv.kind.RULE_ALGORITHM"/></option>
+                        <option value="WAF_PROVIDER"><spring:message code="security.admin.providerAdv.kind.WAF_PROVIDER"/></option>
+                        <option value="CONTENT_MODERATION"><spring:message code="security.admin.providerAdv.kind.CONTENT_MODERATION"/></option>
+                        <option value="IP_REPUTATION"><spring:message code="security.admin.providerAdv.kind.IP_REPUTATION"/></option>
+                        <option value="EMAIL_REPUTATION"><spring:message code="security.admin.providerAdv.kind.EMAIL_REPUTATION"/></option>
+                        <option value="CUSTOM_WEBHOOK"><spring:message code="security.admin.providerAdv.kind.CUSTOM_WEBHOOK"/></option>
+                        <option value="WAF_CDN"><spring:message code="security.admin.providerAdv.kind.WAF_CDN"/></option>
+                        <option value="WAF"><spring:message code="security.admin.providerAdv.kind.WAF"/></option>
+                        <option value="CDN"><spring:message code="security.admin.providerAdv.kind.CDN"/></option>
+                        <option value="EDGE_SECURITY"><spring:message code="security.admin.providerAdv.kind.EDGE_SECURITY"/></option>
+                    </select>
+                </div>
+                <div class="pa-field">
+                    <label class="pa-field-label" for="pa-status">${msg_filterStatus}</label>
+                    <select id="pa-status" class="adm-select">
+                        <option value="">${msg_filterAll}</option>
+                        <option value="DISABLED"><spring:message code="security.admin.providerAdv.status.DISABLED"/></option>
+                        <option value="READY"><spring:message code="security.admin.providerAdv.status.READY"/></option>
+                        <option value="READY_NEEDS_SECRET"><spring:message code="security.admin.providerAdv.status.READY_NEEDS_SECRET"/></option>
+                        <option value="ERROR"><spring:message code="security.admin.providerAdv.status.ERROR"/></option>
+                    </select>
+                </div>
+                <div class="pa-field">
+                    <label class="pa-field-label" for="pa-enabled">${msg_filterEnabled}</label>
+                    <select id="pa-enabled" class="adm-select">
+                        <option value="">${msg_filterAll}</option>
+                        <option value="1">${msg_filterEnYes}</option>
+                        <option value="0">${msg_filterEnNo}</option>
+                    </select>
+                </div>
+                <div class="pa-field">
+                    <label class="pa-field-label" for="pa-category">${msg_filterCategory}</label>
+                    <select id="pa-category" class="adm-select">
+                        <option value="">${msg_filterAll}</option>
+                        <option value="LOGIN_RISK"><spring:message code="security.admin.providerAdv.category.LOGIN_RISK"/></option>
+                        <option value="WAF_SYNC"><spring:message code="security.admin.providerAdv.category.WAF_SYNC"/></option>
+                        <option value="CONTENT_MODERATION"><spring:message code="security.admin.providerAdv.category.CONTENT_MODERATION"/></option>
+                        <option value="IP_REPUTATION"><spring:message code="security.admin.providerAdv.category.IP_REPUTATION"/></option>
+                        <option value="EMAIL_REPUTATION"><spring:message code="security.admin.providerAdv.category.EMAIL_REPUTATION"/></option>
+                    </select>
+                </div>
+                <div class="pa-field">
+                    <label class="pa-field-label" for="pa-trigger">${msg_filterTrigger}</label>
+                    <select id="pa-trigger" class="adm-select">
+                        <option value="">${msg_filterAll}</option>
+                        <option value="LOGIN_ATTEMPT"><spring:message code="security.admin.providerAdv.triggerEvent.LOGIN_ATTEMPT"/></option>
+                        <option value="SIGNUP"><spring:message code="security.admin.providerAdv.triggerEvent.SIGNUP"/></option>
+                        <option value="REPORT_CREATED"><spring:message code="security.admin.providerAdv.triggerEvent.REPORT_CREATED"/></option>
+                        <option value="COMMUNITY_POST_CREATED"><spring:message code="security.admin.providerAdv.triggerEvent.COMMUNITY_POST_CREATED"/></option>
+                        <option value="PASSWORD_RESET"><spring:message code="security.admin.providerAdv.triggerEvent.PASSWORD_RESET"/></option>
+                    </select>
+                </div>
+                <div class="pa-field pa-check-field">
+                    <span class="pa-field-label">&nbsp;</span>
+                    <label class="pa-toggle"><input id="pa-includeDeleted" type="checkbox"> ${msg_filterIncludeDeleted}</label>
+                </div>
+                <div class="pa-field pa-check-field">
+                    <span class="pa-field-label">&nbsp;</span>
+                    <label class="pa-toggle"><input id="pa-onlyDeleted" type="checkbox"> ${msg_filterOnlyDeleted}</label>
                 </div>
             </div>
         </div>
     </div>
 
-    <%-- Bulk action bar (hidden until selection) --%>
-    <div class="adm-bulkbar hidden" id="pa-bulkbar">
-        <span id="pa-selectedLabel"></span>
-        <button type="button" class="adm-btn" data-bulk-action="enable">${msg_bulkEnable}</button>
-        <button type="button" class="adm-btn" data-bulk-action="disable">${msg_bulkDisable}</button>
-        <button type="button" class="adm-btn" data-bulk-action="check">${msg_bulkCheck}</button>
-        <button type="button" class="adm-btn" data-bulk-action="delete">${msg_bulkDelete}</button>
-        <button type="button" class="adm-btn" data-bulk-action="restore">${msg_bulkRestore}</button>
+    <div class="adm-card pa-list-card adm-overflow-visible">
+        <div class="adm-card-head pa-list-head">
+            <div class="adm-card-title">
+                ${msg_title}
+                <span class="pa-total-label" id="pa-totalLine"></span>
+            </div>
+            <div class="pa-export-control adm-export-control">
+                <select class="adm-select pa-export-format" id="pa-exportFormat" title="${msg_export}">
+                    <option value="csv">${msg_exportCsv}</option>
+                    <option value="excel">${msg_exportExcel}</option>
+                </select>
+                <button type="button" class="adm-btn adm-btn-ghost" id="pa-exportToggle">${msg_export} ▾</button>
+                <div id="pa-exportDropdown" class="adm-export-dropdown">
+                    <button type="button" class="adm-export-item" data-export-scope="all">${msg_exportAll}</button>
+                    <button type="button" class="adm-export-item" data-export-scope="filtered">${msg_exportFiltered}</button>
+                    <button type="button" class="adm-export-item" data-export-scope="selected" id="pa-exportSelectedBtn" disabled>${msg_exportSelected} (0)</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="pa-controlbar">
+            <div class="pa-bulkbar" id="pa-bulkbar" aria-hidden="true" aria-live="polite">
+                <span class="pa-selected-label" id="pa-selectedLabel"></span>
+                <div class="pa-bulk-actions">
+                    <button type="button" class="adm-btn" data-bulk-action="enable" disabled>${msg_bulkEnable}</button>
+                    <button type="button" class="adm-btn" data-bulk-action="disable" disabled>${msg_bulkDisable}</button>
+                    <button type="button" class="adm-btn" data-bulk-action="check" disabled>${msg_bulkCheck}</button>
+                    <button type="button" class="adm-btn" data-bulk-action="delete" disabled>${msg_bulkDelete}</button>
+                    <button type="button" class="adm-btn" data-bulk-action="restore" disabled>${msg_bulkRestore}</button>
+                </div>
+            </div>
+
+            <div class="pa-view-tools">
+                <div id="pa-primaryTools" class="pa-primary-tools">
+                    <button type="button" class="adm-dash-sort-reset pa-tool-item pa-sort-reset adm-is-hidden" id="pa-sortReset">${msg_sortReset}</button>
+                    <label class="pa-tool-item pa-tool pa-size-tool">
+                        <span class="pa-tool-label">${msg_pageSize}</span>
+                        <select id="pa-pageSize" class="adm-select pa-page-size">
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="0">${msg_pageSizeAll}</option>
+                        </select>
+                    </label>
+                    <button type="button" class="adm-btn adm-btn-ghost pa-tool-item pa-refresh-tool" id="pa-refresh">${msg_refresh}</button>
+                    <button type="button" class="adm-btn adm-btn-primary pa-tool-item pa-create-tool" id="pa-openCreate">${msg_addNew}</button>
+                </div>
+                <div class="pa-overflow-menu" id="pa-overflowMenu">
+                    <button type="button" class="adm-btn adm-btn-ghost pa-overflow-toggle" aria-expanded="false" aria-controls="pa-overflowPanel">옵션 ▾</button>
+                    <div id="pa-overflowPanel" class="pa-overflow-panel"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="adm-table-wrap adm-overflow-visible pa-table-wrap">
+            <table class="adm-table pa-table" data-admin-list-ignore="true">
+                <thead>
+                    <tr>
+                        <th class="pa-check-col"><input type="checkbox" id="pa-selAll" class="adm-check"></th>
+                        <th data-sort="priority_desc">${msg_colPriority}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th>${msg_colKind}</th>
+                        <th data-sort="name_asc">${msg_colName}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th>${msg_colCode}</th>
+                        <th>${msg_colCategory}</th>
+                        <th>${msg_colStatus}</th>
+                        <th>${msg_colEnabled}</th>
+                        <th data-sort="last_checked_desc">${msg_colLastCheck}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th>${msg_colNextCheck}</th>
+                        <th>${msg_colActions}</th>
+                    </tr>
+                </thead>
+                <tbody id="pa-rows">
+                    <tr><td colspan="11" class="pa-empty-cell">...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pa-pagination" id="pa-pagination"></div>
     </div>
-
-    <div class="total-line" id="pa-totalLine"></div>
-
-    <div class="adm-card" style="padding:0;">
-        <table class="adm-table">
-            <thead>
-                <tr>
-                    <th style="width:36px;"><input type="checkbox" id="pa-selAll"></th>
-                    <th data-sort="priority_desc">${msg_colPriority}</th>
-                    <th>${msg_colKind}</th>
-                    <th data-sort="name_asc">${msg_colName}</th>
-                    <th>${msg_colCode}</th>
-                    <th>${msg_colCategory}</th>
-                    <th>${msg_colStatus}</th>
-                    <th>${msg_colEnabled}</th>
-                    <th data-sort="last_checked_desc">${msg_colLastCheck}</th>
-                    <th>${msg_colNextCheck}</th>
-                    <th>${msg_colActions}</th>
-                </tr>
-            </thead>
-            <tbody id="pa-rows">
-                <tr><td colspan="11" style="text-align:center; padding:2rem;">…</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="pagination" id="pa-pagination"></div>
-</div>
 
 <%-- Edit/Create Modal --%>
 <div class="pa-modal" id="pa-modal" hidden>
@@ -361,31 +887,31 @@
                             <input class="adm-input" type="text" name="tags" id="f-tags" maxlength="255">
                         </label>
                         <label class="full"><span><spring:message code="security.admin.providerAdv.modal.field.usageCategories"/></span>
-                            <div id="f-usageCategories">
-                                <label class="toggle"><input type="checkbox" data-cat value="LOGIN_RISK"> <spring:message code="security.admin.providerAdv.category.LOGIN_RISK"/></label>
-                                <label class="toggle"><input type="checkbox" data-cat value="WAF_SYNC"> <spring:message code="security.admin.providerAdv.category.WAF_SYNC"/></label>
-                                <label class="toggle"><input type="checkbox" data-cat value="CONTENT_MODERATION"> <spring:message code="security.admin.providerAdv.category.CONTENT_MODERATION"/></label>
-                                <label class="toggle"><input type="checkbox" data-cat value="IP_REPUTATION"> <spring:message code="security.admin.providerAdv.category.IP_REPUTATION"/></label>
-                                <label class="toggle"><input type="checkbox" data-cat value="EMAIL_REPUTATION"> <spring:message code="security.admin.providerAdv.category.EMAIL_REPUTATION"/></label>
+                            <div id="f-usageCategories" class="pa-check-list">
+                                <label class="pa-toggle"><input type="checkbox" data-cat value="LOGIN_RISK"> <spring:message code="security.admin.providerAdv.category.LOGIN_RISK"/></label>
+                                <label class="pa-toggle"><input type="checkbox" data-cat value="WAF_SYNC"> <spring:message code="security.admin.providerAdv.category.WAF_SYNC"/></label>
+                                <label class="pa-toggle"><input type="checkbox" data-cat value="CONTENT_MODERATION"> <spring:message code="security.admin.providerAdv.category.CONTENT_MODERATION"/></label>
+                                <label class="pa-toggle"><input type="checkbox" data-cat value="IP_REPUTATION"> <spring:message code="security.admin.providerAdv.category.IP_REPUTATION"/></label>
+                                <label class="pa-toggle"><input type="checkbox" data-cat value="EMAIL_REPUTATION"> <spring:message code="security.admin.providerAdv.category.EMAIL_REPUTATION"/></label>
                             </div>
                             <span class="pa-hint"><spring:message code="security.admin.providerAdv.modal.field.usageCategoriesHint"/></span>
                         </label>
                         <label class="full"><span><spring:message code="security.admin.providerAdv.modal.field.triggerEvents"/></span>
-                            <div id="f-triggerEvents">
-                                <label class="toggle"><input type="checkbox" data-ev value="LOGIN_ATTEMPT"> <spring:message code="security.admin.providerAdv.triggerEvent.LOGIN_ATTEMPT"/></label>
-                                <label class="toggle"><input type="checkbox" data-ev value="SIGNUP"> <spring:message code="security.admin.providerAdv.triggerEvent.SIGNUP"/></label>
-                                <label class="toggle"><input type="checkbox" data-ev value="REPORT_CREATED"> <spring:message code="security.admin.providerAdv.triggerEvent.REPORT_CREATED"/></label>
-                                <label class="toggle"><input type="checkbox" data-ev value="COMMUNITY_POST_CREATED"> <spring:message code="security.admin.providerAdv.triggerEvent.COMMUNITY_POST_CREATED"/></label>
-                                <label class="toggle"><input type="checkbox" data-ev value="PASSWORD_RESET"> <spring:message code="security.admin.providerAdv.triggerEvent.PASSWORD_RESET"/></label>
+                            <div id="f-triggerEvents" class="pa-check-list">
+                                <label class="pa-toggle"><input type="checkbox" data-ev value="LOGIN_ATTEMPT"> <spring:message code="security.admin.providerAdv.triggerEvent.LOGIN_ATTEMPT"/></label>
+                                <label class="pa-toggle"><input type="checkbox" data-ev value="SIGNUP"> <spring:message code="security.admin.providerAdv.triggerEvent.SIGNUP"/></label>
+                                <label class="pa-toggle"><input type="checkbox" data-ev value="REPORT_CREATED"> <spring:message code="security.admin.providerAdv.triggerEvent.REPORT_CREATED"/></label>
+                                <label class="pa-toggle"><input type="checkbox" data-ev value="COMMUNITY_POST_CREATED"> <spring:message code="security.admin.providerAdv.triggerEvent.COMMUNITY_POST_CREATED"/></label>
+                                <label class="pa-toggle"><input type="checkbox" data-ev value="PASSWORD_RESET"> <spring:message code="security.admin.providerAdv.triggerEvent.PASSWORD_RESET"/></label>
                             </div>
                             <span class="pa-hint"><spring:message code="security.admin.providerAdv.modal.field.triggerEventsHint"/></span>
                         </label>
                         <label class="full"><span><spring:message code="security.admin.providerAdv.modal.field.description"/></span>
                             <textarea class="adm-input" name="description" id="f-description" rows="3" maxlength="1000"></textarea>
                         </label>
-                        <label><span><spring:message code="security.admin.providerAdv.modal.field.enabled"/></span>
-                            <label class="toggle"><input type="checkbox" name="enabled" id="f-enabled"> ${msg_filterEnYes}</label>
-                        </label>
+                        <div class="pa-form-field"><span><spring:message code="security.admin.providerAdv.modal.field.enabled"/></span>
+                            <label class="pa-toggle"><input type="checkbox" name="enabled" id="f-enabled"> ${msg_filterEnYes}</label>
+                        </div>
                     </div>
                 </div>
                 <div class="pa-pane" data-pane="request" hidden>
@@ -465,21 +991,22 @@
                 </div>
             </div>
             <div class="pa-foot">
-                <div>
+                <div class="pa-foot-actions">
                     <button type="button" class="adm-btn" id="pa-deleteBtn" hidden>${msg_actDelete}</button>
                     <button type="button" class="adm-btn" id="pa-restoreBtn" hidden>${msg_actRestore}</button>
                     <button type="button" class="adm-btn" id="pa-checkBtn" hidden><spring:message code="security.admin.providerAdv.row.action.check"/></button>
                 </div>
-                <div>
+                <div class="pa-foot-actions">
                     <button type="button" class="adm-btn" id="pa-cancelBtn">${msg_actCancel}</button>
-                    <button type="submit" class="adm-btn primary" id="pa-saveBtn">${msg_actSave}</button>
+                    <button type="submit" class="adm-btn adm-btn-primary" id="pa-saveBtn">${msg_actSave}</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-<div class="adm-toast" id="pa-toast"></div>
+<div class="pa-toast" id="pa-toast"></div>
+</div>
 
 <script>
 (function () {
@@ -502,7 +1029,8 @@
         modalCreateTitle: '${js_modalCreateTitle}',
         modalEditTitle: '${js_modalEditTitle}',
         actSave: '${js_actSave}',
-        actCreate: '${js_actCreate}'
+        actCreate: '${js_actCreate}',
+        exportSelected: '${js_exportSelected}'
     };
 
     const state = {
@@ -561,7 +1089,7 @@
     const renderTable = () => {
         const tbody = $('pa-rows');
         if (!state.rows.length) {
-            tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:2rem; opacity:.7;">' + escHtml(MSG.empty) + '</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="11" class="pa-empty-cell">' + escHtml(MSG.empty) + '</td></tr>';
             return;
         }
         const html = state.rows.map(row => {
@@ -571,24 +1099,24 @@
             const checked = state.selected.has(row.providerIdx) ? 'checked' : '';
             return '' +
                 '<tr class="' + (isDeleted ? 'row-deleted' : '') + '" data-idx="' + row.providerIdx + '">' +
-                  '<td><input type="checkbox" class="pa-rowsel" value="' + row.providerIdx + '" ' + checked + '></td>' +
+                  '<td class="pa-check-col"><input type="checkbox" class="pa-rowsel adm-check" value="' + row.providerIdx + '" ' + checked + '></td>' +
                   '<td><span class="priority-bar">' + (row.priority ?? '') + '</span></td>' +
                   '<td><span class="chip kind-' + escHtml(row.providerKind) + '">' + escHtml(row.providerKind || '') + '</span></td>' +
-                  '<td><a href="#" class="pa-edit-link" data-idx="' + row.providerIdx + '">' + escHtml(row.providerName || '') + '</a></td>' +
+                  '<td><a href="#" class="adm-inline-link pa-edit-link" data-idx="' + row.providerIdx + '">' + escHtml(row.providerName || '') + '</a></td>' +
                   '<td><code>' + escHtml(row.providerCode || '') + '</code></td>' +
                   '<td>' + cats + '</td>' +
                   '<td><span class="chip status-' + escHtml(row.status) + '">' + escHtml(row.status || '') + '</span></td>' +
                   '<td>' + (row.enabled ? '✔' : '—') + '</td>' +
                   '<td>' + escHtml(formatDate(row.lastCheckedAt)) + '</td>' +
                   '<td>' + escHtml(formatDate(row.nextHealthCheckAt)) + '</td>' +
-                  '<td>' +
+                  '<td><div class="pa-row-actions">' +
                     '<button type="button" class="adm-btn pa-edit" data-idx="' + row.providerIdx + '"><spring:message code="security.admin.providerAdv.row.action.edit"/></button> ' +
                     (isDeleted
                       ? '<button type="button" class="adm-btn pa-restore" data-idx="' + row.providerIdx + '"><spring:message code="security.admin.providerAdv.row.action.restore"/></button>'
                       : '<button type="button" class="adm-btn pa-check" data-idx="' + row.providerIdx + '"><spring:message code="security.admin.providerAdv.row.action.check"/></button> ' +
                         '<button type="button" class="adm-btn pa-delete" data-idx="' + row.providerIdx + '"><spring:message code="security.admin.providerAdv.row.action.delete"/></button>'
                     ) +
-                  '</td>' +
+                  '</div></td>' +
                 '</tr>';
         }).join('');
         tbody.innerHTML = html;
@@ -616,15 +1144,53 @@
         pg.innerHTML = html.join('');
     };
 
+    const updateSortIndicators = () => {
+        const currentBase = state.sort.replace(/_(asc|desc)$/i, '');
+        const isDesc = state.sort.endsWith('_desc');
+        document.querySelectorAll('.pa-table th[data-sort]').forEach(th => {
+            const thBase = th.dataset.sort.replace(/_(asc|desc)$/i, '');
+            const active = thBase === currentBase;
+            th.classList.toggle('sorted', active);
+            const ico = th.querySelector('.sort-ico');
+            if (!ico) return;
+            if (active) {
+                ico.className = 'sort-ico ' + (isDesc ? 'desc' : 'asc');
+                ico.textContent = isDesc ? '▼' : '▲';
+            } else {
+                ico.className = 'sort-ico';
+                ico.textContent = '';
+            }
+        });
+        const resetBtn = $('pa-sortReset');
+        if (resetBtn) resetBtn.classList.toggle('adm-is-hidden', state.sort === 'priority_desc');
+        syncProviderControlOverflow();
+    };
+
     const renderTotal = () => {
         $('pa-totalLine').textContent = fmt(MSG.totalCount, state.total);
         const sel = state.selected.size;
-        if (sel > 0) {
-            $('pa-bulkbar').classList.remove('hidden');
-            $('pa-selectedLabel').textContent = fmt(MSG.selectedCount, sel);
-        } else {
-            $('pa-bulkbar').classList.add('hidden');
+        const bulkbar = $('pa-bulkbar');
+        const selectedLabel = $('pa-selectedLabel');
+        const selectedExport = $('pa-exportSelectedBtn');
+        const selectAll = $('pa-selAll');
+        if (bulkbar) {
+            bulkbar.classList.toggle('is-active', sel > 0);
+            bulkbar.setAttribute('aria-hidden', sel > 0 ? 'false' : 'true');
+            bulkbar.querySelectorAll('button[data-bulk-action]').forEach(btn => { btn.disabled = sel === 0; });
         }
+        if (selectedLabel) selectedLabel.textContent = sel > 0 ? fmt(MSG.selectedCount, sel) : fmt(MSG.selectedCount, 0);
+        if (selectedExport) {
+            selectedExport.disabled = sel === 0;
+            selectedExport.classList.toggle('has-selection', sel > 0);
+            selectedExport.textContent = MSG.exportSelected + ' (' + sel + ')';
+        }
+        if (selectAll) {
+            const visibleChecks = Array.from(document.querySelectorAll('.pa-rowsel'));
+            const checked = visibleChecks.filter(cb => cb.checked);
+            selectAll.checked = visibleChecks.length > 0 && checked.length === visibleChecks.length;
+            selectAll.indeterminate = checked.length > 0 && checked.length < visibleChecks.length;
+        }
+        updateSortIndicators();
     };
 
     const setSort = (key) => {
@@ -772,7 +1338,8 @@
         } catch (e) { showToast(MSG.toastFailed); }
     };
 
-    const exportData = (scope, format) => {
+    const exportData = (scope) => {
+        const format = $('pa-exportFormat').value;
         const params = buildFilterParams();
         params.set('scope', scope);
         params.set('format', format);
@@ -782,6 +1349,59 @@
         }
         window.location.href = ctx + '/admin/login-risk/provider-configs/export?' + params.toString();
     };
+
+    let providerControlOverflowSync = null;
+
+    function isVisibleProviderTool(tool) {
+        return !!tool && !tool.classList.contains('adm-is-hidden');
+    }
+
+    function syncProviderControlOverflow() {
+        if (typeof providerControlOverflowSync === 'function') providerControlOverflowSync();
+    }
+
+    function initProviderControlOverflow() {
+        const primary = $('pa-primaryTools');
+        const menu = $('pa-overflowMenu');
+        const panel = $('pa-overflowPanel');
+        const toggle = menu ? menu.querySelector('.pa-overflow-toggle') : null;
+        if (!primary || !menu || !panel || !toggle) return;
+
+        const tools = [
+            { node: $('pa-sortReset'), breakpoint: 1360 },
+            { node: document.querySelector('.pa-size-tool'), breakpoint: 1220 },
+            { node: $('pa-refresh'), breakpoint: 1040 },
+            { node: $('pa-openCreate'), breakpoint: 760 }
+        ].filter(item => !!item.node);
+
+        providerControlOverflowSync = function () {
+            const width = window.innerWidth || document.documentElement.clientWidth || 1600;
+            tools.forEach(item => {
+                const target = width <= item.breakpoint ? panel : primary;
+                if (item.node.parentElement !== target) target.appendChild(item.node);
+            });
+            const hasItems = Array.from(panel.children).some(isVisibleProviderTool);
+            menu.classList.toggle('has-items', hasItems);
+            if (!hasItems) {
+                menu.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        };
+
+        toggle.addEventListener('click', () => {
+            const willOpen = !menu.classList.contains('open');
+            menu.classList.toggle('open', willOpen);
+            toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
+        document.addEventListener('click', e => {
+            if (!menu.contains(e.target)) {
+                menu.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+        window.addEventListener('resize', syncProviderControlOverflow, { passive: true });
+        syncProviderControlOverflow();
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
         loadList();
@@ -803,7 +1423,9 @@
         $('pa-refresh').addEventListener('click', loadList);
         $('pa-openCreate').addEventListener('click', () => openModal(null));
 
-        document.querySelectorAll('.adm-table thead th[data-sort]').forEach(th => {
+        initProviderControlOverflow();
+
+        document.querySelectorAll('.pa-table thead th[data-sort]').forEach(th => {
             th.addEventListener('click', () => setSort(th.dataset.sort));
         });
 
@@ -878,7 +1500,7 @@
         dropdown.addEventListener('click', (e) => {
             const b = e.target.closest('button[data-export-scope]');
             if (b) {
-                exportData(b.dataset.exportScope, b.dataset.exportFormat);
+                exportData(b.dataset.exportScope);
                 dropdown.classList.remove('open');
             }
         });
