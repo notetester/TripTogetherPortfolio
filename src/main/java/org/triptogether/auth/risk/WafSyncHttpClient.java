@@ -22,8 +22,49 @@ public class WafSyncHttpClient {
 
     private final SecurityProviderSecretResolver secretResolver;
     private final ObjectMapper objectMapper;
+    private final ProviderCallThrottler throttler;
 
     public WafSyncResult call(SecurityAssessmentProviderConfigVO provider, SecurityWafSyncQueueVO item) {
+        ProviderCallThrottler.Lease lease = null;
+        try {
+            lease = throttler.acquire(provider);
+            if (!lease.isGranted()) {
+                return WafSyncResult.builder()
+                        .handled(true)
+                        .success(false)
+                        .status(provider.getFailOpen() != null && provider.getFailOpen() == 1 ? "EXTERNAL_PROVIDER_PENDING" : "FAILED")
+                        .message(detail(provider, "THROTTLED", lease.denyReason()))
+                        .build();
+            }
+            return invokeWithRetry(provider, item);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            return WafSyncResult.builder()
+                    .handled(true)
+                    .success(false)
+                    .status("FAILED")
+                    .message(detail(provider, "INTERRUPTED", ie.getMessage()))
+                    .build();
+        } finally {
+            if (lease != null) lease.close();
+        }
+    }
+
+    private WafSyncResult invokeWithRetry(SecurityAssessmentProviderConfigVO provider, SecurityWafSyncQueueVO item) {
+        int attempts = (provider.getRetryCount() == null ? 0 : Math.max(0, provider.getRetryCount())) + 1;
+        int backoff = provider.getRetryBackoffMs() == null ? 500 : Math.max(0, provider.getRetryBackoffMs());
+        WafSyncResult last = null;
+        for (int i = 0; i < attempts; i++) {
+            last = doCall(provider, item);
+            if (last != null && last.isSuccess()) return last;
+            if (i < attempts - 1 && backoff > 0) {
+                try { Thread.sleep((long) backoff * (i + 1)); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); break; }
+            }
+        }
+        return last;
+    }
+
+    private WafSyncResult doCall(SecurityAssessmentProviderConfigVO provider, SecurityWafSyncQueueVO item) {
         try {
             String endpoint = resolveEndpoint(provider.getEndpointUrl(), item);
             WafSyncResult localMockResult = handleLocalMockProvider(provider, item, endpoint);
@@ -48,6 +89,8 @@ public class WafSyncHttpClient {
                     .uri(endpointUri)
                     .timeout(Duration.ofMillis(provider.getTimeoutMillis() == null ? 3000 : provider.getTimeoutMillis()))
                     .header("Content-Type", "application/json");
+
+            applyExtraHeaders(builder, provider);
 
             String body = objectMapper.writeValueAsString(payload);
             String method = resolveMethod(provider, item);
@@ -148,6 +191,9 @@ public class WafSyncHttpClient {
     }
 
     private String resolveMethod(SecurityAssessmentProviderConfigVO provider, SecurityWafSyncQueueVO item) {
+        if (provider.getRequestMethod() != null && !provider.getRequestMethod().isBlank()) {
+            return provider.getRequestMethod().trim().toUpperCase();
+        }
         Map<String, String> config = parseModelConfig(provider.getModelName());
         String method = config.get("method");
         if (method != null && !method.isBlank()) {
@@ -157,6 +203,27 @@ public class WafSyncHttpClient {
             return "DELETE";
         }
         return "POST";
+    }
+
+    private void applyExtraHeaders(HttpRequest.Builder builder, SecurityAssessmentProviderConfigVO provider) {
+        String headers = provider.getRequestHeadersJson();
+        if (headers == null || headers.isBlank()) return;
+        try {
+            com.fasterxml.jackson.databind.JsonNode node = objectMapper.readTree(headers);
+            if (node.isObject()) {
+                java.util.Iterator<Map.Entry<String, com.fasterxml.jackson.databind.JsonNode>> it = node.fields();
+                while (it.hasNext()) {
+                    Map.Entry<String, com.fasterxml.jackson.databind.JsonNode> e = it.next();
+                    String k = e.getKey();
+                    String v = e.getValue().isTextual() ? e.getValue().asText() : e.getValue().toString();
+                    if (k != null && !k.isBlank() && !"Content-Type".equalsIgnoreCase(k)) {
+                        builder.header(k, v == null ? "" : v);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("[WAF] invalid requestHeadersJson provider={}", provider.getProviderCode(), e);
+        }
     }
 
     private Map<String, String> parseModelConfig(String value) {
