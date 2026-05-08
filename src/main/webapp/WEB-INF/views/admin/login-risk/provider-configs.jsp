@@ -30,6 +30,11 @@
 <spring:message var="msg_filterEnNo" code="security.admin.providerAdv.filter.enabledNo"/>
 <spring:message var="msg_pageSize" code="security.admin.providerAdv.pageSize"/>
 <spring:message var="msg_pageSizeAll" code="security.admin.providerAdv.pageSize.all"/>
+<spring:message var="msg_modeLabel" code="admin.blocks.mode.label"/>
+<spring:message var="msg_modeClient" code="admin.blocks.mode.client"/>
+<spring:message var="msg_modeServer" code="admin.blocks.mode.server"/>
+<spring:message var="msg_modeTipClient" code="admin.blocks.mode.tipClient"/>
+<spring:message var="msg_modeTipServer" code="admin.blocks.mode.tipServer"/>
 <spring:message var="msg_colPriority" code="security.admin.providerAdv.col.priority"/>
 <spring:message var="msg_colKind" code="security.admin.providerAdv.col.kind"/>
 <spring:message var="msg_colCode" code="security.admin.providerAdv.col.code"/>
@@ -817,6 +822,13 @@
             <div class="pa-view-tools">
                 <div id="pa-primaryTools" class="pa-primary-tools">
                     <button type="button" class="adm-dash-sort-reset pa-tool-item pa-sort-reset adm-is-hidden" id="pa-sortReset">${msg_sortReset}</button>
+                    <label class="pa-tool-item pa-tool pa-mode-tool">
+                        <span class="pa-tool-label">${msg_modeLabel}</span>
+                        <select id="pa-mode" class="adm-select pa-mode-select" title="${msg_modeLabel}">
+                            <option value="server" title="${msg_modeTipServer}">${msg_modeServer}</option>
+                            <option value="client" title="${msg_modeTipClient}">${msg_modeClient}</option>
+                        </select>
+                    </label>
                     <label class="pa-tool-item pa-tool pa-size-tool">
                         <span class="pa-tool-label">${msg_pageSize}</span>
                         <select id="pa-pageSize" class="adm-select pa-page-size">
@@ -1057,6 +1069,17 @@
         exportSelected: '${js_exportSelected}'
     };
 
+    const PROVIDER_MODE_STORAGE = 'admProviderConfigMode';
+    function loadStoredProviderMode() {
+        try {
+            const stored = localStorage.getItem(PROVIDER_MODE_STORAGE);
+            return stored === 'client' ? 'client' : 'server';
+        } catch (e) { return 'server'; }
+    }
+    function saveProviderMode(mode) {
+        try { localStorage.setItem(PROVIDER_MODE_STORAGE, mode); } catch (e) {}
+    }
+
     const state = {
         sort: 'priority_desc',
         page: 1,
@@ -1064,7 +1087,9 @@
         rows: [],
         total: 0,
         totalPage: 1,
-        selected: new Set()
+        selected: new Set(),
+        mode: loadStoredProviderMode(),
+        allRows: null
     };
 
     const $ = (id) => document.getElementById(id);
@@ -1093,6 +1118,16 @@
     };
 
     const loadList = async () => {
+        if (state.mode === 'client') {
+            if (state.allRows == null) {
+                await fetchAllForClientMode();
+            }
+            applyClientFilterSortPage();
+            renderTable();
+            renderPagination();
+            renderTotal();
+            return;
+        }
         const params = buildFilterParams();
         try {
             const res = await fetch(ctx + '/admin/login-risk/provider-configs/api?' + params.toString());
@@ -1105,6 +1140,92 @@
             renderTotal();
         } catch (e) {
             showToast(MSG.toastFailed);
+        }
+    };
+
+    /* ── 클라이언트 모드: 한 번에 전체 fetch (필터 무시) ── */
+    const fetchAllForClientMode = async () => {
+        const params = new URLSearchParams();
+        params.set('includeDeleted', 'true');
+        params.set('sort', 'priority_desc');
+        params.set('page', '1');
+        params.set('pageSize', '0');
+        try {
+            const res = await fetch(ctx + '/admin/login-risk/provider-configs/api?' + params.toString());
+            const data = await res.json();
+            state.allRows = data.rows || [];
+        } catch (e) {
+            state.allRows = [];
+            showToast(MSG.toastFailed);
+        }
+    };
+
+    const invalidateClientCache = () => { state.allRows = null; };
+
+    /* ── 클라이언트 모드: 필터 + 정렬 + 페이징을 in-memory로 ── */
+    const applyClientFilterSortPage = () => {
+        const all = state.allRows || [];
+        const v = (id) => $(id).value;
+        const kw = (v('pa-keyword') || '').trim().toLowerCase();
+        const kind = v('pa-kind');
+        const stat = v('pa-status');
+        const enabled = v('pa-enabled');
+        const cat = v('pa-category');
+        const trig = v('pa-trigger');
+        const includeDeleted = $('pa-includeDeleted').checked;
+        const onlyDeleted = $('pa-onlyDeleted').checked;
+
+        let filtered = all.filter(r => {
+            if (onlyDeleted) { if (!r.deletedAt) return false; }
+            else if (!includeDeleted) { if (r.deletedAt) return false; }
+            if (kind && r.providerKind !== kind) return false;
+            if (stat && r.status !== stat) return false;
+            if (enabled === '1' && !r.enabled) return false;
+            if (enabled === '0' && r.enabled) return false;
+            if (cat && !((r.usageCategories || '').split(',').map(s => s.trim()).includes(cat))) return false;
+            if (trig && !((r.triggerEvents || '').split(',').map(s => s.trim()).includes(trig))) return false;
+            if (kw) {
+                const hay = [r.providerName, r.providerCode, r.endpointUrl, r.tags, r.description]
+                    .map(x => (x || '').toString().toLowerCase()).join(' ');
+                if (hay.indexOf(kw) < 0) return false;
+            }
+            return true;
+        });
+
+        const sortKey = state.sort || 'priority_desc';
+        const m = sortKey.match(/^(.+)_(asc|desc)$/);
+        const field = m ? m[1] : 'priority';
+        const dir = m && m[2] === 'desc' ? -1 : 1;
+        const valOf = (row, f) => {
+            switch (f) {
+                case 'priority': return row.priority == null ? -Infinity : Number(row.priority);
+                case 'kind': return row.providerKind || '';
+                case 'name': return row.providerName || '';
+                case 'code': return row.providerCode || '';
+                case 'category': return row.usageCategories || '';
+                case 'status': return row.status || '';
+                case 'enabled': return row.enabled ? 1 : 0;
+                case 'last_checked': return row.lastCheckedAt || '';
+                case 'next_check': return row.nextHealthCheckAt || '';
+                default: return '';
+            }
+        };
+        filtered.sort((a, b) => {
+            const av = valOf(a, field), bv = valOf(b, field);
+            if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir;
+            return String(av).localeCompare(String(bv)) * dir;
+        });
+
+        state.total = filtered.length;
+        if (state.pageSize <= 0) {
+            state.totalPage = 1;
+            state.page = 1;
+            state.rows = filtered;
+        } else {
+            state.totalPage = Math.max(1, Math.ceil(filtered.length / state.pageSize));
+            if (state.page > state.totalPage) state.page = state.totalPage;
+            const start = (state.page - 1) * state.pageSize;
+            state.rows = filtered.slice(start, start + state.pageSize);
         }
     };
 
@@ -1357,6 +1478,7 @@
             if (res.type === 'opaqueredirect' || res.ok || res.status === 0) {
                 showToast(idx ? MSG.toastSaved : MSG.toastCreated);
                 closeModal();
+                invalidateClientCache();
                 loadList();
             } else {
                 showToast(MSG.toastFailed);
@@ -1364,6 +1486,7 @@
         } catch (e) {
             showToast(idx ? MSG.toastSaved : MSG.toastCreated);
             closeModal();
+            invalidateClientCache();
             loadList();
         }
     };
@@ -1375,6 +1498,7 @@
         try {
             await fetch(url, { method:'POST', redirect:'manual' });
             showToast(action === 'delete' ? MSG.toastDeleted : action === 'restore' ? MSG.toastRestored : MSG.toastChecked);
+            invalidateClientCache();
             loadList();
         } catch (e) { showToast(MSG.toastFailed); }
     };
@@ -1390,6 +1514,7 @@
             const data = await res.json();
             showToast(fmt(MSG.toastBulkDone, data.requested, data.affected));
             state.selected.clear();
+            invalidateClientCache();
             loadList();
         } catch (e) { showToast(MSG.toastFailed); }
     };
@@ -1494,6 +1619,8 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
+        const modeSelect = $('pa-mode');
+        if (modeSelect) modeSelect.value = state.mode === 'client' ? 'client' : 'server';
         loadList();
 
         ['pa-keyword','pa-kind','pa-status','pa-enabled','pa-category','pa-trigger'].forEach(id => {
@@ -1504,13 +1631,22 @@
         ['pa-includeDeleted','pa-onlyDeleted'].forEach(id => {
             $(id).addEventListener('change', () => { state.page = 1; loadList(); });
         });
+        if (modeSelect) {
+            modeSelect.addEventListener('change', (e) => {
+                state.mode = e.target.value === 'client' ? 'client' : 'server';
+                saveProviderMode(state.mode);
+                state.page = 1;
+                state.allRows = null;
+                loadList();
+            });
+        }
         $('pa-pageSize').addEventListener('change', (e) => {
             state.pageSize = parseInt(e.target.value, 10) || 0;
             state.page = 1;
             loadList();
         });
         $('pa-sortReset').addEventListener('click', () => { state.sort = 'priority_desc'; state.page = 1; loadList(); });
-        $('pa-refresh').addEventListener('click', loadList);
+        $('pa-refresh').addEventListener('click', () => { invalidateClientCache(); loadList(); });
         $('pa-openCreate').addEventListener('click', () => openModal(null));
 
         initProviderControlOverflow();
