@@ -1,5 +1,18 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <script>
+function openFirstBlockSectionAction(section) {
+    const card = getSectionCard(section);
+    const root = card || document;
+    const selectors = {
+        'user-blocks': '.js-open-user-block-editor',
+        'ip-rules': '.js-open-ip-rule-editor',
+        'batches': '.js-open-batch-editor',
+        'histories': '.js-open-history-current, .js-open-block-detail'
+    };
+    const button = root.querySelector(selectors[section] || '.adm-row-btn.detail, .adm-cell-link, .adm-link-btn');
+    if (button) button.click();
+}
+
 document.addEventListener('click', function (e) {
     const syncCacheBtn = e.target.closest('.js-sync-block-cache');
     if (syncCacheBtn) {

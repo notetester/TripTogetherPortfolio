@@ -61,7 +61,7 @@ id="hist-exportFormat" class="adm-select js-block-export-format adm-block-export
                         <th class="js-local-sort adm-th-w14" data-sort-index="4" onclick="sectionSort('histories',4)">${msg_admin_blocks_changeKind}</th>
                         <th class="js-local-sort adm-th-w13" data-sort-index="5" onclick="sectionSort('histories',5)">${msg_admin_blocks_result}</th>
                         <th class="js-local-sort adm-th-w17" data-sort-index="6" onclick="sectionSort('histories',6)">${msg_admin_common_reason}</th>
-                        <th class="adm-th-w14">${msg_admin_common_action}</th>
+                        <th class="adm-th-w14" onclick="openFirstBlockSectionAction('histories')">${msg_admin_common_action}</th>
                     </tr></thead>
                     <tbody>
                     <%@ include file="_historyRowsOnly.jspf" %>

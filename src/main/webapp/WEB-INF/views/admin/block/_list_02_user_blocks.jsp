@@ -65,7 +65,7 @@ id="ub-exportFormat" class="adm-select js-block-export-format adm-block-export-f
                         <th class="js-local-sort adm-th-w9" data-sort-index="4" onclick="sectionSort('user-blocks',4)">${msg_admin_common_status}</th>
                         <th class="js-local-sort adm-th-w16" data-sort-index="5" onclick="sectionSort('user-blocks',5)">${msg_admin_common_reason}</th>
                         <th class="js-local-sort adm-th-w16" data-sort-index="6" onclick="sectionSort('user-blocks',6)">${msg_admin_blocks_blockAndExpire}</th>
-                        <th class="adm-th-w14">${msg_admin_common_action}</th>
+                        <th class="adm-th-w14" onclick="openFirstBlockSectionAction('user-blocks')">${msg_admin_common_action}</th>
                     </tr>
                     </thead>
                     <tbody>

@@ -252,10 +252,10 @@
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-user-blocks">
                                 <thead><tr>
-                                    <th class="adm-dashboard-sortable">${msg_admin_common_member}</th>
-                                    <th class="adm-dashboard-sortable">${msg_admin_common_target}</th>
-                                    <th class="adm-dashboard-sortable">${msg_admin_common_status}</th>
-                                    <th>${msg_admin_common_action}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="0" onclick="sortDashboardTable(this.closest('table'), 0)">${msg_admin_common_member}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="1" onclick="sortDashboardTable(this.closest('table'), 1)">${msg_admin_common_target}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="2" onclick="sortDashboardTable(this.closest('table'), 2)">${msg_admin_common_status}</th>
+                                    <th onclick="openFirstBlockSectionAction('user-blocks')">${msg_admin_common_action}</th>
                                 </tr></thead>
                                 <tbody>
                                 <c:forEach var="b" items="${dashboardUserBlocks}">
@@ -332,10 +332,10 @@
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-ip-rules">
                                 <thead><tr>
-                                    <th class="adm-dashboard-sortable">${msg_admin_common_target}</th>
-                                    <th class="adm-dashboard-sortable">${msg_admin_common_actionLabel}</th>
-                                    <th class="adm-dashboard-sortable">${msg_admin_blocks_effectiveState}</th>
-                                    <th>${msg_admin_common_action}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="0" onclick="sortDashboardTable(this.closest('table'), 0)">${msg_admin_common_target}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="1" onclick="sortDashboardTable(this.closest('table'), 1)">${msg_admin_common_actionLabel}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="2" onclick="sortDashboardTable(this.closest('table'), 2)">${msg_admin_blocks_effectiveState}</th>
+                                    <th onclick="openFirstBlockSectionAction('ip-rules')">${msg_admin_common_action}</th>
                                 </tr></thead>
                                 <tbody>
                                 <c:forEach var="r" items="${dashboardIpBlocks}">
@@ -418,10 +418,10 @@
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-batches">
                                 <thead><tr>
-                                    <th class="adm-dashboard-sortable">${msg_admin_context_batch}</th>
-                                    <th class="adm-dashboard-sortable">${msg_admin_common_actionLabel}</th>
-                                    <th class="adm-dashboard-sortable">${msg_admin_blocks_impact}</th>
-                                    <th>${msg_admin_common_action}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="0" onclick="sortDashboardTable(this.closest('table'), 0)">${msg_admin_context_batch}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="1" onclick="sortDashboardTable(this.closest('table'), 1)">${msg_admin_common_actionLabel}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="2" onclick="sortDashboardTable(this.closest('table'), 2)">${msg_admin_blocks_impact}</th>
+                                    <th onclick="openFirstBlockSectionAction('batches')">${msg_admin_common_action}</th>
                                 </tr></thead>
                                 <tbody>
                                 <c:forEach var="op" items="${batchOperations}" begin="0" end="4">
@@ -460,11 +460,11 @@
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-histories">
                                 <thead><tr>
-                                    <th class="adm-dashboard-sortable">${msg_admin_common_time}</th>
-                                    <th class="adm-dashboard-sortable">${msg_admin_common_target}</th>
-                                    <th class="adm-dashboard-sortable">${msg_admin_blocks_changeKind}</th>
-                                    <th class="adm-dashboard-sortable">${msg_admin_blocks_result}</th>
-                                    <th>${msg_admin_common_action}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="0" onclick="sortDashboardTable(this.closest('table'), 0)">${msg_admin_common_time}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="1" onclick="sortDashboardTable(this.closest('table'), 1)">${msg_admin_common_target}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="2" onclick="sortDashboardTable(this.closest('table'), 2)">${msg_admin_blocks_changeKind}</th>
+                                    <th class="adm-dashboard-sortable" data-dashboard-enhanced="true" data-sort-index="3" onclick="sortDashboardTable(this.closest('table'), 3)">${msg_admin_blocks_result}</th>
+                                    <th onclick="openFirstBlockSectionAction('histories')">${msg_admin_common_action}</th>
                                 </tr></thead>
                                 <tbody>
                                 <c:forEach var="h" items="${dashboardHistories}">

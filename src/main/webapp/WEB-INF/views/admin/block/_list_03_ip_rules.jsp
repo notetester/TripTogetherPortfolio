@@ -67,7 +67,7 @@ id="ipr-exportFormat" class="adm-select js-block-export-format adm-block-export-
                         <th class="js-local-sort adm-th-w11" data-sort-index="4" onclick="sectionSort('ip-rules',4)">${msg_admin_common_status}</th>
                         <th class="js-local-sort adm-th-w9" data-sort-index="5" onclick="sectionSort('ip-rules',5)">${msg_admin_context_priority}</th>
                         <th class="js-local-sort adm-th-w20" data-sort-index="6" onclick="sectionSort('ip-rules',6)">${msg_admin_common_reason}</th>
-                        <th class="adm-th-w14">${msg_admin_common_action}</th>
+                        <th class="adm-th-w14" onclick="openFirstBlockSectionAction('ip-rules')">${msg_admin_common_action}</th>
                     </tr>
                     </thead>
                     <tbody>

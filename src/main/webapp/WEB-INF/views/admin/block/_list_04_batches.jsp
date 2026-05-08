@@ -61,7 +61,7 @@ id="bat-exportFormat" class="adm-select js-block-export-format adm-block-export-
                         <th class="js-local-sort adm-th-w13" data-sort-index="4" onclick="sectionSort('batches',4)">${msg_admin_blocks_currentState}</th>
                         <th class="js-local-sort adm-th-w16" data-sort-index="5" onclick="sectionSort('batches',5)">${msg_admin_blocks_ruleStats}</th>
                         <th class="js-local-sort adm-th-w14" data-sort-index="6" onclick="sectionSort('batches',6)">${msg_admin_blocks_description}</th>
-                        <th class="adm-th-w14">${msg_admin_common_action}</th>
+                        <th class="adm-th-w14" onclick="openFirstBlockSectionAction('batches')">${msg_admin_common_action}</th>
                     </tr></thead>
                     <tbody>
                     <%@ include file="_batchRowsOnly.jspf" %>
