@@ -26,19 +26,21 @@
 <spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount" arguments="${fn:length(histories)}"/>
 <spring:message var="msg_pa_sortReset" code="security.admin.providerAdv.action.sortReset"/>
 <spring:message var="msg_pa_refresh" code="security.admin.providerAdv.action.refresh"/>
-<spring:message var="msg_pa_export" code="security.admin.providerAdv.action.export"/>
-<spring:message var="msg_pa_exportAll" code="security.admin.providerAdv.action.exportAll"/>
-<spring:message var="msg_pa_exportFiltered" code="security.admin.providerAdv.action.exportFiltered"/>
-<spring:message var="msg_pa_exportSelected" code="security.admin.providerAdv.action.exportSelected"/>
 <spring:message var="msg_pa_exportCsv" code="security.admin.providerAdv.action.exportCsv"/>
 <spring:message var="msg_pa_exportExcel" code="security.admin.providerAdv.action.exportExcel"/>
 <spring:message var="msg_admin_common_selectedCount" code="admin.common.selectedCount"/>
 <spring:message var="msg_admin_common_clearSelection" code="admin.common.clearSelection"/>
+<spring:message var="msg_admin_common_export" code="admin.common.export"/>
+<spring:message var="msg_admin_common_exportAll" code="admin.common.exportAll"/>
+<spring:message var="msg_admin_common_exportFiltered" code="admin.common.exportFiltered"/>
+<spring:message var="msg_admin_common_exportSelected" code="admin.common.exportSelected"/>
 <spring:message var="msg_admin_common_pageSizeLabel" code="admin.common.pageSizeLabel"/>
 <spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
 <spring:message var="msg_admin_common_next" code="admin.common.next"/>
 <spring:message var="msg_admin_common_all" code="admin.common.all"/>
-<spring:message var="js_pa_exportSelected" code="security.admin.providerAdv.action.exportSelected" javaScriptEscape="true"/>
+<spring:message var="msg_admin_common_selectPageRows" code="admin.common.selectPageRows"/>
+<spring:message var="msg_admin_common_selectRow" code="admin.common.selectRow"/>
+<spring:message var="js_admin_common_exportSelected" code="admin.common.exportSelected" javaScriptEscape="true"/>
 <spring:message var="js_admin_common_selectedCount" code="admin.common.selectedCount" javaScriptEscape="true"/>
 <c:set var="pageTitle" value="${msg_security_admin_providerHealth_title}"/>
 <c:set var="activeMenu" value="providerHealthHistory"/>
@@ -65,15 +67,15 @@
                 <span class="adm-page-muted phh-total">${msg_admin_common_totalCount}</span>
             </div>
             <div class="phh-export-control" id="phhExportControl">
-                <select class="adm-select phh-export-format" id="phhExportFormat" title="${msg_pa_export}">
+                <select class="adm-select phh-export-format" id="phhExportFormat" title="${msg_admin_common_export}">
                     <option value="csv">${msg_pa_exportCsv}</option>
                     <option value="excel">${msg_pa_exportExcel}</option>
                 </select>
-                <button class="adm-btn adm-btn-ghost" type="button" id="phhExportToggle">${msg_pa_export} ▾</button>
+                <button class="adm-btn adm-btn-ghost" type="button" id="phhExportToggle">${msg_admin_common_export} ▾</button>
                 <div class="phh-export-dropdown" id="phhExportDropdown">
-                    <button type="button" class="phh-export-item" data-scope="all">${msg_pa_exportAll}</button>
-                    <button type="button" class="phh-export-item" data-scope="filtered">${msg_pa_exportFiltered}</button>
-                    <button type="button" class="phh-export-item" data-scope="selected" id="phhExportSelectedBtn" disabled>${msg_pa_exportSelected} (0)</button>
+                    <button type="button" class="phh-export-item" data-scope="all">${msg_admin_common_exportAll}</button>
+                    <button type="button" class="phh-export-item" data-scope="filtered">${msg_admin_common_exportFiltered}</button>
+                    <button type="button" class="phh-export-item" data-scope="selected" id="phhExportSelectedBtn" disabled>${msg_admin_common_exportSelected} (0)</button>
                 </div>
             </div>
         </div>
@@ -132,7 +134,11 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="phh-check-head"><input type="checkbox" class="phh-check" id="phhPageCheck" onclick="togglePhhPageSelection(event)" aria-label="select page rows"></th>
+                    <th class="phh-check-head">
+                        <span class="phh-check-slot">
+                            <input type="checkbox" class="phh-check" id="phhPageCheck" onclick="togglePhhPageSelection(event)" aria-label="${msg_admin_common_selectPageRows}">
+                        </span>
+                    </th>
                     <th class="phh-th" data-sort="checkedAt" onclick="sortProviderHealthRows('checkedAt')"><span class="phh-th-label">${msg_security_admin_providerHealth_checkedAt}</span><span class="phh-sort-ico" aria-hidden="true"></span></th>
                     <th class="phh-th" data-sort="provider" onclick="sortProviderHealthRows('provider')"><span class="phh-th-label">${msg_security_admin_providerHealth_provider}</span><span class="phh-sort-ico" aria-hidden="true"></span></th>
                     <th class="phh-th" data-sort="checkSource" onclick="sortProviderHealthRows('checkSource')"><span class="phh-th-label">${msg_security_admin_providerHealth_checkSource}</span><span class="phh-sort-ico" aria-hidden="true"></span></th>
@@ -158,7 +164,11 @@
                         data-actor="${h.actorUserIdx}"
                         data-detail="${fn:escapeXml(h.detailMessage)}"
                         data-original-index="${st.index}">
-                        <td class="phh-check-cell"><input type="checkbox" class="phh-check phh-row-check" value="${h.healthHistoryIdx}" onclick="togglePhhRowSelection(event, this)" aria-label="select row"></td>
+                        <td class="phh-check-cell">
+                            <span class="phh-check-slot">
+                                <input type="checkbox" class="phh-check phh-row-check" value="${h.healthHistoryIdx}" onclick="togglePhhRowSelection(event, this)" aria-label="${msg_admin_common_selectRow}">
+                            </span>
+                        </td>
                         <td class="phh-cell phh-cell-checked-at" onclick="openPhhCellAction(event, this, 'checkedAt')">${checkedAtDisplay}</td>
                         <td class="phh-cell phh-cell-provider" onclick="openPhhCellAction(event, this, 'provider')">
                             <div class="phh-provider-kind"><c:out value="${h.providerKind}"/></div>
@@ -303,7 +313,7 @@
         }
         if (exportSelected) {
             exportSelected.disabled = count === 0;
-            exportSelected.textContent = '${js_pa_exportSelected} (' + count + ')';
+            exportSelected.textContent = '${js_admin_common_exportSelected} (' + count + ')';
         }
     }
     function renderProviderHealthPage() {
@@ -483,6 +493,9 @@
     justify-content: flex-end;
     margin-left: auto;
 }
+.phh-page #phhSortReset[hidden] {
+    display: none !important;
+}
 .phh-page .phh-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .phh-page .phh-field-keyword { flex: 1 1 300px; min-width: 240px; max-width: 460px; }
 .phh-page .phh-field-limit { flex: 0 0 auto; }
@@ -648,17 +661,28 @@ body.sa-light .phh-page .phh-page-info { color: #64748b; }
     padding: 0 !important;
     text-align: center;
     vertical-align: middle;
+    line-height: 0;
 }
 .phh-page .phh-check-head {
     background: rgba(15,23,42,.6);
     border-bottom: 1px solid rgba(30,41,59,.6);
 }
+.phh-page .phh-check-slot {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.phh-page .phh-check-head .phh-check-slot {
+    min-height: 38px;
+}
 .phh-page .phh-check {
+    display: block;
     width: 15px;
     height: 15px;
+    margin: 0;
     accent-color: #3b82f6;
     cursor: pointer;
-    vertical-align: middle;
 }
 body.sa-light .phh-page .phh-check-head {
     background: #f8fafc;
