@@ -551,13 +551,24 @@ public class AdminLoginRiskPolicyController {
     public ResponseEntity<byte[]> exportProviderHealthHistory(
             @RequestParam(value = "scope", required = false, defaultValue = "filtered") String scope,
             @RequestParam(value = "providerCode", required = false) String providerCode,
+            @RequestParam(value = "selectedIds", required = false) String selectedIds,
             @RequestParam(value = "limit", required = false, defaultValue = "200") int limit,
             @RequestParam(value = "format", required = false, defaultValue = "csv") String format) {
         try {
             boolean exportAll = "all".equalsIgnoreCase(scope);
-            int safeLimit = exportAll ? 1000 : Math.max(1, Math.min(limit, 1000));
+            boolean exportSelected = "selected".equalsIgnoreCase(scope);
+            int safeLimit = (exportAll || exportSelected) ? 1000 : Math.max(1, Math.min(limit, 1000));
             List<org.triptogether.auth.vo.ProviderHealthCheckHistoryVO> data =
-                    loginRiskPolicyService.getProviderHealthCheckHistories(exportAll ? null : providerCode, safeLimit);
+                    loginRiskPolicyService.getProviderHealthCheckHistories((exportAll || exportSelected) ? null : providerCode, safeLimit);
+            if (exportSelected) {
+                List<Long> ids = parseIds(selectedIds);
+                if (ids.isEmpty()) {
+                    return ResponseEntity.badRequest().build();
+                }
+                data = data.stream()
+                        .filter(h -> ids.contains(h.getHealthHistoryIdx()))
+                        .toList();
+            }
             if ("excel".equalsIgnoreCase(format)) {
                 byte[] bytes = buildProviderHealthExcel(data);
                 return ResponseEntity.ok()

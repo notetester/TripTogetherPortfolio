@@ -29,8 +29,17 @@
 <spring:message var="msg_pa_export" code="security.admin.providerAdv.action.export"/>
 <spring:message var="msg_pa_exportAll" code="security.admin.providerAdv.action.exportAll"/>
 <spring:message var="msg_pa_exportFiltered" code="security.admin.providerAdv.action.exportFiltered"/>
+<spring:message var="msg_pa_exportSelected" code="security.admin.providerAdv.action.exportSelected"/>
 <spring:message var="msg_pa_exportCsv" code="security.admin.providerAdv.action.exportCsv"/>
 <spring:message var="msg_pa_exportExcel" code="security.admin.providerAdv.action.exportExcel"/>
+<spring:message var="msg_admin_common_selectedCount" code="admin.common.selectedCount"/>
+<spring:message var="msg_admin_common_clearSelection" code="admin.common.clearSelection"/>
+<spring:message var="msg_admin_common_pageSizeLabel" code="admin.common.pageSizeLabel"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_common_all" code="admin.common.all"/>
+<spring:message var="js_pa_exportSelected" code="security.admin.providerAdv.action.exportSelected" javaScriptEscape="true"/>
+<spring:message var="js_admin_common_selectedCount" code="admin.common.selectedCount" javaScriptEscape="true"/>
 <c:set var="pageTitle" value="${msg_security_admin_providerHealth_title}"/>
 <c:set var="activeMenu" value="providerHealthHistory"/>
 
@@ -88,14 +97,37 @@
                     <div class="phh-export-dropdown" id="phhExportDropdown">
                         <button type="button" class="phh-export-item" data-scope="all">${msg_pa_exportAll}</button>
                         <button type="button" class="phh-export-item" data-scope="filtered">${msg_pa_exportFiltered}</button>
+                        <button type="button" class="phh-export-item" data-scope="selected" id="phhExportSelectedBtn" disabled>${msg_pa_exportSelected} (0)</button>
                     </div>
                 </div>
             </div>
         </form>
 
+        <div class="phh-controlbar">
+            <div id="phhBulkbar" class="phh-bulkbar" aria-hidden="true" aria-live="polite">
+                <span class="phh-selected-label"><strong id="phhSelectedCount">0</strong>${msg_admin_common_selectedCount}</span>
+                <button type="button" class="adm-btn adm-btn-ghost phh-clear-selection" onclick="clearPhhSelection()">${msg_admin_common_clearSelection}</button>
+            </div>
+            <div class="phh-page-tools">
+                <label class="phh-page-size-tool">
+                    <span>${msg_admin_common_pageSizeLabel}</span>
+                    <select class="adm-select phh-page-size" id="phhPageSize">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="0">${msg_admin_common_all}</option>
+                    </select>
+                </label>
+                <span class="phh-page-info" id="phhPageInfo"></span>
+                <button type="button" class="adm-btn adm-btn-ghost phh-page-btn" id="phhPrevPage">${msg_admin_common_prev}</button>
+                <button type="button" class="adm-btn adm-btn-ghost phh-page-btn" id="phhNextPage">${msg_admin_common_next}</button>
+            </div>
+        </div>
+
         <div class="adm-table-wrap phh-table-wrap">
             <table id="providerHealthHistoryTable" class="adm-table phh-table" data-admin-list-ignore="hard">
                 <colgroup>
+                    <col class="phh-col-check"/>
                     <col class="phh-col-checked-at"/>
                     <col class="phh-col-provider"/>
                     <col class="phh-col-source"/>
@@ -106,6 +138,7 @@
                 </colgroup>
                 <thead>
                 <tr>
+                    <th class="phh-check-head"><input type="checkbox" class="phh-check" id="phhPageCheck" onclick="togglePhhPageSelection(event)" aria-label="select page rows"></th>
                     <th class="phh-th" data-sort="checkedAt" onclick="sortProviderHealthRows('checkedAt')"><span class="phh-th-label">${msg_security_admin_providerHealth_checkedAt}</span><span class="phh-sort-ico" aria-hidden="true"></span></th>
                     <th class="phh-th" data-sort="provider" onclick="sortProviderHealthRows('provider')"><span class="phh-th-label">${msg_security_admin_providerHealth_provider}</span><span class="phh-sort-ico" aria-hidden="true"></span></th>
                     <th class="phh-th" data-sort="checkSource" onclick="sortProviderHealthRows('checkSource')"><span class="phh-th-label">${msg_security_admin_providerHealth_checkSource}</span><span class="phh-sort-ico" aria-hidden="true"></span></th>
@@ -119,6 +152,7 @@
                 <c:forEach var="h" items="${histories}" varStatus="st">
                     <fmt:formatDate var="checkedAtDisplay" value="${h.checkedAtDate}" pattern="yyyy-MM-dd HH:mm"/>
                     <tr class="phh-row js-provider-health-row"
+                        data-health-history-idx="${h.healthHistoryIdx}"
                         data-checked-at="${h.checkedAt}"
                         data-checked-at-display="${checkedAtDisplay}"
                         data-provider="${fn:escapeXml(h.providerKind)} ${fn:escapeXml(h.providerCode)}"
@@ -130,6 +164,7 @@
                         data-actor="${h.actorUserIdx}"
                         data-detail="${fn:escapeXml(h.detailMessage)}"
                         data-original-index="${st.index}">
+                        <td class="phh-check-cell"><input type="checkbox" class="phh-check phh-row-check" value="${h.healthHistoryIdx}" onclick="togglePhhRowSelection(event, this)" aria-label="select row"></td>
                         <td class="phh-cell phh-cell-checked-at" onclick="openPhhCellAction(event, this, 'checkedAt')">${checkedAtDisplay}</td>
                         <td class="phh-cell phh-cell-provider" onclick="openPhhCellAction(event, this, 'provider')">
                             <div class="phh-provider-kind"><c:out value="${h.providerKind}"/></div>
@@ -143,7 +178,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty histories}">
-                    <tr class="adm-local-empty"><td colspan="7" class="adm-local-empty-cell">${msg_security_admin_providerHealth_empty}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="8" class="adm-local-empty-cell">${msg_security_admin_providerHealth_empty}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -166,6 +201,9 @@
 <script>
 (function () {
     var ctx = '${pageContext.request.contextPath}';
+    var selectedHistoryIds = new Set();
+    var currentPage = 1;
+    var pageSize = 20;
 
     /* ── 정렬 ── */
     var providerHealthSortState = { field: '', dir: 'DESC' };
@@ -195,6 +233,8 @@
             return cmp * (providerHealthSortState.dir === 'DESC' ? -1 : 1);
         }).forEach(function (row) { tbody.appendChild(row); });
         updateProviderHealthSortIndicators();
+        currentPage = 1;
+        renderProviderHealthPage();
     };
     function updateProviderHealthSortIndicators() {
         document.querySelectorAll('#providerHealthHistoryTable th[data-sort]').forEach(function (th) {
@@ -217,7 +257,94 @@
             return Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex);
         }).forEach(function (row) { tbody.appendChild(row); });
         updateProviderHealthSortIndicators();
+        currentPage = 1;
+        renderProviderHealthPage();
     }
+
+    /* ── 선택 + 페이지네이션 ── */
+    function rowKey(row) {
+        return row ? (row.dataset.healthHistoryIdx || row.dataset.originalIndex || '') : '';
+    }
+    function pageBounds(rows) {
+        var total = rows.length;
+        if (!pageSize || pageSize <= 0) return { start: 0, end: total, totalPages: 1 };
+        var totalPages = Math.max(1, Math.ceil(total / pageSize));
+        currentPage = Math.min(Math.max(1, currentPage), totalPages);
+        var start = (currentPage - 1) * pageSize;
+        return { start: start, end: Math.min(start + pageSize, total), totalPages: totalPages };
+    }
+    function currentPageRows() {
+        var rows = providerHealthRows();
+        var bounds = pageBounds(rows);
+        return rows.slice(bounds.start, bounds.end);
+    }
+    function syncSelectionUi() {
+        providerHealthRows().forEach(function (row) {
+            var box = row.querySelector('.phh-row-check');
+            if (box) box.checked = selectedHistoryIds.has(rowKey(row));
+        });
+        var visibleRows = currentPageRows();
+        var checkedVisible = visibleRows.filter(function (row) { return selectedHistoryIds.has(rowKey(row)); }).length;
+        var pageCheck = document.getElementById('phhPageCheck');
+        if (pageCheck) {
+            pageCheck.checked = visibleRows.length > 0 && checkedVisible === visibleRows.length;
+            pageCheck.indeterminate = checkedVisible > 0 && checkedVisible < visibleRows.length;
+            pageCheck.disabled = visibleRows.length === 0;
+        }
+        var count = selectedHistoryIds.size;
+        var bulkbar = document.getElementById('phhBulkbar');
+        var countEl = document.getElementById('phhSelectedCount');
+        var exportSelected = document.getElementById('phhExportSelectedBtn');
+        if (countEl) countEl.textContent = count;
+        if (bulkbar) {
+            bulkbar.classList.toggle('is-active', count > 0);
+            bulkbar.setAttribute('aria-hidden', count > 0 ? 'false' : 'true');
+        }
+        if (exportSelected) {
+            exportSelected.disabled = count === 0;
+            exportSelected.textContent = '${js_pa_exportSelected} (' + count + ')';
+        }
+    }
+    function renderProviderHealthPage() {
+        var rows = providerHealthRows();
+        var bounds = pageBounds(rows);
+        rows.forEach(function (row, idx) {
+            row.hidden = idx < bounds.start || idx >= bounds.end;
+        });
+        var info = document.getElementById('phhPageInfo');
+        if (info) {
+            var startNo = rows.length === 0 ? 0 : bounds.start + 1;
+            info.textContent = startNo + '-' + bounds.end + ' / ' + rows.length + ' · ' + currentPage + '/' + bounds.totalPages;
+        }
+        var prev = document.getElementById('phhPrevPage');
+        var next = document.getElementById('phhNextPage');
+        if (prev) prev.disabled = currentPage <= 1 || rows.length === 0;
+        if (next) next.disabled = currentPage >= bounds.totalPages || rows.length === 0;
+        syncSelectionUi();
+    }
+    window.togglePhhRowSelection = function (event, checkbox) {
+        if (event) event.stopPropagation();
+        var row = checkbox ? checkbox.closest('.js-provider-health-row') : null;
+        var key = rowKey(row);
+        if (!key) return;
+        if (checkbox.checked) selectedHistoryIds.add(key);
+        else selectedHistoryIds.delete(key);
+        syncSelectionUi();
+    };
+    window.togglePhhPageSelection = function (event) {
+        if (event) event.stopPropagation();
+        var checked = event && event.target ? event.target.checked : false;
+        currentPageRows().forEach(function (row) {
+            var key = rowKey(row);
+            if (checked) selectedHistoryIds.add(key);
+            else selectedHistoryIds.delete(key);
+        });
+        syncSelectionUi();
+    };
+    window.clearPhhSelection = function () {
+        selectedHistoryIds.clear();
+        syncSelectionUi();
+    };
 
     /* ── 상세 모달 ── */
     window.closeProviderHealthDetail = function () {
@@ -265,7 +392,11 @@
         var limit = document.querySelector('select[name="limit"]').value || '200';
         var format = document.getElementById('phhExportFormat').value || 'csv';
         params.set('scope', scope || 'filtered');
-        if (scope !== 'all' && providerCode) params.set('providerCode', providerCode);
+        if (scope === 'selected') {
+            if (selectedHistoryIds.size === 0) return;
+            params.set('selectedIds', Array.from(selectedHistoryIds).join(','));
+        }
+        if (scope !== 'all' && scope !== 'selected' && providerCode) params.set('providerCode', providerCode);
         params.set('limit', scope === 'all' ? '1000' : limit);
         params.set('format', format);
         window.location.href = ctx + '/admin/login-risk/provider-health-history/export?' + params.toString();
@@ -276,6 +407,20 @@
 
         var sortReset = document.getElementById('phhSortReset');
         if (sortReset) sortReset.addEventListener('click', resetProviderHealthSort);
+
+        var pageSizeSelect = document.getElementById('phhPageSize');
+        if (pageSizeSelect) {
+            pageSize = Number(pageSizeSelect.value || 20);
+            pageSizeSelect.addEventListener('change', function () {
+                pageSize = Number(this.value || 20);
+                currentPage = 1;
+                renderProviderHealthPage();
+            });
+        }
+        var prev = document.getElementById('phhPrevPage');
+        var next = document.getElementById('phhNextPage');
+        if (prev) prev.addEventListener('click', function () { currentPage -= 1; renderProviderHealthPage(); });
+        if (next) next.addEventListener('click', function () { currentPage += 1; renderProviderHealthPage(); });
 
         var control = document.getElementById('phhExportControl');
         var dropdown = document.getElementById('phhExportDropdown');
@@ -290,6 +435,7 @@
                 if (b) { exportData(b.dataset.scope); control.classList.remove('open'); }
             });
         }
+        renderProviderHealthPage();
     });
 })();
 </script>
@@ -319,6 +465,70 @@
 .phh-page .phh-select-limit { width: 90px; }
 .phh-page .phh-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-left: auto; }
 .phh-page .phh-actions .adm-btn { white-space: nowrap; }
+
+/* Controlbar - 회원 관리처럼 선택 슬롯과 보기 도구를 고정 */
+.phh-page .phh-controlbar {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) max-content;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(148, 163, 184, .14);
+    background: rgba(15, 23, 42, .42);
+}
+.phh-page .phh-bulkbar {
+    min-height: 38px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+.phh-page .phh-bulkbar.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    border-color: rgba(59, 130, 246, .56);
+    background: rgba(29, 78, 137, .48);
+}
+.phh-page .phh-selected-label {
+    color: #93c5fd;
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+.phh-page .phh-clear-selection { padding: 7px 10px; }
+.phh-page .phh-page-tools {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+}
+.phh-page .phh-page-size-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.phh-page .phh-page-size { width: 86px; min-width: 86px; }
+.phh-page .phh-page-info {
+    min-width: 124px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+    white-space: nowrap;
+}
+.phh-page .phh-page-btn { padding: 7px 12px; }
 
 /* Export dropdown - 회원 관리와 같은 형식 선택 + 범위 드롭다운 */
 .phh-page .phh-export-control {
@@ -353,13 +563,15 @@
 body.sa-light .phh-page .phh-export-dropdown { background: #fff; border-color: #e2e8f0; box-shadow: 0 8px 20px rgba(15,23,42,.16); }
 body.sa-light .phh-page .phh-export-item { color: #334155; }
 body.sa-light .phh-page .phh-export-item:hover { background: #f1f5f9; }
+body.sa-light .phh-page .phh-export-item:disabled { color: #94a3b8; }
 
 /* Table — 컬럼 폭 명시, 가로 overflow는 wrap에서 처리 */
 .phh-page .phh-table-wrap { overflow-x: auto; position: relative; z-index: 1; }
 .phh-page .phh-table {
-    width: 100%; min-width: 1120px;
+    width: 100%; min-width: 1160px;
     table-layout: fixed; border-collapse: collapse;
 }
+.phh-page .phh-col-check      { width: 38px; }
 .phh-page .phh-col-checked-at { width: 132px; }
 .phh-page .phh-col-provider   { width: 320px; }
 .phh-page .phh-col-source     { width: 112px; }
@@ -404,7 +616,36 @@ body.sa-light .phh-page .phh-th.sorted { color: #2563eb; }
 body.sa-light .phh-page .phh-th .phh-sort-ico.asc { color: #dc2626; }
 body.sa-light .phh-page .phh-th .phh-sort-ico.desc { color: #2563eb; }
 body.sa-light .phh-page .phh-card-head,
-body.sa-light .phh-page .phh-toolbar { border-bottom-color: #e2e8f0; }
+body.sa-light .phh-page .phh-toolbar,
+body.sa-light .phh-page .phh-controlbar { border-bottom-color: #e2e8f0; }
+body.sa-light .phh-page .phh-controlbar { background: #f8fafc; }
+body.sa-light .phh-page .phh-page-size-tool,
+body.sa-light .phh-page .phh-page-info { color: #64748b; }
+
+.phh-page .phh-check-head,
+.phh-page .phh-check-cell {
+    width: 38px;
+    min-width: 38px;
+    max-width: 38px;
+    padding: 0 !important;
+    text-align: center;
+    vertical-align: middle;
+}
+.phh-page .phh-check-head {
+    background: rgba(15,23,42,.6);
+    border-bottom: 1px solid rgba(30,41,59,.6);
+}
+.phh-page .phh-check {
+    width: 15px;
+    height: 15px;
+    accent-color: #3b82f6;
+    cursor: pointer;
+    vertical-align: middle;
+}
+body.sa-light .phh-page .phh-check-head {
+    background: #f8fafc;
+    border-bottom-color: #e2e8f0;
+}
 
 /* Cell */
 .phh-page .phh-cell {
@@ -457,6 +698,8 @@ body.sa-light .phh-page .phh-badge { background: #dbeafe; color: #1e40af; }
 /* 미디어 쿼리 */
 @media (max-width: 1080px) {
     .phh-page .phh-actions { margin-left: 0; }
+    .phh-page .phh-controlbar { grid-template-columns: 1fr; }
+    .phh-page .phh-page-tools { justify-content: flex-end; flex-wrap: wrap; }
 }
 @media (max-width: 720px) {
     .phh-page .phh-field-keyword { flex: 1 1 100%; max-width: none; }
