@@ -100,12 +100,12 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th>${msg_admin_finance_policy_limit_col_grade}</th>
-                    <th class="adm-align-right">${msg_admin_finance_policy_limit_col_single}</th>
-                    <th class="adm-align-right">${msg_admin_finance_policy_limit_col_daily}</th>
-                    <th class="adm-align-right">${msg_admin_finance_policy_limit_col_monthly}</th>
-                    <th>${msg_admin_finance_policy_limit_col_active}</th>
-                    <th>${msg_admin_finance_policy_limit_col_action}</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_policy_limit_col_grade}</th>
+                    <th class="adm-align-right" onclick="financeThClick(this)">${msg_admin_finance_policy_limit_col_single}</th>
+                    <th class="adm-align-right" onclick="financeThClick(this)">${msg_admin_finance_policy_limit_col_daily}</th>
+                    <th class="adm-align-right" onclick="financeThClick(this)">${msg_admin_finance_policy_limit_col_monthly}</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_policy_limit_col_active}</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_policy_limit_col_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -190,13 +190,13 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th>${msg_admin_finance_policy_reward_col_event}</th>
-                    <th>${msg_admin_finance_policy_reward_col_grade}</th>
-                    <th>${msg_admin_finance_policy_reward_col_rewardType}</th>
-                    <th class="adm-align-right">${msg_admin_finance_policy_reward_col_rate}</th>
-                    <th class="adm-align-right">${msg_admin_finance_policy_reward_col_fixed}</th>
-                    <th>${msg_admin_finance_policy_reward_col_description}</th>
-                    <th>${msg_admin_finance_policy_reward_col_active}</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_policy_reward_col_event}</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_policy_reward_col_grade}</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_policy_reward_col_rewardType}</th>
+                    <th class="adm-align-right" onclick="financeThClick(this)">${msg_admin_finance_policy_reward_col_rate}</th>
+                    <th class="adm-align-right" onclick="financeThClick(this)">${msg_admin_finance_policy_reward_col_fixed}</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_policy_reward_col_description}</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_policy_reward_col_active}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -321,6 +321,23 @@
         try { initial = localStorage.getItem(KEY) || 'limit'; } catch(e) {}
         show(initial);
     })();
+
+    /* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+    function financeThClick(th) {
+        var table = th.closest('table');
+        var firstRow = table && table.querySelector('tbody tr');
+        if (!firstRow) return;
+        var cell = firstRow.children[th.cellIndex];
+        if (!cell) return;
+        var target = cell.querySelector('button:not([type="submit"]), input[type="checkbox"], a[href]');
+        if (target) {
+            if (target.tagName === 'INPUT' && target.type === 'checkbox') target.click();
+            else target.click();
+            return;
+        }
+        var firstInput = cell.querySelector('input, select, textarea');
+        if (firstInput) { firstInput.focus(); return; }
+    }
     </script>
 
 </div>

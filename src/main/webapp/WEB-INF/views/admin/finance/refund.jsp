@@ -96,13 +96,13 @@
             </colgroup>
             <thead>
             <tr>
-                <th>ID</th>
-                <th>${msg_admin_finance_refund_col_user}</th>
-                <th>${msg_admin_finance_refund_col_order}</th>
-                <th class="adm-align-right">${msg_admin_finance_refund_col_amount}</th>
-                <th>${msg_admin_finance_refund_col_method}</th>
-                <th>${msg_admin_finance_refund_col_paidAt}</th>
-                <th>${msg_admin_finance_refund_col_action}</th>
+                <th onclick="financeRefundThClick(this)">ID</th>
+                <th onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_user}</th>
+                <th onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_order}</th>
+                <th class="adm-align-right" onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_amount}</th>
+                <th onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_method}</th>
+                <th onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_paidAt}</th>
+                <th onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_action}</th>
             </tr>
             </thead>
             <tbody>
@@ -161,15 +161,15 @@
             </colgroup>
             <thead>
             <tr>
-                <th>#</th>
-                <th>${msg_admin_finance_refund_col_paymentId}</th>
-                <th>${msg_admin_finance_refund_col_userNick}</th>
-                <th>${msg_admin_finance_refund_col_order}</th>
-                <th class="adm-align-right">${msg_admin_finance_refund_col_amount}</th>
-                <th>${msg_admin_finance_refund_col_reason}</th>
-                <th>${msg_admin_finance_refund_col_tossStatus}</th>
-                <th>${msg_admin_finance_refund_col_refundedAt}</th>
-                <th>${msg_admin_finance_refund_col_admin}</th>
+                <th onclick="financeRefundThClick(this)">#</th>
+                <th onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_paymentId}</th>
+                <th onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_userNick}</th>
+                <th onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_order}</th>
+                <th class="adm-align-right" onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_amount}</th>
+                <th onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_reason}</th>
+                <th onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_tossStatus}</th>
+                <th onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_refundedAt}</th>
+                <th onclick="financeRefundThClick(this)">${msg_admin_finance_refund_col_admin}</th>
             </tr>
             </thead>
             <tbody>
@@ -251,6 +251,19 @@
         document.getElementById('adm-fin-refund-backdrop').hidden = true;
     };
 })();
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function financeRefundThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr:not(.adm-local-empty)');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href]');
+    if (target) { target.click(); return; }
+    var anyBtn = firstRow.querySelector('button, a[href]');
+    if (anyBtn) anyBtn.click();
+}
 </script>
 
 <%@ include file="../layout-close.jsp" %>

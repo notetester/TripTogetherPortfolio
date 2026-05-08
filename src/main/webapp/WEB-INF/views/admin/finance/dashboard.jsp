@@ -140,9 +140,9 @@
                             <table class="adm-finance-mini-table">
                                 <thead>
                                 <tr>
-                                    <th>${msg_admin_finance_widget_col_time}</th>
-                                    <th>${msg_admin_finance_widget_col_user}</th>
-                                    <th class="adm-align-right">${msg_admin_finance_widget_col_amount}</th>
+                                    <th onclick="financeThClick(this)">${msg_admin_finance_widget_col_time}</th>
+                                    <th onclick="financeThClick(this)">${msg_admin_finance_widget_col_user}</th>
+                                    <th class="adm-align-right" onclick="financeThClick(this)">${msg_admin_finance_widget_col_amount}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -255,15 +255,15 @@
             </colgroup>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>${msg_admin_finance_users_col_nickname}</th>
-                    <th>${msg_admin_finance_users_col_email}</th>
-                    <th>${msg_admin_finance_users_col_grade}</th>
-                    <th class="adm-align-right">${msg_admin_finance_users_col_cash}</th>
-                    <th class="adm-align-right">${msg_admin_finance_users_col_mileage}</th>
-                    <th class="adm-align-right">${msg_admin_finance_users_col_point}</th>
-                    <th>${msg_admin_finance_users_col_status}</th>
-                    <th>${msg_admin_finance_users_col_action}</th>
+                    <th onclick="financeThClick(this)">ID</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_users_col_nickname}</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_users_col_email}</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_users_col_grade}</th>
+                    <th class="adm-align-right" onclick="financeThClick(this)">${msg_admin_finance_users_col_cash}</th>
+                    <th class="adm-align-right" onclick="financeThClick(this)">${msg_admin_finance_users_col_mileage}</th>
+                    <th class="adm-align-right" onclick="financeThClick(this)">${msg_admin_finance_users_col_point}</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_users_col_status}</th>
+                    <th onclick="financeThClick(this)">${msg_admin_finance_users_col_action}</th>
                 </tr>
             </thead>
             <tbody>
@@ -340,6 +340,19 @@ function admFinanceChangePageSize(pageSize) {
     params.set('pageSize', pageSize);
     params.set('page', '1');
     location.href = '${pageContext.request.contextPath}/admin/finance?' + params.toString();
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function financeThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href]');
+    if (target) { target.click(); return; }
+    var anyBtn = firstRow.querySelector('button, a[href]');
+    if (anyBtn) anyBtn.click();
 }
 </script>
 

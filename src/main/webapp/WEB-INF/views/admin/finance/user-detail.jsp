@@ -119,12 +119,12 @@
                         </colgroup>
                         <thead>
                             <tr>
-                                <th>${msg_admin_finance_userDetail_col_changedAt}</th>
-                                <th>${msg_admin_finance_userDetail_col_assetType}</th>
-                                <th>${msg_admin_finance_userDetail_col_changeType}</th>
-                                <th class="adm-align-right">${msg_admin_finance_userDetail_col_amount}</th>
-                                <th class="adm-align-right">${msg_admin_finance_userDetail_col_balanceAfter}</th>
-                                <th>${msg_admin_finance_userDetail_col_detail}</th>
+                                <th onclick="financeUserDetailThClick(this)">${msg_admin_finance_userDetail_col_changedAt}</th>
+                                <th onclick="financeUserDetailThClick(this)">${msg_admin_finance_userDetail_col_assetType}</th>
+                                <th onclick="financeUserDetailThClick(this)">${msg_admin_finance_userDetail_col_changeType}</th>
+                                <th class="adm-align-right" onclick="financeUserDetailThClick(this)">${msg_admin_finance_userDetail_col_amount}</th>
+                                <th class="adm-align-right" onclick="financeUserDetailThClick(this)">${msg_admin_finance_userDetail_col_balanceAfter}</th>
+                                <th onclick="financeUserDetailThClick(this)">${msg_admin_finance_userDetail_col_detail}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -172,10 +172,10 @@
                         </colgroup>
                         <thead>
                             <tr>
-                                <th>${msg_admin_finance_userDetail_col_changedAt}</th>
-                                <th>${msg_admin_finance_userDetail_col_method}</th>
-                                <th>${msg_admin_finance_userDetail_col_status}</th>
-                                <th class="adm-align-right">${msg_admin_finance_userDetail_col_amount}</th>
+                                <th onclick="financeUserDetailThClick(this)">${msg_admin_finance_userDetail_col_changedAt}</th>
+                                <th onclick="financeUserDetailThClick(this)">${msg_admin_finance_userDetail_col_method}</th>
+                                <th onclick="financeUserDetailThClick(this)">${msg_admin_finance_userDetail_col_status}</th>
+                                <th class="adm-align-right" onclick="financeUserDetailThClick(this)">${msg_admin_finance_userDetail_col_amount}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -197,5 +197,20 @@
     </div>
 
 </div>
+
+<script>
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 (이력성 표는 행 자체로) ── */
+function financeUserDetailThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href]');
+    if (target) { target.click(); return; }
+    var anyBtn = firstRow.querySelector('button, a[href]');
+    if (anyBtn) anyBtn.click();
+}
+</script>
 
 <%@ include file="../layout-close.jsp" %>
