@@ -64,51 +64,48 @@
                 ${msg_security_admin_providerHealth_title}
                 <span class="adm-page-muted phh-total">${msg_admin_common_totalCount}</span>
             </div>
-        </div>
-
-        <%-- Toolbar: 한 줄 + 미디어쿼리로 wrap --%>
-        <form method="get" id="phhSearchForm" class="phh-toolbar">
-            <label class="phh-field phh-field-keyword">
-                <span class="phh-label">${msg_security_admin_providerHealth_providerCode}</span>
-                <input class="adm-input phh-input-keyword" type="text" name="providerCode"
-                       value="${fn:escapeXml(providerCode)}"
-                       placeholder="${msg_security_admin_providerHealth_providerCodePlaceholder}">
-            </label>
-            <label class="phh-field phh-field-limit">
-                <span class="phh-label">${msg_security_admin_providerHealth_limit}</span>
-                <select class="adm-select phh-select-limit" name="limit">
-                    <option value="20"  ${limit == 20  ? 'selected' : ''}>20</option>
-                    <option value="50"  ${limit == 50  ? 'selected' : ''}>50</option>
-                    <option value="100" ${limit == 100 ? 'selected' : ''}>100</option>
-                    <option value="200" ${limit == 200 ? 'selected' : ''}>200</option>
+            <div class="phh-export-control" id="phhExportControl">
+                <select class="adm-select phh-export-format" id="phhExportFormat" title="${msg_pa_export}">
+                    <option value="csv">${msg_pa_exportCsv}</option>
+                    <option value="excel">${msg_pa_exportExcel}</option>
                 </select>
-            </label>
-            <div class="phh-actions">
-                <button class="adm-btn adm-btn-primary" type="submit">${msg_security_admin_common_search}</button>
-                <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/provider-health-history">${msg_admin_common_reset}</a>
-                <button class="adm-btn adm-btn-ghost" type="button" id="phhSortReset" hidden>${msg_pa_sortReset}</button>
-                <button class="adm-btn adm-btn-ghost" type="button" onclick="location.reload()">${msg_pa_refresh}</button>
-                <div class="phh-export-control" id="phhExportControl">
-                    <select class="adm-select phh-export-format" id="phhExportFormat" title="${msg_pa_export}">
-                        <option value="csv">${msg_pa_exportCsv}</option>
-                        <option value="excel">${msg_pa_exportExcel}</option>
-                    </select>
-                    <button class="adm-btn adm-btn-ghost" type="button" id="phhExportToggle">${msg_pa_export} ▾</button>
-                    <div class="phh-export-dropdown" id="phhExportDropdown">
-                        <button type="button" class="phh-export-item" data-scope="all">${msg_pa_exportAll}</button>
-                        <button type="button" class="phh-export-item" data-scope="filtered">${msg_pa_exportFiltered}</button>
-                        <button type="button" class="phh-export-item" data-scope="selected" id="phhExportSelectedBtn" disabled>${msg_pa_exportSelected} (0)</button>
-                    </div>
+                <button class="adm-btn adm-btn-ghost" type="button" id="phhExportToggle">${msg_pa_export} ▾</button>
+                <div class="phh-export-dropdown" id="phhExportDropdown">
+                    <button type="button" class="phh-export-item" data-scope="all">${msg_pa_exportAll}</button>
+                    <button type="button" class="phh-export-item" data-scope="filtered">${msg_pa_exportFiltered}</button>
+                    <button type="button" class="phh-export-item" data-scope="selected" id="phhExportSelectedBtn" disabled>${msg_pa_exportSelected} (0)</button>
                 </div>
             </div>
-        </form>
+        </div>
 
-        <div class="phh-controlbar">
-            <div id="phhBulkbar" class="phh-bulkbar" aria-hidden="true" aria-live="polite">
-                <span class="phh-selected-label"><strong id="phhSelectedCount">0</strong>${msg_admin_common_selectedCount}</span>
-                <button type="button" class="adm-btn adm-btn-ghost phh-clear-selection" onclick="clearPhhSelection()">${msg_admin_common_clearSelection}</button>
+        <div id="phhBulkbar" class="phh-bulkbar" aria-hidden="true" aria-live="polite">
+            <span class="phh-selected-label"><strong id="phhSelectedCount">0</strong>${msg_admin_common_selectedCount}</span>
+            <button type="button" class="adm-btn adm-btn-ghost phh-clear-selection" onclick="clearPhhSelection()">${msg_admin_common_clearSelection}</button>
+        </div>
+
+        <form method="get" id="phhSearchForm" class="phh-toolbar">
+            <div class="phh-toolbar-group phh-toolbar-search">
+                <label class="phh-field phh-field-keyword">
+                    <span class="phh-label">${msg_security_admin_providerHealth_providerCode}</span>
+                    <input class="adm-input phh-input-keyword" type="text" name="providerCode"
+                           value="${fn:escapeXml(providerCode)}"
+                           placeholder="${msg_security_admin_providerHealth_providerCodePlaceholder}">
+                </label>
+                <label class="phh-field phh-field-limit">
+                    <span class="phh-label">${msg_security_admin_providerHealth_limit}</span>
+                    <select class="adm-select phh-select-limit" name="limit">
+                        <option value="20"  ${limit == 20  ? 'selected' : ''}>20</option>
+                        <option value="50"  ${limit == 50  ? 'selected' : ''}>50</option>
+                        <option value="100" ${limit == 100 ? 'selected' : ''}>100</option>
+                        <option value="200" ${limit == 200 ? 'selected' : ''}>200</option>
+                    </select>
+                </label>
+                <button class="adm-btn adm-btn-primary" type="submit">${msg_security_admin_common_search}</button>
+                <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/login-risk/provider-health-history">${msg_admin_common_reset}</a>
             </div>
-            <div class="phh-page-tools">
+            <div class="phh-toolbar-group phh-toolbar-tools">
+                <button class="adm-btn adm-btn-ghost" type="button" id="phhSortReset" hidden>${msg_pa_sortReset}</button>
+                <button class="adm-btn adm-btn-ghost" type="button" onclick="location.reload()">${msg_pa_refresh}</button>
                 <label class="phh-page-size-tool">
                     <span>${msg_admin_common_pageSizeLabel}</span>
                     <select class="adm-select phh-page-size" id="phhPageSize">
@@ -118,11 +115,8 @@
                         <option value="0">${msg_admin_common_all}</option>
                     </select>
                 </label>
-                <span class="phh-page-info" id="phhPageInfo"></span>
-                <button type="button" class="adm-btn adm-btn-ghost phh-page-btn" id="phhPrevPage">${msg_admin_common_prev}</button>
-                <button type="button" class="adm-btn adm-btn-ghost phh-page-btn" id="phhNextPage">${msg_admin_common_next}</button>
             </div>
-        </div>
+        </form>
 
         <div class="adm-table-wrap phh-table-wrap">
             <table id="providerHealthHistoryTable" class="adm-table phh-table" data-admin-list-ignore="hard">
@@ -182,6 +176,13 @@
                 </c:if>
                 </tbody>
             </table>
+        </div>
+        <div class="phh-pagination">
+            <div class="phh-page-info" id="phhPageInfo">0</div>
+            <div class="phh-page-actions">
+                <button type="button" class="adm-btn adm-btn-ghost phh-page-btn" id="phhPrevPage">${msg_admin_common_prev}</button>
+                <button type="button" class="adm-btn adm-btn-ghost phh-page-btn" id="phhNextPage">${msg_admin_common_next}</button>
+            </div>
         </div>
     </div>
 </div>
@@ -443,58 +444,65 @@
 <style>
 /* ── Provider 헬스체크 이력 페이지 전용 스타일 ── */
 .phh-page .phh-list-card { padding: 0; overflow: visible; }
-.phh-page .phh-card-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid rgba(30,41,59,.6); }
+.phh-page .phh-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(30,41,59,.6);
+}
 .phh-page .phh-total { margin-left: 8px; font-size: 12px; opacity: .8; }
 
-/* Toolbar — 한 줄 정렬, 좁아지면 wrap */
+/* Toolbar - IP 정책 배치처럼 검색 도구와 보기 도구를 같은 줄에 배치 */
 .phh-page .phh-toolbar {
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 8px 12px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
     padding: 12px 16px;
     border-bottom: 1px solid rgba(30,41,59,.5);
+    background: rgba(15, 23, 42, .42);
     position: relative;
-    z-index: 40;
+    z-index: 30;
+    flex-wrap: wrap;
+}
+.phh-page .phh-toolbar-group {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+.phh-page .phh-toolbar-search {
+    flex: 1 1 520px;
+}
+.phh-page .phh-toolbar-tools {
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    margin-left: auto;
 }
 .phh-page .phh-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.phh-page .phh-field-keyword { flex: 1 1 320px; min-width: 220px; max-width: 560px; }
+.phh-page .phh-field-keyword { flex: 1 1 300px; min-width: 240px; max-width: 460px; }
 .phh-page .phh-field-limit { flex: 0 0 auto; }
 .phh-page .phh-label { font-size: 11px; opacity: .75; white-space: nowrap; }
 .phh-page .phh-input-keyword { width: 100%; }
 .phh-page .phh-select-limit { width: 90px; }
-.phh-page .phh-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-left: auto; }
-.phh-page .phh-actions .adm-btn { white-space: nowrap; }
 
-/* Controlbar - 회원 관리처럼 선택 슬롯과 보기 도구를 고정 */
-.phh-page .phh-controlbar {
-    display: grid;
-    grid-template-columns: minmax(280px, 1fr) max-content;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    border-bottom: 1px solid rgba(148, 163, 184, .14);
-    background: rgba(15, 23, 42, .42);
-}
+/* Bulkbar - IP 정책 배치처럼 선택 시에만 테이블 위에 노출 */
 .phh-page .phh-bulkbar {
-    min-height: 38px;
-    min-width: 0;
-    display: flex;
+    display: none;
     align-items: center;
-    gap: 8px;
-    padding: 5px 10px;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 16px;
+    background: #1e3a5f;
+    border-bottom: 1px solid #334155;
+    flex-wrap: wrap;
 }
 .phh-page .phh-bulkbar.is-active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    border-color: rgba(59, 130, 246, .56);
-    background: rgba(29, 78, 137, .48);
+    display: flex;
 }
 .phh-page .phh-selected-label {
     color: #93c5fd;
@@ -502,13 +510,15 @@
     font-weight: 800;
     white-space: nowrap;
 }
-.phh-page .phh-clear-selection { padding: 7px 10px; }
-.phh-page .phh-page-tools {
+.phh-page .phh-clear-selection { margin-left: auto; padding: 7px 10px; }
+.phh-page .phh-pagination {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
-    min-width: 0;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px 16px;
+    border-top: 1px solid rgba(148, 163, 184, .14);
+    background: rgba(15, 23, 42, .42);
 }
 .phh-page .phh-page-size-tool {
     display: inline-flex;
@@ -521,12 +531,15 @@
 }
 .phh-page .phh-page-size { width: 86px; min-width: 86px; }
 .phh-page .phh-page-info {
-    min-width: 124px;
     color: #94a3b8;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
-    text-align: right;
     white-space: nowrap;
+}
+.phh-page .phh-page-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 .phh-page .phh-page-btn { padding: 7px 12px; }
 
@@ -617,8 +630,13 @@ body.sa-light .phh-page .phh-th .phh-sort-ico.asc { color: #dc2626; }
 body.sa-light .phh-page .phh-th .phh-sort-ico.desc { color: #2563eb; }
 body.sa-light .phh-page .phh-card-head,
 body.sa-light .phh-page .phh-toolbar,
-body.sa-light .phh-page .phh-controlbar { border-bottom-color: #e2e8f0; }
-body.sa-light .phh-page .phh-controlbar { background: #f8fafc; }
+body.sa-light .phh-page .phh-pagination { border-color: #e2e8f0; }
+body.sa-light .phh-page .phh-toolbar,
+body.sa-light .phh-page .phh-pagination { background: #f8fafc; }
+body.sa-light .phh-page .phh-bulkbar {
+    background: #dbeafe;
+    border-bottom-color: #bfdbfe;
+}
 body.sa-light .phh-page .phh-page-size-tool,
 body.sa-light .phh-page .phh-page-info { color: #64748b; }
 
@@ -697,13 +715,18 @@ body.sa-light .phh-page .phh-badge { background: #dbeafe; color: #1e40af; }
 
 /* 미디어 쿼리 */
 @media (max-width: 1080px) {
-    .phh-page .phh-actions { margin-left: 0; }
-    .phh-page .phh-controlbar { grid-template-columns: 1fr; }
-    .phh-page .phh-page-tools { justify-content: flex-end; flex-wrap: wrap; }
+    .phh-page .phh-toolbar-tools { margin-left: 0; }
 }
 @media (max-width: 720px) {
     .phh-page .phh-field-keyword { flex: 1 1 100%; max-width: none; }
-    .phh-page .phh-actions { width: 100%; justify-content: flex-end; }
+    .phh-page .phh-toolbar-group,
+    .phh-page .phh-toolbar-group .adm-btn,
+    .phh-page .phh-field,
+    .phh-page .phh-pagination {
+        width: 100%;
+    }
+    .phh-page .phh-toolbar-tools,
+    .phh-page .phh-page-actions { justify-content: flex-end; }
 }
 </style>
 
