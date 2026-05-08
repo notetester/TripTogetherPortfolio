@@ -130,11 +130,11 @@
                             </colgroup>
                             <thead>
                             <tr>
-                                <th>${msg_package_revision_beforeAfter}</th>
-                                <th>${msg_package_revision_sellerSpot}</th>
-                                <th>${msg_package_revision_pricePeriod}</th>
-                                <th>${msg_package_revision_requestedAt}</th>
-                                <th>${msg_package_revision_review}</th>
+                                <th onclick="pkgThClick(this)">${msg_package_revision_beforeAfter}</th>
+                                <th onclick="pkgThClick(this)">${msg_package_revision_sellerSpot}</th>
+                                <th onclick="pkgThClick(this)">${msg_package_revision_pricePeriod}</th>
+                                <th onclick="pkgThClick(this)">${msg_package_revision_requestedAt}</th>
+                                <th onclick="pkgThClick(this)">${msg_package_revision_review}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -260,12 +260,12 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th>${msg_package_admin_thPackage}</th>
-                    <th>${msg_package_admin_thSeller}</th>
-                    <th>${msg_package_admin_thSpot}</th>
-                    <th>${msg_package_admin_thPriceSchedule}</th>
-                    <th>${msg_package_admin_thStatus}</th>
-                    <th>${msg_package_admin_thReview}</th>
+                    <th onclick="pkgThClick(this)">${msg_package_admin_thPackage}</th>
+                    <th onclick="pkgThClick(this)">${msg_package_admin_thSeller}</th>
+                    <th onclick="pkgThClick(this)">${msg_package_admin_thSpot}</th>
+                    <th onclick="pkgThClick(this)">${msg_package_admin_thPriceSchedule}</th>
+                    <th onclick="pkgThClick(this)">${msg_package_admin_thStatus}</th>
+                    <th onclick="pkgThClick(this)">${msg_package_admin_thReview}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -435,6 +435,19 @@ function focusPackageReviewAction(key) {
     setTimeout(function () {
         target.classList.remove('is-focus-flash');
     }, 1300);
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function pkgThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href]');
+    if (target) { target.click(); return; }
+    var anyBtn = firstRow.querySelector('button, a[href]');
+    if (anyBtn) anyBtn.click();
 }
 </script>
 

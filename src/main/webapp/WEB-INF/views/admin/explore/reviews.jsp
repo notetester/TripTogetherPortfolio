@@ -149,14 +149,14 @@
                 <thead>
                 <tr>
                     <th><input type="checkbox" id="checkAll"></th>
-                    <th>${msg_admin_explore_detail_reviewId}</th>
-                    <th>${msg_admin_explore_reviews_table_spot}</th>
-                    <th>${msg_admin_explore_reviews_table_author}</th>
-                    <th>${msg_admin_explore_reviews_table_rating}</th>
-                    <th>${msg_admin_explore_reviews_table_content}</th>
-                    <th>${msg_admin_common_status}</th>
-                    <th>${msg_admin_explore_reviews_table_createdAt}</th>
-                    <th>${msg_admin_common_action}</th>
+                    <th onclick="exploreReviewsThClick(this)">${msg_admin_explore_detail_reviewId}</th>
+                    <th onclick="exploreReviewsThClick(this)">${msg_admin_explore_reviews_table_spot}</th>
+                    <th onclick="exploreReviewsThClick(this)">${msg_admin_explore_reviews_table_author}</th>
+                    <th onclick="exploreReviewsThClick(this)">${msg_admin_explore_reviews_table_rating}</th>
+                    <th onclick="exploreReviewsThClick(this)">${msg_admin_explore_reviews_table_content}</th>
+                    <th onclick="exploreReviewsThClick(this)">${msg_admin_common_status}</th>
+                    <th onclick="exploreReviewsThClick(this)">${msg_admin_explore_reviews_table_createdAt}</th>
+                    <th onclick="exploreReviewsThClick(this)">${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -379,6 +379,19 @@ function goExploreReviewPageSize(size) {
     params.set('size', size);
     params.set('page', '1');
     location.href = ctx + '/admin/explore/reviews?' + params.toString();
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function exploreReviewsThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button:not(.row-check), a[href]');
+    if (target) { target.click(); return; }
+    var anyLink = firstRow.querySelector('a.adm-cell-link');
+    if (anyLink) location.href = anyLink.getAttribute('href');
 }
 </script>
 

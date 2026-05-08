@@ -189,16 +189,16 @@
                 <thead>
                 <tr>
                     <th><input type="checkbox" id="checkAll"></th>
-                    <th>${msg_admin_common_id}</th>
-                    <th>${msg_admin_explore_table_image}</th>
-                    <th>${msg_admin_explore_table_spot}</th>
-                    <th>${msg_admin_explore_table_author}</th>
-                    <th>${msg_admin_explore_table_region}</th>
-                    <th>${msg_admin_explore_table_rating}</th>
-                    <th>${msg_admin_explore_table_reviews}</th>
-                    <th>${msg_admin_explore_table_likes}</th>
-                    <th>${msg_admin_common_status}</th>
-                    <th>${msg_admin_common_action}</th>
+                    <th onclick="exploreThClick(this)">${msg_admin_common_id}</th>
+                    <th onclick="exploreThClick(this)">${msg_admin_explore_table_image}</th>
+                    <th onclick="exploreThClick(this)">${msg_admin_explore_table_spot}</th>
+                    <th onclick="exploreThClick(this)">${msg_admin_explore_table_author}</th>
+                    <th onclick="exploreThClick(this)">${msg_admin_explore_table_region}</th>
+                    <th onclick="exploreThClick(this)">${msg_admin_explore_table_rating}</th>
+                    <th onclick="exploreThClick(this)">${msg_admin_explore_table_reviews}</th>
+                    <th onclick="exploreThClick(this)">${msg_admin_explore_table_likes}</th>
+                    <th onclick="exploreThClick(this)">${msg_admin_common_status}</th>
+                    <th onclick="exploreThClick(this)">${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -433,6 +433,19 @@ function goExplorePageSize(size) {
     params.set('size', size);
     params.set('page', '1');
     location.href = ctx + '/admin/explore?' + params.toString();
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function exploreThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button:not(.row-check), a[href]');
+    if (target) { target.click(); return; }
+    var anyLink = firstRow.querySelector('a.adm-cell-link, a.adm-link-title');
+    if (anyLink) location.href = anyLink.getAttribute('href');
 }
 </script>
 

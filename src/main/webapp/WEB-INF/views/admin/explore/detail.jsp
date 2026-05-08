@@ -297,13 +297,13 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th>${msg_admin_explore_detail_reviewId}</th>
-                    <th>${msg_admin_explore_detail_reviewAuthor}</th>
-                    <th>${msg_admin_explore_detail_reviewRating}</th>
-                    <th>${msg_admin_explore_detail_reviewContent}</th>
-                    <th>${msg_admin_common_status}</th>
-                    <th>${msg_admin_explore_detail_reviewCreatedAt}</th>
-                    <th>${msg_admin_common_action}</th>
+                    <th onclick="exploreDetailThClick(this)">${msg_admin_explore_detail_reviewId}</th>
+                    <th onclick="exploreDetailThClick(this)">${msg_admin_explore_detail_reviewAuthor}</th>
+                    <th onclick="exploreDetailThClick(this)">${msg_admin_explore_detail_reviewRating}</th>
+                    <th onclick="exploreDetailThClick(this)">${msg_admin_explore_detail_reviewContent}</th>
+                    <th onclick="exploreDetailThClick(this)">${msg_admin_common_status}</th>
+                    <th onclick="exploreDetailThClick(this)">${msg_admin_explore_detail_reviewCreatedAt}</th>
+                    <th onclick="exploreDetailThClick(this)">${msg_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -443,6 +443,19 @@ function blockReview(button) {
             alert(d.message || EXPLORE_DETAIL_MSG.requestFailed);
         }
     });
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function exploreDetailThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href]');
+    if (target) { target.click(); return; }
+    var anyLink = firstRow.querySelector('button.js-open-member-context, a[href]');
+    if (anyLink) anyLink.click();
 }
 </script>
 
