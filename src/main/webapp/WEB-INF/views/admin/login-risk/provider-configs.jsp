@@ -473,6 +473,12 @@
       gap: 8px;
       flex-wrap: wrap;
   }
+  .adm-providerAdv-page .pa-field-focus {
+      outline: 2px solid rgba(96, 165, 250, .7);
+      outline-offset: 3px;
+      box-shadow: 0 0 0 6px rgba(59, 130, 246, .12);
+      transition: outline-color .15s ease, box-shadow .15s ease;
+  }
   .adm-providerAdv-page .pa-hint {
       color: #94a3b8;
       font-size: 11px;
@@ -823,20 +829,20 @@
         </div>
 
         <div class="adm-table-wrap adm-overflow-visible pa-table-wrap">
-            <table class="adm-table pa-table" data-admin-list-ignore="hard">
+            <table class="adm-table pa-table" data-admin-list-ignore="hard" data-admin-column-action-handler="admProviderColumnAction">
                 <thead>
                     <tr>
                         <th class="pa-check-col"><input type="checkbox" id="pa-selAll" class="pa-check-input"></th>
-                        <th data-sort="priority_desc">${msg_colPriority}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-sort="kind_asc">${msg_colKind}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-sort="name_asc">${msg_colName}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-sort="code_asc">${msg_colCode}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-sort="category_asc">${msg_colCategory}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-sort="status_asc">${msg_colStatus}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-sort="enabled_desc">${msg_colEnabled}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-sort="last_checked_desc">${msg_colLastCheck}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-sort="next_check_asc">${msg_colNextCheck}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th>${msg_colActions}</th>
+                        <th data-column-key="priority" data-sort="priority_desc">${msg_colPriority}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="kind" data-sort="kind_asc">${msg_colKind}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="name" data-sort="name_asc">${msg_colName}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="code" data-sort="code_asc">${msg_colCode}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="category" data-sort="category_asc">${msg_colCategory}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="status" data-sort="status_asc">${msg_colStatus}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="enabled" data-sort="enabled_desc">${msg_colEnabled}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="last_checked" data-sort="last_checked_desc">${msg_colLastCheck}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="next_check" data-sort="next_check_asc">${msg_colNextCheck}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="actions">${msg_colActions}</th>
                     </tr>
                 </thead>
                 <tbody id="pa-rows">
@@ -1110,16 +1116,16 @@
             return '' +
                 '<tr class="' + (isDeleted ? 'row-deleted' : '') + '" data-idx="' + row.providerIdx + '">' +
                   '<td class="pa-check-col"><input type="checkbox" class="pa-rowsel pa-check-input" value="' + row.providerIdx + '" ' + checked + '></td>' +
-                  '<td><span class="priority-bar">' + (row.priority ?? '') + '</span></td>' +
-                  '<td><span class="chip kind-' + escHtml(row.providerKind) + '">' + escHtml(row.providerKind || '') + '</span></td>' +
-                  '<td><a href="#" class="adm-inline-link pa-edit-link" data-idx="' + row.providerIdx + '">' + escHtml(row.providerName || '') + '</a></td>' +
-                  '<td><code>' + escHtml(row.providerCode || '') + '</code></td>' +
-                  '<td>' + cats + '</td>' +
-                  '<td><span class="chip status-' + escHtml(row.status) + '">' + escHtml(row.status || '') + '</span></td>' +
-                  '<td>' + (row.enabled ? '✔' : '—') + '</td>' +
-                  '<td>' + escHtml(formatDate(row.lastCheckedAt)) + '</td>' +
-                  '<td>' + escHtml(formatDate(row.nextHealthCheckAt)) + '</td>' +
-                  '<td><div class="pa-row-actions">' +
+                  '<td data-column-key="priority"><span class="priority-bar">' + (row.priority ?? '') + '</span></td>' +
+                  '<td data-column-key="kind"><span class="chip kind-' + escHtml(row.providerKind) + '">' + escHtml(row.providerKind || '') + '</span></td>' +
+                  '<td data-column-key="name"><a href="#" class="adm-inline-link pa-edit-link" data-idx="' + row.providerIdx + '">' + escHtml(row.providerName || '') + '</a></td>' +
+                  '<td data-column-key="code"><code>' + escHtml(row.providerCode || '') + '</code></td>' +
+                  '<td data-column-key="category">' + cats + '</td>' +
+                  '<td data-column-key="status"><span class="chip status-' + escHtml(row.status) + '">' + escHtml(row.status || '') + '</span></td>' +
+                  '<td data-column-key="enabled">' + (row.enabled ? '✔' : '—') + '</td>' +
+                  '<td data-column-key="last_checked">' + escHtml(formatDate(row.lastCheckedAt)) + '</td>' +
+                  '<td data-column-key="next_check">' + escHtml(formatDate(row.nextHealthCheckAt)) + '</td>' +
+                  '<td data-column-key="actions"><div class="pa-row-actions">' +
                     '<button type="button" class="adm-btn pa-edit" data-idx="' + row.providerIdx + '"><spring:message code="security.admin.providerAdv.row.action.edit"/></button> ' +
                     (isDeleted
                       ? '<button type="button" class="adm-btn pa-restore" data-idx="' + row.providerIdx + '"><spring:message code="security.admin.providerAdv.row.action.restore"/></button>'
@@ -1218,15 +1224,46 @@
         try { JSON.parse(s); return null; } catch (e) { return fmt(MSG.invalidJson, fieldName); }
     };
 
-    const openModal = async (idx) => {
+    const PROVIDER_COLUMN_FOCUS = {
+        priority: { tab: 'basic', selector: '#f-priority' },
+        kind: { tab: 'basic', selector: '#f-providerKind' },
+        name: { tab: 'basic', selector: '#f-providerName' },
+        code: { tab: 'basic', selector: '#f-providerCode' },
+        category: { tab: 'basic', selector: '#f-usageCategories input[data-cat]' },
+        status: { tab: 'basic', selector: '#f-enabled' },
+        enabled: { tab: 'basic', selector: '#f-enabled' },
+        last_checked: { tab: 'health', selector: '#pa-checkBtn' },
+        next_check: { tab: 'health', selector: '#f-healthCheckIntervalSec' },
+        actions: { tab: 'basic', selector: '#pa-saveBtn' }
+    };
+
+    const activateProviderTab = (tabName) => {
+        const safeTab = tabName || 'basic';
+        document.querySelectorAll('.pa-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === safeTab));
+        document.querySelectorAll('.pa-pane').forEach(p => p.hidden = (p.dataset.pane !== safeTab));
+    };
+
+    const focusProviderColumn = (columnKey) => {
+        const target = PROVIDER_COLUMN_FOCUS[columnKey] || PROVIDER_COLUMN_FOCUS.actions;
+        activateProviderTab(target.tab);
+        window.setTimeout(() => {
+            const el = document.querySelector(target.selector);
+            if (!el) return;
+            el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            if (typeof el.focus === 'function' && !el.disabled) el.focus({ preventScroll: true });
+            el.classList.add('pa-field-focus');
+            window.setTimeout(() => el.classList.remove('pa-field-focus'), 900);
+        }, 40);
+    };
+
+    const openModal = async (idx, focusKey) => {
         const m = $('pa-modal');
         const err = $('pa-modalError'); err.classList.remove('show'); err.textContent = '';
         document.querySelectorAll('#pa-form input, #pa-form textarea, #pa-form select').forEach(el => {
             if (el.type === 'checkbox') el.checked = false;
             else el.value = '';
         });
-        document.querySelectorAll('.pa-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'basic'));
-        document.querySelectorAll('.pa-pane').forEach(p => p.hidden = (p.dataset.pane !== 'basic'));
+        activateProviderTab('basic');
         if (idx) {
             try {
                 const res = await fetch(ctx + '/admin/login-risk/provider-configs/' + idx + '/api');
@@ -1286,6 +1323,7 @@
             $('pa-checkBtn').hidden = true;
         }
         m.hidden = false;
+        if (focusKey) focusProviderColumn(focusKey);
     };
     const closeModal = () => { $('pa-modal').hidden = true; };
 
@@ -1413,6 +1451,15 @@
         syncProviderControlOverflow();
     }
 
+    window.admProviderColumnAction = (payload) => {
+        if (!payload || payload.fromHeader) return false;
+        const row = payload.row;
+        const idx = row ? parseInt(row.dataset.idx, 10) : 0;
+        if (!idx) return false;
+        openModal(idx, payload.columnKey || 'actions');
+        return true;
+    };
+
     document.addEventListener('DOMContentLoaded', () => {
         loadList();
 
@@ -1476,9 +1523,7 @@
         });
         document.querySelectorAll('.pa-tab').forEach(tab => {
             tab.addEventListener('click', () => {
-                const tabName = tab.dataset.tab;
-                document.querySelectorAll('.pa-tab').forEach(t => t.classList.toggle('active', t === tab));
-                document.querySelectorAll('.pa-pane').forEach(p => p.hidden = (p.dataset.pane !== tabName));
+                activateProviderTab(tab.dataset.tab);
             });
         });
         $('pa-modalClose').addEventListener('click', closeModal);

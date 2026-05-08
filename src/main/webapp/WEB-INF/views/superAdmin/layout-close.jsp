@@ -54,6 +54,7 @@ document.addEventListener('keydown', e => {
 })();
 </script>
 <script src="${pageContext.request.contextPath}/resources/js/admin/admin-list-tools.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/admin/admin-column-actions.js"></script>
     </div><%-- /adm-main --%>
     <div class="adm-backdrop" id="admBackdrop" hidden></div>
 </div><%-- /adm-shell --%>
