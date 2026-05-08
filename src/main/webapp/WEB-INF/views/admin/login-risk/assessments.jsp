@@ -98,13 +98,13 @@
                    data-section="externalAssessments">
                 <thead>
                 <tr>
-                    <th>${msg_security_admin_common_source}</th>
-                    <th>${msg_security_admin_common_target}</th>
-                    <th>${msg_security_admin_common_riskLevel}</th>
-                    <th>${msg_security_admin_common_recommendationAction}</th>
-                    <th>${msg_security_admin_common_evidence}</th>
-                    <th>${msg_security_admin_common_status}</th>
-                    <th>${msg_security_admin_common_createdAt}</th>
+                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 0)">${msg_security_admin_common_source}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 1)">${msg_security_admin_common_target}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 2)">${msg_security_admin_common_riskLevel}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 3)">${msg_security_admin_common_recommendationAction}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 4)">${msg_security_admin_common_evidence}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 5)">${msg_security_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 6)">${msg_security_admin_common_createdAt}<span class="sort-ico" aria-hidden="true"></span></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -142,5 +142,30 @@
         </div>
     </div>
 </div>
+
+<script>
+function sortStaticAdminTable(tableId, columnIndex) {
+    const table = document.getElementById(tableId);
+    const tbody = table ? table.querySelector('tbody') : null;
+    if (!tbody) return;
+    const prevIndex = Number(table.dataset.sortIndex || -1);
+    const prevDir = table.dataset.sortDir || 'ASC';
+    const nextDir = prevIndex === columnIndex && prevDir === 'ASC' ? 'DESC' : 'ASC';
+    table.dataset.sortIndex = String(columnIndex);
+    table.dataset.sortDir = nextDir;
+    const rows = Array.from(tbody.querySelectorAll('tr')).filter(function(row) {
+        return row.children.length > columnIndex && !row.querySelector('td[colspan]');
+    });
+    rows.sort(function(a, b) {
+        const av = (a.children[columnIndex].innerText || '').replace(/\s+/g, ' ').trim();
+        const bv = (b.children[columnIndex].innerText || '').replace(/\s+/g, ' ').trim();
+        return av.localeCompare(bv, undefined, { numeric: true, sensitivity: 'base' }) * (nextDir === 'ASC' ? 1 : -1);
+    }).forEach(function(row) { tbody.appendChild(row); });
+    table.querySelectorAll('th').forEach(function(th, idx) {
+        const ico = th.querySelector('.sort-ico');
+        if (ico) ico.textContent = idx === columnIndex ? (nextDir === 'ASC' ? '▲' : '▼') : '';
+    });
+}
+</script>
 
 <%@ include file="../layout-close.jsp" %>

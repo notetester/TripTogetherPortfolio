@@ -103,13 +103,13 @@
                    data-section="loginRiskReviews">
                 <thead>
                 <tr>
-                    <th>${msg_security_admin_common_status}</th>
-                    <th>${msg_security_admin_common_severity}</th>
-                    <th>${msg_security_admin_common_reviewType}</th>
-                    <th>${msg_security_admin_common_target}</th>
-                    <th>${msg_security_admin_common_summary}</th>
-                    <th>${msg_security_admin_common_createdAt}</th>
-                    <th>${msg_security_admin_common_action}</th>
+                    <th onclick="sortStaticAdminTable('loginRiskReviewTable', 0)">${msg_security_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('loginRiskReviewTable', 1)">${msg_security_admin_common_severity}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('loginRiskReviewTable', 2)">${msg_security_admin_common_reviewType}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('loginRiskReviewTable', 3)">${msg_security_admin_common_target}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('loginRiskReviewTable', 4)">${msg_security_admin_common_summary}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('loginRiskReviewTable', 5)">${msg_security_admin_common_createdAt}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="focusStaticAdminTableAction('loginRiskReviewTable')">${msg_security_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -166,5 +166,38 @@
         </div>
     </div>
 </div>
+
+<script>
+function sortStaticAdminTable(tableId, columnIndex) {
+    const table = document.getElementById(tableId);
+    const tbody = table ? table.querySelector('tbody') : null;
+    if (!tbody) return;
+    const prevIndex = Number(table.dataset.sortIndex || -1);
+    const prevDir = table.dataset.sortDir || 'ASC';
+    const nextDir = prevIndex === columnIndex && prevDir === 'ASC' ? 'DESC' : 'ASC';
+    table.dataset.sortIndex = String(columnIndex);
+    table.dataset.sortDir = nextDir;
+    const rows = Array.from(tbody.querySelectorAll('tr')).filter(function(row) {
+        return row.children.length > columnIndex && !row.querySelector('td[colspan]');
+    });
+    rows.sort(function(a, b) {
+        const av = (a.children[columnIndex].innerText || '').replace(/\s+/g, ' ').trim();
+        const bv = (b.children[columnIndex].innerText || '').replace(/\s+/g, ' ').trim();
+        return av.localeCompare(bv, undefined, { numeric: true, sensitivity: 'base' }) * (nextDir === 'ASC' ? 1 : -1);
+    }).forEach(function(row) { tbody.appendChild(row); });
+    table.querySelectorAll('th').forEach(function(th, idx) {
+        const ico = th.querySelector('.sort-ico');
+        if (ico) ico.textContent = idx === columnIndex ? (nextDir === 'ASC' ? '▲' : '▼') : '';
+    });
+}
+function focusStaticAdminTableAction(tableId) {
+    const table = document.getElementById(tableId);
+    const target = table ? table.querySelector('tbody button, tbody a, tbody input, tbody select, tbody textarea') : null;
+    if (target) {
+        target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        target.focus({ preventScroll: true });
+    }
+}
+</script>
 
 <%@ include file="../layout-close.jsp" %>

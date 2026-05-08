@@ -5767,6 +5767,16 @@ body.sa-light .adm-audit-bulk-bar {
     vertical-align: top;
 }
 
+.adm-governance-page .adm-table th[onclick] {
+    cursor: pointer;
+}
+
+.adm-governance-page .adm-table th[onclick] .sort-ico {
+    margin-left: 4px;
+    font-size: 10px;
+    font-weight: 900;
+}
+
 .adm-governance-page .adm-table td {
     line-height: 1.55;
 }

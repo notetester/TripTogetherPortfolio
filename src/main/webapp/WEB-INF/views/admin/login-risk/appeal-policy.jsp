@@ -189,14 +189,14 @@
         </div>
         <div class="adm-card-body">
             <div class="adm-table-wrap">
-                <table class="adm-table adm-appeal-policy-history-table" data-admin-list-ignore="true">
+                <table id="appealPolicyHistoryTable" class="adm-table adm-appeal-policy-history-table" data-admin-list-ignore="true">
                     <thead>
                     <tr>
-                        <th>${msg_security_admin_appealPolicy_history_version}</th>
-                        <th>${msg_security_admin_appealPolicy_history_changeType}</th>
-                        <th>${msg_security_admin_appealPolicy_history_actor}</th>
-                        <th>${msg_security_admin_appealPolicy_history_changedAt}</th>
-                        <th>${msg_security_admin_appealPolicy_history_snapshot}</th>
+                        <th onclick="sortStaticAdminTable('appealPolicyHistoryTable', 0)">${msg_security_admin_appealPolicy_history_version}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th onclick="sortStaticAdminTable('appealPolicyHistoryTable', 1)">${msg_security_admin_appealPolicy_history_changeType}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th onclick="sortStaticAdminTable('appealPolicyHistoryTable', 2)">${msg_security_admin_appealPolicy_history_actor}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th onclick="sortStaticAdminTable('appealPolicyHistoryTable', 3)">${msg_security_admin_appealPolicy_history_changedAt}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th onclick="openFirstAppealPolicySnapshot()">${msg_security_admin_appealPolicy_history_snapshot}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -232,5 +232,37 @@
         </div>
     </div>
 </div>
+
+<script>
+function sortStaticAdminTable(tableId, columnIndex) {
+    const table = document.getElementById(tableId);
+    const tbody = table ? table.querySelector('tbody') : null;
+    if (!tbody) return;
+    const prevIndex = Number(table.dataset.sortIndex || -1);
+    const prevDir = table.dataset.sortDir || 'ASC';
+    const nextDir = prevIndex === columnIndex && prevDir === 'ASC' ? 'DESC' : 'ASC';
+    table.dataset.sortIndex = String(columnIndex);
+    table.dataset.sortDir = nextDir;
+    Array.from(tbody.querySelectorAll('tr'))
+        .filter(function(row) { return row.children.length > columnIndex && !row.querySelector('td[colspan]'); })
+        .sort(function(a, b) {
+            const av = (a.children[columnIndex].innerText || '').replace(/\s+/g, ' ').trim();
+            const bv = (b.children[columnIndex].innerText || '').replace(/\s+/g, ' ').trim();
+            return av.localeCompare(bv, undefined, { numeric: true, sensitivity: 'base' }) * (nextDir === 'ASC' ? 1 : -1);
+        })
+        .forEach(function(row) { tbody.appendChild(row); });
+    table.querySelectorAll('th').forEach(function(th, idx) {
+        const ico = th.querySelector('.sort-ico');
+        if (ico) ico.textContent = idx === columnIndex ? (nextDir === 'ASC' ? '▲' : '▼') : '';
+    });
+}
+function openFirstAppealPolicySnapshot() {
+    const details = document.querySelector('#appealPolicyHistoryTable tbody details');
+    if (details) {
+        details.open = true;
+        details.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+}
+</script>
 
 <%@ include file="../layout-close.jsp" %>

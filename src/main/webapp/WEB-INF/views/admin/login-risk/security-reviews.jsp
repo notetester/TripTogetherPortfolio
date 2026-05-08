@@ -54,6 +54,32 @@
         const modal = document.getElementById(id);
         if (modal) modal.classList.remove("is-open");
     }
+    function sortStaticAdminTable(tableId, columnIndex) {
+        const table = document.getElementById(tableId);
+        const tbody = table ? table.querySelector("tbody") : null;
+        if (!tbody) return;
+        const prevIndex = Number(table.dataset.sortIndex || -1);
+        const prevDir = table.dataset.sortDir || "ASC";
+        const nextDir = prevIndex === columnIndex && prevDir === "ASC" ? "DESC" : "ASC";
+        table.dataset.sortIndex = String(columnIndex);
+        table.dataset.sortDir = nextDir;
+        Array.from(tbody.querySelectorAll("tr"))
+            .filter(function(row) { return row.children.length > columnIndex && !row.querySelector("td[colspan]"); })
+            .sort(function(a, b) {
+                const av = (a.children[columnIndex].innerText || "").replace(/\s+/g, " ").trim();
+                const bv = (b.children[columnIndex].innerText || "").replace(/\s+/g, " ").trim();
+                return av.localeCompare(bv, undefined, { numeric: true, sensitivity: "base" }) * (nextDir === "ASC" ? 1 : -1);
+            })
+            .forEach(function(row) { tbody.appendChild(row); });
+        table.querySelectorAll("th").forEach(function(th, idx) {
+            const ico = th.querySelector(".sort-ico");
+            if (ico) ico.textContent = idx === columnIndex ? (nextDir === "ASC" ? "▲" : "▼") : "";
+        });
+    }
+    function openFirstSecurityReviewDetail() {
+        const button = document.querySelector("#securityReviewTable .js-security-review-detail-open");
+        if (button) openSecurityReviewDetail(button.getAttribute("data-target"));
+    }
     document.addEventListener("click", function(e) {
         const openButton = e.target.closest(".js-security-review-detail-open");
         if (openButton) {
@@ -140,13 +166,13 @@
                    data-section="securityReviews">
                 <thead>
                 <tr>
-                    <th>${msg_security_admin_common_status}</th>
-                    <th>${msg_security_admin_common_severity}</th>
-                    <th>${msg_security_admin_common_reviewType}</th>
-                    <th>${msg_security_admin_common_target}</th>
-                    <th>${msg_security_admin_common_summaryEvidence}</th>
-                    <th>${msg_security_admin_common_createdAt}</th>
-                    <th>${msg_security_admin_common_action}</th>
+                    <th onclick="sortStaticAdminTable('securityReviewTable', 0)">${msg_security_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('securityReviewTable', 1)">${msg_security_admin_common_severity}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('securityReviewTable', 2)">${msg_security_admin_common_reviewType}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('securityReviewTable', 3)">${msg_security_admin_common_target}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('securityReviewTable', 4)">${msg_security_admin_common_summaryEvidence}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('securityReviewTable', 5)">${msg_security_admin_common_createdAt}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="openFirstSecurityReviewDetail()">${msg_security_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>

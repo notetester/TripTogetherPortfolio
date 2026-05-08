@@ -93,14 +93,14 @@
                    data-section="securityWafSync">
                 <thead>
                 <tr>
-                    <th>${msg_security_admin_common_status}</th>
-                    <th>${msg_security_admin_wafSync_source}</th>
-                    <th>${msg_security_admin_wafSync_action}</th>
-                    <th>${msg_security_admin_common_target}</th>
-                    <th>${msg_security_admin_common_description}</th>
-                    <th>${msg_security_admin_common_createdAt}</th>
-                    <th>${msg_security_admin_wafSync_lastResultAt}</th>
-                    <th>${msg_security_admin_common_action}</th>
+                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 0)">${msg_security_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 1)">${msg_security_admin_wafSync_source}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 2)">${msg_security_admin_wafSync_action}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 3)">${msg_security_admin_common_target}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 4)">${msg_security_admin_common_description}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 5)">${msg_security_admin_common_createdAt}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 6)">${msg_security_admin_wafSync_lastResultAt}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th onclick="openFirstWafDetail()">${msg_security_admin_common_action}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -199,6 +199,32 @@
 </div>
 
 <script>
+function sortStaticAdminTable(tableId, columnIndex) {
+    const table = document.getElementById(tableId);
+    const tbody = table ? table.querySelector('tbody') : null;
+    if (!tbody) return;
+    const prevIndex = Number(table.dataset.sortIndex || -1);
+    const prevDir = table.dataset.sortDir || 'ASC';
+    const nextDir = prevIndex === columnIndex && prevDir === 'ASC' ? 'DESC' : 'ASC';
+    table.dataset.sortIndex = String(columnIndex);
+    table.dataset.sortDir = nextDir;
+    Array.from(tbody.querySelectorAll('tr'))
+        .filter(function(row) { return row.children.length > columnIndex && !row.querySelector('td[colspan]'); })
+        .sort(function(a, b) {
+            const av = (a.children[columnIndex].innerText || '').replace(/\s+/g, ' ').trim();
+            const bv = (b.children[columnIndex].innerText || '').replace(/\s+/g, ' ').trim();
+            return av.localeCompare(bv, undefined, { numeric: true, sensitivity: 'base' }) * (nextDir === 'ASC' ? 1 : -1);
+        })
+        .forEach(function(row) { tbody.appendChild(row); });
+    table.querySelectorAll('th').forEach(function(th, idx) {
+        const ico = th.querySelector('.sort-ico');
+        if (ico) ico.textContent = idx === columnIndex ? (nextDir === 'ASC' ? '▲' : '▼') : '';
+    });
+}
+function openFirstWafDetail() {
+    const button = document.querySelector('#securityWafSyncTable .js-waf-modal-open');
+    if (button) button.click();
+}
 (function () {
     const closeModal = function (modal) { if (modal) modal.hidden = true; };
     const openModal = function (modal) { if (modal) modal.hidden = false; };
