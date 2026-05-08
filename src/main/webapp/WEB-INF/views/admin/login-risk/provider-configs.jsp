@@ -275,6 +275,13 @@
       width: 42px;
       text-align: center;
   }
+  .adm-providerAdv-page .pa-check-input {
+      width: 15px;
+      height: 15px;
+      accent-color: #3b82f6;
+      cursor: pointer;
+      vertical-align: middle;
+  }
   .adm-providerAdv-page .pa-table th {
       cursor: default;
   }
@@ -813,10 +820,10 @@
         </div>
 
         <div class="adm-table-wrap adm-overflow-visible pa-table-wrap">
-            <table class="adm-table pa-table" data-admin-list-ignore="true">
+            <table class="adm-table pa-table" data-admin-list-ignore="hard">
                 <thead>
                     <tr>
-                        <th class="pa-check-col"><input type="checkbox" id="pa-selAll" class="adm-check"></th>
+                        <th class="pa-check-col"><input type="checkbox" id="pa-selAll" class="pa-check-input"></th>
                         <th data-sort="priority_desc">${msg_colPriority}<span class="sort-ico" aria-hidden="true"></span></th>
                         <th>${msg_colKind}</th>
                         <th data-sort="name_asc">${msg_colName}<span class="sort-ico" aria-hidden="true"></span></th>
@@ -1099,7 +1106,7 @@
             const checked = state.selected.has(row.providerIdx) ? 'checked' : '';
             return '' +
                 '<tr class="' + (isDeleted ? 'row-deleted' : '') + '" data-idx="' + row.providerIdx + '">' +
-                  '<td class="pa-check-col"><input type="checkbox" class="pa-rowsel adm-check" value="' + row.providerIdx + '" ' + checked + '></td>' +
+                  '<td class="pa-check-col"><input type="checkbox" class="pa-rowsel pa-check-input" value="' + row.providerIdx + '" ' + checked + '></td>' +
                   '<td><span class="priority-bar">' + (row.priority ?? '') + '</span></td>' +
                   '<td><span class="chip kind-' + escHtml(row.providerKind) + '">' + escHtml(row.providerKind || '') + '</span></td>' +
                   '<td><a href="#" class="adm-inline-link pa-edit-link" data-idx="' + row.providerIdx + '">' + escHtml(row.providerName || '') + '</a></td>' +
