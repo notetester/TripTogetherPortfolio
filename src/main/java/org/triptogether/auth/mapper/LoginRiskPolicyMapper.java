@@ -231,15 +231,31 @@ public interface LoginRiskPolicyMapper {
 
     List<SecurityAssessmentProviderConfigVO> findProviderConfigs();
 
+    List<SecurityAssessmentProviderConfigVO> searchProviderConfigs(@Param("filters") java.util.Map<String, Object> filters);
+    int countProviderConfigs(@Param("filters") java.util.Map<String, Object> filters);
+    java.util.List<Long> searchProviderConfigIdxs(@Param("filters") java.util.Map<String, Object> filters);
+
     SecurityAssessmentProviderConfigVO findProviderConfigByIdx(@Param("providerIdx") Long providerIdx);
     SecurityAssessmentProviderConfigVO findProviderConfigByCode(@Param("providerCode") String providerCode);
+    Integer countProviderConfigByCode(@Param("providerCode") String providerCode);
 
     List<SecurityAssessmentProviderConfigVO> findProviderConfigsForHealthCheck();
+    List<SecurityAssessmentProviderConfigVO> findProviderConfigsDueForHealthCheck(@Param("now") java.time.LocalDateTime now);
     void updateProviderHealth(@Param("providerIdx") Long providerIdx,
                               @Param("status") String status,
                               @Param("lastCheckDetail") String lastCheckDetail);
+    void updateProviderNextHealthCheckAt(@Param("providerIdx") Long providerIdx,
+                                         @Param("nextHealthCheckAt") java.time.LocalDateTime nextHealthCheckAt);
 
+    void insertProviderConfig(SecurityAssessmentProviderConfigVO config);
     void updateProviderConfig(SecurityAssessmentProviderConfigVO config);
+    void softDeleteProviderConfig(@Param("providerIdx") Long providerIdx,
+                                  @Param("actorUserIdx") Long actorUserIdx);
+    void restoreProviderConfig(@Param("providerIdx") Long providerIdx,
+                               @Param("actorUserIdx") Long actorUserIdx);
+    void bulkUpdateProviderEnabled(@Param("idxList") java.util.List<Long> idxList,
+                                   @Param("enabled") boolean enabled,
+                                   @Param("actorUserIdx") Long actorUserIdx);
     void insertProviderConfigHistory(@Param("providerIdx") Long providerIdx,
                                      @Param("providerCode") String providerCode,
                                      @Param("providerKind") String providerKind,

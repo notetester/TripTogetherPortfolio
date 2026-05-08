@@ -213,7 +213,89 @@
         <result property="lastCheckedAt" column="last_checked_at"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+        <result property="deletedByUserIdx" column="deleted_by_user_idx"/>
+        <result property="createdByUserIdx" column="created_by_user_idx"/>
+        <result property="updatedByUserIdx" column="updated_by_user_idx"/>
+        <result property="currentVersionNo" column="current_version_no"/>
+        <result property="priority" column="priority"/>
+        <result property="healthCheckIntervalSec" column="health_check_interval_sec"/>
+        <result property="nextHealthCheckAt" column="next_health_check_at"/>
+        <result property="usageCategories" column="usage_categories"/>
+        <result property="triggerEvents" column="trigger_events"/>
+        <result property="requestMethod" column="request_method"/>
+        <result property="requestHeadersJson" column="request_headers_json"/>
+        <result property="requestTemplateJson" column="request_template_json"/>
+        <result property="responseMappingJson" column="response_mapping_json"/>
+        <result property="maxConcurrent" column="max_concurrent"/>
+        <result property="ratePerMinute" column="rate_per_minute"/>
+        <result property="retryCount" column="retry_count"/>
+        <result property="retryBackoffMs" column="retry_backoff_ms"/>
+        <result property="tags" column="tags"/>
+        <result property="createdByUserId" column="created_by_user_id"/>
+        <result property="updatedByUserId" column="updated_by_user_id"/>
+        <result property="deletedByUserId" column="deleted_by_user_id"/>
     </resultMap>
+
+    <sql id="ProviderConfigSearchWhere">
+        WHERE 1 = 1
+        <choose>
+            <when test="filters.includeDeleted == true and filters.onlyDeleted == true">
+                AND p.deleted_at IS NOT NULL
+            </when>
+            <when test="filters.includeDeleted == true">
+                <!-- 삭제 포함: 조건 없음 -->
+            </when>
+            <otherwise>
+                AND p.deleted_at IS NULL
+            </otherwise>
+        </choose>
+        <if test="filters.kind != null and filters.kind != ''">
+            AND p.provider_kind = #{filters.kind}
+        </if>
+        <if test="filters.status != null and filters.status != ''">
+            AND p.status = #{filters.status}
+        </if>
+        <if test="filters.enabled != null and filters.enabled != ''">
+            AND p.is_enabled = #{filters.enabled}
+        </if>
+        <if test="filters.failOpen != null and filters.failOpen != ''">
+            AND p.fail_open = #{filters.failOpen}
+        </if>
+        <if test="filters.category != null and filters.category != ''">
+            AND FIND_IN_SET(#{filters.category}, REPLACE(p.usage_categories, ' ', '')) &gt; 0
+        </if>
+        <if test="filters.triggerEvent != null and filters.triggerEvent != ''">
+            AND FIND_IN_SET(#{filters.triggerEvent}, REPLACE(p.trigger_events, ' ', '')) &gt; 0
+        </if>
+        <if test="filters.keyword != null and filters.keyword != ''">
+            AND (
+                p.provider_name LIKE CONCAT('%', #{filters.keyword}, '%')
+                OR p.provider_code LIKE CONCAT('%', #{filters.keyword}, '%')
+                OR p.endpoint_url LIKE CONCAT('%', #{filters.keyword}, '%')
+                OR p.tags LIKE CONCAT('%', #{filters.keyword}, '%')
+                OR p.description LIKE CONCAT('%', #{filters.keyword}, '%')
+            )
+        </if>
+        <if test="filters.idxList != null and filters.idxList.size() &gt; 0">
+            AND p.provider_idx IN
+            <foreach collection="filters.idxList" item="id" open="(" separator="," close=")">#{id}</foreach>
+        </if>
+    </sql>
+
+    <sql id="ProviderConfigOrderBy">
+        <choose>
+            <when test="filters.sort == 'priority_asc'">ORDER BY p.priority ASC, p.provider_kind ASC, p.provider_code ASC</when>
+            <when test="filters.sort == 'priority_desc'">ORDER BY p.priority DESC, p.provider_kind ASC, p.provider_code ASC</when>
+            <when test="filters.sort == 'name_asc'">ORDER BY p.provider_name ASC, p.provider_idx ASC</when>
+            <when test="filters.sort == 'name_desc'">ORDER BY p.provider_name DESC, p.provider_idx DESC</when>
+            <when test="filters.sort == 'updated_asc'">ORDER BY p.updated_at ASC, p.provider_idx ASC</when>
+            <when test="filters.sort == 'updated_desc'">ORDER BY p.updated_at DESC, p.provider_idx DESC</when>
+            <when test="filters.sort == 'last_checked_asc'">ORDER BY p.last_checked_at IS NULL, p.last_checked_at ASC, p.provider_idx ASC</when>
+            <when test="filters.sort == 'last_checked_desc'">ORDER BY p.last_checked_at IS NULL, p.last_checked_at DESC, p.provider_idx DESC</when>
+            <otherwise>ORDER BY p.priority DESC, p.provider_kind ASC, p.provider_code ASC</otherwise>
+        </choose>
+    </sql>
 
     <resultMap id="SecurityWafSyncQueueMap" type="org.triptogether.auth.vo.SecurityWafSyncQueueVO">
         <id property="syncIdx" column="sync_idx"/>
@@ -964,22 +1046,104 @@
         WHERE review_idx = #{reviewIdx}
     </update>
 
+    <sql id="ProviderConfigJoinedColumns">
+        p.*,
+        uc.user_id AS created_by_user_id,
+        uu.user_id AS updated_by_user_id,
+        ud.user_id AS deleted_by_user_id
+    </sql>
+
+    <sql id="ProviderConfigJoins">
+        FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG p
+        LEFT JOIN USERS uc ON uc.user_idx = p.created_by_user_idx
+        LEFT JOIN USERS uu ON uu.user_idx = p.updated_by_user_idx
+        LEFT JOIN USERS ud ON ud.user_idx = p.deleted_by_user_idx
+    </sql>
+
     <select id="findProviderConfigs" resultMap="SecurityAssessmentProviderConfigMap">
-        SELECT * FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
-        ORDER BY provider_kind, provider_code
+        SELECT <include refid="ProviderConfigJoinedColumns"/>
+        <include refid="ProviderConfigJoins"/>
+        WHERE p.deleted_at IS NULL
+        ORDER BY p.priority DESC, p.provider_kind ASC, p.provider_code ASC
+    </select>
+
+    <select id="searchProviderConfigs" resultMap="SecurityAssessmentProviderConfigMap">
+        SELECT <include refid="ProviderConfigJoinedColumns"/>
+        <include refid="ProviderConfigJoins"/>
+        <include refid="ProviderConfigSearchWhere"/>
+        <include refid="ProviderConfigOrderBy"/>
+        <if test="filters.pageSize != null and filters.pageSize &gt; 0">
+            LIMIT #{filters.pageSize} OFFSET #{filters.offset}
+        </if>
+    </select>
+
+    <select id="countProviderConfigs" resultType="int">
+        SELECT COUNT(*)
+        FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG p
+        <include refid="ProviderConfigSearchWhere"/>
+    </select>
+
+    <select id="searchProviderConfigIdxs" resultType="long">
+        SELECT p.provider_idx
+        <include refid="ProviderConfigJoins"/>
+        <include refid="ProviderConfigSearchWhere"/>
+        <include refid="ProviderConfigOrderBy"/>
     </select>
 
     <select id="findProviderConfigByIdx" resultMap="SecurityAssessmentProviderConfigMap">
-        SELECT * FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
-        WHERE provider_idx = #{providerIdx}
+        SELECT <include refid="ProviderConfigJoinedColumns"/>
+        <include refid="ProviderConfigJoins"/>
+        WHERE p.provider_idx = #{providerIdx}
     </select>
 
     <select id="findProviderConfigByCode" resultMap="SecurityAssessmentProviderConfigMap">
-        SELECT * FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
-        WHERE provider_code = #{providerCode}
+        SELECT <include refid="ProviderConfigJoinedColumns"/>
+        <include refid="ProviderConfigJoins"/>
+        WHERE p.provider_code = #{providerCode}
         LIMIT 1
     </select>
 
+    <select id="countProviderConfigByCode" resultType="int">
+        SELECT COUNT(*) FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        WHERE provider_code = #{providerCode}
+    </select>
+
+
+    <insert id="insertProviderConfig" parameterType="org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO"
+            useGeneratedKeys="true" keyProperty="providerIdx">
+        INSERT INTO SECURITY_ASSESSMENT_PROVIDER_CONFIG (
+            provider_code, provider_kind, provider_name, is_enabled,
+            endpoint_url, api_key_ref, model_name, timeout_millis, fail_open,
+            status, description,
+            created_by_user_idx, updated_by_user_idx, current_version_no,
+            priority, health_check_interval_sec, next_health_check_at,
+            usage_categories, trigger_events, request_method,
+            request_headers_json, request_template_json, response_mapping_json,
+            max_concurrent, rate_per_minute, retry_count, retry_backoff_ms,
+            tags, created_at, updated_at
+        ) VALUES (
+            #{providerCode}, #{providerKind}, #{providerName}, #{enabled},
+            #{endpointUrl}, #{apiKeyRef}, #{modelName},
+            COALESCE(#{timeoutMillis}, 3000),
+            COALESCE(#{failOpen}, 1),
+            CASE
+                WHEN #{enabled} = 1 AND (#{endpointUrl} IS NULL OR #{endpointUrl} = '' OR #{apiKeyRef} IS NULL OR #{apiKeyRef} = '') THEN 'READY_NEEDS_SECRET'
+                WHEN #{enabled} = 1 THEN 'READY'
+                ELSE 'DISABLED'
+            END,
+            #{description},
+            #{createdByUserIdx}, #{updatedByUserIdx}, 1,
+            COALESCE(#{priority}, 100),
+            COALESCE(#{healthCheckIntervalSec}, 300),
+            #{nextHealthCheckAt},
+            #{usageCategories}, #{triggerEvents}, #{requestMethod},
+            #{requestHeadersJson}, #{requestTemplateJson}, #{responseMappingJson},
+            #{maxConcurrent}, #{ratePerMinute},
+            COALESCE(#{retryCount}, 0),
+            COALESCE(#{retryBackoffMs}, 500),
+            #{tags}, NOW(), NOW()
+        )
+    </insert>
 
     <update id="updateProviderConfig" parameterType="org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO">
         UPDATE SECURITY_ASSESSMENT_PROVIDER_CONFIG
@@ -996,8 +1160,60 @@
                 ELSE 'DISABLED'
             END,
             description = #{description},
+            priority = COALESCE(#{priority}, priority),
+            health_check_interval_sec = COALESCE(#{healthCheckIntervalSec}, health_check_interval_sec),
+            usage_categories = #{usageCategories},
+            trigger_events = #{triggerEvents},
+            request_method = #{requestMethod},
+            request_headers_json = #{requestHeadersJson},
+            request_template_json = #{requestTemplateJson},
+            response_mapping_json = #{responseMappingJson},
+            max_concurrent = #{maxConcurrent},
+            rate_per_minute = #{ratePerMinute},
+            retry_count = COALESCE(#{retryCount}, retry_count),
+            retry_backoff_ms = COALESCE(#{retryBackoffMs}, retry_backoff_ms),
+            tags = #{tags},
+            updated_by_user_idx = #{updatedByUserIdx},
+            current_version_no = current_version_no + 1,
             updated_at = NOW()
         WHERE provider_idx = #{providerIdx}
+    </update>
+
+    <update id="softDeleteProviderConfig">
+        UPDATE SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        SET deleted_at = NOW(),
+            deleted_by_user_idx = #{actorUserIdx},
+            is_enabled = 0,
+            status = 'DISABLED',
+            updated_by_user_idx = #{actorUserIdx},
+            updated_at = NOW()
+        WHERE provider_idx = #{providerIdx}
+          AND deleted_at IS NULL
+    </update>
+
+    <update id="restoreProviderConfig">
+        UPDATE SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        SET deleted_at = NULL,
+            deleted_by_user_idx = NULL,
+            updated_by_user_idx = #{actorUserIdx},
+            updated_at = NOW()
+        WHERE provider_idx = #{providerIdx}
+          AND deleted_at IS NOT NULL
+    </update>
+
+    <update id="bulkUpdateProviderEnabled">
+        UPDATE SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        SET is_enabled = #{enabled},
+            status = CASE
+                WHEN #{enabled} = 1 AND (endpoint_url IS NULL OR endpoint_url = '' OR api_key_ref IS NULL OR api_key_ref = '') THEN 'READY_NEEDS_SECRET'
+                WHEN #{enabled} = 1 THEN 'READY'
+                ELSE 'DISABLED'
+            END,
+            updated_by_user_idx = #{actorUserIdx},
+            updated_at = NOW()
+        WHERE deleted_at IS NULL
+          AND provider_idx IN
+        <foreach collection="idxList" item="id" open="(" separator="," close=")">#{id}</foreach>
     </update>
 
 
@@ -1281,7 +1497,17 @@
     <select id="findProviderConfigsForHealthCheck" resultMap="SecurityAssessmentProviderConfigMap">
         SELECT *
         FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
-        ORDER BY provider_kind, provider_code
+        WHERE deleted_at IS NULL
+        ORDER BY priority DESC, provider_kind ASC, provider_code ASC
+    </select>
+
+    <select id="findProviderConfigsDueForHealthCheck" resultMap="SecurityAssessmentProviderConfigMap">
+        SELECT *
+        FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        WHERE deleted_at IS NULL
+          AND is_enabled = 1
+          AND (next_health_check_at IS NULL OR next_health_check_at &lt;= #{now})
+        ORDER BY priority DESC, next_health_check_at IS NULL DESC, next_health_check_at ASC
     </select>
 
     <update id="updateProviderHealth">
@@ -1290,6 +1516,12 @@
             description = COALESCE(#{lastCheckDetail}, description),
             last_checked_at = NOW(),
             updated_at = NOW()
+        WHERE provider_idx = #{providerIdx}
+    </update>
+
+    <update id="updateProviderNextHealthCheckAt">
+        UPDATE SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        SET next_health_check_at = #{nextHealthCheckAt}
         WHERE provider_idx = #{providerIdx}
     </update>
 
@@ -1315,16 +1547,24 @@
         SELECT *
         FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
         WHERE is_enabled = 1
-          AND provider_kind IN ('AI_MODEL', 'POLICY_AUTHORITY')
-        ORDER BY provider_kind, provider_code
+          AND deleted_at IS NULL
+          AND (
+                provider_kind IN ('AI_MODEL', 'POLICY_AUTHORITY', 'CONTENT_MODERATION', 'IP_REPUTATION', 'EMAIL_REPUTATION', 'CUSTOM_WEBHOOK')
+                OR FIND_IN_SET('LOGIN_RISK', REPLACE(usage_categories, ' ', '')) &gt; 0
+          )
+        ORDER BY priority DESC, provider_kind ASC, provider_code ASC
     </select>
 
     <select id="findEnabledWafProviderConfigs" resultMap="SecurityAssessmentProviderConfigMap">
         SELECT *
         FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
         WHERE is_enabled = 1
-          AND provider_kind IN ('WAF_CDN', 'WAF', 'CDN', 'EDGE_SECURITY')
-        ORDER BY provider_kind, provider_code
+          AND deleted_at IS NULL
+          AND (
+                provider_kind IN ('WAF_CDN', 'WAF', 'CDN', 'EDGE_SECURITY', 'WAF_PROVIDER')
+                OR FIND_IN_SET('WAF_SYNC', REPLACE(usage_categories, ' ', '')) &gt; 0
+          )
+        ORDER BY priority DESC, provider_kind ASC, provider_code ASC
     </select>
 
     <select id="findWafSyncQueue" resultMap="SecurityWafSyncQueueMap">
