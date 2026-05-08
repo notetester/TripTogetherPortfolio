@@ -207,14 +207,14 @@
                         <th class="sa-check-head">
                             <input type="checkbox" class="sa-cb" id="cbAll" onclick="toggleAll(this)">
                         </th>
-                        <th>${msg_superAdmin_member_list_table_member}</th>
-                        <th>${msg_superAdmin_member_list_table_email}</th>
-                        <th>${msg_superAdmin_member_list_table_title}</th>
-                        <th>${msg_superAdmin_member_list_table_organization}</th>
-                        <th>${msg_superAdmin_member_list_table_permissionCode}</th>
-                        <th>${msg_superAdmin_member_list_table_accountStatus}</th>
-                        <th>${msg_superAdmin_member_list_table_createdAt}</th>
-                        <th>${msg_superAdmin_member_list_table_manage}</th>
+                        <th onclick="saMemberThClick(this)">${msg_superAdmin_member_list_table_member}</th>
+                        <th onclick="saMemberThClick(this)">${msg_superAdmin_member_list_table_email}</th>
+                        <th onclick="saMemberThClick(this)">${msg_superAdmin_member_list_table_title}</th>
+                        <th onclick="saMemberThClick(this)">${msg_superAdmin_member_list_table_organization}</th>
+                        <th onclick="saMemberThClick(this)">${msg_superAdmin_member_list_table_permissionCode}</th>
+                        <th onclick="saMemberThClick(this)">${msg_superAdmin_member_list_table_accountStatus}</th>
+                        <th onclick="saMemberThClick(this)">${msg_superAdmin_member_list_table_createdAt}</th>
+                        <th onclick="saMemberThClick(this)">${msg_superAdmin_member_list_table_manage}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -696,7 +696,13 @@ function loadAuditLog() {
                 }).join('');
                 html += '<div class="sa-section-title is-tight">' + MEMBER_LIST_MESSAGES.auditGroupTitle + '</div>' +
                     '<table class="sa-audit-table sa-audit-table-spaced">' +
-                    '<thead><tr><th>' + MEMBER_LIST_MESSAGES.auditHeaderGroupCode + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderGroupName + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderStatus + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderActor + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderDate + '</th></tr></thead>' +
+                    '<thead><tr>' +
+                        '<th onclick="saMemberThClick(this)">' + MEMBER_LIST_MESSAGES.auditHeaderGroupCode + '</th>' +
+                        '<th onclick="saMemberThClick(this)">' + MEMBER_LIST_MESSAGES.auditHeaderGroupName + '</th>' +
+                        '<th onclick="saMemberThClick(this)">' + MEMBER_LIST_MESSAGES.auditHeaderStatus + '</th>' +
+                        '<th onclick="saMemberThClick(this)">' + MEMBER_LIST_MESSAGES.auditHeaderActor + '</th>' +
+                        '<th onclick="saMemberThClick(this)">' + MEMBER_LIST_MESSAGES.auditHeaderDate + '</th>' +
+                    '</tr></thead>' +
                     '<tbody>' + gRows + '</tbody></table>';
             }
 
@@ -719,7 +725,13 @@ function loadAuditLog() {
                 }).join('');
                 html += '<div class="sa-section-title is-tight">' + MEMBER_LIST_MESSAGES.auditPermissionTitle + '</div>' +
                     '<table class="sa-audit-table">' +
-                    '<thead><tr><th>' + MEMBER_LIST_MESSAGES.auditHeaderCode + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderPermissionName + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderStatus + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderActor + '</th><th>' + MEMBER_LIST_MESSAGES.auditHeaderDate + '</th></tr></thead>' +
+                    '<thead><tr>' +
+                        '<th onclick="saMemberThClick(this)">' + MEMBER_LIST_MESSAGES.auditHeaderCode + '</th>' +
+                        '<th onclick="saMemberThClick(this)">' + MEMBER_LIST_MESSAGES.auditHeaderPermissionName + '</th>' +
+                        '<th onclick="saMemberThClick(this)">' + MEMBER_LIST_MESSAGES.auditHeaderStatus + '</th>' +
+                        '<th onclick="saMemberThClick(this)">' + MEMBER_LIST_MESSAGES.auditHeaderActor + '</th>' +
+                        '<th onclick="saMemberThClick(this)">' + MEMBER_LIST_MESSAGES.auditHeaderDate + '</th>' +
+                    '</tr></thead>' +
                     '<tbody>' + pRows + '</tbody></table>';
             }
 
@@ -925,6 +937,23 @@ function saveBulkPermissions() {
 
 function closeModal(id) {
     document.getElementById(id).classList.remove('open');
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 (모달/메인 모두 공용) ── */
+function saMemberThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button:not(.sa-cb), input[type="checkbox"]:not(.sa-cb), a[href]');
+    if (target) {
+        if (target.tagName === 'INPUT' && target.type === 'checkbox') target.click();
+        else target.click();
+        return;
+    }
+    var anyBtn = firstRow.querySelector('button:not(.sa-cb), a[href]');
+    if (anyBtn) anyBtn.click();
 }
 </script>
 

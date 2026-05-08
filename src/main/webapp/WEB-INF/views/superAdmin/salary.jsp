@@ -160,21 +160,21 @@
                 <table class="sa-salary-table" id="salaryTable" data-admin-list-ignore="true">
                     <thead>
                         <tr>
-                            <th>${msg_superAdmin_salary_table_nickname}</th>
-                            <th>${msg_superAdmin_salary_table_department}</th>
-                            <th>${msg_superAdmin_salary_table_team}</th>
-                            <th>${msg_superAdmin_salary_table_positionCode}</th>
-                            <th>${msg_superAdmin_salary_table_title}</th>
-                            <th>${msg_superAdmin_salary_table_rank}</th>
-                            <th>${msg_superAdmin_salary_table_seniority}</th>
-                            <th>${msg_superAdmin_salary_table_tier}</th>
-                            <th>${msg_superAdmin_salary_table_level}</th>
-                            <th>${msg_superAdmin_salary_table_band}</th>
-                            <th>${msg_superAdmin_salary_table_grade}</th>
-                            <th>${msg_superAdmin_salary_table_step}</th>
-                            <th>${msg_superAdmin_salary_table_effectivePermission}</th>
-                            <th>${msg_superAdmin_salary_table_manager}</th>
-                            <th>${msg_superAdmin_salary_table_actions}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_nickname}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_department}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_team}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_positionCode}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_title}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_rank}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_seniority}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_tier}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_level}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_band}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_grade}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_step}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_effectivePermission}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_manager}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_actions}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -344,11 +344,11 @@
                 <table class="sa-salary-table sa-preview-table" id="salaryPreviewTable" data-admin-list-ignore="true">
                     <thead>
                         <tr>
-                            <th class="sa-preview-row-col">${msg_superAdmin_salary_preview_row}</th>
-                            <th class="sa-preview-state-col">${msg_superAdmin_salary_table_state}</th>
-                            <th class="sa-preview-name-col">${msg_superAdmin_salary_table_nickname}</th>
-                            <th class="sa-preview-email-col">${msg_superAdmin_salary_table_email}</th>
-                            <th>${msg_superAdmin_salary_table_changedContent}</th>
+                            <th class="sa-preview-row-col" onclick="saSalaryThClick(this)">${msg_superAdmin_salary_preview_row}</th>
+                            <th class="sa-preview-state-col" onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_state}</th>
+                            <th class="sa-preview-name-col" onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_nickname}</th>
+                            <th class="sa-preview-email-col" onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_email}</th>
+                            <th onclick="saSalaryThClick(this)">${msg_superAdmin_salary_table_changedContent}</th>
                         </tr>
                     </thead>
                     <tbody id="salaryPreviewTbody"></tbody>
@@ -575,6 +575,23 @@ function applySalaryUpload() {
         adm_toast(SALARY_MESSAGES.networkError, 'error');
         btn.disabled = false;
     });
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function saSalaryThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href], input:not([type="checkbox"]), select');
+    if (target) {
+        if (target.tagName === 'INPUT' || target.tagName === 'SELECT') target.focus();
+        else target.click();
+        return;
+    }
+    var anyBtn = firstRow.querySelector('button, a[href]');
+    if (anyBtn) anyBtn.click();
 }
 </script>
 

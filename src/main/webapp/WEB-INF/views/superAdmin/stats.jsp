@@ -114,7 +114,7 @@
                     </c:when>
                     <c:otherwise>
                         <table class="sa-exception-table" data-admin-list-ignore="true">
-                            <thead><tr><th>${msg_superAdmin_stats_table_nickname}</th><th>${msg_superAdmin_stats_table_department}</th><th>${msg_superAdmin_stats_table_lastLogin}</th></tr></thead>
+                            <thead><tr><th onclick="saStatsThClick(this)">${msg_superAdmin_stats_table_nickname}</th><th onclick="saStatsThClick(this)">${msg_superAdmin_stats_table_department}</th><th onclick="saStatsThClick(this)">${msg_superAdmin_stats_table_lastLogin}</th></tr></thead>
                             <tbody>
                             <c:forEach var="m" items="${dormantAdmins}">
                                 <tr>
@@ -144,7 +144,7 @@
                     </c:when>
                     <c:otherwise>
                         <table class="sa-exception-table" data-admin-list-ignore="true">
-                            <thead><tr><th>${msg_superAdmin_stats_table_nickname}</th><th>${msg_superAdmin_stats_table_department}</th><th>${msg_superAdmin_stats_table_title}</th></tr></thead>
+                            <thead><tr><th onclick="saStatsThClick(this)">${msg_superAdmin_stats_table_nickname}</th><th onclick="saStatsThClick(this)">${msg_superAdmin_stats_table_department}</th><th onclick="saStatsThClick(this)">${msg_superAdmin_stats_table_title}</th></tr></thead>
                             <tbody>
                             <c:forEach var="m" items="${adminsWithoutPermissions}">
                                 <tr>
@@ -174,7 +174,7 @@
                     </c:when>
                     <c:otherwise>
                         <table class="sa-exception-table" data-admin-list-ignore="true">
-                            <thead><tr><th>${msg_superAdmin_stats_table_nickname}</th><th>${msg_superAdmin_stats_table_department}</th><th>${msg_superAdmin_stats_table_title}</th></tr></thead>
+                            <thead><tr><th onclick="saStatsThClick(this)">${msg_superAdmin_stats_table_nickname}</th><th onclick="saStatsThClick(this)">${msg_superAdmin_stats_table_department}</th><th onclick="saStatsThClick(this)">${msg_superAdmin_stats_table_title}</th></tr></thead>
                             <tbody>
                             <c:forEach var="m" items="${adminsWithoutManager}">
                                 <tr>
@@ -266,6 +266,19 @@ const dataDept = {
     barChart('chartTier', dataTier);
     barChart('chartDept', dataDept);
 })();
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function saStatsThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('a[href], button');
+    if (target) { target.click(); return; }
+    var anyLink = firstRow.querySelector('a[href]');
+    if (anyLink) location.href = anyLink.getAttribute('href');
+}
 </script>
 
 <%@ include file="layout-close.jsp" %>
