@@ -536,47 +536,6 @@ body.adm-nav-lock { overflow: hidden; }
 .adm-table tbody tr:last-child { border-bottom: none; }
 .adm-table tbody tr:hover { background: #1a2030; }
 .adm-table td { padding: 12px 14px; color: #cbd5e1; vertical-align: middle; }
-.adm-table td.adm-column-clickable-cell {
-    cursor: pointer;
-}
-.adm-table td.adm-column-clickable-cell:hover {
-    background: rgba(59, 130, 246, .06);
-}
-.adm-table th.adm-column-action-head {
-    cursor: pointer;
-}
-.adm-column-detail-grid {
-    display: grid;
-    grid-template-columns: minmax(120px, 180px) minmax(0, 1fr);
-    gap: 0;
-    border: 1px solid #1e293b;
-    border-radius: 12px;
-    overflow: hidden;
-}
-.adm-column-detail-row {
-    display: contents;
-}
-.adm-column-detail-label,
-.adm-column-detail-value {
-    padding: 10px 12px;
-    border-bottom: 1px solid #1e293b;
-}
-.adm-column-detail-row:last-child .adm-column-detail-label,
-.adm-column-detail-row:last-child .adm-column-detail-value {
-    border-bottom: 0;
-}
-.adm-column-detail-label {
-    background: #0f172a;
-    color: #94a3b8;
-    font-size: 12px;
-    font-weight: 700;
-}
-.adm-column-detail-value {
-    color: #e2e8f0;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-}
-
 /* ── 회원 아이디 셀 ── */
 .mem-id-cell { display: flex; align-items: center; gap: 10px; }
 .mem-av {
@@ -1702,12 +1661,6 @@ body.sa-light .adm-table th:hover   { color:#334155; }
 body.sa-light .adm-table tbody tr   { border-bottom-color:#f1f5f9; }
 body.sa-light .adm-table tbody tr:hover { background:#f8fafc; }
 body.sa-light .adm-table td         { color:#334155; }
-body.sa-light .adm-table td.adm-column-clickable-cell:hover { background:rgba(37,99,235,.06); }
-body.sa-light .adm-column-detail-grid,
-body.sa-light .adm-column-detail-label,
-body.sa-light .adm-column-detail-value { border-color:#e2e8f0; }
-body.sa-light .adm-column-detail-label { background:#f8fafc; color:#64748b; }
-body.sa-light .adm-column-detail-value { color:#1e293b; }
 body.sa-light .mem-name             { color:#1e293b; }
 body.sa-light .mem-uid              { color:#94a3b8; }
 

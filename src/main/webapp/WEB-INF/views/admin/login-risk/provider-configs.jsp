@@ -285,11 +285,19 @@
   .adm-providerAdv-page .pa-table th {
       cursor: default;
   }
-  .adm-providerAdv-page .pa-table th[data-sort] {
+  .adm-providerAdv-page .pa-table th[data-sort],
+  .adm-providerAdv-page .pa-table th[onclick] {
       cursor: pointer;
   }
   .adm-providerAdv-page .pa-table td {
       vertical-align: middle;
+  }
+  .adm-providerAdv-page .pa-action-cell {
+      cursor: pointer;
+      transition: background .15s ease;
+  }
+  .adm-providerAdv-page .pa-action-cell:hover {
+      background: rgba(59, 130, 246, .07);
   }
   .adm-providerAdv-page .pa-table tr.row-deleted {
       opacity: .58;
@@ -829,20 +837,20 @@
         </div>
 
         <div class="adm-table-wrap adm-overflow-visible pa-table-wrap">
-            <table class="adm-table pa-table" data-admin-list-ignore="hard" data-admin-column-action-handler="admProviderColumnAction">
+            <table class="adm-table pa-table" data-admin-list-ignore="hard">
                 <thead>
                     <tr>
                         <th class="pa-check-col"><input type="checkbox" id="pa-selAll" class="pa-check-input"></th>
-                        <th data-column-key="priority" data-sort="priority_desc">${msg_colPriority}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-column-key="kind" data-sort="kind_asc">${msg_colKind}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-column-key="name" data-sort="name_asc">${msg_colName}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-column-key="code" data-sort="code_asc">${msg_colCode}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-column-key="category" data-sort="category_asc">${msg_colCategory}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-column-key="status" data-sort="status_asc">${msg_colStatus}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-column-key="enabled" data-sort="enabled_desc">${msg_colEnabled}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-column-key="last_checked" data-sort="last_checked_desc">${msg_colLastCheck}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-column-key="next_check" data-sort="next_check_asc">${msg_colNextCheck}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th data-column-key="actions">${msg_colActions}</th>
+                        <th data-column-key="priority" data-sort="priority_desc" onclick="providerHeaderAction(event, 'priority', 'priority_desc')">${msg_colPriority}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="kind" data-sort="kind_asc" onclick="providerHeaderAction(event, 'kind', 'kind_asc')">${msg_colKind}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="name" data-sort="name_asc" onclick="providerHeaderAction(event, 'name', 'name_asc')">${msg_colName}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="code" data-sort="code_asc" onclick="providerHeaderAction(event, 'code', 'code_asc')">${msg_colCode}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="category" data-sort="category_asc" onclick="providerHeaderAction(event, 'category', 'category_asc')">${msg_colCategory}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="status" data-sort="status_asc" onclick="providerHeaderAction(event, 'status', 'status_asc')">${msg_colStatus}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="enabled" data-sort="enabled_desc" onclick="providerHeaderAction(event, 'enabled', 'enabled_desc')">${msg_colEnabled}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="last_checked" data-sort="last_checked_desc" onclick="providerHeaderAction(event, 'last_checked', 'last_checked_desc')">${msg_colLastCheck}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="next_check" data-sort="next_check_asc" onclick="providerHeaderAction(event, 'next_check', 'next_check_asc')">${msg_colNextCheck}<span class="sort-ico" aria-hidden="true"></span></th>
+                        <th data-column-key="actions" onclick="providerHeaderAction(event, 'actions', '')">${msg_colActions}</th>
                     </tr>
                 </thead>
                 <tbody id="pa-rows">
@@ -1116,16 +1124,16 @@
             return '' +
                 '<tr class="' + (isDeleted ? 'row-deleted' : '') + '" data-idx="' + row.providerIdx + '">' +
                   '<td class="pa-check-col"><input type="checkbox" class="pa-rowsel pa-check-input" value="' + row.providerIdx + '" ' + checked + '></td>' +
-                  '<td data-column-key="priority"><span class="priority-bar">' + (row.priority ?? '') + '</span></td>' +
-                  '<td data-column-key="kind"><span class="chip kind-' + escHtml(row.providerKind) + '">' + escHtml(row.providerKind || '') + '</span></td>' +
-                  '<td data-column-key="name"><a href="#" class="adm-inline-link pa-edit-link" data-idx="' + row.providerIdx + '">' + escHtml(row.providerName || '') + '</a></td>' +
-                  '<td data-column-key="code"><code>' + escHtml(row.providerCode || '') + '</code></td>' +
-                  '<td data-column-key="category">' + cats + '</td>' +
-                  '<td data-column-key="status"><span class="chip status-' + escHtml(row.status) + '">' + escHtml(row.status || '') + '</span></td>' +
-                  '<td data-column-key="enabled">' + (row.enabled ? '✔' : '—') + '</td>' +
-                  '<td data-column-key="last_checked">' + escHtml(formatDate(row.lastCheckedAt)) + '</td>' +
-                  '<td data-column-key="next_check">' + escHtml(formatDate(row.nextHealthCheckAt)) + '</td>' +
-                  '<td data-column-key="actions"><div class="pa-row-actions">' +
+                  '<td class="pa-action-cell" data-column-key="priority" onclick="providerCellAction(event, this, \'priority\')"><span class="priority-bar">' + (row.priority ?? '') + '</span></td>' +
+                  '<td class="pa-action-cell" data-column-key="kind" onclick="providerCellAction(event, this, \'kind\')"><span class="chip kind-' + escHtml(row.providerKind) + '">' + escHtml(row.providerKind || '') + '</span></td>' +
+                  '<td class="pa-action-cell" data-column-key="name" onclick="providerCellAction(event, this, \'name\')"><a href="#" class="adm-inline-link pa-edit-link" data-idx="' + row.providerIdx + '">' + escHtml(row.providerName || '') + '</a></td>' +
+                  '<td class="pa-action-cell" data-column-key="code" onclick="providerCellAction(event, this, \'code\')"><code>' + escHtml(row.providerCode || '') + '</code></td>' +
+                  '<td class="pa-action-cell" data-column-key="category" onclick="providerCellAction(event, this, \'category\')">' + cats + '</td>' +
+                  '<td class="pa-action-cell" data-column-key="status" onclick="providerCellAction(event, this, \'status\')"><span class="chip status-' + escHtml(row.status) + '">' + escHtml(row.status || '') + '</span></td>' +
+                  '<td class="pa-action-cell" data-column-key="enabled" onclick="providerCellAction(event, this, \'enabled\')">' + (row.enabled ? '✔' : '—') + '</td>' +
+                  '<td class="pa-action-cell" data-column-key="last_checked" onclick="providerCellAction(event, this, \'last_checked\')">' + escHtml(formatDate(row.lastCheckedAt)) + '</td>' +
+                  '<td class="pa-action-cell" data-column-key="next_check" onclick="providerCellAction(event, this, \'next_check\')">' + escHtml(formatDate(row.nextHealthCheckAt)) + '</td>' +
+                  '<td class="pa-action-cell" data-column-key="actions" onclick="providerCellAction(event, this, \'actions\')"><div class="pa-row-actions">' +
                     '<button type="button" class="adm-btn pa-edit" data-idx="' + row.providerIdx + '"><spring:message code="security.admin.providerAdv.row.action.edit"/></button> ' +
                     (isDeleted
                       ? '<button type="button" class="adm-btn pa-restore" data-idx="' + row.providerIdx + '"><spring:message code="security.admin.providerAdv.row.action.restore"/></button>'
@@ -1451,13 +1459,38 @@
         syncProviderControlOverflow();
     }
 
-    window.admProviderColumnAction = (payload) => {
-        if (!payload || payload.fromHeader) return false;
-        const row = payload.row;
+    const openFirstProviderForColumn = (columnKey) => {
+        const firstRow = document.querySelector('#pa-rows tr[data-idx]');
+        const idx = firstRow ? parseInt(firstRow.dataset.idx, 10) : 0;
+        if (idx) openModal(idx, columnKey || 'actions');
+    };
+
+    window.providerHeaderAction = (event, columnKey, sortKey) => {
+        const interactive = event && event.target && event.target.closest('input, button, a, select, textarea, label');
+        if (interactive) return true;
+        if (sortKey) {
+            setSort(sortKey);
+        } else {
+            openFirstProviderForColumn(columnKey);
+        }
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        return false;
+    };
+
+    window.providerCellAction = (event, cell, columnKey) => {
+        const interactive = event && event.target && event.target.closest('button, a, input, select, textarea, label');
+        if (interactive) return true;
+        const row = cell ? cell.closest('tr[data-idx]') : null;
         const idx = row ? parseInt(row.dataset.idx, 10) : 0;
-        if (!idx) return false;
-        openModal(idx, payload.columnKey || 'actions');
-        return true;
+        if (idx) openModal(idx, columnKey || (cell ? cell.dataset.columnKey : 'actions'));
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        return false;
     };
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -1481,10 +1514,6 @@
         $('pa-openCreate').addEventListener('click', () => openModal(null));
 
         initProviderControlOverflow();
-
-        document.querySelectorAll('.pa-table thead th[data-sort]').forEach(th => {
-            th.addEventListener('click', () => setSort(th.dataset.sort));
-        });
 
         $('pa-rows').addEventListener('change', (e) => {
             if (e.target.classList.contains('pa-rowsel')) {
