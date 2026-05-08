@@ -38,6 +38,7 @@
 <spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_security_historyTitle" code="admin.security.historyTitle"/>
+<spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
 <spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
 <spring:message var="msg_admin_common_export" code="admin.common.export"/>
 <spring:message var="msg_admin_common_exportAll" code="admin.common.exportAll"/>
@@ -200,7 +201,7 @@
                     <th class="js-security-sort" data-sort="reason" onclick="securitySortBy('reason')">${msg_admin_common_reason}</th>
                     <th class="js-security-sort" data-sort="ip" onclick="securitySortBy('ip')">${msg_admin_common_ip}</th>
                     <th class="js-security-sort" data-sort="requestId" onclick="securitySortBy('requestId')">${msg_admin_security_correlationId}</th>
-                    <th></th>
+                    <th onclick="openFirstSecurityDetail()">${msg_admin_common_viewDetail}</th>
                 </tr>
                 </thead>
                 <tbody id="securityRowsBody">
@@ -715,6 +716,10 @@ async function exportSecurityAudits(scope) {
     }
 }
 
+function openFirstSecurityDetail() {
+    const btn = document.querySelector('#securityRowsBody .adm-row-btn.detail');
+    if (btn) openSecurityDetail(btn);
+}
 function openSecurityDetail(btn) {
     const d = btn.dataset;
     const modal = document.getElementById('securityDetailModal');

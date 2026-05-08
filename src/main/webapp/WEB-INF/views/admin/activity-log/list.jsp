@@ -135,7 +135,7 @@
           <th class="js-activity-sort" data-sort="status" onclick="sortBy('status')">${msg_admin_common_status}</th>
           <th class="js-activity-sort" data-sort="ip" onclick="sortBy('ip')">${msg_admin_common_ip}</th>
           <th class="js-activity-sort" data-sort="flow" onclick="sortBy('flow')">${msg_admin_activity_flow}</th>
-          <th></th>
+          <th onclick="openFirstActivityDetail()">${msg_admin_common_viewDetail}</th>
         </tr></thead>
         <tbody>
         <c:forEach items="${list}" var="item">
@@ -527,6 +527,10 @@ function goPage(page) {
   var params = new URLSearchParams(window.location.search);
   params.set('page', page);
   location.href = BASE_URL + '?' + params.toString();
+}
+function openFirstActivityDetail() {
+  var btn = document.querySelector('.adm-activity-section-table .adm-row-btn.detail');
+  if (btn) openActivityDetail(btn);
 }
 function openActivityDetail(btn) {
   var d = btn.dataset;

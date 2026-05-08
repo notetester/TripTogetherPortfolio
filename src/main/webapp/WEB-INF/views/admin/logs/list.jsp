@@ -41,6 +41,7 @@
 <spring:message var="msg_admin_common_searchButton" code="admin.common.searchButton"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_logs_historyTitle" code="admin.logs.historyTitle"/>
+<spring:message var="msg_admin_common_viewDetail" code="admin.common.viewDetail"/>
 <spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount"/>
 <spring:message var="msg_admin_common_export" code="admin.common.export"/>
 <spring:message var="msg_admin_common_exportAll" code="admin.common.exportAll"/>
@@ -213,7 +214,7 @@
                     <th class="js-login-sort" data-sort="reason" onclick="loginSortBy('reason')">${msg_admin_common_reason}</th>
                     <th class="js-login-sort" data-sort="ip" onclick="loginSortBy('ip')">${msg_admin_common_ip}</th>
                     <th class="js-login-sort" data-sort="requestId" onclick="loginSortBy('requestId')">${msg_admin_context_requestId}</th>
-                    <th></th>
+                    <th onclick="openFirstLoginDetail()">${msg_admin_common_viewDetail}</th>
                 </tr>
                 </thead>
                 <tbody id="loginRowsBody">
@@ -758,6 +759,10 @@ async function exportLoginAudits(scope) {
     }
 }
 
+function openFirstLoginDetail() {
+    const btn = document.querySelector('#loginRowsBody .adm-row-btn.detail');
+    if (btn) openLoginDetail(btn);
+}
 function openLoginDetail(btn) {
     var d = btn.dataset;
     showRowDetail(ADMIN_LOGIN_MSG.historyTitle, [
