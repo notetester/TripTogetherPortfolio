@@ -69,6 +69,15 @@
                    class="adm-table adm-section-table-fixed adm-provider-health-table"
                    data-admin-list-ignore="true"
                    data-section="providerHealthHistory">
+                <colgroup>
+                    <col class="adm-provider-health-col-checked-at"/>
+                    <col class="adm-provider-health-col-provider"/>
+                    <col class="adm-provider-health-col-source"/>
+                    <col class="adm-provider-health-col-status"/>
+                    <col class="adm-provider-health-col-status"/>
+                    <col class="adm-provider-health-col-actor"/>
+                    <col class="adm-provider-health-col-detail"/>
+                </colgroup>
                 <thead>
                 <tr>
                     <th data-sort="checkedAt" onclick="sortProviderHealthRows('checkedAt')">${msg_security_admin_providerHealth_checkedAt}<span class="sort-ico" aria-hidden="true"></span></th>

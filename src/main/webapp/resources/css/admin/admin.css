@@ -3262,6 +3262,19 @@ body.sa-light .js-member-section-card .js-member-page-state {
     white-space: nowrap;
 }
 .adm-admin-list-export-tool {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    flex-shrink: 0;
+}
+.adm-admin-list-export-tool .js-admin-list-export-format {
+    width: 70px;
+    min-width: 70px;
+    flex: 0 0 auto;
+}
+.adm-admin-list-export-tool .adm-export-menu {
     flex: 0 0 auto;
 }
 .adm-admin-list-compact-export {
@@ -3376,6 +3389,12 @@ body.sa-light .adm-admin-list-overflow-panel {
 .adm-admin-list-table .adm-export-control {
     margin-left: 0;
 }
+@media (max-width: 1280px) {
+    .adm-admin-list-export-tool .js-admin-list-export-format {
+        width: 64px;
+        min-width: 64px;
+    }
+}
 @media (max-width: 900px) {
     .adm-section-list-toolbar {
         align-items: stretch;
@@ -3400,6 +3419,10 @@ body.sa-light .adm-admin-list-overflow-panel {
     }
     .adm-section-list-footer .adm-section-list-page-tools {
         justify-content: flex-start;
+    }
+    .adm-admin-list-export-tool {
+        margin-left: 0;
+        flex-wrap: nowrap;
     }
 }
 @media (max-width: 560px) {
@@ -6596,19 +6619,35 @@ body.sa-light .adm-governance-page .provider-detail-close {
 }
 
 .adm-governance-page .adm-provider-health-table {
-    min-width: 980px;
+    min-width: 1080px;
+    table-layout: fixed;
+}
+
+.adm-governance-page .adm-provider-health-table .adm-provider-health-col-checked-at { width: 144px; }
+.adm-governance-page .adm-provider-health-table .adm-provider-health-col-provider { width: 200px; }
+.adm-governance-page .adm-provider-health-table .adm-provider-health-col-source { width: 110px; }
+.adm-governance-page .adm-provider-health-table .adm-provider-health-col-status { width: 140px; }
+.adm-governance-page .adm-provider-health-table .adm-provider-health-col-actor { width: 96px; }
+.adm-governance-page .adm-provider-health-table .adm-provider-health-col-detail { width: auto; }
+
+.adm-governance-page .adm-provider-health-table th,
+.adm-governance-page .adm-provider-health-table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.adm-governance-page .adm-provider-health-table .adm-provider-health-detail {
+    max-width: none;
+    white-space: pre-wrap;
+    overflow: visible;
+    overflow-wrap: anywhere;
+    line-height: 1.45;
 }
 
 .adm-governance-page .adm-provider-health-provider {
     font-weight: 800;
     color: #dbeafe;
-}
-
-.adm-governance-page .adm-provider-health-detail {
-    max-width: 520px;
-    white-space: pre-wrap;
     overflow-wrap: anywhere;
-    line-height: 1.45;
 }
 
 .adm-governance-page .adm-provider-health-filter-actions .adm-btn {
