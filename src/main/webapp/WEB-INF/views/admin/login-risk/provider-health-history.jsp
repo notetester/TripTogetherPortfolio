@@ -37,6 +37,7 @@
 <spring:message var="msg_admin_common_pageSizeLabel" code="admin.common.pageSizeLabel"/>
 <spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
 <spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_common_pageStatusInitial" code="admin.common.pageStatus" arguments="1,1"/>
 <spring:message var="msg_admin_common_all" code="admin.common.all"/>
 <spring:message var="msg_admin_common_selectPageRows" code="admin.common.selectPageRows"/>
 <spring:message var="msg_admin_common_selectRow" code="admin.common.selectRow"/>
@@ -44,6 +45,7 @@
 <spring:message var="js_admin_common_selectedCount" code="admin.common.selectedCount" javaScriptEscape="true"/>
 <spring:message var="js_admin_common_totalCountFormat" code="admin.common.totalCountFormat" javaScriptEscape="true"/>
 <spring:message var="js_admin_common_currentCountFormat" code="admin.common.currentCountFormat" javaScriptEscape="true"/>
+<spring:message var="js_admin_common_pageStatus" code="admin.common.pageStatus" javaScriptEscape="true"/>
 <c:set var="pageTitle" value="${msg_security_admin_providerHealth_title}"/>
 <c:set var="activeMenu" value="providerHealthHistory"/>
 
@@ -193,6 +195,7 @@
             <div class="phh-page-info" id="phhPageInfo">${msg_admin_common_totalCount}</div>
             <div class="phh-page-actions">
                 <button type="button" class="adm-btn adm-btn-ghost phh-page-btn" id="phhPrevPage">${msg_admin_common_prev}</button>
+                <span class="phh-page-state" id="phhPageState">${msg_admin_common_pageStatusInitial}</span>
                 <button type="button" class="adm-btn adm-btn-ghost phh-page-btn" id="phhNextPage">${msg_admin_common_next}</button>
             </div>
         </div>
@@ -219,9 +222,15 @@
     var pageSize = 20;
     var totalCountFormat = '${js_admin_common_totalCountFormat}';
     var currentCountFormat = '${js_admin_common_currentCountFormat}';
+    var pageStatusFormat = '${js_admin_common_pageStatus}';
 
     function formatPhhCount(pattern, value) {
         return pattern.replace('{0}', Number(value || 0).toLocaleString());
+    }
+    function formatPhhPageStatus(page, totalPages) {
+        return pageStatusFormat
+            .replace('{0}', Number(page || 1).toLocaleString())
+            .replace('{1}', Number(totalPages || 1).toLocaleString());
     }
 
     /* ── 정렬 ── */
@@ -335,6 +344,8 @@
             var currentCount = Math.max(0, bounds.end - bounds.start);
             info.textContent = formatPhhCount(totalCountFormat, rows.length) + ' / ' + formatPhhCount(currentCountFormat, currentCount);
         }
+        var pageState = document.getElementById('phhPageState');
+        if (pageState) pageState.textContent = formatPhhPageStatus(currentPage, bounds.totalPages);
         var prev = document.getElementById('phhPrevPage');
         var next = document.getElementById('phhNextPage');
         if (prev) prev.disabled = currentPage <= 1 || rows.length === 0;
@@ -562,6 +573,14 @@
     align-items: center;
     gap: 8px;
 }
+.phh-page .phh-page-state {
+    min-width: 72px;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 800;
+    text-align: center;
+    white-space: nowrap;
+}
 .phh-page .phh-page-btn { padding: 7px 12px; }
 
 /* Export dropdown - 회원 관리와 같은 형식 선택 + 범위 드롭다운 */
@@ -659,7 +678,8 @@ body.sa-light .phh-page .phh-bulkbar {
     border-bottom-color: #bfdbfe;
 }
 body.sa-light .phh-page .phh-page-size-tool,
-body.sa-light .phh-page .phh-page-info { color: #64748b; }
+body.sa-light .phh-page .phh-page-info,
+body.sa-light .phh-page .phh-page-state { color: #64748b; }
 
 .phh-page .phh-check-head,
 .phh-page .phh-check-cell {
