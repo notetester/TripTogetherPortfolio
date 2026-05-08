@@ -332,7 +332,13 @@ function buildMemberHistTab(history) {
     return ''
         + '<div style="overflow-x:auto;max-height:340px;overflow-y:auto;">'
         + '<table class="history-table">'
-        + '<thead><tr><th>${msg_admin_common_time_js}</th><th>${msg_admin_logs_provider_js}</th><th>${msg_admin_blocks_result_js}</th><th>${msg_admin_logs_failReason_js}</th><th>${msg_admin_common_ip_js}</th></tr></thead>'
+        + '<thead><tr>'
+        +   '<th onclick="blockHistoryThClick(this)">${msg_admin_common_time_js}</th>'
+        +   '<th onclick="blockHistoryThClick(this)">${msg_admin_logs_provider_js}</th>'
+        +   '<th onclick="blockHistoryThClick(this)">${msg_admin_blocks_result_js}</th>'
+        +   '<th onclick="blockHistoryThClick(this)">${msg_admin_logs_failReason_js}</th>'
+        +   '<th onclick="blockHistoryThClick(this)">${msg_admin_common_ip_js}</th>'
+        + '</tr></thead>'
         + '<tbody>' + rows + '</tbody>'
         + '</table>'
         + '</div>';
@@ -377,5 +383,15 @@ async function openMemberDetailModal(userIdx) {
         + '<div id="member-detail-tab-hist" style="display:none;">' + buildMemberHistTab(history) + '</div>';
 }
 
+/* ── 헤더 클릭: 차단 모달 내 history-table 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function blockHistoryThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href]');
+    if (target) target.click();
+}
 
 </script>

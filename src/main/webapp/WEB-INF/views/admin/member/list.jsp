@@ -1759,7 +1759,13 @@ function buildHistTab(history) {
     return ''
         + '<div class="adm-context-table-scroll">'
         + '<table class="history-table">'
-        + '<thead><tr><th>' + '${msg_admin_common_time_js}' + '</th><th>' + '${msg_admin_logs_provider_js}' + '</th><th>' + '${msg_admin_logs_success_js}' + '</th><th>' + '${msg_admin_logs_failReason_js}' + '</th><th>${msg_admin_common_ip_js}</th></tr></thead>'
+        + '<thead><tr>'
+        +   '<th onclick="memberHistoryThClick(this)">' + '${msg_admin_common_time_js}' + '</th>'
+        +   '<th onclick="memberHistoryThClick(this)">' + '${msg_admin_logs_provider_js}' + '</th>'
+        +   '<th onclick="memberHistoryThClick(this)">' + '${msg_admin_logs_success_js}' + '</th>'
+        +   '<th onclick="memberHistoryThClick(this)">' + '${msg_admin_logs_failReason_js}' + '</th>'
+        +   '<th onclick="memberHistoryThClick(this)">${msg_admin_common_ip_js}</th>'
+        + '</tr></thead>'
         + '<tbody>' + rows + '</tbody>'
         + '</table>'
         + '</div>';
@@ -1994,6 +2000,17 @@ document.addEventListener('DOMContentLoaded', function () {
         openDetail(detailUserIdx);
     }
 });
+
+/* ── 헤더 클릭: 모달 내 history-table 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function memberHistoryThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href]');
+    if (target) target.click();
+}
 </script>
 
 <%@ include file="../layout-close.jsp" %>
