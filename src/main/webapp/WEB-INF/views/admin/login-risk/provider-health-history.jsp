@@ -42,6 +42,8 @@
 <spring:message var="msg_admin_common_selectRow" code="admin.common.selectRow"/>
 <spring:message var="js_admin_common_exportSelected" code="admin.common.exportSelected" javaScriptEscape="true"/>
 <spring:message var="js_admin_common_selectedCount" code="admin.common.selectedCount" javaScriptEscape="true"/>
+<spring:message var="js_admin_common_totalCountFormat" code="admin.common.totalCountFormat" javaScriptEscape="true"/>
+<spring:message var="js_admin_common_currentCountFormat" code="admin.common.currentCountFormat" javaScriptEscape="true"/>
 <c:set var="pageTitle" value="${msg_security_admin_providerHealth_title}"/>
 <c:set var="activeMenu" value="providerHealthHistory"/>
 
@@ -188,7 +190,7 @@
             </table>
         </div>
         <div class="phh-pagination">
-            <div class="phh-page-info" id="phhPageInfo">0</div>
+            <div class="phh-page-info" id="phhPageInfo">${msg_admin_common_totalCount}</div>
             <div class="phh-page-actions">
                 <button type="button" class="adm-btn adm-btn-ghost phh-page-btn" id="phhPrevPage">${msg_admin_common_prev}</button>
                 <button type="button" class="adm-btn adm-btn-ghost phh-page-btn" id="phhNextPage">${msg_admin_common_next}</button>
@@ -215,6 +217,12 @@
     var selectedHistoryIds = new Set();
     var currentPage = 1;
     var pageSize = 20;
+    var totalCountFormat = '${js_admin_common_totalCountFormat}';
+    var currentCountFormat = '${js_admin_common_currentCountFormat}';
+
+    function formatPhhCount(pattern, value) {
+        return pattern.replace('{0}', Number(value || 0).toLocaleString());
+    }
 
     /* ── 정렬 ── */
     var providerHealthSortState = { field: '', dir: 'DESC' };
@@ -324,8 +332,8 @@
         });
         var info = document.getElementById('phhPageInfo');
         if (info) {
-            var startNo = rows.length === 0 ? 0 : bounds.start + 1;
-            info.textContent = startNo + '-' + bounds.end + ' / ' + rows.length + ' · ' + currentPage + '/' + bounds.totalPages;
+            var currentCount = Math.max(0, bounds.end - bounds.start);
+            info.textContent = formatPhhCount(totalCountFormat, rows.length) + ' / ' + formatPhhCount(currentCountFormat, currentCount);
         }
         var prev = document.getElementById('phhPrevPage');
         var next = document.getElementById('phhNextPage');
