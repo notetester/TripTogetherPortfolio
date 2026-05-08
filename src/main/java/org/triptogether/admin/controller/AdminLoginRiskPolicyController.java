@@ -538,12 +538,95 @@ public class AdminLoginRiskPolicyController {
     public String providerHealthHistory(@RequestParam(value = "providerCode", required = false) String providerCode,
                                         @RequestParam(value = "limit", required = false, defaultValue = "100") int limit,
                                         Model model) {
-        model.addAttribute("histories", loginRiskPolicyService.getProviderHealthCheckHistories(providerCode, limit));
+        int safeLimit = Math.max(1, Math.min(limit, 200));
+        model.addAttribute("histories", loginRiskPolicyService.getProviderHealthCheckHistories(providerCode, safeLimit));
         model.addAttribute("providerCode", providerCode);
-        model.addAttribute("limit", Math.max(1, Math.min(limit, 200)));
+        model.addAttribute("limit", safeLimit);
         model.addAttribute("activeMenu", "providerHealthHistory");
         model.addAttribute("pageTitleCode", "security.admin.providerHealth.title");
         return "admin/login-risk/provider-health-history";
+    }
+
+    @GetMapping("/provider-health-history/export")
+    public ResponseEntity<byte[]> exportProviderHealthHistory(
+            @RequestParam(value = "scope", required = false, defaultValue = "filtered") String scope,
+            @RequestParam(value = "providerCode", required = false) String providerCode,
+            @RequestParam(value = "limit", required = false, defaultValue = "200") int limit,
+            @RequestParam(value = "format", required = false, defaultValue = "csv") String format) {
+        try {
+            boolean exportAll = "all".equalsIgnoreCase(scope);
+            int safeLimit = exportAll ? 1000 : Math.max(1, Math.min(limit, 1000));
+            List<org.triptogether.auth.vo.ProviderHealthCheckHistoryVO> data =
+                    loginRiskPolicyService.getProviderHealthCheckHistories(exportAll ? null : providerCode, safeLimit);
+            if ("excel".equalsIgnoreCase(format)) {
+                byte[] bytes = buildProviderHealthExcel(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"provider-health-history.xlsx\"")
+                        .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(bytes);
+            }
+            byte[] bytes = buildProviderHealthCsv(data);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"provider-health-history.csv\"")
+                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                    .body(bytes);
+        } catch (Exception e) {
+            log.error("Provider 헬스체크 이력 내보내기 실패", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private static final String[] PROVIDER_HEALTH_EXPORT_HEADERS = {
+            "checkedAt", "providerKind", "providerCode", "checkSource",
+            "statusBefore", "statusAfter", "actorUserIdx", "detailMessage"
+    };
+
+    private byte[] buildProviderHealthCsv(List<org.triptogether.auth.vo.ProviderHealthCheckHistoryVO> data) {
+        StringBuilder sb = new StringBuilder("﻿");
+        sb.append(String.join(",", PROVIDER_HEALTH_EXPORT_HEADERS)).append('\n');
+        for (org.triptogether.auth.vo.ProviderHealthCheckHistoryVO h : data) {
+            Object[] cols = providerHealthRow(h);
+            for (int i = 0; i < cols.length; i++) {
+                if (i > 0) sb.append(',');
+                sb.append(csvVal(cols[i]));
+            }
+            sb.append('\n');
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private byte[] buildProviderHealthExcel(List<org.triptogether.auth.vo.ProviderHealthCheckHistoryVO> data) throws Exception {
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            var sheet = wb.createSheet("provider-health");
+            var hRow = sheet.createRow(0);
+            for (int i = 0; i < PROVIDER_HEALTH_EXPORT_HEADERS.length; i++) {
+                hRow.createCell(i).setCellValue(PROVIDER_HEALTH_EXPORT_HEADERS[i]);
+            }
+            int r = 1;
+            for (org.triptogether.auth.vo.ProviderHealthCheckHistoryVO h : data) {
+                Object[] cols = providerHealthRow(h);
+                var row = sheet.createRow(r++);
+                for (int i = 0; i < cols.length; i++) {
+                    row.createCell(i).setCellValue(cols[i] == null ? "" : String.valueOf(cols[i]));
+                }
+            }
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private Object[] providerHealthRow(org.triptogether.auth.vo.ProviderHealthCheckHistoryVO h) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return new Object[] {
+                h.getCheckedAt() == null ? "" : h.getCheckedAt().format(fmt),
+                h.getProviderKind(),
+                h.getProviderCode(),
+                h.getCheckSource(),
+                h.getStatusBefore(),
+                h.getStatusAfter(),
+                h.getActorUserIdx(),
+                h.getDetailMessage()
+        };
     }
 
     @GetMapping("/waf-sync")
