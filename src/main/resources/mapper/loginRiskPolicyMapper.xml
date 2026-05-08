@@ -361,6 +361,8 @@
         <result property="statusBefore" column="status_before"/>
         <result property="statusAfter" column="status_after"/>
         <result property="actorUserIdx" column="actor_user_idx"/>
+        <result property="actorUserId" column="actor_user_id"/>
+        <result property="actorNickname" column="actor_nickname"/>
         <result property="detailMessage" column="detail_message"/>
         <result property="checkedAt" column="checked_at"/>
     </resultMap>
@@ -1258,14 +1260,26 @@
         (#{providerIdx}, #{providerCode}, #{providerKind}, #{checkSource}, #{statusBefore}, #{statusAfter}, #{actorUserIdx}, #{detailMessage}, NOW())
     </insert>
 
+    <select id="findDefaultAdminActorUserIdx" resultType="java.lang.Long">
+        SELECT user_idx
+        FROM USERS
+        WHERE user_role IN ('ADMIN', 'SUPERADMIN')
+        ORDER BY user_idx
+        LIMIT 1
+    </select>
+
     <select id="findProviderHealthCheckHistories" resultMap="ProviderHealthCheckHistoryMap">
-        SELECT *
-        FROM SECURITY_PROVIDER_HEALTH_CHECK_HISTORY
+        SELECT
+            h.*,
+            au.user_id AS actor_user_id,
+            au.nickname AS actor_nickname
+        FROM SECURITY_PROVIDER_HEALTH_CHECK_HISTORY h
+        LEFT JOIN USERS au ON au.user_idx = h.actor_user_idx
         WHERE 1 = 1
         <if test="providerCode != null and providerCode != ''">
-            AND provider_code = #{providerCode}
+            AND h.provider_code = #{providerCode}
         </if>
-        ORDER BY checked_at DESC, health_history_idx DESC
+        ORDER BY h.checked_at DESC, h.health_history_idx DESC
         LIMIT #{limit}
     </select>
 

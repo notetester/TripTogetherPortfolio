@@ -266,6 +266,8 @@ public interface LoginRiskPolicyMapper {
     List<SecurityAssessmentProviderConfigHistoryVO> findProviderConfigHistory(@Param("providerCode") String providerCode,
                                                                               @Param("limit") int limit);
 
+    Long findDefaultAdminActorUserIdx();
+
     void insertProviderHealthCheckHistory(@Param("providerIdx") Long providerIdx,
                                           @Param("providerCode") String providerCode,
                                           @Param("providerKind") String providerKind,

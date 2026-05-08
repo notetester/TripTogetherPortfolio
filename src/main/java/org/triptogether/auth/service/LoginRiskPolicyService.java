@@ -755,10 +755,20 @@ public class LoginRiskPolicyService {
     public void runProviderHealthCheckOnce() {
         LocalDateTime now = LocalDateTime.now();
         List<SecurityAssessmentProviderConfigVO> providers = loginRiskPolicyMapper.findProviderConfigsDueForHealthCheck(now);
+        Long fallbackActorUserIdx = null;
         for (SecurityAssessmentProviderConfigVO provider : providers) {
             String beforeStatus = provider.getStatus();
             ProviderHealth health = evaluateProviderHealth(provider);
             String healthDetail = dbText(health.description(), 1000);
+            Long actorUserIdx = provider.getUpdatedByUserIdx() != null
+                    ? provider.getUpdatedByUserIdx()
+                    : provider.getCreatedByUserIdx();
+            if (actorUserIdx == null) {
+                if (fallbackActorUserIdx == null) {
+                    fallbackActorUserIdx = loginRiskPolicyMapper.findDefaultAdminActorUserIdx();
+                }
+                actorUserIdx = fallbackActorUserIdx;
+            }
             loginRiskPolicyMapper.updateProviderHealth(provider.getProviderIdx(), health.status(), healthDetail);
             loginRiskPolicyMapper.insertProviderHealthCheckHistory(
                     provider.getProviderIdx(),
@@ -767,7 +777,7 @@ public class LoginRiskPolicyService {
                     "SCHEDULED",
                     beforeStatus,
                     health.status(),
-                    null,
+                    actorUserIdx,
                     healthDetail
             );
             int interval = provider.getHealthCheckIntervalSec() != null && provider.getHealthCheckIntervalSec() > 0

@@ -16,6 +16,8 @@ public class ProviderHealthCheckHistoryVO {
     private String statusBefore;
     private String statusAfter;
     private Long actorUserIdx;
+    private String actorUserId;
+    private String actorNickname;
     private String detailMessage;
     private LocalDateTime checkedAt;
 

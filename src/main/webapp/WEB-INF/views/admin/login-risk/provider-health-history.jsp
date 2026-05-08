@@ -155,6 +155,13 @@
                 <tbody>
                 <c:forEach var="h" items="${histories}" varStatus="st">
                     <fmt:formatDate var="checkedAtDisplay" value="${h.checkedAtDate}" pattern="yyyy-MM-dd HH:mm"/>
+                    <c:set var="actorDisplay" value="${h.actorNickname}"/>
+                    <c:if test="${empty actorDisplay}">
+                        <c:set var="actorDisplay" value="${h.actorUserId}"/>
+                    </c:if>
+                    <c:if test="${empty actorDisplay}">
+                        <c:set var="actorDisplay" value="${h.actorUserIdx}"/>
+                    </c:if>
                     <tr class="phh-row js-provider-health-row"
                         data-health-history-idx="${h.healthHistoryIdx}"
                         data-checked-at="${h.checkedAt}"
@@ -165,7 +172,9 @@
                         data-check-source="${fn:escapeXml(h.checkSource)}"
                         data-status-before="${fn:escapeXml(h.statusBefore)}"
                         data-status-after="${fn:escapeXml(h.statusAfter)}"
-                        data-actor="${h.actorUserIdx}"
+                        data-actor="${fn:escapeXml(actorDisplay)}"
+                        data-actor-idx="${h.actorUserIdx}"
+                        data-actor-user-id="${fn:escapeXml(h.actorUserId)}"
                         data-detail="${fn:escapeXml(h.detailMessage)}"
                         data-original-index="${st.index}">
                         <td class="phh-check-cell">
@@ -179,9 +188,19 @@
                             <div class="phh-provider-code"><c:out value="${h.providerCode}"/></div>
                         </td>
                         <td class="phh-cell" onclick="openPhhCellAction(event, this, 'checkSource')"><span class="phh-badge"><c:out value="${h.checkSource}"/></span></td>
-                        <td class="phh-cell" onclick="openPhhCellAction(event, this, 'statusBefore')"><c:out value="${h.statusBefore}" default="-"/></td>
-                        <td class="phh-cell" onclick="openPhhCellAction(event, this, 'statusAfter')"><c:out value="${h.statusAfter}" default="-"/></td>
-                        <td class="phh-cell" onclick="openPhhCellAction(event, this, 'actor')"><c:out value="${h.actorUserIdx}" default="-"/></td>
+                        <td class="phh-cell phh-cell-status" onclick="openPhhCellAction(event, this, 'statusBefore')" title="${fn:escapeXml(h.statusBefore)}"><c:out value="${h.statusBefore}" default="-"/></td>
+                        <td class="phh-cell phh-cell-status" onclick="openPhhCellAction(event, this, 'statusAfter')" title="${fn:escapeXml(h.statusAfter)}"><c:out value="${h.statusAfter}" default="-"/></td>
+                        <td class="phh-cell phh-cell-actor" onclick="openPhhCellAction(event, this, 'actor')">
+                            <c:choose>
+                                <c:when test="${not empty h.actorUserIdx}">
+                                    <button type="button" class="adm-inline-link phh-actor-link js-open-member-context" data-user-idx="${h.actorUserIdx}" data-default-tab="info"><c:out value="${actorDisplay}"/></button>
+                                    <c:if test="${not empty h.actorUserId}">
+                                        <div class="phh-actor-id">@<c:out value="${h.actorUserId}"/></div>
+                                    </c:if>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
                         <td class="phh-cell phh-cell-detail" onclick="openPhhCellAction(event, this, 'detail')"><div class="phh-detail-text"><c:out value="${h.detailMessage}" default="-"/></div></td>
                     </tr>
                 </c:forEach>
@@ -621,15 +640,15 @@ body.sa-light .phh-page .phh-export-item:disabled { color: #94a3b8; }
 /* Table — 컬럼 폭 명시, 가로 overflow는 wrap에서 처리 */
 .phh-page .phh-table-wrap { overflow-x: auto; position: relative; z-index: 1; }
 .phh-page .phh-table {
-    width: 100%; min-width: 1160px;
+    width: 100%; min-width: 1380px;
     table-layout: fixed; border-collapse: collapse;
 }
 .phh-page .phh-col-check      { width: 38px; }
 .phh-page .phh-col-checked-at { width: 132px; }
-.phh-page .phh-col-provider   { width: 320px; }
+.phh-page .phh-col-provider   { width: 300px; }
 .phh-page .phh-col-source     { width: 112px; }
-.phh-page .phh-col-status     { width: 116px; }
-.phh-page .phh-col-actor      { width: 82px; }
+.phh-page .phh-col-status     { width: 178px; }
+.phh-page .phh-col-actor      { width: 158px; }
 .phh-page .phh-col-detail     { width: auto; }
 
 /* Header — 정렬 ▼/▲가 다음 컬럼으로 떨어지지 않도록 inline-flex로 고정 */
@@ -733,6 +752,32 @@ body.sa-light .phh-page .phh-cell:hover { background: rgba(37,99,235,.06); }
 
 .phh-page .phh-cell-checked-at { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .phh-page .phh-cell-provider   { line-height: 1.3; }
+.phh-page .phh-cell-status {
+    white-space: nowrap;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+.phh-page .phh-cell-actor {
+    line-height: 1.3;
+}
+.phh-page .phh-actor-link {
+    display: inline-block;
+    max-width: 100%;
+    color: #93c5fd;
+    font-weight: 800;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: top;
+}
+.phh-page .phh-actor-id {
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 .phh-page .phh-provider-kind,
 .phh-page .phh-provider-code {
     display: block;
@@ -743,6 +788,8 @@ body.sa-light .phh-page .phh-cell:hover { background: rgba(37,99,235,.06); }
 .phh-page .phh-provider-kind   { font-weight: 700; color: #dbeafe; }
 .phh-page .phh-provider-code   { font-size: 11px; opacity: .75; }
 body.sa-light .phh-page .phh-provider-kind { color: #1d4ed8; }
+body.sa-light .phh-page .phh-actor-link { color: #1d4ed8; }
+body.sa-light .phh-page .phh-actor-id { color: #64748b; }
 
 .phh-page .phh-badge {
     display: inline-block; padding: 2px 8px; border-radius: 999px;
