@@ -93,6 +93,7 @@
                    data-section="securityWafSync"
                    data-admin-list-ignore="hard">
                 <colgroup>
+                    <col class="wf-col-check"/>
                     <col class="wf-col-status"/>
                     <col class="wf-col-source"/>
                     <col class="wf-col-action"/>
@@ -104,19 +105,21 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 0)"><span class="wf-th-label">${msg_security_admin_common_status}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
-                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 1)"><span class="wf-th-label">${msg_security_admin_wafSync_source}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
-                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 2)"><span class="wf-th-label">${msg_security_admin_wafSync_action}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
-                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 3)"><span class="wf-th-label">${msg_security_admin_common_target}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
-                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 4)"><span class="wf-th-label">${msg_security_admin_common_description}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
-                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 5)"><span class="wf-th-label">${msg_security_admin_common_createdAt}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
-                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 6)"><span class="wf-th-label">${msg_security_admin_wafSync_lastResultAt}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th wf-th-check"><input type="checkbox" aria-label="전체 선택"></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 1)"><span class="wf-th-label">${msg_security_admin_common_status}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 2)"><span class="wf-th-label">${msg_security_admin_wafSync_source}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 3)"><span class="wf-th-label">${msg_security_admin_wafSync_action}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 4)"><span class="wf-th-label">${msg_security_admin_common_target}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 5)"><span class="wf-th-label">${msg_security_admin_common_description}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 6)"><span class="wf-th-label">${msg_security_admin_common_createdAt}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 7)"><span class="wf-th-label">${msg_security_admin_wafSync_lastResultAt}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
                     <th class="wf-th" onclick="openFirstWafDetail()"><span class="wf-th-label">${msg_security_admin_common_action}</span></th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="i" items="${items}">
                     <tr>
+                        <td class="wf-cell-check"><input type="checkbox" aria-label="행 선택"></td>
                         <td><span class="adm-badge"><c:out value="${i.status}"/></span></td>
                         <td>
                             <div class="adm-waf-primary"><c:out value="${i.sourceType}"/></div>
@@ -150,7 +153,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty items}">
-                    <tr class="adm-local-empty"><td colspan="8" class="adm-local-empty-cell">${msg_security_admin_empty_wafSync}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="9" class="adm-local-empty-cell">${msg_security_admin_empty_wafSync}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -278,7 +281,9 @@ function openFirstWafDetail() {
 
 <style>
 /* ── WAF 동기화 페이지 전용 ── */
-.adm-waf-page .wf-table { width: 100%; min-width: 1280px; table-layout: fixed; }
+.adm-waf-page .wf-table { width: 100%; min-width: 1320px; table-layout: fixed; }
+.adm-waf-page .wf-col-check     { width: 42px; }
+.adm-waf-page .wf-th-check, .adm-waf-page .wf-cell-check { text-align: center; padding: 8px 4px; }
 .adm-waf-page .wf-col-status    { width: 100px; }
 .adm-waf-page .wf-col-source    { width: 170px; }
 .adm-waf-page .wf-col-action    { width: 100px; }

@@ -103,6 +103,7 @@
                    data-section="loginRiskReviews"
                    data-admin-list-ignore="hard">
                 <colgroup>
+                    <col class="lrr-col-check"/>
                     <col class="lrr-col-status"/>
                     <col class="lrr-col-severity"/>
                     <col class="lrr-col-type"/>
@@ -113,18 +114,20 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 0)"><span class="lrr-th-label">${msg_security_admin_common_status}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 1)"><span class="lrr-th-label">${msg_security_admin_common_severity}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 2)"><span class="lrr-th-label">${msg_security_admin_common_reviewType}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 3)"><span class="lrr-th-label">${msg_security_admin_common_target}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 4)"><span class="lrr-th-label">${msg_security_admin_common_summary}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 5)"><span class="lrr-th-label">${msg_security_admin_common_createdAt}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="lrr-th lrr-th-check"><input type="checkbox" id="lrrCheckAll" onclick="toggleLrrAll(this)" aria-label="전체 선택"></th>
+                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 1)"><span class="lrr-th-label">${msg_security_admin_common_status}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 2)"><span class="lrr-th-label">${msg_security_admin_common_severity}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 3)"><span class="lrr-th-label">${msg_security_admin_common_reviewType}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 4)"><span class="lrr-th-label">${msg_security_admin_common_target}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 5)"><span class="lrr-th-label">${msg_security_admin_common_summary}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 6)"><span class="lrr-th-label">${msg_security_admin_common_createdAt}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
                     <th class="lrr-th" onclick="focusStaticAdminTableAction('loginRiskReviewTable')"><span class="lrr-th-label">${msg_security_admin_common_action}</span></th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="r" items="${reviews}">
                     <tr>
+                        <td class="lrr-cell-check"><input type="checkbox" class="lrr-row-check" value="${r.reviewIdx}" onclick="updateLrrSelection()"></td>
                         <td><span class="adm-badge"><c:out value="${r.reviewStatus}"/></span></td>
                         <td><c:out value="${r.severity}"/></td>
                         <td>
@@ -169,7 +172,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty reviews}">
-                    <tr class="adm-local-empty"><td colspan="7" class="adm-local-empty-cell">${msg_security_admin_empty_reviews}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="8" class="adm-local-empty-cell">${msg_security_admin_empty_reviews}</td></tr>
                 </c:if>
                 </tbody>
             </table>

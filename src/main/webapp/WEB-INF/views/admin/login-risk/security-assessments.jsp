@@ -118,6 +118,7 @@
                    data-section="securityAssessments"
                    data-admin-list-ignore="hard">
                 <colgroup>
+                    <col class="sa-col-check"/>
                     <col class="sa-col-source"/>
                     <col class="sa-col-target"/>
                     <col class="sa-col-risk"/>
@@ -129,19 +130,21 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 0)"><span class="sa-th-label">${msg_security_admin_common_scopeSource}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 1)"><span class="sa-th-label">${msg_security_admin_common_target}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 2)"><span class="sa-th-label">${msg_security_admin_common_riskLevel}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 3)"><span class="sa-th-label">${msg_security_admin_common_recommendationAction}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 4)"><span class="sa-th-label">${msg_security_admin_common_evidence}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 5)"><span class="sa-th-label">${msg_security_admin_common_status}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 6)"><span class="sa-th-label">${msg_security_admin_common_createdAt}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th sa-th-check"><input type="checkbox" aria-label="전체 선택"></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 1)"><span class="sa-th-label">${msg_security_admin_common_scopeSource}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 2)"><span class="sa-th-label">${msg_security_admin_common_target}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 3)"><span class="sa-th-label">${msg_security_admin_common_riskLevel}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 4)"><span class="sa-th-label">${msg_security_admin_common_recommendationAction}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 5)"><span class="sa-th-label">${msg_security_admin_common_evidence}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 6)"><span class="sa-th-label">${msg_security_admin_common_status}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 7)"><span class="sa-th-label">${msg_security_admin_common_createdAt}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
                     <th class="sa-th" onclick="focusStaticAdminTableAction('securityAssessmentTable')"><span class="sa-th-label">${msg_security_admin_common_apply}</span></th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="a" items="${assessments}">
                     <tr>
+                        <td class="sa-cell-check"><input type="checkbox" aria-label="행 선택"></td>
                         <td>
                             <div class="adm-security-assessment-primary"><c:out value="${a.assessmentScope}"/></div>
                             <div class="adm-page-muted"><c:out value="${a.sourceKind}"/></div>
@@ -184,7 +187,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty assessments}">
-                    <tr class="adm-local-empty"><td colspan="8" class="adm-local-empty-cell">${msg_security_admin_empty_securityAssessments}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="9" class="adm-local-empty-cell">${msg_security_admin_empty_securityAssessments}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -241,7 +244,9 @@ function focusStaticAdminTableAction(tableId) {
 
 <style>
 /* ── 보안 위험 판단 페이지 전용 ── */
-.adm-security-assessment-page .sa-table { width: 100%; min-width: 1280px; table-layout: fixed; }
+.adm-security-assessment-page .sa-table { width: 100%; min-width: 1320px; table-layout: fixed; }
+.adm-security-assessment-page .sa-col-check     { width: 42px; }
+.adm-security-assessment-page .sa-th-check, .adm-security-assessment-page .sa-cell-check { text-align: center; padding: 8px 4px; }
 .adm-security-assessment-page .sa-col-source    { width: 170px; }
 .adm-security-assessment-page .sa-col-target    { width: 190px; }
 .adm-security-assessment-page .sa-col-risk      { width: 130px; }

@@ -166,6 +166,7 @@
                    data-section="securityReviews"
                    data-admin-list-ignore="hard">
                 <colgroup>
+                    <col class="sr-col-check"/>
                     <col class="sr-col-status"/>
                     <col class="sr-col-severity"/>
                     <col class="sr-col-type"/>
@@ -176,18 +177,20 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 0)"><span class="sr-th-label">${msg_security_admin_common_status}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 1)"><span class="sr-th-label">${msg_security_admin_common_severity}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 2)"><span class="sr-th-label">${msg_security_admin_common_reviewType}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 3)"><span class="sr-th-label">${msg_security_admin_common_target}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 4)"><span class="sr-th-label">${msg_security_admin_common_summaryEvidence}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 5)"><span class="sr-th-label">${msg_security_admin_common_createdAt}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th sr-th-check"><input type="checkbox" aria-label="전체 선택"></th>
+                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 1)"><span class="sr-th-label">${msg_security_admin_common_status}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 2)"><span class="sr-th-label">${msg_security_admin_common_severity}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 3)"><span class="sr-th-label">${msg_security_admin_common_reviewType}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 4)"><span class="sr-th-label">${msg_security_admin_common_target}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 5)"><span class="sr-th-label">${msg_security_admin_common_summaryEvidence}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 6)"><span class="sr-th-label">${msg_security_admin_common_createdAt}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
                     <th class="sr-th" onclick="openFirstSecurityReviewDetail()"><span class="sr-th-label">${msg_security_admin_common_action}</span></th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="r" items="${reviews}">
                     <tr>
+                        <td class="sr-cell-check"><input type="checkbox" aria-label="행 선택"></td>
                         <td><span class="adm-badge"><c:out value="${r.reviewStatus}"/></span></td>
                         <td><div class="adm-security-review-primary"><c:out value="${r.severity}"/></div></td>
                         <td>
@@ -235,7 +238,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty reviews}">
-                    <tr class="adm-local-empty"><td colspan="7" class="adm-local-empty-cell">${msg_security_admin_empty_reviews}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="8" class="adm-local-empty-cell">${msg_security_admin_empty_reviews}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -318,7 +321,9 @@
 
 <style>
 /* ── 일반 검토 큐 페이지 전용 ── */
-.adm-security-review-page .sr-table { width: 100%; min-width: 1180px; table-layout: fixed; }
+.adm-security-review-page .sr-table { width: 100%; min-width: 1220px; table-layout: fixed; }
+.adm-security-review-page .sr-col-check    { width: 42px; }
+.adm-security-review-page .sr-th-check, .adm-security-review-page .sr-cell-check { text-align: center; padding: 8px 4px; }
 .adm-security-review-page .sr-col-status   { width: 100px; }
 .adm-security-review-page .sr-col-severity { width: 90px; }
 .adm-security-review-page .sr-col-type     { width: 170px; }

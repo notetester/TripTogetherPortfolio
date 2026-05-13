@@ -191,6 +191,7 @@
             <div class="adm-table-wrap">
                 <table id="appealPolicyHistoryTable" class="adm-table adm-appeal-policy-history-table aph-table" data-admin-list-ignore="hard">
                     <colgroup>
+                        <col class="aph-col-check"/>
                         <col class="aph-col-version"/>
                         <col class="aph-col-change"/>
                         <col class="aph-col-actor"/>
@@ -199,16 +200,18 @@
                     </colgroup>
                     <thead>
                     <tr>
-                        <th class="aph-th" onclick="sortStaticAdminTable('appealPolicyHistoryTable', 0)"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_version}</span><span class="aph-sort-ico" aria-hidden="true"></span></th>
-                        <th class="aph-th" onclick="sortStaticAdminTable('appealPolicyHistoryTable', 1)"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_changeType}</span><span class="aph-sort-ico" aria-hidden="true"></span></th>
-                        <th class="aph-th" onclick="sortStaticAdminTable('appealPolicyHistoryTable', 2)"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_actor}</span><span class="aph-sort-ico" aria-hidden="true"></span></th>
-                        <th class="aph-th" onclick="sortStaticAdminTable('appealPolicyHistoryTable', 3)"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_changedAt}</span><span class="aph-sort-ico" aria-hidden="true"></span></th>
+                        <th class="aph-th aph-th-check"><input type="checkbox" aria-label="전체 선택"></th>
+                        <th class="aph-th" onclick="sortStaticAdminTable('appealPolicyHistoryTable', 1)"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_version}</span><span class="aph-sort-ico" aria-hidden="true"></span></th>
+                        <th class="aph-th" onclick="sortStaticAdminTable('appealPolicyHistoryTable', 2)"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_changeType}</span><span class="aph-sort-ico" aria-hidden="true"></span></th>
+                        <th class="aph-th" onclick="sortStaticAdminTable('appealPolicyHistoryTable', 3)"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_actor}</span><span class="aph-sort-ico" aria-hidden="true"></span></th>
+                        <th class="aph-th" onclick="sortStaticAdminTable('appealPolicyHistoryTable', 4)"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_changedAt}</span><span class="aph-sort-ico" aria-hidden="true"></span></th>
                         <th class="aph-th" onclick="openFirstAppealPolicySnapshot()"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_snapshot}</span></th>
                     </tr>
                     </thead>
                     <tbody>
                     <c:forEach var="h" items="${policyHistories}">
                         <tr>
+                            <td class="aph-cell-check"><input type="checkbox" aria-label="행 선택"></td>
                             <td><c:out value="${h.versionNo}"/></td>
                             <td><span class="adm-badge"><c:out value="${h.changeType}"/></span></td>
                             <td><c:out value="${h.actorUserIdx}" default="-"/></td>
@@ -231,7 +234,7 @@
                         </tr>
                     </c:forEach>
                     <c:if test="${empty policyHistories}">
-                        <tr class="adm-local-empty"><td colspan="5" class="adm-local-empty-cell">${msg_security_admin_appealPolicy_history_empty}</td></tr>
+                        <tr class="adm-local-empty"><td colspan="6" class="adm-local-empty-cell">${msg_security_admin_appealPolicy_history_empty}</td></tr>
                     </c:if>
                     </tbody>
                 </table>
@@ -288,7 +291,9 @@ function openFirstAppealPolicySnapshot() {
 
 <style>
 /* ── 이의제기 정책 페이지 (이력 표) 전용 ── */
-.aph-table { width: 100%; min-width: 760px; table-layout: fixed; }
+.aph-table { width: 100%; min-width: 800px; table-layout: fixed; }
+.aph-col-check    { width: 42px; }
+.aph-th-check, .aph-cell-check { text-align: center; padding: 8px 4px; }
 .aph-col-version  { width: 90px; }
 .aph-col-change   { width: 140px; }
 .aph-col-actor    { width: 120px; }

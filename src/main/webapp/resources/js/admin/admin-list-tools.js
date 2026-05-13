@@ -50,14 +50,7 @@
         '/admin/members',
         '/admin/business-applications',
         '/admin/login-risk/provider-configs',
-        '/admin/login-risk/provider-health-history',
-        '/admin/login-risk/reviews',
-        '/admin/login-risk/assessments',
-        '/admin/login-risk/security-assessments',
-        '/admin/login-risk/security-reviews',
-        '/admin/login-risk/appeal-policy',
-        '/admin/login-risk/appeals',
-        '/admin/login-risk/waf-sync'
+        '/admin/login-risk/provider-health-history'
     ];
 
     const tableStates = new WeakMap();

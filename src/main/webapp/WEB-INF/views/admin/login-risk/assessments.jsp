@@ -98,6 +98,7 @@
                    data-section="externalAssessments"
                    data-admin-list-ignore="hard">
                 <colgroup>
+                    <col class="ea-col-check"/>
                     <col class="ea-col-source"/>
                     <col class="ea-col-target"/>
                     <col class="ea-col-risk"/>
@@ -108,18 +109,20 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 0)"><span class="ea-th-label">${msg_security_admin_common_source}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
-                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 1)"><span class="ea-th-label">${msg_security_admin_common_target}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
-                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 2)"><span class="ea-th-label">${msg_security_admin_common_riskLevel}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
-                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 3)"><span class="ea-th-label">${msg_security_admin_common_recommendationAction}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
-                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 4)"><span class="ea-th-label">${msg_security_admin_common_evidence}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
-                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 5)"><span class="ea-th-label">${msg_security_admin_common_status}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
-                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 6)"><span class="ea-th-label">${msg_security_admin_common_createdAt}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th ea-th-check"><input type="checkbox" aria-label="전체 선택"></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 1)"><span class="ea-th-label">${msg_security_admin_common_source}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 2)"><span class="ea-th-label">${msg_security_admin_common_target}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 3)"><span class="ea-th-label">${msg_security_admin_common_riskLevel}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 4)"><span class="ea-th-label">${msg_security_admin_common_recommendationAction}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 5)"><span class="ea-th-label">${msg_security_admin_common_evidence}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 6)"><span class="ea-th-label">${msg_security_admin_common_status}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 7)"><span class="ea-th-label">${msg_security_admin_common_createdAt}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="a" items="${assessments}">
                     <tr>
+                        <td class="ea-cell-check"><input type="checkbox" aria-label="행 선택"></td>
                         <td>
                             <div class="adm-external-assessment-primary"><c:out value="${a.sourceKind}"/></div>
                             <div class="adm-page-muted"><c:out value="${a.sourceName}"/></div>
@@ -145,7 +148,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty assessments}">
-                    <tr class="adm-local-empty"><td colspan="7" class="adm-local-empty-cell">${msg_security_admin_empty_externalAssessments}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="8" class="adm-local-empty-cell">${msg_security_admin_empty_externalAssessments}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -180,7 +183,9 @@ function sortStaticAdminTable(tableId, columnIndex) {
 
 <style>
 /* ── 외부 위험 판단 페이지 전용 ── */
-.adm-external-assessment-page .ea-table { width: 100%; min-width: 1180px; table-layout: fixed; }
+.adm-external-assessment-page .ea-table { width: 100%; min-width: 1220px; table-layout: fixed; }
+.adm-external-assessment-page .ea-col-check     { width: 42px; }
+.adm-external-assessment-page .ea-th-check, .adm-external-assessment-page .ea-cell-check { text-align: center; padding: 8px 4px; }
 .adm-external-assessment-page .ea-col-source    { width: 180px; }
 .adm-external-assessment-page .ea-col-target    { width: 200px; }
 .adm-external-assessment-page .ea-col-risk      { width: 130px; }

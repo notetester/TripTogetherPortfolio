@@ -119,6 +119,7 @@
                    data-section="securityAppeals"
                    data-admin-list-ignore="hard">
                 <colgroup>
+                    <col class="ap-col-check"/>
                     <col class="ap-col-status"/>
                     <col class="ap-col-user"/>
                     <col class="ap-col-target"/>
@@ -128,17 +129,19 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 0)"><span class="ap-th-label">${msg_security_admin_common_status}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
-                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 1)"><span class="ap-th-label">${msg_security_admin_common_user}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
-                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 2)"><span class="ap-th-label">${msg_security_admin_common_target}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
-                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 3)"><span class="ap-th-label">${msg_security_admin_common_titleContent}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
-                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 4)"><span class="ap-th-label">${msg_security_admin_common_submittedAt}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ap-th ap-th-check"><input type="checkbox" aria-label="전체 선택"></th>
+                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 1)"><span class="ap-th-label">${msg_security_admin_common_status}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 2)"><span class="ap-th-label">${msg_security_admin_common_user}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 3)"><span class="ap-th-label">${msg_security_admin_common_target}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 4)"><span class="ap-th-label">${msg_security_admin_common_titleContent}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 5)"><span class="ap-th-label">${msg_security_admin_common_submittedAt}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
                     <th class="ap-th" onclick="openFirstAppealDetail()"><span class="ap-th-label">${msg_security_admin_common_action}</span></th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="a" items="${appeals}">
                     <tr data-appeal-id="${a.appealIdx}">
+                        <td class="ap-cell-check"><input type="checkbox" aria-label="행 선택"></td>
                         <td><span class="adm-badge"><c:out value="${a.appealStatus}"/></span></td>
                         <td>
                             <div class="adm-appeal-primary">
@@ -214,7 +217,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty appeals}">
-                    <tr class="adm-local-empty"><td colspan="6" class="adm-local-empty-cell">${msg_security_admin_empty_appeals}</td></tr>
+                    <tr class="adm-local-empty"><td colspan="7" class="adm-local-empty-cell">${msg_security_admin_empty_appeals}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -396,7 +399,9 @@ function openFirstAppealDetail() {
 
 <style>
 /* ── 이의제기 페이지 전용 ── */
-.adm-appeal-page .ap-table { width: 100%; min-width: 1100px; table-layout: fixed; }
+.adm-appeal-page .ap-table { width: 100%; min-width: 1140px; table-layout: fixed; }
+.adm-appeal-page .ap-col-check   { width: 42px; }
+.adm-appeal-page .ap-th-check, .adm-appeal-page .ap-cell-check { text-align: center; padding: 8px 4px; }
 .adm-appeal-page .ap-col-status  { width: 110px; }
 .adm-appeal-page .ap-col-user    { width: 180px; }
 .adm-appeal-page .ap-col-target  { width: 200px; }
