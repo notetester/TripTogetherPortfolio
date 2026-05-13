@@ -114,7 +114,7 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="lrr-th lrr-th-check"><input type="checkbox" id="lrrCheckAll" onclick="toggleLrrAll(this)" aria-label="전체 선택"></th>
+                    <th class="lrr-th lrr-th-check"><input type="checkbox" aria-label="전체 선택"></th>
                     <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 1)"><span class="lrr-th-label">${msg_security_admin_common_status}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
                     <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 2)"><span class="lrr-th-label">${msg_security_admin_common_severity}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
                     <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 3)"><span class="lrr-th-label">${msg_security_admin_common_reviewType}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
@@ -127,7 +127,7 @@
                 <tbody>
                 <c:forEach var="r" items="${reviews}">
                     <tr>
-                        <td class="lrr-cell-check"><input type="checkbox" class="lrr-row-check" value="${r.reviewIdx}" onclick="updateLrrSelection()"></td>
+                        <td class="lrr-cell-check"><input type="checkbox" value="${r.reviewIdx}" aria-label="행 선택"></td>
                         <td><span class="adm-badge"><c:out value="${r.reviewStatus}"/></span></td>
                         <td><c:out value="${r.severity}"/></td>
                         <td>
@@ -230,7 +230,9 @@ function focusStaticAdminTableAction(tableId) {
 
 <style>
 /* ── 로그인 위험 검토 페이지 전용 ── */
-.adm-login-review-page .lrr-table { width: 100%; min-width: 1080px; table-layout: fixed; }
+.adm-login-review-page .lrr-table { width: 100%; min-width: 1120px; table-layout: fixed; }
+.adm-login-review-page .lrr-col-check    { width: 42px; }
+.adm-login-review-page .lrr-th-check, .adm-login-review-page .lrr-cell-check { text-align: center; padding: 8px 4px; }
 .adm-login-review-page .lrr-col-status   { width: 100px; }
 .adm-login-review-page .lrr-col-severity { width: 90px; }
 .adm-login-review-page .lrr-col-type     { width: 170px; }
