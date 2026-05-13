@@ -114,18 +114,29 @@
         </div>
         <div class="adm-table-wrap">
             <table id="securityAssessmentTable"
-                   class="adm-table adm-section-table-fixed adm-security-assessment-table"
-                   data-section="securityAssessments">
+                   class="adm-table adm-section-table-fixed adm-security-assessment-table sa-table"
+                   data-section="securityAssessments"
+                   data-admin-list-ignore="hard">
+                <colgroup>
+                    <col class="sa-col-source"/>
+                    <col class="sa-col-target"/>
+                    <col class="sa-col-risk"/>
+                    <col class="sa-col-recommend"/>
+                    <col class="sa-col-evidence"/>
+                    <col class="sa-col-status"/>
+                    <col class="sa-col-date"/>
+                    <col class="sa-col-action"/>
+                </colgroup>
                 <thead>
                 <tr>
-                    <th onclick="sortStaticAdminTable('securityAssessmentTable', 0)">${msg_security_admin_common_scopeSource}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityAssessmentTable', 1)">${msg_security_admin_common_target}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityAssessmentTable', 2)">${msg_security_admin_common_riskLevel}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityAssessmentTable', 3)">${msg_security_admin_common_recommendationAction}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityAssessmentTable', 4)">${msg_security_admin_common_evidence}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityAssessmentTable', 5)">${msg_security_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityAssessmentTable', 6)">${msg_security_admin_common_createdAt}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="focusStaticAdminTableAction('securityAssessmentTable')">${msg_security_admin_common_apply}</th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 0)"><span class="sa-th-label">${msg_security_admin_common_scopeSource}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 1)"><span class="sa-th-label">${msg_security_admin_common_target}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 2)"><span class="sa-th-label">${msg_security_admin_common_riskLevel}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 3)"><span class="sa-th-label">${msg_security_admin_common_recommendationAction}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 4)"><span class="sa-th-label">${msg_security_admin_common_evidence}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 5)"><span class="sa-th-label">${msg_security_admin_common_status}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 6)"><span class="sa-th-label">${msg_security_admin_common_createdAt}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sa-th" onclick="focusStaticAdminTableAction('securityAssessmentTable')"><span class="sa-th-label">${msg_security_admin_common_apply}</span></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -212,6 +223,65 @@ function focusStaticAdminTableAction(tableId) {
         target.focus({ preventScroll: true });
     }
 }
+(function () {
+    const orig = window.sortStaticAdminTable;
+    window.sortStaticAdminTable = function (tableId, columnIndex) {
+        orig(tableId, columnIndex);
+        const table = document.getElementById(tableId);
+        if (!table) return;
+        const dir = table.dataset.sortDir || 'ASC';
+        const idx = Number(table.dataset.sortIndex || -1);
+        table.querySelectorAll('th').forEach(function (th, i) {
+            const ico = th.querySelector('.sa-sort-ico');
+            if (ico) ico.textContent = i === idx ? (dir === 'ASC' ? '▲' : '▼') : '';
+        });
+    };
+})();
 </script>
+
+<style>
+/* ── 보안 위험 판단 페이지 전용 ── */
+.adm-security-assessment-page .sa-table { width: 100%; min-width: 1280px; table-layout: fixed; }
+.adm-security-assessment-page .sa-col-source    { width: 170px; }
+.adm-security-assessment-page .sa-col-target    { width: 190px; }
+.adm-security-assessment-page .sa-col-risk      { width: 130px; }
+.adm-security-assessment-page .sa-col-recommend { width: 180px; }
+.adm-security-assessment-page .sa-col-evidence  { width: auto; }
+.adm-security-assessment-page .sa-col-status    { width: 100px; }
+.adm-security-assessment-page .sa-col-date      { width: 140px; }
+.adm-security-assessment-page .sa-col-action    { width: 200px; }
+
+.adm-security-assessment-page .sa-th {
+    white-space: nowrap; overflow: hidden;
+    cursor: pointer; user-select: none;
+    padding-right: 18px; box-sizing: border-box;
+}
+.adm-security-assessment-page .sa-th .sa-th-label {
+    display: inline-block; max-width: calc(100% - 14px);
+    overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
+}
+.adm-security-assessment-page .sa-th .sa-sort-ico {
+    display: inline-block; margin-left: 4px; width: 10px;
+    font-size: 10px; line-height: 1; vertical-align: middle; color: #93c5fd;
+}
+body.sa-light .adm-security-assessment-page .sa-th .sa-sort-ico { color: #2563eb; }
+
+.adm-security-assessment-page .sa-table td {
+    vertical-align: top; overflow: hidden;
+    word-break: break-word;
+}
+.adm-security-assessment-page .sa-table .adm-security-assessment-evidence {
+    white-space: pre-wrap; overflow-wrap: anywhere;
+    max-height: 8em; overflow: hidden;
+    text-overflow: ellipsis; font-size: 12px; line-height: 1.45;
+}
+.adm-security-assessment-page .sa-table .adm-security-assessment-row-actions {
+    display: flex; flex-wrap: wrap; gap: 4px;
+}
+
+@media (max-width: 1280px) {
+    .adm-security-assessment-page .adm-security-assessment-filterbar { flex-wrap: wrap; }
+}
+</style>
 
 <%@ include file="../layout-close.jsp" %>

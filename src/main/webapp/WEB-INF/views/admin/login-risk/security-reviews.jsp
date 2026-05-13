@@ -162,17 +162,27 @@
         </div>
         <div class="adm-table-wrap">
             <table id="securityReviewTable"
-                   class="adm-table adm-section-table-fixed adm-security-review-table"
-                   data-section="securityReviews">
+                   class="adm-table adm-section-table-fixed adm-security-review-table sr-table"
+                   data-section="securityReviews"
+                   data-admin-list-ignore="hard">
+                <colgroup>
+                    <col class="sr-col-status"/>
+                    <col class="sr-col-severity"/>
+                    <col class="sr-col-type"/>
+                    <col class="sr-col-target"/>
+                    <col class="sr-col-summary"/>
+                    <col class="sr-col-date"/>
+                    <col class="sr-col-action"/>
+                </colgroup>
                 <thead>
                 <tr>
-                    <th onclick="sortStaticAdminTable('securityReviewTable', 0)">${msg_security_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityReviewTable', 1)">${msg_security_admin_common_severity}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityReviewTable', 2)">${msg_security_admin_common_reviewType}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityReviewTable', 3)">${msg_security_admin_common_target}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityReviewTable', 4)">${msg_security_admin_common_summaryEvidence}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityReviewTable', 5)">${msg_security_admin_common_createdAt}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="openFirstSecurityReviewDetail()">${msg_security_admin_common_action}</th>
+                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 0)"><span class="sr-th-label">${msg_security_admin_common_status}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 1)"><span class="sr-th-label">${msg_security_admin_common_severity}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 2)"><span class="sr-th-label">${msg_security_admin_common_reviewType}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 3)"><span class="sr-th-label">${msg_security_admin_common_target}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 4)"><span class="sr-th-label">${msg_security_admin_common_summaryEvidence}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 5)"><span class="sr-th-label">${msg_security_admin_common_createdAt}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th" onclick="openFirstSecurityReviewDetail()"><span class="sr-th-label">${msg_security_admin_common_action}</span></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -286,5 +296,67 @@
         </c:forEach>
     </div>
 </div>
+
+<script>
+(function () {
+    const orig = window.sortStaticAdminTable;
+    if (typeof orig === 'function') {
+        window.sortStaticAdminTable = function (tableId, columnIndex) {
+            orig(tableId, columnIndex);
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            const dir = table.dataset.sortDir || 'ASC';
+            const idx = Number(table.dataset.sortIndex || -1);
+            table.querySelectorAll('th').forEach(function (th, i) {
+                const ico = th.querySelector('.sr-sort-ico');
+                if (ico) ico.textContent = i === idx ? (dir === 'ASC' ? '▲' : '▼') : '';
+            });
+        };
+    }
+})();
+</script>
+
+<style>
+/* ── 일반 검토 큐 페이지 전용 ── */
+.adm-security-review-page .sr-table { width: 100%; min-width: 1180px; table-layout: fixed; }
+.adm-security-review-page .sr-col-status   { width: 100px; }
+.adm-security-review-page .sr-col-severity { width: 90px; }
+.adm-security-review-page .sr-col-type     { width: 170px; }
+.adm-security-review-page .sr-col-target   { width: 200px; }
+.adm-security-review-page .sr-col-summary  { width: auto; }
+.adm-security-review-page .sr-col-date     { width: 140px; }
+.adm-security-review-page .sr-col-action   { width: 240px; }
+
+.adm-security-review-page .sr-th {
+    white-space: nowrap; overflow: hidden;
+    cursor: pointer; user-select: none;
+    padding-right: 18px; box-sizing: border-box;
+}
+.adm-security-review-page .sr-th .sr-th-label {
+    display: inline-block; max-width: calc(100% - 14px);
+    overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
+}
+.adm-security-review-page .sr-th .sr-sort-ico {
+    display: inline-block; margin-left: 4px; width: 10px;
+    font-size: 10px; line-height: 1; vertical-align: middle; color: #93c5fd;
+}
+body.sa-light .adm-security-review-page .sr-th .sr-sort-ico { color: #2563eb; }
+
+.adm-security-review-page .sr-table td {
+    vertical-align: top; overflow: hidden;
+    word-break: break-word;
+}
+.adm-security-review-page .sr-table .adm-security-review-summary {
+    white-space: normal; line-height: 1.45;
+    max-height: 8em; overflow: hidden; text-overflow: ellipsis;
+}
+.adm-security-review-page .sr-table .adm-security-review-row-actions {
+    display: flex; flex-wrap: wrap; gap: 4px;
+}
+
+@media (max-width: 1180px) {
+    .adm-security-review-page .adm-security-review-filterbar { flex-wrap: wrap; }
+}
+</style>
 
 <%@ include file="../layout-close.jsp" %>

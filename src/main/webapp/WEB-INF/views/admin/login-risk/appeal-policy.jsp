@@ -189,14 +189,21 @@
         </div>
         <div class="adm-card-body">
             <div class="adm-table-wrap">
-                <table id="appealPolicyHistoryTable" class="adm-table adm-appeal-policy-history-table" data-admin-list-ignore="true">
+                <table id="appealPolicyHistoryTable" class="adm-table adm-appeal-policy-history-table aph-table" data-admin-list-ignore="hard">
+                    <colgroup>
+                        <col class="aph-col-version"/>
+                        <col class="aph-col-change"/>
+                        <col class="aph-col-actor"/>
+                        <col class="aph-col-date"/>
+                        <col class="aph-col-snapshot"/>
+                    </colgroup>
                     <thead>
                     <tr>
-                        <th onclick="sortStaticAdminTable('appealPolicyHistoryTable', 0)">${msg_security_admin_appealPolicy_history_version}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th onclick="sortStaticAdminTable('appealPolicyHistoryTable', 1)">${msg_security_admin_appealPolicy_history_changeType}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th onclick="sortStaticAdminTable('appealPolicyHistoryTable', 2)">${msg_security_admin_appealPolicy_history_actor}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th onclick="sortStaticAdminTable('appealPolicyHistoryTable', 3)">${msg_security_admin_appealPolicy_history_changedAt}<span class="sort-ico" aria-hidden="true"></span></th>
-                        <th onclick="openFirstAppealPolicySnapshot()">${msg_security_admin_appealPolicy_history_snapshot}</th>
+                        <th class="aph-th" onclick="sortStaticAdminTable('appealPolicyHistoryTable', 0)"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_version}</span><span class="aph-sort-ico" aria-hidden="true"></span></th>
+                        <th class="aph-th" onclick="sortStaticAdminTable('appealPolicyHistoryTable', 1)"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_changeType}</span><span class="aph-sort-ico" aria-hidden="true"></span></th>
+                        <th class="aph-th" onclick="sortStaticAdminTable('appealPolicyHistoryTable', 2)"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_actor}</span><span class="aph-sort-ico" aria-hidden="true"></span></th>
+                        <th class="aph-th" onclick="sortStaticAdminTable('appealPolicyHistoryTable', 3)"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_changedAt}</span><span class="aph-sort-ico" aria-hidden="true"></span></th>
+                        <th class="aph-th" onclick="openFirstAppealPolicySnapshot()"><span class="aph-th-label">${msg_security_admin_appealPolicy_history_snapshot}</span></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -263,6 +270,62 @@ function openFirstAppealPolicySnapshot() {
         details.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }
 }
+(function () {
+    const orig = window.sortStaticAdminTable;
+    window.sortStaticAdminTable = function (tableId, columnIndex) {
+        orig(tableId, columnIndex);
+        const table = document.getElementById(tableId);
+        if (!table) return;
+        const dir = table.dataset.sortDir || 'ASC';
+        const idx = Number(table.dataset.sortIndex || -1);
+        table.querySelectorAll('th').forEach(function (th, i) {
+            const ico = th.querySelector('.aph-sort-ico');
+            if (ico) ico.textContent = i === idx ? (dir === 'ASC' ? '▲' : '▼') : '';
+        });
+    };
+})();
 </script>
+
+<style>
+/* ── 이의제기 정책 페이지 (이력 표) 전용 ── */
+.aph-table { width: 100%; min-width: 760px; table-layout: fixed; }
+.aph-col-version  { width: 90px; }
+.aph-col-change   { width: 140px; }
+.aph-col-actor    { width: 120px; }
+.aph-col-date     { width: 160px; }
+.aph-col-snapshot { width: auto; }
+
+.aph-th {
+    white-space: nowrap; overflow: hidden;
+    cursor: pointer; user-select: none;
+    padding-right: 18px; box-sizing: border-box;
+}
+.aph-th .aph-th-label {
+    display: inline-block; max-width: calc(100% - 14px);
+    overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
+}
+.aph-th .aph-sort-ico {
+    display: inline-block; margin-left: 4px; width: 10px;
+    font-size: 10px; line-height: 1; vertical-align: middle; color: #93c5fd;
+}
+body.sa-light .aph-th .aph-sort-ico { color: #2563eb; }
+
+.aph-table td { vertical-align: top; overflow: hidden; word-break: break-word; }
+.aph-table td details { font-size: 12px; }
+.aph-table td details summary { cursor: pointer; }
+.aph-table td .adm-appeal-policy-snapshot-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;
+}
+.aph-table td .adm-appeal-policy-snapshot {
+    white-space: pre-wrap; overflow-wrap: anywhere;
+    background: rgba(15,23,42,.4); padding: 8px; border-radius: 6px;
+    max-height: 220px; overflow: auto;
+    font-size: 11px; font-family: ui-monospace, "Consolas", monospace;
+}
+body.sa-light .aph-table td .adm-appeal-policy-snapshot { background: #f1f5f9; }
+@media (max-width: 720px) {
+    .aph-table td .adm-appeal-policy-snapshot-grid { grid-template-columns: 1fr; }
+}
+</style>
 
 <%@ include file="../layout-close.jsp" %>

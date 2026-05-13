@@ -89,18 +89,29 @@
         </div>
         <div class="adm-table-wrap">
             <table id="securityWafSyncTable"
-                   class="adm-table adm-section-table-fixed adm-waf-table"
-                   data-section="securityWafSync">
+                   class="adm-table adm-section-table-fixed adm-waf-table wf-table"
+                   data-section="securityWafSync"
+                   data-admin-list-ignore="hard">
+                <colgroup>
+                    <col class="wf-col-status"/>
+                    <col class="wf-col-source"/>
+                    <col class="wf-col-action"/>
+                    <col class="wf-col-target"/>
+                    <col class="wf-col-desc"/>
+                    <col class="wf-col-created"/>
+                    <col class="wf-col-result"/>
+                    <col class="wf-col-rowaction"/>
+                </colgroup>
                 <thead>
                 <tr>
-                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 0)">${msg_security_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 1)">${msg_security_admin_wafSync_source}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 2)">${msg_security_admin_wafSync_action}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 3)">${msg_security_admin_common_target}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 4)">${msg_security_admin_common_description}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 5)">${msg_security_admin_common_createdAt}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityWafSyncTable', 6)">${msg_security_admin_wafSync_lastResultAt}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="openFirstWafDetail()">${msg_security_admin_common_action}</th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 0)"><span class="wf-th-label">${msg_security_admin_common_status}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 1)"><span class="wf-th-label">${msg_security_admin_wafSync_source}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 2)"><span class="wf-th-label">${msg_security_admin_wafSync_action}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 3)"><span class="wf-th-label">${msg_security_admin_common_target}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 4)"><span class="wf-th-label">${msg_security_admin_common_description}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 5)"><span class="wf-th-label">${msg_security_admin_common_createdAt}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="sortStaticAdminTable('securityWafSyncTable', 6)"><span class="wf-th-label">${msg_security_admin_wafSync_lastResultAt}</span><span class="wf-sort-ico" aria-hidden="true"></span></th>
+                    <th class="wf-th" onclick="openFirstWafDetail()"><span class="wf-th-label">${msg_security_admin_common_action}</span></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -226,6 +237,20 @@ function openFirstWafDetail() {
     if (button) button.click();
 }
 (function () {
+    const orig = window.sortStaticAdminTable;
+    window.sortStaticAdminTable = function (tableId, columnIndex) {
+        orig(tableId, columnIndex);
+        const table = document.getElementById(tableId);
+        if (!table) return;
+        const dir = table.dataset.sortDir || 'ASC';
+        const idx = Number(table.dataset.sortIndex || -1);
+        table.querySelectorAll('th').forEach(function (th, i) {
+            const ico = th.querySelector('.wf-sort-ico');
+            if (ico) ico.textContent = i === idx ? (dir === 'ASC' ? '▲' : '▼') : '';
+        });
+    };
+})();
+(function () {
     const closeModal = function (modal) { if (modal) modal.hidden = true; };
     const openModal = function (modal) { if (modal) modal.hidden = false; };
     document.querySelectorAll('.js-waf-modal-open').forEach(function (button) {
@@ -250,5 +275,47 @@ function openFirstWafDetail() {
     });
 })();
 </script>
+
+<style>
+/* ── WAF 동기화 페이지 전용 ── */
+.adm-waf-page .wf-table { width: 100%; min-width: 1280px; table-layout: fixed; }
+.adm-waf-page .wf-col-status    { width: 100px; }
+.adm-waf-page .wf-col-source    { width: 170px; }
+.adm-waf-page .wf-col-action    { width: 100px; }
+.adm-waf-page .wf-col-target    { width: 200px; }
+.adm-waf-page .wf-col-desc      { width: auto; }
+.adm-waf-page .wf-col-created   { width: 140px; }
+.adm-waf-page .wf-col-result    { width: 140px; }
+.adm-waf-page .wf-col-rowaction { width: 130px; }
+
+.adm-waf-page .wf-th {
+    white-space: nowrap; overflow: hidden;
+    cursor: pointer; user-select: none;
+    padding-right: 18px; box-sizing: border-box;
+}
+.adm-waf-page .wf-th .wf-th-label {
+    display: inline-block; max-width: calc(100% - 14px);
+    overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
+}
+.adm-waf-page .wf-th .wf-sort-ico {
+    display: inline-block; margin-left: 4px; width: 10px;
+    font-size: 10px; line-height: 1; vertical-align: middle; color: #93c5fd;
+}
+body.sa-light .adm-waf-page .wf-th .wf-sort-ico { color: #2563eb; }
+
+.adm-waf-page .wf-table td {
+    vertical-align: top; overflow: hidden;
+    word-break: break-word;
+}
+.adm-waf-page .wf-table .adm-waf-description {
+    white-space: normal; line-height: 1.45;
+    max-height: 6em; overflow: hidden; text-overflow: ellipsis;
+    font-size: 12px;
+}
+
+@media (max-width: 1280px) {
+    .adm-waf-page .adm-waf-filterbar { flex-wrap: wrap; }
+}
+</style>
 
 <%@ include file="../layout-close.jsp" %>

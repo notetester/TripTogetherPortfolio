@@ -94,17 +94,27 @@
         </div>
         <div class="adm-table-wrap">
             <table id="externalAssessmentTable"
-                   class="adm-table adm-section-table-fixed adm-external-assessment-table"
-                   data-section="externalAssessments">
+                   class="adm-table adm-section-table-fixed adm-external-assessment-table ea-table"
+                   data-section="externalAssessments"
+                   data-admin-list-ignore="hard">
+                <colgroup>
+                    <col class="ea-col-source"/>
+                    <col class="ea-col-target"/>
+                    <col class="ea-col-risk"/>
+                    <col class="ea-col-recommend"/>
+                    <col class="ea-col-evidence"/>
+                    <col class="ea-col-status"/>
+                    <col class="ea-col-date"/>
+                </colgroup>
                 <thead>
                 <tr>
-                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 0)">${msg_security_admin_common_source}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 1)">${msg_security_admin_common_target}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 2)">${msg_security_admin_common_riskLevel}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 3)">${msg_security_admin_common_recommendationAction}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 4)">${msg_security_admin_common_evidence}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 5)">${msg_security_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('externalAssessmentTable', 6)">${msg_security_admin_common_createdAt}<span class="sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 0)"><span class="ea-th-label">${msg_security_admin_common_source}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 1)"><span class="ea-th-label">${msg_security_admin_common_target}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 2)"><span class="ea-th-label">${msg_security_admin_common_riskLevel}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 3)"><span class="ea-th-label">${msg_security_admin_common_recommendationAction}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 4)"><span class="ea-th-label">${msg_security_admin_common_evidence}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 5)"><span class="ea-th-label">${msg_security_admin_common_status}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ea-th" onclick="sortStaticAdminTable('externalAssessmentTable', 6)"><span class="ea-th-label">${msg_security_admin_common_createdAt}</span><span class="ea-sort-ico" aria-hidden="true"></span></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -162,10 +172,51 @@ function sortStaticAdminTable(tableId, columnIndex) {
         return av.localeCompare(bv, undefined, { numeric: true, sensitivity: 'base' }) * (nextDir === 'ASC' ? 1 : -1);
     }).forEach(function(row) { tbody.appendChild(row); });
     table.querySelectorAll('th').forEach(function(th, idx) {
-        const ico = th.querySelector('.sort-ico');
+        const ico = th.querySelector('.sort-ico') || th.querySelector('.ea-sort-ico');
         if (ico) ico.textContent = idx === columnIndex ? (nextDir === 'ASC' ? '▲' : '▼') : '';
     });
 }
 </script>
+
+<style>
+/* ── 외부 위험 판단 페이지 전용 ── */
+.adm-external-assessment-page .ea-table { width: 100%; min-width: 1180px; table-layout: fixed; }
+.adm-external-assessment-page .ea-col-source    { width: 180px; }
+.adm-external-assessment-page .ea-col-target    { width: 200px; }
+.adm-external-assessment-page .ea-col-risk      { width: 130px; }
+.adm-external-assessment-page .ea-col-recommend { width: 180px; }
+.adm-external-assessment-page .ea-col-evidence  { width: auto; }
+.adm-external-assessment-page .ea-col-status    { width: 110px; }
+.adm-external-assessment-page .ea-col-date      { width: 140px; }
+
+.adm-external-assessment-page .ea-th {
+    white-space: nowrap; overflow: hidden;
+    cursor: pointer; user-select: none;
+    padding-right: 18px; box-sizing: border-box;
+}
+.adm-external-assessment-page .ea-th .ea-th-label {
+    display: inline-block; max-width: calc(100% - 14px);
+    overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
+}
+.adm-external-assessment-page .ea-th .ea-sort-ico {
+    display: inline-block; margin-left: 4px; width: 10px;
+    font-size: 10px; line-height: 1; vertical-align: middle; color: #93c5fd;
+}
+body.sa-light .adm-external-assessment-page .ea-th .ea-sort-ico { color: #2563eb; }
+
+.adm-external-assessment-page .ea-table td {
+    vertical-align: top; overflow: hidden;
+    word-break: break-word;
+}
+.adm-external-assessment-page .ea-table .adm-external-assessment-evidence {
+    white-space: pre-wrap; overflow-wrap: anywhere;
+    max-height: 8em; overflow: hidden;
+    text-overflow: ellipsis; font-size: 12px; line-height: 1.45;
+}
+
+@media (max-width: 1180px) {
+    .adm-external-assessment-page .adm-external-assessment-filterbar { flex-wrap: wrap; }
+}
+</style>
 
 <%@ include file="../layout-close.jsp" %>

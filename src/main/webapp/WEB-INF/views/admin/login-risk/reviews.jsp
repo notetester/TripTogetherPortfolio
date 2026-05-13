@@ -99,17 +99,27 @@
         </div>
         <div class="adm-table-wrap">
             <table id="loginRiskReviewTable"
-                   class="adm-table adm-section-table-fixed adm-login-review-table"
-                   data-section="loginRiskReviews">
+                   class="adm-table adm-section-table-fixed adm-login-review-table lrr-table"
+                   data-section="loginRiskReviews"
+                   data-admin-list-ignore="hard">
+                <colgroup>
+                    <col class="lrr-col-status"/>
+                    <col class="lrr-col-severity"/>
+                    <col class="lrr-col-type"/>
+                    <col class="lrr-col-target"/>
+                    <col class="lrr-col-summary"/>
+                    <col class="lrr-col-date"/>
+                    <col class="lrr-col-action"/>
+                </colgroup>
                 <thead>
                 <tr>
-                    <th onclick="sortStaticAdminTable('loginRiskReviewTable', 0)">${msg_security_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('loginRiskReviewTable', 1)">${msg_security_admin_common_severity}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('loginRiskReviewTable', 2)">${msg_security_admin_common_reviewType}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('loginRiskReviewTable', 3)">${msg_security_admin_common_target}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('loginRiskReviewTable', 4)">${msg_security_admin_common_summary}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('loginRiskReviewTable', 5)">${msg_security_admin_common_createdAt}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="focusStaticAdminTableAction('loginRiskReviewTable')">${msg_security_admin_common_action}</th>
+                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 0)"><span class="lrr-th-label">${msg_security_admin_common_status}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 1)"><span class="lrr-th-label">${msg_security_admin_common_severity}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 2)"><span class="lrr-th-label">${msg_security_admin_common_reviewType}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 3)"><span class="lrr-th-label">${msg_security_admin_common_target}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 4)"><span class="lrr-th-label">${msg_security_admin_common_summary}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="lrr-th" onclick="sortStaticAdminTable('loginRiskReviewTable', 5)"><span class="lrr-th-label">${msg_security_admin_common_createdAt}</span><span class="lrr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="lrr-th" onclick="focusStaticAdminTableAction('loginRiskReviewTable')"><span class="lrr-th-label">${msg_security_admin_common_action}</span></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -198,6 +208,65 @@ function focusStaticAdminTableAction(tableId) {
         target.focus({ preventScroll: true });
     }
 }
+/* 정렬 헤더 sort-ico 셀렉터 — lrr-sort-ico에도 적용 */
+(function () {
+    const orig = window.sortStaticAdminTable;
+    window.sortStaticAdminTable = function (tableId, columnIndex) {
+        orig(tableId, columnIndex);
+        const table = document.getElementById(tableId);
+        if (!table) return;
+        const dir = table.dataset.sortDir || 'ASC';
+        const idx = Number(table.dataset.sortIndex || -1);
+        table.querySelectorAll('th').forEach(function (th, i) {
+            const ico = th.querySelector('.lrr-sort-ico');
+            if (ico) ico.textContent = i === idx ? (dir === 'ASC' ? '▲' : '▼') : '';
+        });
+    };
+})();
 </script>
+
+<style>
+/* ── 로그인 위험 검토 페이지 전용 ── */
+.adm-login-review-page .lrr-table { width: 100%; min-width: 1080px; table-layout: fixed; }
+.adm-login-review-page .lrr-col-status   { width: 100px; }
+.adm-login-review-page .lrr-col-severity { width: 90px; }
+.adm-login-review-page .lrr-col-type     { width: 170px; }
+.adm-login-review-page .lrr-col-target   { width: 200px; }
+.adm-login-review-page .lrr-col-summary  { width: auto; }
+.adm-login-review-page .lrr-col-date     { width: 140px; }
+.adm-login-review-page .lrr-col-action   { width: 230px; }
+
+.adm-login-review-page .lrr-th {
+    white-space: nowrap; overflow: hidden;
+    cursor: pointer; user-select: none;
+    padding-right: 18px;
+    position: relative;
+    box-sizing: border-box;
+}
+.adm-login-review-page .lrr-th .lrr-th-label {
+    display: inline-block; max-width: calc(100% - 14px);
+    overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
+}
+.adm-login-review-page .lrr-th .lrr-sort-ico {
+    display: inline-block; margin-left: 4px; width: 10px;
+    font-size: 10px; line-height: 1; vertical-align: middle; color: #93c5fd;
+}
+body.sa-light .adm-login-review-page .lrr-th .lrr-sort-ico { color: #2563eb; }
+
+.adm-login-review-page .lrr-table td {
+    vertical-align: top;
+    overflow: hidden; text-overflow: ellipsis;
+    word-break: break-word;
+}
+.adm-login-review-page .lrr-table td .adm-login-review-summary { white-space: normal; line-height: 1.45; }
+.adm-login-review-page .lrr-table td .adm-login-review-row-actions {
+    display: flex; flex-wrap: wrap; gap: 4px;
+}
+.adm-login-review-page .lrr-table td .adm-login-review-row-actions form { display: inline-flex; }
+
+@media (max-width: 1080px) {
+    .adm-login-review-page .adm-login-review-filterbar { flex-wrap: wrap; }
+}
+</style>
 
 <%@ include file="../layout-close.jsp" %>

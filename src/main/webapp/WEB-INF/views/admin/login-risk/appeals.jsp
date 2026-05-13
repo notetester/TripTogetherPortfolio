@@ -115,16 +115,25 @@
         </div>
         <div class="adm-table-wrap">
             <table id="securityAppealTable"
-                   class="adm-table adm-section-table-fixed adm-appeal-table"
-                   data-section="securityAppeals">
+                   class="adm-table adm-section-table-fixed adm-appeal-table ap-table"
+                   data-section="securityAppeals"
+                   data-admin-list-ignore="hard">
+                <colgroup>
+                    <col class="ap-col-status"/>
+                    <col class="ap-col-user"/>
+                    <col class="ap-col-target"/>
+                    <col class="ap-col-content"/>
+                    <col class="ap-col-date"/>
+                    <col class="ap-col-action"/>
+                </colgroup>
                 <thead>
                 <tr>
-                    <th onclick="sortStaticAdminTable('securityAppealTable', 0)">${msg_security_admin_common_status}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityAppealTable', 1)">${msg_security_admin_common_user}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityAppealTable', 2)">${msg_security_admin_common_target}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityAppealTable', 3)">${msg_security_admin_common_titleContent}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="sortStaticAdminTable('securityAppealTable', 4)">${msg_security_admin_common_submittedAt}<span class="sort-ico" aria-hidden="true"></span></th>
-                    <th onclick="openFirstAppealDetail()">${msg_security_admin_common_action}</th>
+                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 0)"><span class="ap-th-label">${msg_security_admin_common_status}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 1)"><span class="ap-th-label">${msg_security_admin_common_user}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 2)"><span class="ap-th-label">${msg_security_admin_common_target}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 3)"><span class="ap-th-label">${msg_security_admin_common_titleContent}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ap-th" onclick="sortStaticAdminTable('securityAppealTable', 4)"><span class="ap-th-label">${msg_security_admin_common_submittedAt}</span><span class="ap-sort-ico" aria-hidden="true"></span></th>
+                    <th class="ap-th" onclick="openFirstAppealDetail()"><span class="ap-th-label">${msg_security_admin_common_action}</span></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -312,6 +321,20 @@ function openFirstAppealDetail() {
     if (button) button.click();
 }
 (function () {
+    const orig = window.sortStaticAdminTable;
+    window.sortStaticAdminTable = function (tableId, columnIndex) {
+        orig(tableId, columnIndex);
+        const table = document.getElementById(tableId);
+        if (!table) return;
+        const dir = table.dataset.sortDir || 'ASC';
+        const idx = Number(table.dataset.sortIndex || -1);
+        table.querySelectorAll('th').forEach(function (th, i) {
+            const ico = th.querySelector('.ap-sort-ico');
+            if (ico) ico.textContent = i === idx ? (dir === 'ASC' ? '▲' : '▼') : '';
+        });
+    };
+})();
+(function () {
     const closeModal = function (modal) {
         if (modal) modal.hidden = true;
     };
@@ -370,5 +393,45 @@ function openFirstAppealDetail() {
     });
 })();
 </script>
+
+<style>
+/* ── 이의제기 페이지 전용 ── */
+.adm-appeal-page .ap-table { width: 100%; min-width: 1100px; table-layout: fixed; }
+.adm-appeal-page .ap-col-status  { width: 110px; }
+.adm-appeal-page .ap-col-user    { width: 180px; }
+.adm-appeal-page .ap-col-target  { width: 200px; }
+.adm-appeal-page .ap-col-content { width: auto; }
+.adm-appeal-page .ap-col-date    { width: 140px; }
+.adm-appeal-page .ap-col-action  { width: 130px; }
+
+.adm-appeal-page .ap-th {
+    white-space: nowrap; overflow: hidden;
+    cursor: pointer; user-select: none;
+    padding-right: 18px; box-sizing: border-box;
+}
+.adm-appeal-page .ap-th .ap-th-label {
+    display: inline-block; max-width: calc(100% - 14px);
+    overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
+}
+.adm-appeal-page .ap-th .ap-sort-ico {
+    display: inline-block; margin-left: 4px; width: 10px;
+    font-size: 10px; line-height: 1; vertical-align: middle; color: #93c5fd;
+}
+body.sa-light .adm-appeal-page .ap-th .ap-sort-ico { color: #2563eb; }
+
+.adm-appeal-page .ap-table td {
+    vertical-align: top; overflow: hidden;
+    word-break: break-word;
+}
+.adm-appeal-page .ap-table .adm-appeal-summary,
+.adm-appeal-page .ap-table .adm-appeal-content {
+    white-space: normal; line-height: 1.45;
+    max-height: 6em; overflow: hidden; text-overflow: ellipsis;
+}
+
+@media (max-width: 1100px) {
+    .adm-appeal-page .adm-appeal-filterbar { flex-wrap: wrap; }
+}
+</style>
 
 <%@ include file="../layout-close.jsp" %>
