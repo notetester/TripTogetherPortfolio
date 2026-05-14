@@ -180,37 +180,36 @@
             </div>
         </div>
 
-        <%-- 일괄 처리 바 — 선택 시에만 보임 --%>
-        <div id="lrrBulkBar" class="lrr-bulkbar" aria-live="polite" hidden>
-            <span class="lrr-bulk-count"><strong id="lrrBulkCount">0</strong>${msg_admin_common_selectedCount}</span>
-            <div class="lrr-bulk-actions">
-                <select class="adm-select" id="lrrBulkActionSelect">
-                    <option value="">${msg_lrr_bulkActionPlaceholder}</option>
-                    <option value="approve">${msg_security_admin_common_approve}</option>
-                    <option value="hold">${msg_security_admin_common_hold}</option>
-                    <option value="reject">${msg_security_admin_common_reject}</option>
-                </select>
-                <button type="button" class="adm-btn adm-btn-primary" onclick="lrrApplyBulk()">${msg_admin_common_apply}</button>
+        <%-- ══════ 컨트롤바 — 회원관리 grid 패턴 (좌:일괄처리 / 우:도구) ══════ --%>
+        <div class="lrr-controlbar">
+            <%-- 좌측: 일괄 처리 바 — 자리는 항상 차지, 선택 시 가시화 (.is-active) --%>
+            <div id="lrrBulkBar" class="lrr-bulkbar" aria-live="polite">
+                <span class="lrr-bulk-count"><strong id="lrrBulkCount">0</strong>${msg_admin_common_selectedCount}</span>
+                <div class="lrr-bulk-actions">
+                    <select class="adm-select lrr-bulk-action-select" id="lrrBulkActionSelect">
+                        <option value="">${msg_lrr_bulkActionPlaceholder}</option>
+                        <option value="approve">${msg_security_admin_common_approve}</option>
+                        <option value="hold">${msg_security_admin_common_hold}</option>
+                        <option value="reject">${msg_security_admin_common_reject}</option>
+                    </select>
+                    <button type="button" class="adm-btn adm-btn-primary" onclick="lrrApplyBulk()">${msg_admin_common_apply}</button>
+                </div>
+                <button type="button" class="adm-btn adm-btn-ghost lrr-bulk-clear" onclick="lrrClearSelection()">${msg_admin_common_clearSelection}</button>
             </div>
-            <button type="button" class="adm-btn adm-btn-ghost lrr-bulk-clear" onclick="lrrClearSelection()">${msg_admin_common_clearSelection}</button>
-        </div>
 
-        <%-- 도구바 (정렬초기화 + 모드 + 사이즈 + 결과내검색) --%>
-        <div class="lrr-toolbar">
-            <div class="lrr-toolbar-left">
+            <%-- 우측: 도구 (정렬리셋 + 로드방식 + 사이즈) --%>
+            <div class="lrr-view-tools">
                 <button type="button" class="adm-btn adm-btn-ghost lrr-sort-reset adm-is-hidden" id="lrrSortReset" onclick="lrrResetSort()">${msg_lrr_sortReset}</button>
-
                 <label class="lrr-tool" title="${msg_lrr_modeTipClient}">
                     <span class="lrr-tool-label">${msg_lrr_modeLabel}</span>
-                    <select class="adm-select" id="lrrModeSelect" onchange="lrrChangeMode(this.value)">
+                    <select class="adm-select lrr-tool-select" id="lrrModeSelect" onchange="lrrChangeMode(this.value)">
                         <option value="CLIENT" ${mode == 'CLIENT' ? 'selected' : ''} title="${msg_lrr_modeTipClient}">${msg_lrr_modeClient}</option>
                         <option value="SERVER" ${mode == 'SERVER' ? 'selected' : ''} title="${msg_lrr_modeTipServer}">${msg_lrr_modeServer}</option>
                     </select>
                 </label>
-
                 <label class="lrr-tool">
                     <span class="lrr-tool-label">${msg_admin_common_pageSizeLabel}</span>
-                    <select class="adm-select" id="lrrPageSize" onchange="lrrChangeSize(this.value)">
+                    <select class="adm-select lrr-tool-select" id="lrrPageSize" onchange="lrrChangeSize(this.value)">
                         <option value="10"  ${pageSize == 10  ? 'selected' : ''}>${msg_admin_common_pageSize_10}</option>
                         <option value="20"  ${pageSize == 20  ? 'selected' : ''}>${msg_admin_common_pageSize_20}</option>
                         <option value="50"  ${pageSize == 50  ? 'selected' : ''}>${msg_admin_common_pageSize_50}</option>
@@ -218,23 +217,22 @@
                     </select>
                 </label>
             </div>
+        </div>
 
-            <div class="lrr-toolbar-right">
-                <label class="lrr-page-search-field">
-                    <span class="lrr-tool-label">${msg_lrr_inPageSearchLabel}</span>
-                    <select class="adm-select lrr-page-search-col" id="lrrPageSearchCol" onchange="lrrSetPageSearchCol(this.value)">
-                        <option value="all">${msg_lrr_searchType_all}</option>
-                        <option value="status">${msg_security_admin_common_status}</option>
-                        <option value="severity">${msg_security_admin_common_severity}</option>
-                        <option value="type">${msg_security_admin_common_reviewType}</option>
-                        <option value="target">${msg_security_admin_common_target}</option>
-                        <option value="summary">${msg_security_admin_common_summary}</option>
-                    </select>
-                    <div class="adm-search-box lrr-page-search-box">
-                        <span class="adm-search-ico">🔍</span>
-                        <input class="adm-input lrr-page-search" id="lrrPageSearch" type="text" placeholder="${msg_lrr_inPageSearchLabel}" oninput="lrrSetPageSearch(this.value)">
-                    </div>
-                </label>
+        <%-- 결과 내 검색 — 별도 줄 (긴 검색창 필요) --%>
+        <div class="lrr-page-search-bar">
+            <span class="lrr-tool-label">${msg_lrr_inPageSearchLabel}</span>
+            <select class="adm-select lrr-page-search-col" id="lrrPageSearchCol" onchange="lrrSetPageSearchCol(this.value)">
+                <option value="all">${msg_lrr_searchType_all}</option>
+                <option value="status">${msg_security_admin_common_status}</option>
+                <option value="severity">${msg_security_admin_common_severity}</option>
+                <option value="type">${msg_security_admin_common_reviewType}</option>
+                <option value="target">${msg_security_admin_common_target}</option>
+                <option value="summary">${msg_security_admin_common_summary}</option>
+            </select>
+            <div class="adm-search-box lrr-page-search-box">
+                <span class="adm-search-ico">🔍</span>
+                <input class="adm-input lrr-page-search" id="lrrPageSearch" type="text" placeholder="${msg_lrr_inPageSearchLabel}" oninput="lrrSetPageSearch(this.value)">
             </div>
         </div>
 
@@ -482,14 +480,9 @@
         var n = checked.length;
         var bulkBar = document.getElementById('lrrBulkBar');
         if (bulkBar) {
-            /* 선택 시에만 노출 */
-            if (n > 0) {
-                bulkBar.hidden = false;
-                bulkBar.setAttribute('aria-hidden', 'false');
-            } else {
-                bulkBar.hidden = true;
-                bulkBar.setAttribute('aria-hidden', 'true');
-            }
+            /* 회원관리 패턴: 자리는 항상 차지(.lrr-controlbar grid), .is-active 로 가시화 */
+            bulkBar.classList.toggle('is-active', n > 0);
+            bulkBar.setAttribute('aria-hidden', n > 0 ? 'false' : 'true');
         }
         var countEl = document.getElementById('lrrBulkCount');
         if (countEl) countEl.textContent = n;
@@ -689,15 +682,18 @@
    로그인 위험 검토 — 자체 스타일 (lrr-)
    ══════════════════════════════════════════════════════════════ */
 
-/* 검색 / 필터 바 — 회원관리 .adm-filter-bar 패턴 차용 */
+/* ── 검색/필터 바 ── 회원관리 .adm-filter-bar 패턴 */
 .adm-login-review-page .lrr-filter-bar {
     display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
 }
-.adm-login-review-page .lrr-keyword-field { flex: 1 1 360px; min-width: 280px; }
+.adm-login-review-page .lrr-keyword-field { flex: 1 1 360px; min-width: 260px; }
 .adm-login-review-page .lrr-filter-field  { flex: 0 0 auto; min-width: 140px; }
-.adm-login-review-page .lrr-search-row    { display: flex; gap: 6px; }
-.adm-login-review-page .lrr-search-type   { min-width: 110px; flex: 0 0 auto; }
-.adm-login-review-page .lrr-search-box    { position: relative; flex: 1 1 auto; }
+.adm-login-review-page .lrr-search-row    { display: flex; gap: 6px; align-items: center; }
+
+/* (#4) 검색 분류 select 폭 강제 — 글로벌 .adm-select 의 width:100% 를 override */
+.adm-login-review-page .lrr-search-type   { width: 110px; flex: 0 0 110px; }
+
+.adm-login-review-page .lrr-search-box    { position: relative; flex: 1 1 auto; min-width: 0; }
 .adm-login-review-page .lrr-search-box .adm-search-ico {
     position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
     font-size: 13px; pointer-events: none;
@@ -708,10 +704,10 @@
     display: inline-flex; gap: 8px; align-items: center; margin-left: auto;
 }
 
-/* 카드 head — 다운로드 한 줄 정리 */
+/* ── 카드 head — 다운로드 한 줄 (#3 overflow 방지) ── */
 .adm-login-review-page .lrr-card-head {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; padding: 12px 16px;
+    gap: 12px; padding: 12px 16px; flex-wrap: wrap;
 }
 .adm-login-review-page .lrr-card-title-area {
     display: inline-flex; align-items: center; gap: 10px; flex-wrap: nowrap;
@@ -721,75 +717,69 @@
     font-size: 12px; color: #94a3b8; font-weight: normal; white-space: nowrap;
 }
 
-/* 다운로드 — 한 줄 강제, 드롭다운 CSS 강화 */
+/* (#2 + #3) 다운로드 — 글로벌 .adm-export-dropdown 그대로 사용, 강제 width 만 추가 */
 .adm-login-review-page .lrr-export-control {
     position: relative; display: inline-flex; gap: 6px; align-items: center;
-    flex-wrap: nowrap; white-space: nowrap;
+    flex: 0 0 auto;  /* shrink 방지, 본인 폭만 차지 */
 }
-.adm-login-review-page .lrr-export-control .lrr-export-format { min-width: 84px; }
-.adm-login-review-page .lrr-export-control .js-lrr-export-toggle { white-space: nowrap; }
-.adm-login-review-page .lrr-export-control .adm-export-dropdown {
-    display: none;
-    position: absolute; top: calc(100% + 4px); right: 0; z-index: 50;
-    background: var(--adm-card-bg, #1e293b);
-    border: 1px solid var(--adm-border, #334155);
-    border-radius: 6px; padding: 4px; min-width: 220px;
-    box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+.adm-login-review-page .lrr-export-format { width: 90px; flex: 0 0 90px; }
+.adm-login-review-page .js-lrr-export-toggle { white-space: nowrap; }
+
+/* ── (#5) 컨트롤바 — 회원관리 grid 패턴 (좌 일괄처리, 우 도구) ── */
+.adm-login-review-page .lrr-controlbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-top: 1px solid rgba(148,163,184,0.14);
+    border-bottom: 1px solid rgba(148,163,184,0.14);
+    background: rgba(15,23,42,0.42);
 }
-body.sa-light .adm-login-review-page .lrr-export-control .adm-export-dropdown {
-    background: #ffffff; border-color: #cbd5e1;
-    box-shadow: 0 12px 28px rgba(15,23,42,0.18);
-}
-.adm-login-review-page .lrr-export-control .adm-export-dropdown.open { display: block; }
-.adm-login-review-page .lrr-export-control .adm-export-item {
-    display: block; width: 100%; text-align: left; padding: 8px 12px;
-    background: transparent; color: inherit; border: 0; border-radius: 4px;
-    cursor: pointer; font-size: 13px;
-}
-.adm-login-review-page .lrr-export-control .adm-export-item:hover:not(:disabled) {
-    background: rgba(148,163,184,0.18);
-}
-.adm-login-review-page .lrr-export-control .adm-export-item:disabled {
-    opacity: 0.45; cursor: not-allowed;
+body.sa-light .adm-login-review-page .lrr-controlbar {
+    background: #f8fafc; border-color: #e2e8f0;
 }
 
-/* 일괄처리 바 — 선택 시에만 보임 (hidden 속성 사용) */
-.adm-login-review-page .lrr-bulkbar[hidden] { display: none !important; }
+/* 일괄처리 — 자리는 항상 차지, .is-active 일 때만 가시화 */
 .adm-login-review-page .lrr-bulkbar {
-    display: flex; align-items: center; gap: 12px;
-    margin: 0 16px 8px; padding: 10px 14px;
-    background: rgba(251,191,36,0.10);
-    border: 1px solid rgba(251,191,36,0.30);
-    border-radius: 8px;
+    min-height: 44px; min-width: 0;
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px; border: 1px solid transparent; border-radius: 8px;
     flex-wrap: wrap;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity .15s ease, background-color .15s ease, border-color .15s ease;
 }
-.adm-login-review-page .lrr-bulk-count { font-size: 13px; }
+.adm-login-review-page .lrr-bulkbar.is-active {
+    opacity: 1; visibility: visible; pointer-events: auto;
+    border-color: rgba(251,191,36,0.50);
+    background: rgba(251,191,36,0.10);
+}
+.adm-login-review-page .lrr-bulk-count { font-size: 13px; white-space: nowrap; }
 .adm-login-review-page .lrr-bulk-count strong { font-size: 15px; margin-right: 2px; color: #fbbf24; }
 .adm-login-review-page .lrr-bulk-actions { display: inline-flex; gap: 6px; align-items: center; }
+.adm-login-review-page .lrr-bulk-action-select { width: 140px; flex: 0 0 140px; }
 .adm-login-review-page .lrr-bulk-clear { margin-left: auto; }
 
-/* 도구바 — 좌측(정렬리셋·모드·사이즈) + 우측(결과내 검색) */
-.adm-login-review-page .lrr-toolbar {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; padding: 8px 16px; flex-wrap: wrap;
+/* 도구 — 우측 끝, 줄바꿈 최소화 */
+.adm-login-review-page .lrr-view-tools {
+    display: inline-flex; gap: 10px; align-items: center; justify-content: flex-end;
+    flex-wrap: wrap;
 }
-.adm-login-review-page .lrr-toolbar-left,
-.adm-login-review-page .lrr-toolbar-right {
-    display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap;
-}
-.adm-login-review-page .lrr-toolbar-right { flex: 1 1 auto; justify-content: flex-end; }
 .adm-login-review-page .lrr-tool { display: inline-flex; gap: 6px; align-items: center; }
 .adm-login-review-page .lrr-tool-label { font-size: 12px; color: #94a3b8; white-space: nowrap; }
+.adm-login-review-page .lrr-tool-select { width: 130px; flex: 0 0 130px; }
 .adm-login-review-page .lrr-sort-reset { font-size: 12px; }
 
-/* 결과 내 검색 — 길게 + 컬럼 select */
-.adm-login-review-page .lrr-page-search-field {
-    display: inline-flex; gap: 6px; align-items: center;
-    flex: 1 1 320px; max-width: 560px; min-width: 280px;
+/* ── 결과 내 검색 — 별도 줄, 긴 입력 ── */
+.adm-login-review-page .lrr-page-search-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(148,163,184,0.14);
+    flex-wrap: wrap;
 }
-.adm-login-review-page .lrr-page-search-col { min-width: 110px; flex: 0 0 auto; }
+.adm-login-review-page .lrr-page-search-col { width: 120px; flex: 0 0 120px; }
 .adm-login-review-page .lrr-page-search-box {
-    position: relative; flex: 1 1 auto; min-width: 0;
+    position: relative; flex: 1 1 360px; min-width: 0;
 }
 .adm-login-review-page .lrr-page-search-box .adm-search-ico {
     position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
@@ -797,24 +787,35 @@ body.sa-light .adm-login-review-page .lrr-export-control .adm-export-dropdown {
 }
 .adm-login-review-page .lrr-page-search { padding-left: 30px; width: 100%; min-width: 0; }
 
-/* ──────── 테이블 ──────── */
-.adm-login-review-page .lrr-table { width: 100%; min-width: 1120px; table-layout: fixed; }
-.adm-login-review-page .lrr-col-check    { width: 42px; }
-.adm-login-review-page .lrr-col-status   { width: 100px; }
-.adm-login-review-page .lrr-col-severity { width: 84px; }
-.adm-login-review-page .lrr-col-type     { width: 170px; }
-.adm-login-review-page .lrr-col-target   { width: 200px; }
-.adm-login-review-page .lrr-col-summary  { width: auto; min-width: 240px; }
-.adm-login-review-page .lrr-col-date     { width: 130px; }
-.adm-login-review-page .lrr-col-action   { width: 230px; }
+/* ══════ (#6) 테이블 컬럼 폭 — % 비율 + min-width 보장 ══════
+   화면이 넓어도 summary 만 비대해지지 않도록 % 비율 분배. */
+.adm-login-review-page .lrr-table { width: 100%; min-width: 1180px; table-layout: fixed; }
+.adm-login-review-page .lrr-col-check    { width: 44px; }
+.adm-login-review-page .lrr-col-status   { width: 8%; }
+.adm-login-review-page .lrr-col-severity { width: 6.5%; }
+.adm-login-review-page .lrr-col-type     { width: 14%; }
+.adm-login-review-page .lrr-col-target   { width: 16%; }
+.adm-login-review-page .lrr-col-summary  { width: 26%; }
+.adm-login-review-page .lrr-col-date     { width: 9.5%; }
+.adm-login-review-page .lrr-col-action   { width: 20%; }
 
-.adm-login-review-page .lrr-th-check,
-.adm-login-review-page .lrr-cell-check { text-align: center; padding: 8px 4px; }
+/* (#1) 헤더 체크박스 셀 — padding-right 18px override + 중앙 정렬 + 수직 가운데 */
+.adm-login-review-page .lrr-th.lrr-th-check {
+    padding: 8px 4px; padding-right: 4px;
+    text-align: center; vertical-align: middle;
+}
+.adm-login-review-page .lrr-th.lrr-th-check input[type="checkbox"] {
+    margin: 0; vertical-align: middle;
+}
+.adm-login-review-page .lrr-cell-check {
+    text-align: center; padding: 8px 4px; vertical-align: middle;
+}
 
 .adm-login-review-page .lrr-th {
     white-space: nowrap; overflow: hidden;
     user-select: none; padding-right: 18px;
     position: relative; box-sizing: border-box;
+    vertical-align: middle;
 }
 .adm-login-review-page .lrr-th.lrr-sortable { cursor: pointer; }
 .adm-login-review-page .lrr-th .lrr-th-label {
@@ -845,21 +846,25 @@ body.sa-light .adm-login-review-page .lrr-th .lrr-sort-ico { color: #2563eb; }
 .adm-login-review-page .lrr-severity-medium   { color: #fbbf24; }
 .adm-login-review-page .lrr-severity-low      { color: #94a3b8; }
 
-/* 요약 컬럼 UX — 제목은 진하게, 본문은 clamp:2 + 더보기 */
+/* (#6) 요약 컬럼 — 제목 진하게, 본문 clamp:2 + 더보기 */
 .adm-login-review-page .lrr-summary {
     display: flex; flex-direction: column; gap: 4px;
-    white-space: normal; line-height: 1.45;
+    white-space: normal; line-height: 1.45; min-width: 0;
 }
-.adm-login-review-page .lrr-summary-title { font-size: 13px; font-weight: 600; }
+.adm-login-review-page .lrr-summary-title {
+    font-size: 13px; font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis;
+    display: -webkit-box; -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2; line-clamp: 2;
+}
 .adm-login-review-page .lrr-summary-body {
     font-size: 12px; color: #cbd5e1;
     display: -webkit-box; -webkit-box-orient: vertical;
     -webkit-line-clamp: 2; line-clamp: 2;
     overflow: hidden; text-overflow: ellipsis;
 }
-.adm-login-review-page .lrr-summary.is-expanded .lrr-summary-body {
-    -webkit-line-clamp: unset; line-clamp: unset; display: block;
-}
+.adm-login-review-page .lrr-summary.is-expanded .lrr-summary-title { -webkit-line-clamp: unset; line-clamp: unset; display: block; }
+.adm-login-review-page .lrr-summary.is-expanded .lrr-summary-body  { -webkit-line-clamp: unset; line-clamp: unset; display: block; }
 .adm-login-review-page .lrr-summary-comment {
     font-size: 12px; color: #94a3b8;
     border-left: 2px solid rgba(148,163,184,0.4); padding-left: 6px;
@@ -871,7 +876,7 @@ body.sa-light .adm-login-review-page .lrr-th .lrr-sort-ico { color: #2563eb; }
 }
 body.sa-light .adm-login-review-page .lrr-summary-toggle { color: #2563eb; }
 
-/* 행 액션 — 작은 버튼들 */
+/* 행 액션 */
 .adm-login-review-page .lrr-row-actions { display: flex; flex-wrap: wrap; gap: 4px; }
 .adm-login-review-page .lrr-row-actions form { display: inline-flex; }
 .adm-login-review-page .adm-btn-sm { padding: 4px 10px; font-size: 12px; }
@@ -893,41 +898,52 @@ body.sa-light .adm-login-review-page .lrr-summary-toggle { color: #2563eb; }
 
 /* ══════ 미디어 쿼리 ══════ */
 
-/* 1280px↓ — 필터바·도구바 wrap 강화 */
+/* 1280px↓ */
 @media (max-width: 1280px) {
     .adm-login-review-page .lrr-filter-bar { gap: 10px; }
     .adm-login-review-page .lrr-filter-actions { margin-left: 0; }
-    .adm-login-review-page .lrr-toolbar { gap: 10px; }
+    .adm-login-review-page .lrr-tool-select { width: 120px; flex: 0 0 120px; }
+    .adm-login-review-page .lrr-bulk-action-select { width: 130px; flex: 0 0 130px; }
 }
 
-/* 1080px↓ — 컨트롤바 stack */
+/* 1080px↓ — controlbar 1열, bulkBar 비활성 시 숨김 */
 @media (max-width: 1080px) {
-    .adm-login-review-page .lrr-toolbar { flex-direction: column; align-items: stretch; }
-    .adm-login-review-page .lrr-toolbar-left,
-    .adm-login-review-page .lrr-toolbar-right { width: 100%; justify-content: flex-start; }
-    .adm-login-review-page .lrr-page-search-field { max-width: none; flex: 1 1 auto; }
+    .adm-login-review-page .lrr-controlbar {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+    .adm-login-review-page .lrr-bulkbar:not(.is-active) { display: none; }
+    .adm-login-review-page .lrr-view-tools { justify-content: flex-start; }
 }
 
-/* 768px↓ — 모바일 친화, 키워드 필드 풀너비 */
+/* 768px↓ — 모바일, 키워드/도구 풀너비 */
 @media (max-width: 768px) {
     .adm-login-review-page .lrr-keyword-field,
     .adm-login-review-page .lrr-filter-field { flex: 1 1 100%; min-width: 0; }
     .adm-login-review-page .lrr-search-row { flex-wrap: wrap; }
-    .adm-login-review-page .lrr-search-type { flex: 0 0 100%; }
+    .adm-login-review-page .lrr-search-type { flex: 0 0 100%; width: 100%; }
     .adm-login-review-page .lrr-search-box { flex: 1 1 100%; }
-    .adm-login-review-page .lrr-card-head { flex-direction: column; align-items: flex-start; }
+
+    .adm-login-review-page .lrr-card-head { flex-direction: column; align-items: stretch; }
     .adm-login-review-page .lrr-export-control { width: 100%; flex-wrap: wrap; }
-    .adm-login-review-page .lrr-export-control .adm-export-dropdown { left: 0; right: auto; }
+    .adm-login-review-page .lrr-export-format { flex: 1 1 auto; width: auto; }
+    .adm-login-review-page .adm-export-dropdown { left: 0; right: auto; }
+
     .adm-login-review-page .lrr-bulkbar { gap: 8px; }
     .adm-login-review-page .lrr-bulk-clear { margin-left: 0; }
-    .adm-login-review-page .lrr-page-search-field { flex-wrap: wrap; }
-    .adm-login-review-page .lrr-page-search-col { flex: 0 0 100%; }
+    .adm-login-review-page .lrr-bulk-action-select { flex: 1 1 auto; width: auto; }
+
+    .adm-login-review-page .lrr-view-tools { flex-wrap: wrap; gap: 8px; }
+    .adm-login-review-page .lrr-tool-select { flex: 1 1 auto; width: auto; min-width: 110px; }
+
+    .adm-login-review-page .lrr-page-search-bar { flex-wrap: wrap; }
+    .adm-login-review-page .lrr-page-search-col { flex: 0 0 100%; width: 100%; }
     .adm-login-review-page .lrr-page-search-box { flex: 1 1 100%; }
 }
 
-/* 520px↓ — 좁은 모바일, 행 액션 stack */
+/* 520px↓ — 좁은 모바일 */
 @media (max-width: 520px) {
-    .adm-login-review-page .lrr-table { min-width: 720px; /* 가로 스크롤 허용 */ }
+    .adm-login-review-page .lrr-table { min-width: 720px; /* 가로 스크롤 */ }
     .adm-login-review-page .lrr-row-actions { flex-direction: column; align-items: stretch; }
     .adm-login-review-page .lrr-row-actions .adm-btn-sm { width: 100%; }
     .adm-login-review-page .lrr-filter-actions { flex-direction: column; align-items: stretch; }
