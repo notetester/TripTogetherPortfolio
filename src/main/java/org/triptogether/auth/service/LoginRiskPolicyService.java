@@ -198,6 +198,22 @@ public class LoginRiskPolicyService {
     }
 
     @Transactional
+    public int bulkDecideSecurityReviews(List<Long> reviewIdxList, String decision, Long actorUserIdx, String comment) {
+        if (reviewIdxList == null || reviewIdxList.isEmpty()) return 0;
+        int affected = 0;
+        for (Long id : reviewIdxList) {
+            if (id == null) continue;
+            try {
+                decideSecurityReview(id, decision, actorUserIdx, comment);
+                affected++;
+            } catch (RuntimeException ignore) {
+                /* skip individual failures */
+            }
+        }
+        return affected;
+    }
+
+    @Transactional
     public int bulkActOnSecurityAssessments(List<Long> ids, String action, Long actorUserIdx) {
         if (ids == null || ids.isEmpty() || action == null) return 0;
         int affected = 0;

@@ -5,7 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
-<%-- i18n message declarations: var names are derived from message codes. --%>
+<%-- i18n message declarations --%>
 <spring:message var="msg_security_admin_securityReviews_title" code="security.admin.securityReviews.title"/>
 <spring:message var="msg_security_admin_placeholder_accountIpSummary" code="security.admin.placeholder.accountIpSummary"/>
 <spring:message var="msg_security_admin_placeholder_reviewType" code="security.admin.placeholder.reviewType"/>
@@ -40,6 +40,27 @@
 <spring:message var="msg_security_admin_empty_reviews" code="security.admin.empty.reviews"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount" arguments="${fn:length(reviews)}"/>
+<spring:message var="msg_admin_common_export" code="admin.common.export"/>
+<spring:message var="msg_admin_common_exportAll" code="admin.common.exportAll"/>
+<spring:message var="msg_admin_common_exportFiltered" code="admin.common.exportFiltered"/>
+<spring:message var="msg_admin_common_exportSelected" code="admin.common.exportSelected"/>
+<spring:message var="msg_admin_common_apply" code="admin.common.apply"/>
+<spring:message var="msg_admin_common_clearSelection" code="admin.common.clearSelection"/>
+<spring:message var="msg_admin_common_selectedCount" code="admin.common.selectedCount"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_common_pageSizeLabel" code="admin.common.pageSizeLabel"/>
+<spring:message var="msg_admin_common_pageSize_10" code="admin.common.pageSize" arguments="10"/>
+<spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
+<spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100"/>
+<spring:message var="msg_lrr_sortReset" code="security.admin.loginReviews.sortReset"/>
+<spring:message var="msg_lrr_pickAction" code="security.admin.loginReviews.pickActionMsg"/>
+<spring:message var="msg_lrr_noSelection" code="security.admin.loginReviews.noSelectionMsg"/>
+<spring:message var="msg_lrr_pageSearchPlaceholder" code="security.admin.loginReviews.pageSearchPlaceholder"/>
+<spring:message var="msg_lrr_bulkActionPlaceholder" code="security.admin.loginReviews.bulkActionPlaceholder"/>
+<spring:message var="msg_lrr_bulkComment" code="security.admin.loginReviews.bulkComment"/>
+
 <c:set var="pageTitle" value="${msg_security_admin_securityReviews_title}"/>
 <c:set var="activeMenu" value="securityReviews"/>
 
@@ -53,32 +74,6 @@
     function closeSecurityReviewDetail(id) {
         const modal = document.getElementById(id);
         if (modal) modal.classList.remove("is-open");
-    }
-    function sortStaticAdminTable(tableId, columnIndex) {
-        const table = document.getElementById(tableId);
-        const tbody = table ? table.querySelector("tbody") : null;
-        if (!tbody) return;
-        const prevIndex = Number(table.dataset.sortIndex || -1);
-        const prevDir = table.dataset.sortDir || "ASC";
-        const nextDir = prevIndex === columnIndex && prevDir === "ASC" ? "DESC" : "ASC";
-        table.dataset.sortIndex = String(columnIndex);
-        table.dataset.sortDir = nextDir;
-        Array.from(tbody.querySelectorAll("tr"))
-            .filter(function(row) { return row.children.length > columnIndex && !row.querySelector("td[colspan]"); })
-            .sort(function(a, b) {
-                const av = (a.children[columnIndex].innerText || "").replace(/\s+/g, " ").trim();
-                const bv = (b.children[columnIndex].innerText || "").replace(/\s+/g, " ").trim();
-                return av.localeCompare(bv, undefined, { numeric: true, sensitivity: "base" }) * (nextDir === "ASC" ? 1 : -1);
-            })
-            .forEach(function(row) { tbody.appendChild(row); });
-        table.querySelectorAll("th").forEach(function(th, idx) {
-            const ico = th.querySelector(".sort-ico");
-            if (ico) ico.textContent = idx === columnIndex ? (nextDir === "ASC" ? "▲" : "▼") : "";
-        });
-    }
-    function openFirstSecurityReviewDetail() {
-        const button = document.querySelector("#securityReviewTable .js-security-review-detail-open");
-        if (button) openSecurityReviewDetail(button.getAttribute("data-target"));
     }
     document.addEventListener("click", function(e) {
         const openButton = e.target.closest(".js-security-review-detail-open");
@@ -120,7 +115,7 @@
         <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
-    <form method="get" class="adm-card adm-security-review-filter-card adm-overflow-visible">
+    <form id="srSearchForm" method="get" class="adm-card adm-security-review-filter-card adm-overflow-visible">
         <div class="adm-card-body">
             <div class="adm-security-review-filterbar">
                 <label>${msg_security_admin_common_status}
@@ -156,10 +151,56 @@
     </form>
 
     <div class="adm-card adm-security-review-list-card adm-overflow-visible">
-        <div class="adm-card-head">
-            <div class="adm-card-title">${msg_security_admin_securityReviews_title}</div>
-            <div class="adm-page-muted">${msg_admin_common_totalCount}</div>
+        <div class="adm-card-head sr-card-head">
+            <div class="adm-card-title">
+                ${msg_security_admin_securityReviews_title}
+                <span class="sr-total-label" id="srTotalLabel">${msg_admin_common_totalCount}</span>
+            </div>
+            <div class="adm-export-control sr-export-control">
+                <select class="adm-select sr-export-format" id="srExportFormat">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <button type="button" class="adm-btn adm-btn-ghost js-sr-export-toggle">${msg_admin_common_export} ▾</button>
+                <div id="srExportDropdown" class="adm-export-dropdown">
+                    <button type="button" class="adm-export-item" onclick="srExport('all')">${msg_admin_common_exportAll}</button>
+                    <button type="button" class="adm-export-item" onclick="srExport('filtered')">${msg_admin_common_exportFiltered}</button>
+                    <button type="button" class="adm-export-item" id="srExportSelectedBtn" disabled onclick="srExport('selected')">${msg_admin_common_exportSelected} (0)</button>
+                </div>
+            </div>
         </div>
+
+        <div class="sr-controlbar">
+            <div id="srBulkBar" class="sr-bulkbar" aria-live="polite" aria-hidden="true">
+                <span class="sr-bulk-count"><strong id="srBulkCount">0</strong>${msg_admin_common_selectedCount}</span>
+                <div class="sr-bulk-actions">
+                    <select class="adm-select" id="srBulkActionSelect">
+                        <option value="">${msg_lrr_bulkActionPlaceholder}</option>
+                        <option value="approve">${msg_security_admin_common_approve}</option>
+                        <option value="hold">${msg_security_admin_common_hold}</option>
+                        <option value="reject">${msg_security_admin_common_reject}</option>
+                    </select>
+                    <button type="button" class="adm-btn adm-btn-primary" onclick="srApplyBulk()">${msg_admin_common_apply}</button>
+                </div>
+                <button type="button" class="adm-btn adm-btn-ghost sr-bulk-clear" onclick="srClearSelection()">${msg_admin_common_clearSelection}</button>
+            </div>
+            <div class="sr-view-tools">
+                <button type="button" class="adm-btn adm-btn-ghost sr-sort-reset adm-is-hidden" id="srSortReset" onclick="srResetSort()">${msg_lrr_sortReset}</button>
+                <label class="sr-tool sr-page-search-tool">
+                    <input class="adm-input sr-page-search" id="srPageSearch" type="text" placeholder="${msg_lrr_pageSearchPlaceholder}" oninput="srSetPageSearch(this.value)">
+                </label>
+                <label class="sr-tool">
+                    <span class="sr-tool-label">${msg_admin_common_pageSizeLabel}</span>
+                    <select class="adm-select sr-page-size" id="srPageSize" onchange="srChangeSize(this.value)">
+                        <option value="10">${msg_admin_common_pageSize_10}</option>
+                        <option value="20" selected>${msg_admin_common_pageSize_20}</option>
+                        <option value="50">${msg_admin_common_pageSize_50}</option>
+                        <option value="100">${msg_admin_common_pageSize_100}</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
         <div class="adm-table-wrap">
             <table id="securityReviewTable"
                    class="adm-table adm-section-table-fixed adm-security-review-table sr-table"
@@ -177,20 +218,26 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="sr-th sr-th-check"><input type="checkbox" aria-label="전체 선택"></th>
-                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 1)"><span class="sr-th-label">${msg_security_admin_common_status}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 2)"><span class="sr-th-label">${msg_security_admin_common_severity}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 3)"><span class="sr-th-label">${msg_security_admin_common_reviewType}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 4)"><span class="sr-th-label">${msg_security_admin_common_target}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 5)"><span class="sr-th-label">${msg_security_admin_common_summaryEvidence}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sr-th" onclick="sortStaticAdminTable('securityReviewTable', 6)"><span class="sr-th-label">${msg_security_admin_common_createdAt}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sr-th" onclick="openFirstSecurityReviewDetail()"><span class="sr-th-label">${msg_security_admin_common_action}</span></th>
+                    <th class="sr-th sr-th-check"><input type="checkbox" id="srCheckAll" onchange="srToggleAll(this)" aria-label="select-all"></th>
+                    <th class="sr-th sr-sortable" data-sort="status" onclick="srSortBy('status')"><span class="sr-th-label">${msg_security_admin_common_status}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th sr-sortable" data-sort="severity" onclick="srSortBy('severity')"><span class="sr-th-label">${msg_security_admin_common_severity}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th sr-sortable" data-sort="type" onclick="srSortBy('type')"><span class="sr-th-label">${msg_security_admin_common_reviewType}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th sr-sortable" data-sort="target" onclick="srSortBy('target')"><span class="sr-th-label">${msg_security_admin_common_target}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th sr-sortable" data-sort="summary" onclick="srSortBy('summary')"><span class="sr-th-label">${msg_security_admin_common_summaryEvidence}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th sr-sortable" data-sort="date" onclick="srSortBy('date')"><span class="sr-th-label">${msg_security_admin_common_createdAt}</span><span class="sr-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sr-th"><span class="sr-th-label">${msg_security_admin_common_action}</span></th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="srTableBody">
                 <c:forEach var="r" items="${reviews}">
-                    <tr>
-                        <td class="sr-cell-check"><input type="checkbox" aria-label="행 선택"></td>
+                    <tr data-row-id="${r.reviewIdx}"
+                        data-sort-status="${fn:escapeXml(r.reviewStatus)}"
+                        data-sort-severity="${fn:escapeXml(r.severity)}"
+                        data-sort-type="${fn:escapeXml(r.reviewType)}"
+                        data-sort-target="${fn:escapeXml(r.subjectType)}:${fn:escapeXml(r.subjectKey)}"
+                        data-sort-summary="${fn:escapeXml(r.summary)}"
+                        data-sort-date="<fmt:formatDate value='${r.createdAtDate}' pattern='yyyyMMddHHmm'/>">
+                        <td class="sr-cell-check"><input type="checkbox" class="js-sr-row-check" value="${r.reviewIdx}" onchange="srUpdateBulkCount()" aria-label="row-select"></td>
                         <td><span class="adm-badge"><c:out value="${r.reviewStatus}"/></span></td>
                         <td><div class="adm-security-review-primary"><c:out value="${r.severity}"/></div></td>
                         <td>
@@ -237,11 +284,18 @@
                         </td>
                     </tr>
                 </c:forEach>
-                <c:if test="${empty reviews}">
-                    <tr class="adm-local-empty"><td colspan="8" class="adm-local-empty-cell">${msg_security_admin_empty_reviews}</td></tr>
-                </c:if>
                 </tbody>
             </table>
+            <div class="sr-empty adm-is-hidden" id="srEmptyState">${msg_security_admin_empty_reviews}</div>
+        </div>
+
+        <div class="sr-pagination" id="srPaging">
+            <div class="sr-page-info"><span id="srPageInfo"></span></div>
+            <div class="sr-page-actions">
+                <button type="button" class="adm-btn adm-btn-ghost" id="srPrevBtn" onclick="srGoPage(window.srState.page - 1)">${msg_admin_common_prev}</button>
+                <span class="sr-page-state" id="srPageState"></span>
+                <button type="button" class="adm-btn adm-btn-ghost" id="srNextBtn" onclick="srGoPage(window.srState.page + 1)">${msg_admin_common_next}</button>
+            </div>
         </div>
 
         <c:forEach var="r" items="${reviews}">
@@ -302,25 +356,238 @@
 
 <script>
 (function () {
-    const orig = window.sortStaticAdminTable;
-    if (typeof orig === 'function') {
-        window.sortStaticAdminTable = function (tableId, columnIndex) {
-            orig(tableId, columnIndex);
-            const table = document.getElementById(tableId);
-            if (!table) return;
-            const dir = table.dataset.sortDir || 'ASC';
-            const idx = Number(table.dataset.sortIndex || -1);
-            table.querySelectorAll('th').forEach(function (th, i) {
-                const ico = th.querySelector('.sr-sort-ico');
-                if (ico) ico.textContent = i === idx ? (dir === 'ASC' ? '▲' : '▼') : '';
-            });
-        };
+    'use strict';
+    /* ─── 일반 검토 큐 — 클라이언트 사이드 페이징·정렬·검색·체크박스 일괄처리 ───
+       로딩 방식 결정: 서버 getSecurityReviews() 는 LIMIT 없이 status/severity/reviewType/keyword
+       서버 필터 후 전 결과 반환. detail 모달은 서버 렌더된 행마다 함께 출력되므로 클라이언트
+       페이징으로 행을 detach 해도 모달 노드는 카드 하위에 그대로 남아 detail 동작 영향 없음. */
+    var ctx = '${pageContext.request.contextPath}';
+
+    var SR_MSG = {
+        exportSelectedLabel: '${msg_admin_common_exportSelected}',
+        pickAction: '${msg_lrr_pickAction}',
+        noSelection: '${msg_lrr_noSelection}',
+        bulkConfirmTpl: '<spring:message code="security.admin.loginReviews.bulkConfirm" arguments="{0}" javaScriptEscape="true"/>',
+        bulkComment: '${msg_lrr_bulkComment}'
+    };
+
+    var srState = {
+        page: 1, pageSize: 20,
+        sortBy: '', sortDir: 'ASC',
+        pageSearch: '',
+        rows: [], filtered: []
+    };
+    window.srState = srState;
+
+    function cacheRows() {
+        var tbody = document.getElementById('srTableBody');
+        if (!tbody) return;
+        srState.rows = Array.prototype.slice.call(tbody.querySelectorAll('tr[data-row-id]'));
     }
+    function applyFilter() {
+        var q = (srState.pageSearch || '').trim().toLowerCase();
+        if (!q) { srState.filtered = srState.rows.slice(); return; }
+        srState.filtered = srState.rows.filter(function (tr) {
+            return ((tr.innerText || tr.textContent) || '').toLowerCase().indexOf(q) !== -1;
+        });
+    }
+    function applySort() {
+        if (!srState.sortBy) return;
+        var dir = srState.sortDir === 'DESC' ? -1 : 1;
+        var attr = 'data-sort-' + srState.sortBy;
+        srState.filtered.sort(function (a, b) {
+            var av = (a.getAttribute(attr) || '').toLowerCase();
+            var bv = (b.getAttribute(attr) || '').toLowerCase();
+            return av.localeCompare(bv, undefined, { numeric: true, sensitivity: 'base' }) * dir;
+        });
+    }
+    function render() {
+        var tbody = document.getElementById('srTableBody');
+        if (!tbody) return;
+        var total = srState.filtered.length;
+        var pageSize = srState.pageSize > 0 ? srState.pageSize : 20;
+        var totalPage = Math.max(1, Math.ceil(total / pageSize));
+        if (srState.page > totalPage) srState.page = totalPage;
+        if (srState.page < 1) srState.page = 1;
+        var start = (srState.page - 1) * pageSize;
+        var slice = srState.filtered.slice(start, start + pageSize);
+
+        srState.rows.forEach(function (tr) { if (tr.parentNode === tbody) tbody.removeChild(tr); });
+        Array.prototype.slice.call(tbody.querySelectorAll('.sr-empty-row')).forEach(function (tr) { tr.remove(); });
+        slice.forEach(function (tr) { tbody.appendChild(tr); });
+        if (slice.length === 0) {
+            var emptyTpl = document.getElementById('srEmptyState');
+            var emptyText = emptyTpl ? emptyTpl.textContent : '';
+            var emptyTr = document.createElement('tr');
+            emptyTr.className = 'sr-empty-row';
+            var td = document.createElement('td');
+            td.colSpan = 8; td.className = 'sr-empty-cell'; td.textContent = emptyText;
+            emptyTr.appendChild(td);
+            tbody.appendChild(emptyTr);
+        }
+
+        var info = document.getElementById('srPageInfo');
+        if (info) info.textContent = total + ' / ' + srState.rows.length;
+        var stateEl = document.getElementById('srPageState');
+        if (stateEl) stateEl.textContent = srState.page + ' / ' + totalPage;
+        var prev = document.getElementById('srPrevBtn');
+        var next = document.getElementById('srNextBtn');
+        if (prev) prev.disabled = srState.page <= 1;
+        if (next) next.disabled = srState.page >= totalPage;
+
+        Array.prototype.slice.call(document.querySelectorAll('#securityReviewTable thead th.sr-sortable')).forEach(function (th) {
+            var ico = th.querySelector('.sr-sort-ico');
+            if (!ico) return;
+            ico.textContent = (th.getAttribute('data-sort') === srState.sortBy)
+                ? (srState.sortDir === 'DESC' ? '▼' : '▲')
+                : '';
+        });
+        var resetBtn = document.getElementById('srSortReset');
+        if (resetBtn) resetBtn.classList.toggle('adm-is-hidden', !srState.sortBy);
+
+        updateBulkCount();
+    }
+    function applyAll() { applyFilter(); applySort(); render(); }
+
+    function updateBulkCount() {
+        var checked = document.querySelectorAll('#srTableBody .js-sr-row-check:checked');
+        var n = checked.length;
+        var bulkBar = document.getElementById('srBulkBar');
+        if (bulkBar) {
+            bulkBar.classList.toggle('is-active', n > 0);
+            bulkBar.setAttribute('aria-hidden', n > 0 ? 'false' : 'true');
+            bulkBar.querySelectorAll('select, button').forEach(function (el) { el.disabled = n === 0; });
+        }
+        var countEl = document.getElementById('srBulkCount');
+        if (countEl) countEl.textContent = n;
+        var selBtn = document.getElementById('srExportSelectedBtn');
+        if (selBtn) {
+            selBtn.disabled = n === 0;
+            selBtn.textContent = SR_MSG.exportSelectedLabel + ' (' + n + ')';
+        }
+        var checkAll = document.getElementById('srCheckAll');
+        if (checkAll) {
+            var visible = document.querySelectorAll('#srTableBody .js-sr-row-check');
+            checkAll.checked = visible.length > 0 && n === visible.length;
+            checkAll.indeterminate = n > 0 && n < visible.length;
+        }
+    }
+    window.srUpdateBulkCount = updateBulkCount;
+
+    window.srToggleAll = function (cb) {
+        document.querySelectorAll('#srTableBody .js-sr-row-check').forEach(function (c) { c.checked = cb.checked; });
+        updateBulkCount();
+    };
+    window.srClearSelection = function () {
+        document.querySelectorAll('#srTableBody .js-sr-row-check').forEach(function (c) { c.checked = false; });
+        var checkAll = document.getElementById('srCheckAll');
+        if (checkAll) { checkAll.checked = false; checkAll.indeterminate = false; }
+        updateBulkCount();
+    };
+
+    window.srSortBy = function (field) {
+        if (srState.sortBy === field) {
+            srState.sortDir = (srState.sortDir === 'ASC') ? 'DESC' : 'ASC';
+        } else { srState.sortBy = field; srState.sortDir = 'ASC'; }
+        srState.page = 1; applyAll();
+    };
+    window.srResetSort = function () {
+        srState.sortBy = ''; srState.sortDir = 'ASC'; srState.page = 1; applyAll();
+    };
+    window.srChangeSize = function (size) {
+        var n = parseInt(size, 10);
+        srState.pageSize = (n > 0 ? n : 20);
+        srState.page = 1; render();
+    };
+    window.srGoPage = function (p) {
+        var total = srState.filtered.length;
+        var totalPage = Math.max(1, Math.ceil(total / srState.pageSize));
+        var next = Math.min(Math.max(1, parseInt(p, 10) || 1), totalPage);
+        if (next === srState.page) return;
+        srState.page = next; render();
+    };
+    window.srSetPageSearch = function (text) {
+        srState.pageSearch = text || ''; srState.page = 1; applyAll();
+    };
+
+    window.srApplyBulk = function () {
+        var action = (document.getElementById('srBulkActionSelect') || {}).value || '';
+        if (!action) { alert(SR_MSG.pickAction); return; }
+        var checked = Array.prototype.slice.call(document.querySelectorAll('#srTableBody .js-sr-row-check:checked'));
+        if (!checked.length) { alert(SR_MSG.noSelection); return; }
+        var confirmMsg = (SR_MSG.bulkConfirmTpl || '').replace('{0}', String(checked.length));
+        if (!window.confirm(confirmMsg)) return;
+
+        var ids = checked.map(function (c) { return c.value; }).join(',');
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = ctx + '/admin/login-risk/security-reviews/bulk';
+        function addInput(name, value) {
+            var inp = document.createElement('input');
+            inp.type = 'hidden'; inp.name = name; inp.value = value;
+            form.appendChild(inp);
+        }
+        addInput('action', action);
+        addInput('ids', ids);
+        addInput('comment', SR_MSG.bulkComment);
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+    window.srExport = function (scope) {
+        var format = (document.getElementById('srExportFormat') || {}).value || 'csv';
+        var params = new URLSearchParams();
+        params.set('scope', scope);
+        params.set('format', format);
+        if (scope === 'filtered') {
+            var form = document.getElementById('srSearchForm');
+            if (form) {
+                var fd = new FormData(form);
+                fd.forEach(function (v, k) { if (v) params.set(k, v); });
+            }
+        }
+        if (scope === 'selected') {
+            var ids = Array.prototype.slice.call(document.querySelectorAll('#srTableBody .js-sr-row-check:checked')).map(function (c) { return c.value; });
+            if (!ids.length) { alert(SR_MSG.noSelection); return; }
+            params.set('selectedIds', ids.join(','));
+        }
+        var dropdown = document.getElementById('srExportDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+        window.location.href = ctx + '/admin/login-risk/security-reviews/export?' + params.toString();
+    };
+
+    function initExportDropdown() {
+        var toggle = document.querySelector('.js-sr-export-toggle');
+        var dropdown = document.getElementById('srExportDropdown');
+        if (!toggle || !dropdown) return;
+        toggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('open');
+        });
+        document.addEventListener('click', function (e) {
+            if (!toggle.contains(e.target) && !dropdown.contains(e.target)) dropdown.classList.remove('open');
+        });
+    }
+
+    function init() {
+        cacheRows();
+        var sizeSel = document.getElementById('srPageSize');
+        if (sizeSel) {
+            var n = parseInt(sizeSel.value, 10);
+            srState.pageSize = n > 0 ? n : 20;
+        }
+        initExportDropdown();
+        applyAll();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else { init(); }
 })();
 </script>
 
 <style>
-/* ── 일반 검토 큐 페이지 전용 ── */
+/* ── 일반 검토 큐 페이지 전용 (sr-) ── */
 .adm-security-review-page .sr-table { width: 100%; min-width: 1220px; table-layout: fixed; }
 .adm-security-review-page .sr-col-check    { width: 42px; }
 .adm-security-review-page .sr-th-check, .adm-security-review-page .sr-cell-check { text-align: center; padding: 8px 4px; }
@@ -334,9 +601,10 @@
 
 .adm-security-review-page .sr-th {
     white-space: nowrap; overflow: hidden;
-    cursor: pointer; user-select: none;
+    user-select: none;
     padding-right: 18px; box-sizing: border-box;
 }
+.adm-security-review-page .sr-th.sr-sortable { cursor: pointer; }
 .adm-security-review-page .sr-th .sr-th-label {
     display: inline-block; max-width: calc(100% - 14px);
     overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
@@ -359,8 +627,54 @@ body.sa-light .adm-security-review-page .sr-th .sr-sort-ico { color: #2563eb; }
     display: flex; flex-wrap: wrap; gap: 4px;
 }
 
+/* card head + export */
+.adm-security-review-page .sr-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.adm-security-review-page .sr-total-label { margin-left: 8px; font-size: 12px; color: #94a3b8; font-weight: normal; }
+.adm-security-review-page .sr-export-control { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+.adm-security-review-page .sr-export-control .sr-export-format { min-width: 84px; }
+.adm-security-review-page .sr-export-control .adm-export-dropdown {
+    display: none; position: absolute; top: 100%; right: 0; margin-top: 4px;
+    background: var(--adm-card-bg, #1e293b); border: 1px solid var(--adm-border, #334155);
+    border-radius: 6px; padding: 4px; z-index: 30; min-width: 200px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+.adm-security-review-page .sr-export-control .adm-export-dropdown.open { display: block; }
+.adm-security-review-page .sr-export-control .adm-export-item {
+    display: block; width: 100%; text-align: left; padding: 6px 10px;
+    background: transparent; color: inherit; border: 0; cursor: pointer;
+    font-size: 13px; border-radius: 4px;
+}
+.adm-security-review-page .sr-export-control .adm-export-item:disabled { opacity: 0.5; cursor: not-allowed; }
+.adm-security-review-page .sr-export-control .adm-export-item:hover:not(:disabled) { background: rgba(148,163,184,0.15); }
+
+/* controlbar */
+.adm-security-review-page .sr-controlbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 14px; flex-wrap: wrap; }
+.adm-security-review-page .sr-bulkbar { display: flex; align-items: center; gap: 10px; opacity: 0.55; transition: opacity 0.2s; }
+.adm-security-review-page .sr-bulkbar.is-active { opacity: 1; }
+.adm-security-review-page .sr-bulk-count { font-size: 13px; }
+.adm-security-review-page .sr-bulk-count strong { font-size: 15px; margin-right: 2px; color: #fbbf24; }
+.adm-security-review-page .sr-bulk-actions { display: inline-flex; gap: 6px; align-items: center; }
+.adm-security-review-page .sr-view-tools { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.adm-security-review-page .sr-tool { display: inline-flex; gap: 4px; align-items: center; }
+.adm-security-review-page .sr-tool-label { font-size: 12px; color: #94a3b8; }
+.adm-security-review-page .sr-page-search { min-width: 220px; }
+.adm-security-review-page .sr-sort-reset { font-size: 12px; }
+
+/* pagination */
+.adm-security-review-page .sr-pagination { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; gap: 10px; flex-wrap: wrap; }
+.adm-security-review-page .sr-page-info { font-size: 12px; color: #94a3b8; }
+.adm-security-review-page .sr-page-actions { display: inline-flex; gap: 8px; align-items: center; }
+.adm-security-review-page .sr-page-state { font-size: 13px; min-width: 60px; text-align: center; }
+
+.adm-security-review-page .sr-empty,
+.adm-security-review-page .sr-empty-cell { padding: 16px; text-align: center; color: #94a3b8; }
+.adm-security-review-page .adm-is-hidden { display: none !important; }
+
 @media (max-width: 1180px) {
     .adm-security-review-page .adm-security-review-filterbar { flex-wrap: wrap; }
+    .adm-security-review-page .sr-controlbar { flex-direction: column; align-items: stretch; }
+    .adm-security-review-page .sr-bulkbar { flex-wrap: wrap; }
+    .adm-security-review-page .sr-view-tools { justify-content: flex-end; }
 }
 </style>
 

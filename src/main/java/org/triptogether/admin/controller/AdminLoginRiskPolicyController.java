@@ -19,6 +19,7 @@ import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.LoginRiskReviewVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.SecurityAppealPolicyVO;
+import org.triptogether.auth.vo.SecurityReviewVO;
 import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 import org.triptogether.auth.vo.UsersVO;
 
@@ -544,6 +545,125 @@ public class AdminLoginRiskPolicyController {
         loginRiskPolicyService.decideSecurityReview(reviewIdx, decision, currentAdminIdx(session), comment);
         redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.securityReviewProcessed"));
         return "redirect:/admin/login-risk/security-reviews";
+    }
+
+    @PostMapping("/security-reviews/bulk")
+    public String bulkDecideSecurityReviews(@RequestParam("action") String action,
+                                            @RequestParam(value = "ids", required = false) String idsCsv,
+                                            @RequestParam(value = "comment", required = false) String comment,
+                                            HttpSession session,
+                                            RedirectAttributes redirectAttributes,
+                                            Locale locale) {
+        List<Long> ids = parseIds(idsCsv);
+        int affected = loginRiskPolicyService.bulkDecideSecurityReviews(ids, action, currentAdminIdx(session), comment);
+        redirectAttributes.addFlashAttribute("message",
+                msg(locale, "security.admin.flash.bulkSecurityReviewProcessed") + " (" + affected + "/" + ids.size() + ")");
+        return "redirect:/admin/login-risk/security-reviews";
+    }
+
+    @GetMapping("/security-reviews/export")
+    public ResponseEntity<byte[]> exportSecurityReviews(
+            @RequestParam(value = "scope", required = false, defaultValue = "filtered") String scope,
+            @RequestParam(value = "format", required = false, defaultValue = "csv") String format,
+            @RequestParam(value = "selectedIds", required = false) String selectedIds,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "severity", required = false) String severity,
+            @RequestParam(value = "reviewType", required = false) String reviewType,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+        try {
+            List<SecurityReviewVO> data;
+            if ("all".equalsIgnoreCase(scope)) {
+                data = loginRiskPolicyService.getSecurityReviews(null, null, null, null);
+            } else if ("selected".equalsIgnoreCase(scope)) {
+                List<Long> ids = parseIds(selectedIds);
+                if (ids.isEmpty()) {
+                    return ResponseEntity.badRequest().build();
+                }
+                data = loginRiskPolicyService.getSecurityReviews(null, null, null, null).stream()
+                        .filter(r -> r.getReviewIdx() != null && ids.contains(r.getReviewIdx()))
+                        .toList();
+            } else {
+                data = loginRiskPolicyService.getSecurityReviews(status, severity, reviewType, keyword);
+            }
+            if ("excel".equalsIgnoreCase(format)) {
+                byte[] bytes = buildSecurityReviewExcel(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"security-reviews.xlsx\"")
+                        .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(bytes);
+            }
+            byte[] bytes = buildSecurityReviewCsv(data);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"security-reviews.csv\"")
+                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                    .body(bytes);
+        } catch (Exception e) {
+            log.error("일반 검토 큐 내보내기 실패", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private static final String[] SECURITY_REVIEW_EXPORT_HEADERS = {
+            "reviewIdx", "reviewStatus", "severity", "reviewType", "assessmentScope",
+            "subjectType", "subjectKey", "userId", "nickname", "ipAddress",
+            "summary", "detailMessage", "reviewComment", "reviewedByUserId",
+            "reviewedAt", "createdAt"
+    };
+
+    private byte[] buildSecurityReviewCsv(List<SecurityReviewVO> data) {
+        StringBuilder sb = new StringBuilder("﻿");
+        sb.append(String.join(",", SECURITY_REVIEW_EXPORT_HEADERS)).append('\n');
+        for (SecurityReviewVO r : data) {
+            Object[] cols = securityReviewRow(r);
+            for (int i = 0; i < cols.length; i++) {
+                if (i > 0) sb.append(',');
+                sb.append(csvVal(cols[i]));
+            }
+            sb.append('\n');
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private byte[] buildSecurityReviewExcel(List<SecurityReviewVO> data) throws Exception {
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            var sheet = wb.createSheet("security-reviews");
+            var hRow = sheet.createRow(0);
+            for (int i = 0; i < SECURITY_REVIEW_EXPORT_HEADERS.length; i++) {
+                hRow.createCell(i).setCellValue(SECURITY_REVIEW_EXPORT_HEADERS[i]);
+            }
+            int r = 1;
+            for (SecurityReviewVO row : data) {
+                Object[] cols = securityReviewRow(row);
+                var sheetRow = sheet.createRow(r++);
+                for (int i = 0; i < cols.length; i++) {
+                    sheetRow.createCell(i).setCellValue(cols[i] == null ? "" : String.valueOf(cols[i]));
+                }
+            }
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private Object[] securityReviewRow(SecurityReviewVO r) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return new Object[]{
+                r.getReviewIdx(),
+                r.getReviewStatus(),
+                r.getSeverity(),
+                r.getReviewType(),
+                r.getAssessmentScope(),
+                r.getSubjectType(),
+                r.getSubjectKey(),
+                r.getUserId(),
+                r.getNickname(),
+                r.getIpAddress(),
+                r.getSummary(),
+                r.getDetailMessage(),
+                r.getReviewComment(),
+                r.getReviewedByUserId(),
+                r.getReviewedAt() == null ? "" : r.getReviewedAt().format(fmt),
+                r.getCreatedAt() == null ? "" : r.getCreatedAt().format(fmt)
+        };
     }
 
     @GetMapping("/appeals")
