@@ -171,6 +171,26 @@ public class LoginRiskPolicyService {
         return loginRiskPolicyMapper.findReviewQueue(emptyToNull(status), emptyToNull(severity), emptyToNull(reviewType), emptyToNull(keyword));
     }
 
+    public List<LoginRiskReviewVO> getReviewQueuePaged(String status, String severity, String reviewType,
+                                                       String keyword, String searchType,
+                                                       String sortBy, String sortDir,
+                                                       int page, int pageSize) {
+        int safePage = Math.max(1, page);
+        int safeSize = Math.max(1, Math.min(pageSize, 10000));
+        int offset = (safePage - 1) * safeSize;
+        return loginRiskPolicyMapper.findReviewQueuePaged(
+                emptyToNull(status), emptyToNull(severity), emptyToNull(reviewType),
+                emptyToNull(keyword), emptyToNull(searchType),
+                emptyToNull(sortBy), emptyToNull(sortDir),
+                offset, safeSize);
+    }
+
+    public long countReviewQueue(String status, String severity, String reviewType, String keyword, String searchType) {
+        return loginRiskPolicyMapper.countReviewQueue(
+                emptyToNull(status), emptyToNull(severity), emptyToNull(reviewType),
+                emptyToNull(keyword), emptyToNull(searchType));
+    }
+
     public LoginRiskReviewVO getReviewDetail(Long reviewIdx) {
         return loginRiskPolicyMapper.findReviewByIdx(reviewIdx);
     }

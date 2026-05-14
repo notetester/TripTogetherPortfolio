@@ -106,6 +106,23 @@ public interface LoginRiskPolicyMapper {
                                             @Param("severity") String severity,
                                             @Param("reviewType") String reviewType,
                                             @Param("keyword") String keyword);
+
+    List<LoginRiskReviewVO> findReviewQueuePaged(@Param("status") String status,
+                                                 @Param("severity") String severity,
+                                                 @Param("reviewType") String reviewType,
+                                                 @Param("keyword") String keyword,
+                                                 @Param("searchType") String searchType,
+                                                 @Param("sortBy") String sortBy,
+                                                 @Param("sortDir") String sortDir,
+                                                 @Param("offset") int offset,
+                                                 @Param("limit") int limit);
+
+    long countReviewQueue(@Param("status") String status,
+                          @Param("severity") String severity,
+                          @Param("reviewType") String reviewType,
+                          @Param("keyword") String keyword,
+                          @Param("searchType") String searchType);
+
     LoginRiskReviewVO findReviewByIdx(@Param("reviewIdx") Long reviewIdx);
     void updateReviewDecision(@Param("reviewIdx") Long reviewIdx,
                               @Param("reviewStatus") String reviewStatus,

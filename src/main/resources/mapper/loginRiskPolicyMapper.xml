@@ -647,6 +647,67 @@
         (#{userIdx}, #{sourceType}, COALESCE(#{sourceId}, 0), #{message}, #{targetUrl}, NOW())
     </insert>
 
+    <sql id="reviewQueueFilter">
+        <where>
+            <if test="status != null and status != ''">AND rq.review_status = #{status}</if>
+            <if test="severity != null and severity != ''">AND rq.severity = #{severity}</if>
+            <if test="reviewType != null and reviewType != ''">AND rq.review_type = #{reviewType}</if>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'target'">
+                        AND (rq.subject_key LIKE CONCAT('%', #{keyword}, '%') OR rq.ip_address LIKE CONCAT('%', #{keyword}, '%'))
+                    </when>
+                    <when test="searchType == 'user'">
+                        AND (u.user_id LIKE CONCAT('%', #{keyword}, '%') OR u.nickname LIKE CONCAT('%', #{keyword}, '%'))
+                    </when>
+                    <when test="searchType == 'summary'">
+                        AND rq.summary LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'detail'">
+                        AND rq.detail_message LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'policyCode'">
+                        AND rq.policy_code LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (
+                            rq.policy_code LIKE CONCAT('%', #{keyword}, '%')
+                            OR rq.subject_key LIKE CONCAT('%', #{keyword}, '%')
+                            OR rq.ip_address LIKE CONCAT('%', #{keyword}, '%')
+                            OR rq.summary LIKE CONCAT('%', #{keyword}, '%')
+                            OR rq.detail_message LIKE CONCAT('%', #{keyword}, '%')
+                            OR u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                            OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </sql>
+
+    <sql id="reviewQueueOrder">
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'status'">rq.review_status</when>
+            <when test="sortBy == 'severity'">CASE rq.severity WHEN 'CRITICAL' THEN 0 WHEN 'HIGH' THEN 1 WHEN 'MEDIUM' THEN 2 ELSE 3 END</when>
+            <when test="sortBy == 'type'">rq.review_type</when>
+            <when test="sortBy == 'target'">rq.subject_key</when>
+            <when test="sortBy == 'summary'">rq.summary</when>
+            <when test="sortBy == 'date'">rq.created_at</when>
+            <otherwise>
+                CASE rq.review_status WHEN 'PENDING' THEN 0 WHEN 'HOLD' THEN 1 WHEN 'APPROVED' THEN 2 ELSE 3 END,
+                CASE rq.severity WHEN 'CRITICAL' THEN 0 WHEN 'HIGH' THEN 1 WHEN 'MEDIUM' THEN 2 ELSE 3 END,
+                rq.created_at DESC
+            </otherwise>
+        </choose>
+        <if test="sortBy != null and sortBy != ''">
+            <choose>
+                <when test="sortDir == 'DESC'">DESC</when>
+                <otherwise>ASC</otherwise>
+            </choose>
+        </if>
+    </sql>
+
     <select id="findReviewQueue" resultMap="LoginRiskReviewMap">
         SELECT
             rq.*,
@@ -658,26 +719,35 @@
         LEFT JOIN LOGIN_RISK_POLICY p ON p.policy_code = rq.policy_code
         LEFT JOIN USERS u ON u.user_idx = rq.user_idx
         LEFT JOIN USERS reviewer ON reviewer.user_idx = rq.reviewed_by_user_idx
-        <where>
-            <if test="status != null and status != ''">AND rq.review_status = #{status}</if>
-            <if test="severity != null and severity != ''">AND rq.severity = #{severity}</if>
-            <if test="reviewType != null and reviewType != ''">AND rq.review_type = #{reviewType}</if>
-            <if test="keyword != null and keyword != ''">
-                AND (
-                    rq.policy_code LIKE CONCAT('%', #{keyword}, '%')
-                    OR rq.subject_key LIKE CONCAT('%', #{keyword}, '%')
-                    OR rq.ip_address LIKE CONCAT('%', #{keyword}, '%')
-                    OR rq.summary LIKE CONCAT('%', #{keyword}, '%')
-                    OR rq.detail_message LIKE CONCAT('%', #{keyword}, '%')
-                    OR u.user_id LIKE CONCAT('%', #{keyword}, '%')
-                    OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
-                )
-            </if>
-        </where>
+        <include refid="reviewQueueFilter"/>
         ORDER BY
             CASE rq.review_status WHEN 'PENDING' THEN 0 WHEN 'HOLD' THEN 1 WHEN 'APPROVED' THEN 2 ELSE 3 END,
             CASE rq.severity WHEN 'CRITICAL' THEN 0 WHEN 'HIGH' THEN 1 WHEN 'MEDIUM' THEN 2 ELSE 3 END,
             rq.created_at DESC
+    </select>
+
+    <select id="findReviewQueuePaged" resultMap="LoginRiskReviewMap">
+        SELECT
+            rq.*,
+            p.policy_name,
+            u.user_id,
+            u.nickname,
+            reviewer.user_id AS reviewed_by_user_id
+        FROM LOGIN_RISK_REVIEW_QUEUE rq
+        LEFT JOIN LOGIN_RISK_POLICY p ON p.policy_code = rq.policy_code
+        LEFT JOIN USERS u ON u.user_idx = rq.user_idx
+        LEFT JOIN USERS reviewer ON reviewer.user_idx = rq.reviewed_by_user_idx
+        <include refid="reviewQueueFilter"/>
+        <include refid="reviewQueueOrder"/>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countReviewQueue" resultType="long">
+        SELECT COUNT(*)
+        FROM LOGIN_RISK_REVIEW_QUEUE rq
+        LEFT JOIN LOGIN_RISK_POLICY p ON p.policy_code = rq.policy_code
+        LEFT JOIN USERS u ON u.user_idx = rq.user_idx
+        <include refid="reviewQueueFilter"/>
     </select>
 
     <select id="findReviewByIdx" resultMap="LoginRiskReviewMap">

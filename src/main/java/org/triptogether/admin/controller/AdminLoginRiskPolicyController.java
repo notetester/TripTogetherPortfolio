@@ -108,12 +108,36 @@ public class AdminLoginRiskPolicyController {
                           @RequestParam(value = "severity", required = false) String severity,
                           @RequestParam(value = "reviewType", required = false) String reviewType,
                           @RequestParam(value = "keyword", required = false) String keyword,
+                          @RequestParam(value = "searchType", required = false, defaultValue = "all") String searchType,
+                          @RequestParam(value = "mode", required = false, defaultValue = "CLIENT") String mode,
+                          @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                          @RequestParam(value = "size", required = false, defaultValue = "20") int size,
+                          @RequestParam(value = "sortBy", required = false) String sortBy,
+                          @RequestParam(value = "sortDir", required = false, defaultValue = "ASC") String sortDir,
                           Model model) {
-        model.addAttribute("reviews", loginRiskPolicyService.getReviewQueue(status, severity, reviewType, keyword));
+        String normalizedMode = "SERVER".equalsIgnoreCase(mode) ? "SERVER" : "CLIENT";
+        int safeSize = "CLIENT".equals(normalizedMode) ? 10000 : Math.max(1, Math.min(size, 500));
+        int safePage = Math.max(1, page);
+
+        long total = loginRiskPolicyService.countReviewQueue(status, severity, reviewType, keyword, searchType);
+        List<LoginRiskReviewVO> rows = loginRiskPolicyService.getReviewQueuePaged(
+                status, severity, reviewType, keyword, searchType,
+                sortBy, sortDir, safePage, safeSize);
+
+        int totalPage = (int) Math.max(1, Math.ceil((double) total / safeSize));
+        model.addAttribute("reviews", rows);
+        model.addAttribute("total", total);
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("currentPage", safePage);
         model.addAttribute("status", status);
         model.addAttribute("severity", severity);
         model.addAttribute("reviewType", reviewType);
         model.addAttribute("keyword", keyword);
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("mode", normalizedMode);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortDir", sortDir);
         model.addAttribute("activeMenu", "loginRiskReviews");
         model.addAttribute("pageTitleCode", "security.admin.loginReviews.title");
         return "admin/login-risk/reviews";
