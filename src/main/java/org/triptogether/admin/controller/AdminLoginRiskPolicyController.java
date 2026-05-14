@@ -21,6 +21,7 @@ import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.SecurityAppealPolicyVO;
 import org.triptogether.auth.vo.SecurityAppealVO;
 import org.triptogether.auth.vo.SecurityReviewVO;
+import org.triptogether.auth.vo.SecurityWafSyncQueueVO;
 import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 import org.triptogether.auth.vo.UsersVO;
 
@@ -1240,6 +1241,120 @@ public class AdminLoginRiskPolicyController {
         loginRiskPolicyService.retryWafSync(syncIdx, currentAdminIdx(session));
         redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.wafSyncRetryQueued"));
         return "redirect:/admin/login-risk/waf-sync";
+    }
+
+    @PostMapping("/waf-sync/bulk")
+    public String bulkWafSync(@RequestParam("action") String action,
+                              @RequestParam(value = "ids", required = false) String idsCsv,
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes,
+                              Locale locale) {
+        List<Long> ids = parseIds(idsCsv);
+        int affected = 0;
+        if ("retry".equalsIgnoreCase(action)) {
+            affected = loginRiskPolicyService.bulkRetryWafSync(ids, currentAdminIdx(session));
+        }
+        redirectAttributes.addFlashAttribute("message",
+                msg(locale, "security.admin.flash.bulkWafSyncProcessed") + " (" + affected + "/" + ids.size() + ")");
+        return "redirect:/admin/login-risk/waf-sync";
+    }
+
+    @GetMapping("/waf-sync/export")
+    public ResponseEntity<byte[]> exportWafSync(
+            @RequestParam(value = "scope", required = false, defaultValue = "filtered") String scope,
+            @RequestParam(value = "format", required = false, defaultValue = "csv") String format,
+            @RequestParam(value = "selectedIds", required = false) String selectedIds,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "targetType", required = false) String targetType,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+        try {
+            List<SecurityWafSyncQueueVO> data;
+            if ("all".equalsIgnoreCase(scope)) {
+                data = loginRiskPolicyService.getWafSyncQueue(null, null, null);
+            } else if ("selected".equalsIgnoreCase(scope)) {
+                List<Long> ids = parseIds(selectedIds);
+                if (ids.isEmpty()) {
+                    return ResponseEntity.badRequest().build();
+                }
+                data = loginRiskPolicyService.getWafSyncQueue(null, null, null).stream()
+                        .filter(w -> w.getSyncIdx() != null && ids.contains(w.getSyncIdx()))
+                        .toList();
+            } else {
+                data = loginRiskPolicyService.getWafSyncQueue(status, targetType, keyword);
+            }
+            if ("excel".equalsIgnoreCase(format)) {
+                byte[] bytes = buildWafSyncExcel(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"waf-sync.xlsx\"")
+                        .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(bytes);
+            }
+            byte[] bytes = buildWafSyncCsv(data);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"waf-sync.csv\"")
+                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                    .body(bytes);
+        } catch (Exception e) {
+            log.error("WAF 동기화 큐 내보내기 실패", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private static final String[] WAF_SYNC_EXPORT_HEADERS = {
+            "syncIdx", "status", "sourceType", "sourceId", "syncAction",
+            "targetType", "targetValue", "detailMessage",
+            "syncedAt", "createdAt", "updatedAt"
+    };
+
+    private byte[] buildWafSyncCsv(List<SecurityWafSyncQueueVO> data) {
+        StringBuilder sb = new StringBuilder("﻿");
+        sb.append(String.join(",", WAF_SYNC_EXPORT_HEADERS)).append('\n');
+        for (SecurityWafSyncQueueVO w : data) {
+            Object[] cols = wafSyncRow(w);
+            for (int i = 0; i < cols.length; i++) {
+                if (i > 0) sb.append(',');
+                sb.append(csvVal(cols[i]));
+            }
+            sb.append('\n');
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private byte[] buildWafSyncExcel(List<SecurityWafSyncQueueVO> data) throws Exception {
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            var sheet = wb.createSheet("waf-sync");
+            var hRow = sheet.createRow(0);
+            for (int i = 0; i < WAF_SYNC_EXPORT_HEADERS.length; i++) {
+                hRow.createCell(i).setCellValue(WAF_SYNC_EXPORT_HEADERS[i]);
+            }
+            int r = 1;
+            for (SecurityWafSyncQueueVO w : data) {
+                Object[] cols = wafSyncRow(w);
+                var row = sheet.createRow(r++);
+                for (int i = 0; i < cols.length; i++) {
+                    row.createCell(i).setCellValue(cols[i] == null ? "" : String.valueOf(cols[i]));
+                }
+            }
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private Object[] wafSyncRow(SecurityWafSyncQueueVO w) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return new Object[]{
+                w.getSyncIdx(),
+                w.getStatus(),
+                w.getSourceType(),
+                w.getSourceId(),
+                w.getSyncAction(),
+                w.getTargetType(),
+                w.getTargetValue(),
+                w.getDetailMessage(),
+                w.getSyncedAt() == null ? "" : w.getSyncedAt().format(fmt),
+                w.getCreatedAt() == null ? "" : w.getCreatedAt().format(fmt),
+                w.getUpdatedAt() == null ? "" : w.getUpdatedAt().format(fmt)
+        };
     }
 
     @GetMapping("/notification-preferences")

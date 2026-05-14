@@ -472,6 +472,22 @@ public class LoginRiskPolicyService {
     }
 
     @Transactional
+    public int bulkRetryWafSync(List<Long> ids, Long actorUserIdx) {
+        if (ids == null || ids.isEmpty()) return 0;
+        int affected = 0;
+        for (Long id : ids) {
+            if (id == null) continue;
+            try {
+                retryWafSync(id, actorUserIdx);
+                affected++;
+            } catch (RuntimeException ignore) {
+                /* skip individual failures */
+            }
+        }
+        return affected;
+    }
+
+    @Transactional
     public void retryWafSync(Long syncIdx, Long actorUserIdx) {
         loginRiskPolicyMapper.resetWafSyncStatus(syncIdx, msg("ko", "security.waf.sync.retryRequested"));
         loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
