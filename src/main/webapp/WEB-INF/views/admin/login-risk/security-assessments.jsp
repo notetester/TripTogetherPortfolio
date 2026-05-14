@@ -36,7 +36,6 @@
 <spring:message var="msg_admin_common_exportAll" code="admin.common.exportAll"/>
 <spring:message var="msg_admin_common_exportFiltered" code="admin.common.exportFiltered"/>
 <spring:message var="msg_admin_common_exportSelected" code="admin.common.exportSelected"/>
-<spring:message var="msg_admin_common_apply2" code="admin.common.apply"/>
 <spring:message var="msg_admin_common_clearSelection" code="admin.common.clearSelection"/>
 <spring:message var="msg_admin_common_selectedCount" code="admin.common.selectedCount"/>
 <spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
