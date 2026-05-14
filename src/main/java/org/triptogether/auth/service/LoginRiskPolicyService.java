@@ -198,6 +198,35 @@ public class LoginRiskPolicyService {
     }
 
     @Transactional
+    public int bulkActOnSecurityAssessments(List<Long> ids, String action, Long actorUserIdx) {
+        if (ids == null || ids.isEmpty() || action == null) return 0;
+        int affected = 0;
+        for (Long id : ids) {
+            if (id == null) continue;
+            try {
+                SecurityRiskAssessmentVO a = loginRiskPolicyMapper.findSecurityRiskAssessmentByIdx(id);
+                if (a == null) continue;
+                switch (action) {
+                    case "apply-user-block" -> {
+                        if ("USER".equalsIgnoreCase(a.getSubjectType())) {
+                            applyUserBlockFromSecurityAssessment(id, actorUserIdx);
+                            affected++;
+                        }
+                    }
+                    case "create-review" -> {
+                        createSecurityReviewFromAssessment(id, a.getRiskLevel(), a.getRecommendationAction(), a.getEvidenceSummary());
+                        affected++;
+                    }
+                    default -> { /* unknown action */ }
+                }
+            } catch (RuntimeException ignore) {
+                /* skip individual failures */
+            }
+        }
+        return affected;
+    }
+
+    @Transactional
     public void createSecurityReviewFromAssessment(Long assessmentIdx, String severity, String summary, String detailMessage) {
         SecurityRiskAssessmentVO assessment = loginRiskPolicyMapper.findSecurityRiskAssessmentByIdx(assessmentIdx);
         if (assessment == null) {

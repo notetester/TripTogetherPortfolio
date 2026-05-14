@@ -19,6 +19,7 @@ import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.LoginRiskReviewVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.SecurityAppealPolicyVO;
+import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 import org.triptogether.auth.vo.UsersVO;
 
 import java.io.ByteArrayOutputStream;
@@ -399,6 +400,122 @@ public class AdminLoginRiskPolicyController {
         loginRiskPolicyService.createSecurityReviewFromAssessment(assessmentIdx, severity, summary, detailMessage);
         redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.assessmentQueued"));
         return "redirect:/admin/login-risk/security-assessments";
+    }
+
+    @PostMapping("/security-assessments/bulk")
+    public String bulkSecurityAssessmentAction(@RequestParam("action") String action,
+                                               @RequestParam(value = "ids", required = false) String idsCsv,
+                                               HttpSession session,
+                                               RedirectAttributes redirectAttributes,
+                                               Locale locale) {
+        List<Long> ids = parseIds(idsCsv);
+        int affected = loginRiskPolicyService.bulkActOnSecurityAssessments(ids, action, currentAdminIdx(session));
+        redirectAttributes.addFlashAttribute("message",
+                msg(locale, "security.admin.flash.assessmentBulkProcessed") + " (" + affected + "/" + ids.size() + ")");
+        return "redirect:/admin/login-risk/security-assessments";
+    }
+
+    @GetMapping("/security-assessments/export")
+    public ResponseEntity<byte[]> exportSecurityAssessments(
+            @RequestParam(value = "scope", required = false, defaultValue = "filtered") String scope,
+            @RequestParam(value = "format", required = false, defaultValue = "csv") String format,
+            @RequestParam(value = "selectedIds", required = false) String selectedIds,
+            @RequestParam(value = "assessmentScope", required = false) String assessmentScope,
+            @RequestParam(value = "sourceKind", required = false) String sourceKind,
+            @RequestParam(value = "riskLevel", required = false) String riskLevel,
+            @RequestParam(value = "decisionStatus", required = false) String decisionStatus,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+        try {
+            List<SecurityRiskAssessmentVO> data;
+            if ("all".equalsIgnoreCase(scope)) {
+                data = loginRiskPolicyService.getSecurityRiskAssessments(null, null, null, null, null);
+            } else if ("selected".equalsIgnoreCase(scope)) {
+                List<Long> ids = parseIds(selectedIds);
+                if (ids.isEmpty()) {
+                    return ResponseEntity.badRequest().build();
+                }
+                data = loginRiskPolicyService.getSecurityRiskAssessments(null, null, null, null, null).stream()
+                        .filter(a -> a.getAssessmentIdx() != null && ids.contains(a.getAssessmentIdx()))
+                        .toList();
+            } else {
+                data = loginRiskPolicyService.getSecurityRiskAssessments(assessmentScope, sourceKind, riskLevel, decisionStatus, keyword);
+            }
+            if ("excel".equalsIgnoreCase(format)) {
+                byte[] bytes = buildSecurityAssessmentExcel(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"security-assessments.xlsx\"")
+                        .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(bytes);
+            }
+            byte[] bytes = buildSecurityAssessmentCsv(data);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"security-assessments.csv\"")
+                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                    .body(bytes);
+        } catch (Exception e) {
+            log.error("보안 위험 판단 내보내기 실패", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private static final String[] SECURITY_ASSESSMENT_EXPORT_HEADERS = {
+            "assessmentIdx", "assessmentScope", "sourceKind", "sourceCode", "sourceName", "sourceVersion",
+            "policyCode", "subjectType", "subjectKey", "userId", "nickname", "ipAddress",
+            "countryCode", "asn", "contentType", "contentId",
+            "riskScore", "riskLevel", "confidenceScore",
+            "recommendationAction", "recommendationReason", "evidenceSummary",
+            "decisionStatus", "createdAt"
+    };
+
+    private byte[] buildSecurityAssessmentCsv(List<SecurityRiskAssessmentVO> data) {
+        StringBuilder sb = new StringBuilder("﻿");
+        sb.append(String.join(",", SECURITY_ASSESSMENT_EXPORT_HEADERS)).append('\n');
+        for (SecurityRiskAssessmentVO a : data) {
+            Object[] cols = securityAssessmentRow(a);
+            for (int i = 0; i < cols.length; i++) {
+                if (i > 0) sb.append(',');
+                sb.append(csvVal(cols[i]));
+            }
+            sb.append('\n');
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private byte[] buildSecurityAssessmentExcel(List<SecurityRiskAssessmentVO> data) throws Exception {
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            var sheet = wb.createSheet("security-assessments");
+            var hRow = sheet.createRow(0);
+            for (int i = 0; i < SECURITY_ASSESSMENT_EXPORT_HEADERS.length; i++) {
+                hRow.createCell(i).setCellValue(SECURITY_ASSESSMENT_EXPORT_HEADERS[i]);
+            }
+            int r = 1;
+            for (SecurityRiskAssessmentVO a : data) {
+                Object[] cols = securityAssessmentRow(a);
+                var row = sheet.createRow(r++);
+                for (int i = 0; i < cols.length; i++) {
+                    row.createCell(i).setCellValue(cols[i] == null ? "" : String.valueOf(cols[i]));
+                }
+            }
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private Object[] securityAssessmentRow(SecurityRiskAssessmentVO a) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return new Object[]{
+                a.getAssessmentIdx(),
+                a.getAssessmentScope(),
+                a.getSourceKind(), a.getSourceCode(), a.getSourceName(), a.getSourceVersion(),
+                a.getPolicyCode(), a.getSubjectType(), a.getSubjectKey(),
+                a.getUserId(), a.getNickname(), a.getIpAddress(),
+                a.getCountryCode(), a.getAsn(),
+                a.getContentType(), a.getContentId(),
+                a.getRiskScore(), a.getRiskLevel(), a.getConfidenceScore(),
+                a.getRecommendationAction(), a.getRecommendationReason(), a.getEvidenceSummary(),
+                a.getDecisionStatus(),
+                a.getCreatedAt() == null ? "" : a.getCreatedAt().format(fmt)
+        };
     }
 
     @GetMapping("/security-reviews")

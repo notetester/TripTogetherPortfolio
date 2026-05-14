@@ -5,7 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
-<%-- i18n message declarations: var names are derived from message codes. --%>
+<%-- i18n message declarations --%>
 <spring:message var="msg_security_admin_securityAssessments_title" code="security.admin.securityAssessments.title"/>
 <spring:message var="msg_security_admin_placeholder_accountIpEvidenceSource" code="security.admin.placeholder.accountIpEvidenceSource"/>
 <spring:message var="msg_security_admin_nav_securityAssessments" code="security.admin.nav.securityAssessments"/>
@@ -32,6 +32,26 @@
 <spring:message var="msg_security_admin_empty_securityAssessments" code="security.admin.empty.securityAssessments"/>
 <spring:message var="msg_admin_common_reset" code="admin.common.reset"/>
 <spring:message var="msg_admin_common_totalCount" code="admin.common.totalCount" arguments="${fn:length(assessments)}"/>
+<spring:message var="msg_admin_common_export" code="admin.common.export"/>
+<spring:message var="msg_admin_common_exportAll" code="admin.common.exportAll"/>
+<spring:message var="msg_admin_common_exportFiltered" code="admin.common.exportFiltered"/>
+<spring:message var="msg_admin_common_exportSelected" code="admin.common.exportSelected"/>
+<spring:message var="msg_admin_common_apply2" code="admin.common.apply"/>
+<spring:message var="msg_admin_common_clearSelection" code="admin.common.clearSelection"/>
+<spring:message var="msg_admin_common_selectedCount" code="admin.common.selectedCount"/>
+<spring:message var="msg_admin_common_prev" code="admin.common.prev"/>
+<spring:message var="msg_admin_common_next" code="admin.common.next"/>
+<spring:message var="msg_admin_common_pageSizeLabel" code="admin.common.pageSizeLabel"/>
+<spring:message var="msg_admin_common_pageSize_10" code="admin.common.pageSize" arguments="10"/>
+<spring:message var="msg_admin_common_pageSize_20" code="admin.common.pageSize" arguments="20"/>
+<spring:message var="msg_admin_common_pageSize_50" code="admin.common.pageSize" arguments="50"/>
+<spring:message var="msg_admin_common_pageSize_100" code="admin.common.pageSize" arguments="100"/>
+<spring:message var="msg_lrr_sortReset" code="security.admin.loginReviews.sortReset"/>
+<spring:message var="msg_lrr_pickAction" code="security.admin.loginReviews.pickActionMsg"/>
+<spring:message var="msg_lrr_noSelection" code="security.admin.loginReviews.noSelectionMsg"/>
+<spring:message var="msg_lrr_pageSearchPlaceholder" code="security.admin.loginReviews.pageSearchPlaceholder"/>
+<spring:message var="msg_lrr_bulkActionPlaceholder" code="security.admin.loginReviews.bulkActionPlaceholder"/>
+
 <c:set var="pageTitle" value="${msg_security_admin_securityAssessments_title}"/>
 <c:set var="activeMenu" value="securityRiskAssessments"/>
 
@@ -56,7 +76,7 @@
         <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
-    <form method="get" class="adm-card adm-security-assessment-filter-card adm-overflow-visible">
+    <form id="sraSearchForm" method="get" class="adm-card adm-security-assessment-filter-card adm-overflow-visible">
         <div class="adm-card-body">
             <div class="adm-security-assessment-filterbar">
                 <label>${msg_security_admin_common_scope}
@@ -108,43 +128,96 @@
     </form>
 
     <div class="adm-card adm-security-assessment-list-card adm-overflow-visible">
-        <div class="adm-card-head">
-            <div class="adm-card-title">${msg_security_admin_securityAssessments_title}</div>
-            <div class="adm-page-muted">${msg_admin_common_totalCount}</div>
+        <div class="adm-card-head sra-card-head">
+            <div class="adm-card-title">
+                ${msg_security_admin_securityAssessments_title}
+                <span class="sra-total-label" id="sraTotalLabel">${msg_admin_common_totalCount}</span>
+            </div>
+            <div class="adm-export-control sra-export-control">
+                <select class="adm-select sra-export-format" id="sraExportFormat">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <button type="button" class="adm-btn adm-btn-ghost js-sra-export-toggle">${msg_admin_common_export} ▾</button>
+                <div id="sraExportDropdown" class="adm-export-dropdown">
+                    <button type="button" class="adm-export-item" onclick="sraExport('all')">${msg_admin_common_exportAll}</button>
+                    <button type="button" class="adm-export-item" onclick="sraExport('filtered')">${msg_admin_common_exportFiltered}</button>
+                    <button type="button" class="adm-export-item" id="sraExportSelectedBtn" disabled onclick="sraExport('selected')">${msg_admin_common_exportSelected} (0)</button>
+                </div>
+            </div>
         </div>
+
+        <div class="sra-controlbar">
+            <div id="sraBulkBar" class="sra-bulkbar" aria-live="polite" aria-hidden="true">
+                <span class="sra-bulk-count"><strong id="sraBulkCount">0</strong>${msg_admin_common_selectedCount}</span>
+                <div class="sra-bulk-actions">
+                    <select class="adm-select" id="sraBulkActionSelect">
+                        <option value="">${msg_lrr_bulkActionPlaceholder}</option>
+                        <option value="create-review">${msg_security_admin_common_enqueueReview}</option>
+                        <option value="apply-user-block">${msg_security_admin_common_applyUserBlock}</option>
+                    </select>
+                    <button type="button" class="adm-btn adm-btn-primary" onclick="sraApplyBulk()">${msg_admin_common_apply}</button>
+                </div>
+                <button type="button" class="adm-btn adm-btn-ghost sra-bulk-clear" onclick="sraClearSelection()">${msg_admin_common_clearSelection}</button>
+            </div>
+            <div class="sra-view-tools">
+                <button type="button" class="adm-btn adm-btn-ghost sra-sort-reset adm-is-hidden" id="sraSortReset" onclick="sraResetSort()">${msg_lrr_sortReset}</button>
+                <label class="sra-tool sra-page-search-tool">
+                    <input class="adm-input sra-page-search" id="sraPageSearch" type="text" placeholder="${msg_lrr_pageSearchPlaceholder}" oninput="sraSetPageSearch(this.value)">
+                </label>
+                <label class="sra-tool">
+                    <span class="sra-tool-label">${msg_admin_common_pageSizeLabel}</span>
+                    <select class="adm-select sra-page-size" id="sraPageSize" onchange="sraChangeSize(this.value)">
+                        <option value="10">${msg_admin_common_pageSize_10}</option>
+                        <option value="20" selected>${msg_admin_common_pageSize_20}</option>
+                        <option value="50">${msg_admin_common_pageSize_50}</option>
+                        <option value="100">${msg_admin_common_pageSize_100}</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
         <div class="adm-table-wrap">
             <table id="securityAssessmentTable"
-                   class="adm-table adm-section-table-fixed adm-security-assessment-table sa-table"
+                   class="adm-table adm-section-table-fixed adm-security-assessment-table sra-table"
                    data-section="securityAssessments"
                    data-admin-list-ignore="hard">
                 <colgroup>
-                    <col class="sa-col-check"/>
-                    <col class="sa-col-source"/>
-                    <col class="sa-col-target"/>
-                    <col class="sa-col-risk"/>
-                    <col class="sa-col-recommend"/>
-                    <col class="sa-col-evidence"/>
-                    <col class="sa-col-status"/>
-                    <col class="sa-col-date"/>
-                    <col class="sa-col-action"/>
+                    <col class="sra-col-check"/>
+                    <col class="sra-col-source"/>
+                    <col class="sra-col-target"/>
+                    <col class="sra-col-risk"/>
+                    <col class="sra-col-recommend"/>
+                    <col class="sra-col-evidence"/>
+                    <col class="sra-col-status"/>
+                    <col class="sra-col-date"/>
+                    <col class="sra-col-action"/>
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="sa-th sa-th-check"><input type="checkbox" aria-label="전체 선택"></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 1)"><span class="sa-th-label">${msg_security_admin_common_scopeSource}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 2)"><span class="sa-th-label">${msg_security_admin_common_target}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 3)"><span class="sa-th-label">${msg_security_admin_common_riskLevel}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 4)"><span class="sa-th-label">${msg_security_admin_common_recommendationAction}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 5)"><span class="sa-th-label">${msg_security_admin_common_evidence}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 6)"><span class="sa-th-label">${msg_security_admin_common_status}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="sortStaticAdminTable('securityAssessmentTable', 7)"><span class="sa-th-label">${msg_security_admin_common_createdAt}</span><span class="sa-sort-ico" aria-hidden="true"></span></th>
-                    <th class="sa-th" onclick="focusStaticAdminTableAction('securityAssessmentTable')"><span class="sa-th-label">${msg_security_admin_common_apply}</span></th>
+                    <th class="sra-th sra-th-check"><input type="checkbox" id="sraCheckAll" onchange="sraToggleAll(this)" aria-label="select-all"></th>
+                    <th class="sra-th sra-sortable" data-sort="source" onclick="sraSortBy('source')"><span class="sra-th-label">${msg_security_admin_common_scopeSource}</span><span class="sra-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sra-th sra-sortable" data-sort="target" onclick="sraSortBy('target')"><span class="sra-th-label">${msg_security_admin_common_target}</span><span class="sra-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sra-th sra-sortable" data-sort="risk" onclick="sraSortBy('risk')"><span class="sra-th-label">${msg_security_admin_common_riskLevel}</span><span class="sra-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sra-th sra-sortable" data-sort="recommend" onclick="sraSortBy('recommend')"><span class="sra-th-label">${msg_security_admin_common_recommendationAction}</span><span class="sra-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sra-th"><span class="sra-th-label">${msg_security_admin_common_evidence}</span></th>
+                    <th class="sra-th sra-sortable" data-sort="status" onclick="sraSortBy('status')"><span class="sra-th-label">${msg_security_admin_common_status}</span><span class="sra-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sra-th sra-sortable" data-sort="date" onclick="sraSortBy('date')"><span class="sra-th-label">${msg_security_admin_common_createdAt}</span><span class="sra-sort-ico" aria-hidden="true"></span></th>
+                    <th class="sra-th"><span class="sra-th-label">${msg_security_admin_common_apply}</span></th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="sraTableBody">
                 <c:forEach var="a" items="${assessments}">
-                    <tr>
-                        <td class="sa-cell-check"><input type="checkbox" aria-label="행 선택"></td>
+                    <tr data-row-id="${a.assessmentIdx}"
+                        data-subject-type="${fn:escapeXml(a.subjectType)}"
+                        data-decision-status="${fn:escapeXml(a.decisionStatus)}"
+                        data-sort-source="${fn:escapeXml(a.assessmentScope)}|${fn:escapeXml(a.sourceKind)}|${fn:escapeXml(a.sourceName)}"
+                        data-sort-target="${fn:escapeXml(a.subjectType)}:${fn:escapeXml(a.subjectKey)}"
+                        data-sort-risk="${fn:escapeXml(a.riskLevel)}|${a.riskScore}"
+                        data-sort-recommend="${fn:escapeXml(a.recommendationAction)}"
+                        data-sort-status="${fn:escapeXml(a.decisionStatus)}"
+                        data-sort-date="<fmt:formatDate value='${a.createdAtDate}' pattern='yyyyMMddHHmm'/>">
+                        <td class="sra-cell-check"><input type="checkbox" class="js-sra-row-check" value="${a.assessmentIdx}" onchange="sraUpdateBulkCount()" aria-label="row-select"></td>
                         <td>
                             <div class="adm-security-assessment-primary"><c:out value="${a.assessmentScope}"/></div>
                             <div class="adm-page-muted"><c:out value="${a.sourceKind}"/></div>
@@ -186,106 +259,355 @@
                         </td>
                     </tr>
                 </c:forEach>
-                <c:if test="${empty assessments}">
-                    <tr class="adm-local-empty"><td colspan="9" class="adm-local-empty-cell">${msg_security_admin_empty_securityAssessments}</td></tr>
-                </c:if>
                 </tbody>
             </table>
+            <div class="sra-empty adm-is-hidden" id="sraEmptyState">${msg_security_admin_empty_securityAssessments}</div>
+        </div>
+
+        <div class="sra-pagination" id="sraPaging">
+            <div class="sra-page-info"><span id="sraPageInfo"></span></div>
+            <div class="sra-page-actions">
+                <button type="button" class="adm-btn adm-btn-ghost" id="sraPrevBtn" onclick="sraGoPage(window.sraState.page - 1)">${msg_admin_common_prev}</button>
+                <span class="sra-page-state" id="sraPageState"></span>
+                <button type="button" class="adm-btn adm-btn-ghost" id="sraNextBtn" onclick="sraGoPage(window.sraState.page + 1)">${msg_admin_common_next}</button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-function sortStaticAdminTable(tableId, columnIndex) {
-    const table = document.getElementById(tableId);
-    const tbody = table ? table.querySelector('tbody') : null;
-    if (!tbody) return;
-    const prevIndex = Number(table.dataset.sortIndex || -1);
-    const prevDir = table.dataset.sortDir || 'ASC';
-    const nextDir = prevIndex === columnIndex && prevDir === 'ASC' ? 'DESC' : 'ASC';
-    table.dataset.sortIndex = String(columnIndex);
-    table.dataset.sortDir = nextDir;
-    const rows = Array.from(tbody.querySelectorAll('tr')).filter(function(row) {
-        return row.children.length > columnIndex && !row.querySelector('td[colspan]');
-    });
-    rows.sort(function(a, b) {
-        const av = (a.children[columnIndex].innerText || '').replace(/\s+/g, ' ').trim();
-        const bv = (b.children[columnIndex].innerText || '').replace(/\s+/g, ' ').trim();
-        return av.localeCompare(bv, undefined, { numeric: true, sensitivity: 'base' }) * (nextDir === 'ASC' ? 1 : -1);
-    }).forEach(function(row) { tbody.appendChild(row); });
-    table.querySelectorAll('th').forEach(function(th, idx) {
-        const ico = th.querySelector('.sort-ico');
-        if (ico) ico.textContent = idx === columnIndex ? (nextDir === 'ASC' ? '▲' : '▼') : '';
-    });
-}
-function focusStaticAdminTableAction(tableId) {
-    const table = document.getElementById(tableId);
-    const target = table ? table.querySelector('tbody button, tbody a, tbody input, tbody select, tbody textarea') : null;
-    if (target) {
-        target.scrollIntoView({ block: 'center', behavior: 'smooth' });
-        target.focus({ preventScroll: true });
-    }
-}
 (function () {
-    const orig = window.sortStaticAdminTable;
-    window.sortStaticAdminTable = function (tableId, columnIndex) {
-        orig(tableId, columnIndex);
-        const table = document.getElementById(tableId);
-        if (!table) return;
-        const dir = table.dataset.sortDir || 'ASC';
-        const idx = Number(table.dataset.sortIndex || -1);
-        table.querySelectorAll('th').forEach(function (th, i) {
-            const ico = th.querySelector('.sa-sort-ico');
-            if (ico) ico.textContent = i === idx ? (dir === 'ASC' ? '▲' : '▼') : '';
-        });
+    'use strict';
+    /* ─── 보안 위험 판단 — 클라이언트 사이드 페이징·정렬·검색·체크박스 일괄처리 ───
+       로딩 방식 결정: 서버 getSecurityRiskAssessments() 는 LIMIT 없이 5개 필터(assessmentScope/
+       sourceKind/riskLevel/decisionStatus/keyword)로 서버 필터링 후 전 결과 반환. 단건
+       create-review / apply-user-block 액션을 ids 기반 bulk POST 로 확장. 행 별 단건 폼은 유지.
+       프리픽스 sra- (security risk assessment) — sa- 는 superAdmin 예약. */
+    var ctx = '${pageContext.request.contextPath}';
+
+    var SRA_MSG = {
+        exportSelectedLabel: '${msg_admin_common_exportSelected}',
+        pickAction: '${msg_lrr_pickAction}',
+        noSelection: '${msg_lrr_noSelection}',
+        bulkConfirmTpl: '<spring:message code="security.admin.loginReviews.bulkConfirm" arguments="{0}" javaScriptEscape="true"/>'
     };
+
+    var sraState = {
+        page: 1, pageSize: 20,
+        sortBy: '', sortDir: 'ASC',
+        pageSearch: '',
+        rows: [], filtered: []
+    };
+    window.sraState = sraState;
+
+    function cacheRows() {
+        var tbody = document.getElementById('sraTableBody');
+        if (!tbody) return;
+        sraState.rows = Array.prototype.slice.call(tbody.querySelectorAll('tr[data-row-id]'));
+    }
+    function applyFilter() {
+        var q = (sraState.pageSearch || '').trim().toLowerCase();
+        if (!q) { sraState.filtered = sraState.rows.slice(); return; }
+        sraState.filtered = sraState.rows.filter(function (tr) {
+            return ((tr.innerText || tr.textContent) || '').toLowerCase().indexOf(q) !== -1;
+        });
+    }
+    function applySort() {
+        if (!sraState.sortBy) return;
+        var dir = sraState.sortDir === 'DESC' ? -1 : 1;
+        var attr = 'data-sort-' + sraState.sortBy;
+        sraState.filtered.sort(function (a, b) {
+            var av = (a.getAttribute(attr) || '').toLowerCase();
+            var bv = (b.getAttribute(attr) || '').toLowerCase();
+            return av.localeCompare(bv, undefined, { numeric: true, sensitivity: 'base' }) * dir;
+        });
+    }
+    function render() {
+        var tbody = document.getElementById('sraTableBody');
+        if (!tbody) return;
+        var total = sraState.filtered.length;
+        var pageSize = sraState.pageSize > 0 ? sraState.pageSize : 20;
+        var totalPage = Math.max(1, Math.ceil(total / pageSize));
+        if (sraState.page > totalPage) sraState.page = totalPage;
+        if (sraState.page < 1) sraState.page = 1;
+        var start = (sraState.page - 1) * pageSize;
+        var slice = sraState.filtered.slice(start, start + pageSize);
+
+        sraState.rows.forEach(function (tr) { if (tr.parentNode === tbody) tbody.removeChild(tr); });
+        Array.prototype.slice.call(tbody.querySelectorAll('.sra-empty-row')).forEach(function (tr) { tr.remove(); });
+        slice.forEach(function (tr) { tbody.appendChild(tr); });
+        if (slice.length === 0) {
+            var emptyTpl = document.getElementById('sraEmptyState');
+            var emptyText = emptyTpl ? emptyTpl.textContent : '';
+            var emptyTr = document.createElement('tr');
+            emptyTr.className = 'sra-empty-row';
+            var td = document.createElement('td');
+            td.colSpan = 9; td.className = 'sra-empty-cell'; td.textContent = emptyText;
+            emptyTr.appendChild(td);
+            tbody.appendChild(emptyTr);
+        }
+
+        var info = document.getElementById('sraPageInfo');
+        if (info) info.textContent = total + ' / ' + sraState.rows.length;
+        var stateEl = document.getElementById('sraPageState');
+        if (stateEl) stateEl.textContent = sraState.page + ' / ' + totalPage;
+        var prev = document.getElementById('sraPrevBtn');
+        var next = document.getElementById('sraNextBtn');
+        if (prev) prev.disabled = sraState.page <= 1;
+        if (next) next.disabled = sraState.page >= totalPage;
+
+        Array.prototype.slice.call(document.querySelectorAll('#securityAssessmentTable thead th.sra-sortable')).forEach(function (th) {
+            var ico = th.querySelector('.sra-sort-ico');
+            if (!ico) return;
+            ico.textContent = (th.getAttribute('data-sort') === sraState.sortBy)
+                ? (sraState.sortDir === 'DESC' ? '▼' : '▲')
+                : '';
+        });
+        var resetBtn = document.getElementById('sraSortReset');
+        if (resetBtn) resetBtn.classList.toggle('adm-is-hidden', !sraState.sortBy);
+
+        updateBulkCount();
+    }
+    function applyAll() { applyFilter(); applySort(); render(); }
+
+    function updateBulkCount() {
+        var checked = document.querySelectorAll('#sraTableBody .js-sra-row-check:checked');
+        var n = checked.length;
+        var bulkBar = document.getElementById('sraBulkBar');
+        if (bulkBar) {
+            bulkBar.classList.toggle('is-active', n > 0);
+            bulkBar.setAttribute('aria-hidden', n > 0 ? 'false' : 'true');
+            bulkBar.querySelectorAll('select, button').forEach(function (el) { el.disabled = n === 0; });
+        }
+        var countEl = document.getElementById('sraBulkCount');
+        if (countEl) countEl.textContent = n;
+        var selBtn = document.getElementById('sraExportSelectedBtn');
+        if (selBtn) {
+            selBtn.disabled = n === 0;
+            selBtn.textContent = SRA_MSG.exportSelectedLabel + ' (' + n + ')';
+        }
+        var checkAll = document.getElementById('sraCheckAll');
+        if (checkAll) {
+            var visible = document.querySelectorAll('#sraTableBody .js-sra-row-check');
+            checkAll.checked = visible.length > 0 && n === visible.length;
+            checkAll.indeterminate = n > 0 && n < visible.length;
+        }
+    }
+    window.sraUpdateBulkCount = updateBulkCount;
+
+    window.sraToggleAll = function (cb) {
+        document.querySelectorAll('#sraTableBody .js-sra-row-check').forEach(function (c) { c.checked = cb.checked; });
+        updateBulkCount();
+    };
+    window.sraClearSelection = function () {
+        document.querySelectorAll('#sraTableBody .js-sra-row-check').forEach(function (c) { c.checked = false; });
+        var checkAll = document.getElementById('sraCheckAll');
+        if (checkAll) { checkAll.checked = false; checkAll.indeterminate = false; }
+        updateBulkCount();
+    };
+
+    window.sraSortBy = function (field) {
+        if (sraState.sortBy === field) {
+            sraState.sortDir = (sraState.sortDir === 'ASC') ? 'DESC' : 'ASC';
+        } else { sraState.sortBy = field; sraState.sortDir = 'ASC'; }
+        sraState.page = 1;
+        applyAll();
+    };
+    window.sraResetSort = function () {
+        sraState.sortBy = ''; sraState.sortDir = 'ASC'; sraState.page = 1; applyAll();
+    };
+    window.sraChangeSize = function (size) {
+        var n = parseInt(size, 10);
+        sraState.pageSize = (n > 0 ? n : 20);
+        sraState.page = 1; render();
+    };
+    window.sraGoPage = function (p) {
+        var total = sraState.filtered.length;
+        var totalPage = Math.max(1, Math.ceil(total / sraState.pageSize));
+        var next = Math.min(Math.max(1, parseInt(p, 10) || 1), totalPage);
+        if (next === sraState.page) return;
+        sraState.page = next; render();
+    };
+    window.sraSetPageSearch = function (text) {
+        sraState.pageSearch = text || ''; sraState.page = 1; applyAll();
+    };
+
+    window.sraApplyBulk = function () {
+        var action = (document.getElementById('sraBulkActionSelect') || {}).value || '';
+        if (!action) { alert(SRA_MSG.pickAction); return; }
+        var checked = Array.prototype.slice.call(document.querySelectorAll('#sraTableBody .js-sra-row-check:checked'));
+        if (!checked.length) { alert(SRA_MSG.noSelection); return; }
+
+        /* apply-user-block 은 USER 대상만 처리 가능 — 서버에서 한 번 더 거르지만, 사용자에게 미리 안내. */
+        var filteredCount = checked.length;
+        if (action === 'apply-user-block') {
+            filteredCount = checked.filter(function (c) {
+                var tr = c.closest('tr');
+                return tr && tr.getAttribute('data-subject-type') === 'USER';
+            }).length;
+            if (!filteredCount) { alert(SRA_MSG.noSelection); return; }
+        }
+        var confirmMsg = (SRA_MSG.bulkConfirmTpl || '').replace('{0}', String(filteredCount));
+        if (!window.confirm(confirmMsg)) return;
+
+        var ids = checked.map(function (c) { return c.value; }).join(',');
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = ctx + '/admin/login-risk/security-assessments/bulk';
+        function addInput(name, value) {
+            var inp = document.createElement('input');
+            inp.type = 'hidden'; inp.name = name; inp.value = value;
+            form.appendChild(inp);
+        }
+        addInput('action', action);
+        addInput('ids', ids);
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+    window.sraExport = function (scope) {
+        var format = (document.getElementById('sraExportFormat') || {}).value || 'csv';
+        var params = new URLSearchParams();
+        params.set('scope', scope);
+        params.set('format', format);
+        if (scope === 'filtered') {
+            var form = document.getElementById('sraSearchForm');
+            if (form) {
+                var fd = new FormData(form);
+                fd.forEach(function (v, k) { if (v) params.set(k, v); });
+            }
+        }
+        if (scope === 'selected') {
+            var ids = Array.prototype.slice.call(document.querySelectorAll('#sraTableBody .js-sra-row-check:checked')).map(function (c) { return c.value; });
+            if (!ids.length) { alert(SRA_MSG.noSelection); return; }
+            params.set('selectedIds', ids.join(','));
+        }
+        var dropdown = document.getElementById('sraExportDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+        window.location.href = ctx + '/admin/login-risk/security-assessments/export?' + params.toString();
+    };
+
+    function initExportDropdown() {
+        var toggle = document.querySelector('.js-sra-export-toggle');
+        var dropdown = document.getElementById('sraExportDropdown');
+        if (!toggle || !dropdown) return;
+        toggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('open');
+        });
+        document.addEventListener('click', function (e) {
+            if (!toggle.contains(e.target) && !dropdown.contains(e.target)) dropdown.classList.remove('open');
+        });
+    }
+
+    function init() {
+        cacheRows();
+        var sizeSel = document.getElementById('sraPageSize');
+        if (sizeSel) {
+            var n = parseInt(sizeSel.value, 10);
+            sraState.pageSize = n > 0 ? n : 20;
+        }
+        initExportDropdown();
+        applyAll();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else { init(); }
 })();
 </script>
 
 <style>
-/* ── 보안 위험 판단 페이지 전용 ── */
-.adm-security-assessment-page .sa-table { width: 100%; min-width: 1320px; table-layout: fixed; }
-.adm-security-assessment-page .sa-col-check     { width: 42px; }
-.adm-security-assessment-page .sa-th-check, .adm-security-assessment-page .sa-cell-check { text-align: center; padding: 8px 4px; }
-.adm-security-assessment-page .sa-col-source    { width: 170px; }
-.adm-security-assessment-page .sa-col-target    { width: 190px; }
-.adm-security-assessment-page .sa-col-risk      { width: 130px; }
-.adm-security-assessment-page .sa-col-recommend { width: 180px; }
-.adm-security-assessment-page .sa-col-evidence  { width: auto; }
-.adm-security-assessment-page .sa-col-status    { width: 100px; }
-.adm-security-assessment-page .sa-col-date      { width: 140px; }
-.adm-security-assessment-page .sa-col-action    { width: 200px; }
+/* ── 보안 위험 판단 페이지 전용 (sra-) ── */
+.adm-security-assessment-page .sra-table { width: 100%; min-width: 1320px; table-layout: fixed; }
+.adm-security-assessment-page .sra-col-check     { width: 42px; }
+.adm-security-assessment-page .sra-th-check, .adm-security-assessment-page .sra-cell-check { text-align: center; padding: 8px 4px; }
+.adm-security-assessment-page .sra-col-source    { width: 170px; }
+.adm-security-assessment-page .sra-col-target    { width: 190px; }
+.adm-security-assessment-page .sra-col-risk      { width: 130px; }
+.adm-security-assessment-page .sra-col-recommend { width: 180px; }
+.adm-security-assessment-page .sra-col-evidence  { width: auto; }
+.adm-security-assessment-page .sra-col-status    { width: 100px; }
+.adm-security-assessment-page .sra-col-date      { width: 140px; }
+.adm-security-assessment-page .sra-col-action    { width: 200px; }
 
-.adm-security-assessment-page .sa-th {
+.adm-security-assessment-page .sra-th {
     white-space: nowrap; overflow: hidden;
-    cursor: pointer; user-select: none;
+    user-select: none;
     padding-right: 18px; box-sizing: border-box;
 }
-.adm-security-assessment-page .sa-th .sa-th-label {
+.adm-security-assessment-page .sra-th.sra-sortable { cursor: pointer; }
+.adm-security-assessment-page .sra-th .sra-th-label {
     display: inline-block; max-width: calc(100% - 14px);
     overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
 }
-.adm-security-assessment-page .sa-th .sa-sort-ico {
+.adm-security-assessment-page .sra-th .sra-sort-ico {
     display: inline-block; margin-left: 4px; width: 10px;
     font-size: 10px; line-height: 1; vertical-align: middle; color: #93c5fd;
 }
-body.sa-light .adm-security-assessment-page .sa-th .sa-sort-ico { color: #2563eb; }
+body.sa-light .adm-security-assessment-page .sra-th .sra-sort-ico { color: #2563eb; }
 
-.adm-security-assessment-page .sa-table td {
+.adm-security-assessment-page .sra-table td {
     vertical-align: top; overflow: hidden;
     word-break: break-word;
 }
-.adm-security-assessment-page .sa-table .adm-security-assessment-evidence {
+.adm-security-assessment-page .sra-table .adm-security-assessment-evidence {
     white-space: pre-wrap; overflow-wrap: anywhere;
     max-height: 8em; overflow: hidden;
     text-overflow: ellipsis; font-size: 12px; line-height: 1.45;
 }
-.adm-security-assessment-page .sa-table .adm-security-assessment-row-actions {
+.adm-security-assessment-page .sra-table .adm-security-assessment-row-actions {
     display: flex; flex-wrap: wrap; gap: 4px;
 }
 
+/* card head + export */
+.adm-security-assessment-page .sra-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.adm-security-assessment-page .sra-total-label { margin-left: 8px; font-size: 12px; color: #94a3b8; font-weight: normal; }
+.adm-security-assessment-page .sra-export-control { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+.adm-security-assessment-page .sra-export-control .sra-export-format { min-width: 84px; }
+.adm-security-assessment-page .sra-export-control .adm-export-dropdown {
+    display: none; position: absolute; top: 100%; right: 0; margin-top: 4px;
+    background: var(--adm-card-bg, #1e293b); border: 1px solid var(--adm-border, #334155);
+    border-radius: 6px; padding: 4px; z-index: 30; min-width: 200px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+.adm-security-assessment-page .sra-export-control .adm-export-dropdown.open { display: block; }
+.adm-security-assessment-page .sra-export-control .adm-export-item {
+    display: block; width: 100%; text-align: left; padding: 6px 10px;
+    background: transparent; color: inherit; border: 0; cursor: pointer;
+    font-size: 13px; border-radius: 4px;
+}
+.adm-security-assessment-page .sra-export-control .adm-export-item:disabled { opacity: 0.5; cursor: not-allowed; }
+.adm-security-assessment-page .sra-export-control .adm-export-item:hover:not(:disabled) { background: rgba(148,163,184,0.15); }
+
+/* controlbar */
+.adm-security-assessment-page .sra-controlbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 14px; flex-wrap: wrap; }
+.adm-security-assessment-page .sra-bulkbar { display: flex; align-items: center; gap: 10px; opacity: 0.55; transition: opacity 0.2s; }
+.adm-security-assessment-page .sra-bulkbar.is-active { opacity: 1; }
+.adm-security-assessment-page .sra-bulk-count { font-size: 13px; }
+.adm-security-assessment-page .sra-bulk-count strong { font-size: 15px; margin-right: 2px; color: #fbbf24; }
+.adm-security-assessment-page .sra-bulk-actions { display: inline-flex; gap: 6px; align-items: center; }
+.adm-security-assessment-page .sra-view-tools { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.adm-security-assessment-page .sra-tool { display: inline-flex; gap: 4px; align-items: center; }
+.adm-security-assessment-page .sra-tool-label { font-size: 12px; color: #94a3b8; }
+.adm-security-assessment-page .sra-page-search { min-width: 220px; }
+.adm-security-assessment-page .sra-sort-reset { font-size: 12px; }
+
+/* pagination */
+.adm-security-assessment-page .sra-pagination { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; gap: 10px; flex-wrap: wrap; }
+.adm-security-assessment-page .sra-page-info { font-size: 12px; color: #94a3b8; }
+.adm-security-assessment-page .sra-page-actions { display: inline-flex; gap: 8px; align-items: center; }
+.adm-security-assessment-page .sra-page-state { font-size: 13px; min-width: 60px; text-align: center; }
+
+.adm-security-assessment-page .sra-empty,
+.adm-security-assessment-page .sra-empty-cell { padding: 16px; text-align: center; color: #94a3b8; }
+.adm-security-assessment-page .adm-is-hidden { display: none !important; }
+
 @media (max-width: 1280px) {
     .adm-security-assessment-page .adm-security-assessment-filterbar { flex-wrap: wrap; }
+    .adm-security-assessment-page .sra-controlbar { flex-direction: column; align-items: stretch; }
+    .adm-security-assessment-page .sra-bulkbar { flex-wrap: wrap; }
+    .adm-security-assessment-page .sra-view-tools { justify-content: flex-end; }
 }
 </style>
 
