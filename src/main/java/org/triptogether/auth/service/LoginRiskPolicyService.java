@@ -360,6 +360,22 @@ public class LoginRiskPolicyService {
     }
 
     @Transactional
+    public int bulkDecideSecurityAppeals(List<Long> ids, String decision, Long actorUserIdx, String comment) {
+        if (ids == null || ids.isEmpty()) return 0;
+        int affected = 0;
+        for (Long id : ids) {
+            if (id == null) continue;
+            try {
+                decideSecurityAppeal(id, decision, actorUserIdx, comment);
+                affected++;
+            } catch (RuntimeException ignore) {
+                /* skip individual failures */
+            }
+        }
+        return affected;
+    }
+
+    @Transactional
     public void decideSecurityAppeal(Long appealIdx, String decision, Long actorUserIdx, String comment) {
         String normalized = switch (decision == null ? "" : decision.toLowerCase(Locale.ROOT)) {
             case "accept", "accepted" -> "ACCEPTED";

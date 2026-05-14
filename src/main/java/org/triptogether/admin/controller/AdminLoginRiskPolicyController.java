@@ -19,6 +19,7 @@ import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.LoginRiskReviewVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.SecurityAppealPolicyVO;
+import org.triptogether.auth.vo.SecurityAppealVO;
 import org.triptogether.auth.vo.SecurityReviewVO;
 import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 import org.triptogether.auth.vo.UsersVO;
@@ -690,6 +691,126 @@ public class AdminLoginRiskPolicyController {
         loginRiskPolicyService.decideSecurityAppeal(appealIdx, decision, currentAdminIdx(session), comment);
         redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.appealProcessed"));
         return "redirect:/admin/login-risk/appeals";
+    }
+
+    @PostMapping("/appeals/bulk")
+    public String bulkDecideSecurityAppeals(@RequestParam("action") String action,
+                                            @RequestParam(value = "ids", required = false) String idsCsv,
+                                            @RequestParam(value = "comment", required = false) String comment,
+                                            HttpSession session,
+                                            RedirectAttributes redirectAttributes,
+                                            Locale locale) {
+        List<Long> ids = parseIds(idsCsv);
+        int affected = loginRiskPolicyService.bulkDecideSecurityAppeals(ids, action, currentAdminIdx(session), comment);
+        redirectAttributes.addFlashAttribute("message",
+                msg(locale, "security.admin.flash.bulkAppealProcessed") + " (" + affected + "/" + ids.size() + ")");
+        return "redirect:/admin/login-risk/appeals";
+    }
+
+    @GetMapping("/appeals/export")
+    public ResponseEntity<byte[]> exportSecurityAppeals(
+            @RequestParam(value = "scope", required = false, defaultValue = "filtered") String scope,
+            @RequestParam(value = "format", required = false, defaultValue = "csv") String format,
+            @RequestParam(value = "selectedIds", required = false) String selectedIds,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "targetType", required = false) String targetType,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+        try {
+            List<SecurityAppealVO> data;
+            if ("all".equalsIgnoreCase(scope)) {
+                data = loginRiskPolicyService.getSecurityAppeals(null, null, null);
+            } else if ("selected".equalsIgnoreCase(scope)) {
+                List<Long> ids = parseIds(selectedIds);
+                if (ids.isEmpty()) {
+                    return ResponseEntity.badRequest().build();
+                }
+                data = loginRiskPolicyService.getSecurityAppeals(null, null, null).stream()
+                        .filter(a -> a.getAppealIdx() != null && ids.contains(a.getAppealIdx()))
+                        .toList();
+            } else {
+                data = loginRiskPolicyService.getSecurityAppeals(status, targetType, keyword);
+            }
+            if ("excel".equalsIgnoreCase(format)) {
+                byte[] bytes = buildAppealExcel(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"security-appeals.xlsx\"")
+                        .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(bytes);
+            }
+            byte[] bytes = buildAppealCsv(data);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"security-appeals.csv\"")
+                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                    .body(bytes);
+        } catch (Exception e) {
+            log.error("이의제기 내보내기 실패", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private static final String[] APPEAL_EXPORT_HEADERS = {
+            "appealIdx", "appealStatus", "userId", "nickname", "targetType", "targetKey",
+            "appealTitle", "appealContent", "reviewComment", "publicRequestId",
+            "submitterEmail", "inquiryId", "blockRequestId", "blockAccessRequestId",
+            "reviewedByUserId", "reviewedAt", "createdAt", "updatedAt"
+    };
+
+    private byte[] buildAppealCsv(List<SecurityAppealVO> data) {
+        StringBuilder sb = new StringBuilder("﻿");
+        sb.append(String.join(",", APPEAL_EXPORT_HEADERS)).append('\n');
+        for (SecurityAppealVO a : data) {
+            Object[] cols = appealRow(a);
+            for (int i = 0; i < cols.length; i++) {
+                if (i > 0) sb.append(',');
+                sb.append(csvVal(cols[i]));
+            }
+            sb.append('\n');
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private byte[] buildAppealExcel(List<SecurityAppealVO> data) throws Exception {
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            var sheet = wb.createSheet("security-appeals");
+            var hRow = sheet.createRow(0);
+            for (int i = 0; i < APPEAL_EXPORT_HEADERS.length; i++) {
+                hRow.createCell(i).setCellValue(APPEAL_EXPORT_HEADERS[i]);
+            }
+            int r = 1;
+            for (SecurityAppealVO a : data) {
+                Object[] cols = appealRow(a);
+                var row = sheet.createRow(r++);
+                for (int i = 0; i < cols.length; i++) {
+                    row.createCell(i).setCellValue(cols[i] == null ? "" : String.valueOf(cols[i]));
+                }
+            }
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private Object[] appealRow(SecurityAppealVO a) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return new Object[]{
+                a.getAppealIdx(),
+                a.getAppealStatus(),
+                a.getUserId(),
+                a.getNickname(),
+                a.getTargetType(),
+                a.getTargetKey(),
+                a.getAppealTitle(),
+                a.getAppealContent(),
+                a.getReviewComment(),
+                a.getPublicRequestId(),
+                a.getSubmitterEmail(),
+                a.getInquiryId(),
+                a.getBlockRequestId(),
+                a.getBlockAccessRequestId(),
+                a.getReviewedByUserId(),
+                a.getReviewedAt() == null ? "" : a.getReviewedAt().format(fmt),
+                a.getCreatedAt() == null ? "" : a.getCreatedAt().format(fmt),
+                a.getUpdatedAt() == null ? "" : a.getUpdatedAt().format(fmt)
+        };
     }
 
     @GetMapping("/provider-configs")

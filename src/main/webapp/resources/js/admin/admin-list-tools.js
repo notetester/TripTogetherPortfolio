@@ -54,7 +54,8 @@
         '/admin/login-risk/reviews',
         '/admin/login-risk/assessments',
         '/admin/login-risk/security-assessments',
-        '/admin/login-risk/security-reviews'
+        '/admin/login-risk/security-reviews',
+        '/admin/login-risk/appeals'
     ];
 
     const tableStates = new WeakMap();
