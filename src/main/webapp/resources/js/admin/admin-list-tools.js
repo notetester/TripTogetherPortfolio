@@ -50,7 +50,8 @@
         '/admin/members',
         '/admin/business-applications',
         '/admin/login-risk/provider-configs',
-        '/admin/login-risk/provider-health-history'
+        '/admin/login-risk/provider-health-history',
+        '/admin/login-risk/reviews'
     ];
 
     const tableStates = new WeakMap();

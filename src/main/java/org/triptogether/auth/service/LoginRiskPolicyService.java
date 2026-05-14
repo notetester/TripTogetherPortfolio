@@ -1559,6 +1559,22 @@ public class LoginRiskPolicyService {
     }
 
     @Transactional
+    public int bulkDecideReviews(List<Long> reviewIdxList, String decision, Long adminUserIdx, String comment) {
+        if (reviewIdxList == null || reviewIdxList.isEmpty()) return 0;
+        int affected = 0;
+        for (Long id : reviewIdxList) {
+            if (id == null) continue;
+            try {
+                decideReview(id, decision, adminUserIdx, comment);
+                affected++;
+            } catch (RuntimeException ignore) {
+                /* skip individual failures so partial bulk still progresses */
+            }
+        }
+        return affected;
+    }
+
+    @Transactional
     public void decideReview(Long reviewIdx, String decision, Long adminUserIdx, String comment) {
         LoginRiskReviewVO review = loginRiskPolicyMapper.findReviewByIdx(reviewIdx);
         if (review == null) {
