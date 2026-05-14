@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.service.LoginRiskPolicyService;
 import org.triptogether.auth.vo.AdminNotificationPreferenceVO;
+import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.LoginRiskReviewVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
@@ -259,6 +260,105 @@ public class AdminLoginRiskPolicyController {
         model.addAttribute("activeMenu", "loginRiskAssessments");
         model.addAttribute("pageTitleCode", "security.admin.externalAssessments.title");
         return "admin/login-risk/assessments";
+    }
+
+    @GetMapping("/assessments/export")
+    public ResponseEntity<byte[]> exportExternalAssessments(
+            @RequestParam(value = "scope", required = false, defaultValue = "filtered") String scope,
+            @RequestParam(value = "format", required = false, defaultValue = "csv") String format,
+            @RequestParam(value = "selectedIds", required = false) String selectedIds,
+            @RequestParam(value = "sourceKind", required = false) String sourceKind,
+            @RequestParam(value = "riskLevel", required = false) String riskLevel,
+            @RequestParam(value = "decisionStatus", required = false) String decisionStatus,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+        try {
+            List<LoginRiskExternalAssessmentVO> data;
+            if ("all".equalsIgnoreCase(scope)) {
+                data = loginRiskPolicyService.getExternalAssessments(null, null, null, null);
+            } else if ("selected".equalsIgnoreCase(scope)) {
+                List<Long> ids = parseIds(selectedIds);
+                if (ids.isEmpty()) {
+                    return ResponseEntity.badRequest().build();
+                }
+                data = loginRiskPolicyService.getExternalAssessments(null, null, null, null).stream()
+                        .filter(a -> a.getAssessmentIdx() != null && ids.contains(a.getAssessmentIdx()))
+                        .toList();
+            } else {
+                data = loginRiskPolicyService.getExternalAssessments(sourceKind, riskLevel, decisionStatus, keyword);
+            }
+            if ("excel".equalsIgnoreCase(format)) {
+                byte[] bytes = buildExternalAssessmentExcel(data);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"external-assessments.xlsx\"")
+                        .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                        .body(bytes);
+            }
+            byte[] bytes = buildExternalAssessmentCsv(data);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"external-assessments.csv\"")
+                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                    .body(bytes);
+        } catch (Exception e) {
+            log.error("외부 위험 판단 내보내기 실패", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private static final String[] EXTERNAL_ASSESSMENT_EXPORT_HEADERS = {
+            "assessmentIdx", "sourceKind", "sourceCode", "sourceName", "sourceVersion",
+            "policyCode", "subjectType", "subjectKey", "userId", "nickname", "ipAddress",
+            "countryCode", "asn", "riskScore", "riskLevel", "confidenceScore",
+            "recommendationAction", "recommendationReason", "evidenceSummary",
+            "decisionStatus", "createdAt"
+    };
+
+    private byte[] buildExternalAssessmentCsv(List<LoginRiskExternalAssessmentVO> data) {
+        StringBuilder sb = new StringBuilder("﻿");
+        sb.append(String.join(",", EXTERNAL_ASSESSMENT_EXPORT_HEADERS)).append('\n');
+        for (LoginRiskExternalAssessmentVO a : data) {
+            Object[] cols = externalAssessmentRow(a);
+            for (int i = 0; i < cols.length; i++) {
+                if (i > 0) sb.append(',');
+                sb.append(csvVal(cols[i]));
+            }
+            sb.append('\n');
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private byte[] buildExternalAssessmentExcel(List<LoginRiskExternalAssessmentVO> data) throws Exception {
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            var sheet = wb.createSheet("external-assessments");
+            var hRow = sheet.createRow(0);
+            for (int i = 0; i < EXTERNAL_ASSESSMENT_EXPORT_HEADERS.length; i++) {
+                hRow.createCell(i).setCellValue(EXTERNAL_ASSESSMENT_EXPORT_HEADERS[i]);
+            }
+            int r = 1;
+            for (LoginRiskExternalAssessmentVO a : data) {
+                Object[] cols = externalAssessmentRow(a);
+                var row = sheet.createRow(r++);
+                for (int i = 0; i < cols.length; i++) {
+                    row.createCell(i).setCellValue(cols[i] == null ? "" : String.valueOf(cols[i]));
+                }
+            }
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private Object[] externalAssessmentRow(LoginRiskExternalAssessmentVO a) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return new Object[]{
+                a.getAssessmentIdx(),
+                a.getSourceKind(), a.getSourceCode(), a.getSourceName(), a.getSourceVersion(),
+                a.getPolicyCode(), a.getSubjectType(), a.getSubjectKey(),
+                a.getUserId(), a.getNickname(), a.getIpAddress(),
+                a.getCountryCode(), a.getAsn(),
+                a.getRiskScore(), a.getRiskLevel(), a.getConfidenceScore(),
+                a.getRecommendationAction(), a.getRecommendationReason(), a.getEvidenceSummary(),
+                a.getDecisionStatus(),
+                a.getCreatedAt() == null ? "" : a.getCreatedAt().format(fmt)
+        };
     }
 
     @GetMapping("/security-assessments")
