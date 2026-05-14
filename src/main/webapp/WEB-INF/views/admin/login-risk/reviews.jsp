@@ -67,6 +67,17 @@
 <spring:message var="msg_lrr_showMore" code="security.admin.loginReviews.showMore"/>
 <spring:message var="msg_lrr_showLess" code="security.admin.loginReviews.showLess"/>
 <spring:message var="msg_lrr_inPageSearchLabel" code="security.admin.loginReviews.inPageSearchLabel"/>
+<spring:message var="msg_lrr_detailTitle" code="security.admin.loginReviews.detailTitle"/>
+<spring:message var="msg_lrr_detail_user" code="security.admin.loginReviews.detail.user"/>
+<spring:message var="msg_lrr_detail_ip" code="security.admin.loginReviews.detail.ip"/>
+<spring:message var="msg_lrr_detail_policyCode" code="security.admin.loginReviews.detail.policyCode"/>
+<spring:message var="msg_lrr_detail_requestId" code="security.admin.loginReviews.detail.requestId"/>
+<spring:message var="msg_lrr_detail_flowTraceId" code="security.admin.loginReviews.detail.flowTraceId"/>
+<spring:message var="msg_lrr_detail_summary" code="security.admin.loginReviews.detail.summary"/>
+<spring:message var="msg_lrr_detail_detailMessage" code="security.admin.loginReviews.detail.detailMessage"/>
+<spring:message var="msg_lrr_detail_reviewedBy" code="security.admin.loginReviews.detail.reviewedBy"/>
+<spring:message var="msg_lrr_detail_reviewedAt" code="security.admin.loginReviews.detail.reviewedAt"/>
+<spring:message var="msg_lrr_close" code="security.admin.common.close"/>
 
 <c:set var="pageTitle" value="${msg_security_admin_loginReviews_title}"/>
 <c:set var="activeMenu" value="loginRiskReviews"/>
@@ -171,7 +182,7 @@
                     <option value="csv">CSV</option>
                     <option value="excel">Excel</option>
                 </select>
-                <button type="button" class="adm-btn adm-btn-ghost js-lrr-export-toggle">${msg_admin_common_export} ▾</button>
+                <button type="button" class="adm-btn adm-btn-ghost js-export-toggle js-lrr-export-toggle">${msg_admin_common_export} ▾</button>
                 <div id="lrrExportDropdown" class="adm-export-dropdown">
                     <button type="button" class="adm-export-item" onclick="lrrExport('all')">${msg_admin_common_exportAll}</button>
                     <button type="button" class="adm-export-item" onclick="lrrExport('filtered')">${msg_admin_common_exportFiltered}</button>
@@ -272,32 +283,51 @@
                         data-sort-target="${fn:escapeXml(r.subjectType)}:${fn:escapeXml(r.subjectKey)}"
                         data-sort-summary="${fn:escapeXml(r.summary)}"
                         data-sort-date="<fmt:formatDate value='${r.createdAtDate}' pattern='yyyyMMddHHmm'/>">
-                        <td class="lrr-cell-check"><input type="checkbox" class="js-lrr-row-check" value="${r.reviewIdx}" onchange="lrrUpdateBulkCount()" aria-label="row-select"></td>
-                        <td><span class="adm-badge lrr-status-badge lrr-status-${fn:toLowerCase(r.reviewStatus)}"><c:out value="${r.reviewStatus}"/></span></td>
-                        <td><span class="lrr-severity lrr-severity-${fn:toLowerCase(r.severity)}"><c:out value="${r.severity}"/></span></td>
+                        <td class="lrr-cell-check"><input type="checkbox" class="js-lrr-row-check" value="${r.reviewIdx}" onchange="lrrUpdateBulkCount()" onclick="event.stopPropagation();" aria-label="row-select"></td>
+                        <td>
+                            <button type="button" class="adm-cell-link js-lrr-cell-open" data-review-id="${r.reviewIdx}" data-focus="status">
+                                <span class="adm-badge lrr-status-badge lrr-status-${fn:toLowerCase(r.reviewStatus)}"><c:out value="${r.reviewStatus}"/></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="adm-cell-link js-lrr-cell-open" data-review-id="${r.reviewIdx}" data-focus="severity">
+                                <span class="lrr-severity lrr-severity-${fn:toLowerCase(r.severity)}"><c:out value="${r.severity}"/></span>
+                            </button>
+                        </td>
                         <td class="lrr-cell-type">
-                            <div class="lrr-cell-primary"><c:out value="${r.reviewType}"/></div>
-                            <div class="adm-page-muted"><c:out value="${r.policyCode}"/></div>
+                            <button type="button" class="adm-cell-link js-lrr-cell-open" data-review-id="${r.reviewIdx}" data-focus="type">
+                                <div class="lrr-cell-primary"><c:out value="${r.reviewType}"/></div>
+                                <div class="adm-page-muted"><c:out value="${r.policyCode}"/></div>
+                            </button>
                         </td>
                         <td class="lrr-cell-target">
-                            <div><c:out value="${r.subjectType}"/>: <c:out value="${r.subjectKey}"/></div>
-                            <c:if test="${not empty r.userId}"><div class="adm-page-muted"><c:out value="${r.userId}"/> / <c:out value="${r.nickname}"/></div></c:if>
+                            <button type="button" class="adm-cell-link js-lrr-cell-open" data-review-id="${r.reviewIdx}" data-focus="target">
+                                <div><c:out value="${r.subjectType}"/>: <c:out value="${r.subjectKey}"/></div>
+                                <c:if test="${not empty r.userId}"><div class="adm-page-muted"><c:out value="${r.userId}"/> / <c:out value="${r.nickname}"/></div></c:if>
+                            </button>
                         </td>
                         <td class="lrr-cell-summary">
-                            <div class="lrr-summary">
-                                <strong class="lrr-summary-title"><c:out value="${r.summary}"/></strong>
-                                <c:if test="${not empty r.detailMessage}">
-                                    <div class="lrr-summary-body" data-clamp="true"><c:out value="${r.detailMessage}"/></div>
-                                </c:if>
-                                <c:if test="${not empty r.reviewComment}">
-                                    <div class="lrr-summary-comment">${msg_security_admin_common_reviewComment}: <c:out value="${r.reviewComment}"/></div>
-                                </c:if>
-                                <c:if test="${not empty r.detailMessage}">
-                                    <button type="button" class="lrr-summary-toggle js-lrr-summary-toggle" data-label-more="${msg_lrr_showMore}" data-label-less="${msg_lrr_showLess}">${msg_lrr_showMore}</button>
-                                </c:if>
-                            </div>
+                            <button type="button" class="adm-cell-link js-lrr-cell-open" data-review-id="${r.reviewIdx}" data-focus="summary">
+                                <div class="lrr-summary">
+                                    <strong class="lrr-summary-title"><c:out value="${r.summary}"/></strong>
+                                    <c:if test="${not empty r.detailMessage}">
+                                        <div class="lrr-summary-body" data-clamp="true"><c:out value="${r.detailMessage}"/></div>
+                                    </c:if>
+                                    <c:if test="${not empty r.reviewComment}">
+                                        <div class="lrr-summary-comment">${msg_security_admin_common_reviewComment}: <c:out value="${r.reviewComment}"/></div>
+                                    </c:if>
+                                    <c:if test="${not empty r.detailMessage}">
+                                        <span class="lrr-summary-toggle js-lrr-summary-toggle" role="button" tabindex="0"
+                                              data-label-more="${msg_lrr_showMore}" data-label-less="${msg_lrr_showLess}">${msg_lrr_showMore}</span>
+                                    </c:if>
+                                </div>
+                            </button>
                         </td>
-                        <td class="lrr-cell-date"><fmt:formatDate value="${r.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
+                        <td class="lrr-cell-date">
+                            <button type="button" class="adm-cell-link js-lrr-cell-open" data-review-id="${r.reviewIdx}" data-focus="date">
+                                <fmt:formatDate value="${r.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/>
+                            </button>
+                        </td>
                         <td class="lrr-cell-action">
                             <c:if test="${r.reviewStatus == 'PENDING' || r.reviewStatus == 'HOLD'}">
                                 <div class="lrr-row-actions">
@@ -334,6 +364,95 @@
                 <button type="button" class="adm-btn adm-btn-ghost" id="lrrNextBtn" onclick="lrrGoPage(window.lrrState.page + 1)">${msg_admin_common_next}</button>
             </div>
         </div>
+
+        <%-- ══════ 상세 모달 (행 셀 클릭 시 오픈, 클릭한 컬럼이 강조) ══════ --%>
+        <c:forEach var="r" items="${reviews}">
+            <div class="lrr-detail-modal" id="lrr-detail-${r.reviewIdx}" hidden>
+                <div class="lrr-detail-card" role="dialog" aria-modal="true" aria-labelledby="lrr-detail-title-${r.reviewIdx}">
+                    <div class="lrr-detail-head">
+                        <div>
+                            <h2 id="lrr-detail-title-${r.reviewIdx}" class="lrr-detail-title">${msg_lrr_detailTitle}</h2>
+                            <div class="adm-page-muted">#<c:out value="${r.reviewIdx}"/> · <c:out value="${r.reviewStatus}"/> · <c:out value="${r.severity}"/></div>
+                        </div>
+                        <button class="adm-btn adm-btn-ghost js-lrr-detail-close" type="button">${msg_lrr_close}</button>
+                    </div>
+                    <div class="lrr-detail-body">
+                        <div class="lrr-detail-grid">
+                            <div class="lrr-detail-item" data-section="status">
+                                <div class="lrr-detail-label">${msg_security_admin_common_status}</div>
+                                <div class="lrr-detail-value"><c:out value="${r.reviewStatus}" default="-"/></div>
+                            </div>
+                            <div class="lrr-detail-item" data-section="severity">
+                                <div class="lrr-detail-label">${msg_security_admin_common_severity}</div>
+                                <div class="lrr-detail-value"><c:out value="${r.severity}" default="-"/></div>
+                            </div>
+                            <div class="lrr-detail-item" data-section="type">
+                                <div class="lrr-detail-label">${msg_security_admin_common_reviewType}</div>
+                                <div class="lrr-detail-value"><c:out value="${r.reviewType}" default="-"/></div>
+                            </div>
+                            <div class="lrr-detail-item" data-section="type">
+                                <div class="lrr-detail-label">${msg_lrr_detail_policyCode}</div>
+                                <div class="lrr-detail-value"><c:out value="${r.policyCode}" default="-"/></div>
+                            </div>
+                            <div class="lrr-detail-item" data-section="target">
+                                <div class="lrr-detail-label">${msg_security_admin_common_target}</div>
+                                <div class="lrr-detail-value"><c:out value="${r.subjectType}" default="-"/>: <c:out value="${r.subjectKey}" default="-"/></div>
+                            </div>
+                            <div class="lrr-detail-item" data-section="target">
+                                <div class="lrr-detail-label">${msg_lrr_detail_user}</div>
+                                <div class="lrr-detail-value"><c:out value="${r.userId}" default="-"/> / <c:out value="${r.nickname}" default="-"/></div>
+                            </div>
+                            <div class="lrr-detail-item" data-section="target">
+                                <div class="lrr-detail-label">${msg_lrr_detail_ip}</div>
+                                <div class="lrr-detail-value"><c:out value="${r.ipAddress}" default="-"/></div>
+                            </div>
+                            <div class="lrr-detail-item" data-section="date">
+                                <div class="lrr-detail-label">${msg_security_admin_common_createdAt}</div>
+                                <div class="lrr-detail-value"><fmt:formatDate value="${r.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
+                            </div>
+                            <div class="lrr-detail-item">
+                                <div class="lrr-detail-label">${msg_lrr_detail_reviewedBy}</div>
+                                <div class="lrr-detail-value"><c:out value="${r.reviewedByUserId}" default="-"/></div>
+                            </div>
+                            <div class="lrr-detail-item">
+                                <div class="lrr-detail-label">${msg_lrr_detail_reviewedAt}</div>
+                                <div class="lrr-detail-value"><fmt:formatDate value="${r.reviewedAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
+                            </div>
+                            <c:if test="${not empty r.requestId}">
+                                <div class="lrr-detail-item">
+                                    <div class="lrr-detail-label">${msg_lrr_detail_requestId}</div>
+                                    <div class="lrr-detail-value"><c:out value="${r.requestId}"/></div>
+                                </div>
+                            </c:if>
+                            <c:if test="${not empty r.flowTraceId}">
+                                <div class="lrr-detail-item">
+                                    <div class="lrr-detail-label">${msg_lrr_detail_flowTraceId}</div>
+                                    <div class="lrr-detail-value"><c:out value="${r.flowTraceId}"/></div>
+                                </div>
+                            </c:if>
+                        </div>
+                        <div class="lrr-detail-stack">
+                            <div class="lrr-detail-item" data-section="summary">
+                                <div class="lrr-detail-label">${msg_lrr_detail_summary}</div>
+                                <div class="lrr-detail-value lrr-detail-pre"><c:out value="${r.summary}" default="-"/></div>
+                            </div>
+                            <c:if test="${not empty r.detailMessage}">
+                                <div class="lrr-detail-item" data-section="summary">
+                                    <div class="lrr-detail-label">${msg_lrr_detail_detailMessage}</div>
+                                    <div class="lrr-detail-value lrr-detail-pre"><c:out value="${r.detailMessage}"/></div>
+                                </div>
+                            </c:if>
+                            <c:if test="${not empty r.reviewComment}">
+                                <div class="lrr-detail-item">
+                                    <div class="lrr-detail-label">${msg_security_admin_common_reviewComment}</div>
+                                    <div class="lrr-detail-value lrr-detail-pre"><c:out value="${r.reviewComment}"/></div>
+                                </div>
+                            </c:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </c:forEach>
     </div>
 </div>
 
@@ -654,11 +773,75 @@
         document.addEventListener('click', function (e) {
             var btn = e.target.closest('.js-lrr-summary-toggle');
             if (!btn) return;
+            /* 셀 클릭(adm-cell-link) 이 모달 오픈하므로 더보기 클릭은 bubble 차단 */
+            e.preventDefault();
+            e.stopPropagation();
             var card = btn.closest('.lrr-summary');
             if (!card) return;
             var expanded = card.classList.toggle('is-expanded');
             btn.textContent = expanded ? (btn.getAttribute('data-label-less') || LRR_MSG.showLess)
                                        : (btn.getAttribute('data-label-more') || LRR_MSG.showMore);
+        });
+        /* 키보드 접근성: 더보기에 포커스 후 Enter/Space */
+        document.addEventListener('keydown', function (e) {
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            var btn = e.target.closest('.js-lrr-summary-toggle');
+            if (!btn) return;
+            e.preventDefault();
+            btn.click();
+        });
+    }
+
+    /* ─── 행 셀 클릭 → 상세 모달 오픈 (회원관리 패턴) ─── */
+    function openLrrDetail(reviewId, focusSection) {
+        var modal = document.getElementById('lrr-detail-' + reviewId);
+        if (!modal) return;
+        modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        /* 클릭된 컬럼 강조 — data-section 일치하는 item 에 .is-focused 부여 후 scrollIntoView */
+        modal.querySelectorAll('.lrr-detail-item').forEach(function (el) { el.classList.remove('is-focused'); });
+        if (focusSection) {
+            var matches = modal.querySelectorAll('.lrr-detail-item[data-section="' + focusSection + '"]');
+            matches.forEach(function (el) { el.classList.add('is-focused'); });
+            if (matches.length) {
+                setTimeout(function () { matches[0].scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 50);
+            }
+        }
+    }
+    window.openLrrDetail = openLrrDetail;
+
+    function closeLrrDetail(modal) {
+        if (!modal) return;
+        modal.hidden = true;
+        document.body.style.overflow = '';
+    }
+
+    function initDetailModal() {
+        /* 셀 click — adm-cell-link 버튼 → 모달 오픈 */
+        document.addEventListener('click', function (e) {
+            /* 더보기 토글이 먼저 처리되어 stopPropagation 됨. 여기 도달 시 셀 link 처리 */
+            var cellBtn = e.target.closest('.js-lrr-cell-open');
+            if (cellBtn) {
+                var id = cellBtn.getAttribute('data-review-id');
+                var focus = cellBtn.getAttribute('data-focus') || '';
+                if (id) openLrrDetail(id, focus);
+                return;
+            }
+            /* 닫기 버튼 */
+            var closeBtn = e.target.closest('.js-lrr-detail-close');
+            if (closeBtn) {
+                closeLrrDetail(closeBtn.closest('.lrr-detail-modal'));
+                return;
+            }
+            /* backdrop 클릭(모달 자체 영역) 시 닫기 */
+            if (e.target && e.target.classList && e.target.classList.contains('lrr-detail-modal')) {
+                closeLrrDetail(e.target);
+            }
+        });
+        /* ESC 키로 닫기 */
+        document.addEventListener('keydown', function (e) {
+            if (e.key !== 'Escape') return;
+            document.querySelectorAll('.lrr-detail-modal:not([hidden])').forEach(closeLrrDetail);
         });
     }
 
@@ -666,6 +849,7 @@
         cacheRows();
         initExportDropdown();
         initSummaryToggles();
+        initDetailModal();
         applyAll();
     }
 
@@ -895,6 +1079,98 @@ body.sa-light .adm-login-review-page .lrr-summary-toggle { color: #2563eb; }
 .adm-login-review-page .lrr-empty-cell { padding: 16px; text-align: center; color: #94a3b8; }
 .adm-login-review-page .adm-is-hidden { display: none !important; }
 
+/* (#2) 다운로드 드롭다운 — 글로벌 .adm-export-dropdown 강제 노출. 회원관리와 통일 */
+.adm-login-review-page .lrr-export-control .adm-export-dropdown {
+    /* 글로벌 값 명시 재선언 — 카드 내 다른 selector 의 override 방지 */
+    background: #1e2535;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    box-shadow: 0 12px 26px rgba(0,0,0,0.42);
+    z-index: 300;
+}
+body.sa-light .adm-login-review-page .lrr-export-control .adm-export-dropdown {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 12px 26px rgba(15,23,42,.16);
+}
+
+/* (#3) 행 셀 — adm-cell-link 안 내용 정렬 */
+.adm-login-review-page .lrr-table td > .adm-cell-link {
+    align-items: flex-start; min-width: 0;
+}
+.adm-login-review-page .lrr-table td > .adm-cell-link > * { min-width: 0; max-width: 100%; }
+
+/* (#1) 요약 더보기 — span 으로 변경, inline 토글 */
+.adm-login-review-page .lrr-summary-toggle {
+    align-self: flex-start; font-size: 11px;
+    background: transparent; border: 0; padding: 2px 6px;
+    color: #93c5fd; cursor: pointer; user-select: none;
+    border-radius: 4px;
+}
+.adm-login-review-page .lrr-summary-toggle:hover { background: rgba(147,197,253,0.10); }
+body.sa-light .adm-login-review-page .lrr-summary-toggle { color: #2563eb; }
+body.sa-light .adm-login-review-page .lrr-summary-toggle:hover { background: rgba(37,99,235,0.08); }
+
+/* ══════ (#3) 상세 모달 ══════ */
+.adm-login-review-page .lrr-detail-modal {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(15,23,42,0.62);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+}
+.adm-login-review-page .lrr-detail-modal[hidden] { display: none !important; }
+.adm-login-review-page .lrr-detail-card {
+    background: #1e2535; color: #e2e8f0;
+    border: 1px solid #334155; border-radius: 12px;
+    width: 100%; max-width: 880px; max-height: calc(100vh - 48px);
+    display: flex; flex-direction: column;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+}
+body.sa-light .adm-login-review-page .lrr-detail-card {
+    background: #ffffff; color: #1e293b; border-color: #cbd5e1;
+    box-shadow: 0 24px 60px rgba(15,23,42,0.20);
+}
+.adm-login-review-page .lrr-detail-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 12px; padding: 16px 20px;
+    border-bottom: 1px solid rgba(148,163,184,0.18);
+}
+.adm-login-review-page .lrr-detail-title { font-size: 16px; font-weight: 700; margin: 0; }
+.adm-login-review-page .lrr-detail-body {
+    overflow-y: auto; padding: 16px 20px;
+    display: flex; flex-direction: column; gap: 14px;
+}
+.adm-login-review-page .lrr-detail-grid {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 18px;
+}
+.adm-login-review-page .lrr-detail-stack { display: flex; flex-direction: column; gap: 10px; }
+.adm-login-review-page .lrr-detail-item {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 8px 10px; border-radius: 8px;
+    transition: background-color .15s ease, box-shadow .15s ease;
+}
+.adm-login-review-page .lrr-detail-item.is-focused {
+    background: rgba(96,165,250,0.18);
+    box-shadow: inset 0 0 0 1px rgba(96,165,250,0.45);
+}
+body.sa-light .adm-login-review-page .lrr-detail-item.is-focused {
+    background: rgba(37,99,235,0.10);
+    box-shadow: inset 0 0 0 1px rgba(37,99,235,0.40);
+}
+.adm-login-review-page .lrr-detail-label {
+    font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.adm-login-review-page .lrr-detail-value { font-size: 13px; line-height: 1.5; word-break: break-word; }
+.adm-login-review-page .lrr-detail-pre {
+    white-space: pre-wrap; font-size: 12px;
+    background: rgba(15,23,42,0.30); padding: 8px 10px; border-radius: 6px;
+}
+body.sa-light .adm-login-review-page .lrr-detail-pre {
+    background: #f1f5f9;
+}
+
 
 /* ══════ 미디어 쿼리 ══════ */
 
@@ -939,6 +1215,9 @@ body.sa-light .adm-login-review-page .lrr-summary-toggle { color: #2563eb; }
     .adm-login-review-page .lrr-page-search-bar { flex-wrap: wrap; }
     .adm-login-review-page .lrr-page-search-col { flex: 0 0 100%; width: 100%; }
     .adm-login-review-page .lrr-page-search-box { flex: 1 1 100%; }
+
+    .adm-login-review-page .lrr-detail-modal { padding: 12px; }
+    .adm-login-review-page .lrr-detail-grid { grid-template-columns: 1fr; }
 }
 
 /* 520px↓ — 좁은 모바일 */
