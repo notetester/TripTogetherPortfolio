@@ -329,25 +329,71 @@
     return _send.apply(this, arguments);
   };
 
-  // ---------- 서버 절대경로 링크 가로채기 ----------
-  // 정적 파일로 매핑되는 서버 경로는 해당 정적 페이지로 이동시킨다.
-  var LINKMAP = {
-    '/TripTogether/admin/login-risk/provider-health-history': 'admin/login-risk/provider-health-history.html',
-    '/TripTogether/admin/login-risk/notification-preferences': 'admin/login-risk/notification-preferences.html',
-    '/TripTogether/admin/login-risk/waf-sync': 'admin/login-risk/waf-sync.html',
-    '/TripTogether/superAdmin': 'superAdmin/members.html'
-  };
+  // ---------- 서버(/TripTogether/) 링크 → 정적 페이지 매핑 ----------
+  // 정적 데모이므로 /TripTogether/* 절대경로 링크는 404가 난다.
+  // 존재하는 정적 파일이면 그 경로로 재작성하고, 없으면 안내 토스트로 막아 404를 원천 차단한다.
+  var PAGES = new Set(['admin.html','admin/activity-logs.html','admin/ads.html','admin/ads/1/edit.html','admin/ads/new.html','admin/ai-helper.html','admin/ai-helper/chatbot.html','admin/blocks.html','admin/blocks/api/batches/1/detail.html','admin/blocks/api/batches/fragment.html','admin/blocks/api/histories/1/detail.html','admin/blocks/api/histories/fragment.html','admin/blocks/api/ip-rules/1/detail.html','admin/blocks/api/ip-rules/fragment.html','admin/blocks/api/user-blocks/1/detail.html','admin/blocks/api/user-blocks/fragment.html','admin/business-applications.html','admin/business-applications/fragment.html','admin/community.html','admin/community/comments.html','admin/community/posts/1.html','admin/courses.html','admin/courses/1.html','admin/email-tokens.html','admin/email-verifications.html','admin/explore.html','admin/explore/reviews.html','admin/explore/spots/1.html','admin/finance.html','admin/finance/policy.html','admin/finance/refund.html','admin/finance/users/4.html','admin/initial-settings.html','admin/inquiries.html','admin/inquiries/1.html','admin/login-risk/appeal-policy.html','admin/login-risk/appeals.html','admin/login-risk/assessments.html','admin/login-risk/notification-preferences.html','admin/login-risk/policies.html','admin/login-risk/provider-configs.html','admin/login-risk/provider-health-history.html','admin/login-risk/reviews.html','admin/login-risk/security-assessments.html','admin/login-risk/security-reviews.html','admin/login-risk/waf-sync.html','admin/logins.html','admin/logins/fragment.html','admin/members.html','admin/members/fragment.html','admin/moderation.html','admin/packages.html','admin/policies.html','admin/policy-history.html','admin/reports.html','admin/reports/1.html','admin/runtime-settings.html','admin/security.html','admin/security/fragment.html','assistant.html','auth/find-id.html','auth/find-pw.html','auth/login.html','auth/register.html','auth/social/complete.html','blocked-access.html','community/1.html','community/1/comments.html','community/12.html','community/edit/1.html','community/list.html','community/write.html','courses.html','courses/ai/form.html','courses/detail.html','courses/edit.html','courses/my.html','courses/public.html','courses/write.html','detail/1.html','detail/10.html','explore.html','index.html','inquiry/1.html','inquiry/8.html','inquiry/list.html','inquiry/write.html','mypage.html','mypage/bookings/flights.html','mypage/bookings/packages.html','mypage/edit-confirm.html','mypage/edit.html','mypage/history.html','packages.html','packages/manage.html','packages/manage/1/edit.html','packages/manage/write.html','report/1.html','report/list.html','security/appeal.html','security/appeal/new.html','security/appeal/result.html','shop.html','superAdmin/groups.html','superAdmin/members.html','superAdmin/members/2/edit.html','superAdmin/org.html','superAdmin/permission-codes.html','superAdmin/permissions.html','superAdmin/salary.html','superAdmin/stats.html','wallet.html']);
+  var PATHMAP = { 'superAdmin': 'superAdmin/members.html' };
+  function toStatic(href) {
+    var raw = String(href || '').replace(/^\/TripTogether\/?/, '');
+    var path = raw.split('#')[0].split('?')[0].replace(/\/+$/, '');
+    if (/^auth\/logout/.test(path)) return '__logout__';
+    if (path === '') return 'index.html';
+    if (PATHMAP[path]) return PATHMAP[path];
+    var cand = /\.html$/.test(path) ? path : path + '.html';
+    if (PAGES.has(cand)) return cand;
+    if (PAGES.has(path + '/index.html')) return path + '/index.html';
+    // 상세 페이지 샘플 폴백 (데모엔 대표 1건만 스냅샷 — 404 대신 대표 상세로)
+    var SAMPLE = [
+      [/^admin\/community\/posts\/\d+/, 'admin/community/posts/1.html'],
+      [/^admin\/courses\/\d+/, 'admin/courses/1.html'],
+      [/^admin\/explore\/spots\/\d+/, 'admin/explore/spots/1.html'],
+      [/^admin\/inquiries\/\d+/, 'admin/inquiries/1.html'],
+      [/^admin\/reports\/\d+/, 'admin/reports/1.html'],
+      [/^admin\/finance\/users\/\d+/, 'admin/finance/users/4.html'],
+      [/^superAdmin\/members\/\d+\/edit/, 'superAdmin/members/2/edit.html'],
+      [/^community\/\d+/, 'community/1.html'],
+      [/^inquiry\/\d+/, 'inquiry/1.html'],
+      [/^detail\/\d+/, 'detail/1.html']
+    ];
+    for (var i = 0; i < SAMPLE.length; i++) { if (SAMPLE[i][0].test(path)) return SAMPLE[i][1]; }
+    return null; // 데모에 없는 페이지
+  }
+  // 로드 시 + 동적 추가 시: /TripTogether 절대 링크를 정적 경로로 재작성(없으면 표식)
+  function rewriteServerLinks(root) {
+    var as = (root || document).querySelectorAll('a[href^="/TripTogether"]');
+    Array.prototype.forEach.call(as, function (a) {
+      if (a.__ttDone) return; a.__ttDone = true;
+      var t = toStatic(a.getAttribute('href') || '');
+      if (t === '__logout__') { a.setAttribute('href', '#'); a.dataset.ttAction = 'logout'; }
+      else if (t) { a.setAttribute('href', BASE + t); a.removeAttribute('target'); }
+      else { a.setAttribute('href', '#'); a.dataset.ttAction = 'missing'; }
+    });
+  }
+  var _moPending = false;
+  function startLinkObserver() {
+    try {
+      var mo = new MutationObserver(function () {
+        if (_moPending) return; _moPending = true;
+        setTimeout(function () { _moPending = false; rewriteServerLinks(); }, 80);
+      });
+      mo.observe(document.body || document.documentElement, { childList: true, subtree: true });
+    } catch (e) {}
+  }
+  // 클릭 폴백(재작성 전 동적 링크 포함) — 어떤 경우에도 404로 안 가게
   document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('a[href]');
+    var a = e.target.closest && e.target.closest('a');
     if (!a) return;
+    var act = a.dataset ? a.dataset.ttAction : '';
+    if (act === 'logout') { e.preventDefault(); logout(); return; }
+    if (act === 'missing') { e.preventDefault(); toast('이 화면은 데모에 포함되지 않았습니다.'); return; }
     var href = a.getAttribute('href') || '';
-    if (href.indexOf('/TripTogether/') === 0) {
-      // 로그아웃 링크는 데모 로그아웃으로
-      if (/auth\/logout/.test(href)) { e.preventDefault(); logout(); return; }
-      var base = href.split('?')[0].split('#')[0].replace(/\/$/, '');
-      if (LINKMAP[base]) { e.preventDefault(); location.href = BASE + LINKMAP[base]; return; }
+    if (href.indexOf('/TripTogether') === 0) {
       e.preventDefault();
-      toast('이 화면은 데모에 포함되지 않았습니다.');
+      var t = toStatic(href);
+      if (t === '__logout__') { logout(); }
+      else if (t) { location.href = BASE + t; }
+      else { toast('이 화면은 데모에 포함되지 않았습니다.'); }
     }
   }, true);
 
@@ -355,6 +401,8 @@
   function init() {
     injectStyles();
     injectBanner();
+    rewriteServerLinks();   // /TripTogether 절대 링크 → 정적 경로 (전 페이지 공통)
+    startLinkObserver();
     // 관리자 크롬이면 게이트/관리자 처리 후 종료(일반 헤더 없음)
     if (handleAdminChrome()) return;
     rewriteUserHeader();
