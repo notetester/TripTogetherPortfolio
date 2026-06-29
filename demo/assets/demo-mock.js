@@ -103,17 +103,28 @@
       '.adm-section-list-footer .adm-section-list-page-tools{display:flex !important;flex-direction:row !important;align-items:center;gap:6px;margin-left:auto}' +
       '.adm-local-pagination{display:flex !important;flex-direction:row !important;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap;padding:10px 16px 12px;width:100%}' +
       '.adm-local-pagination .adm-local-page-info{font-size:12px;color:#94a3b8;white-space:nowrap}' +
-      '.adm-local-pagination .adm-local-page-actions{display:flex !important;flex-direction:row !important;align-items:center;gap:6px;margin-left:auto}';
+      '.adm-local-pagination .adm-local-page-actions{display:flex !important;flex-direction:row !important;align-items:center;gap:6px;margin-left:auto}' +
+      // 데모 배너 닫기(X) 버튼
+      '#demo-banner{padding-right:40px}' +
+      '#demo-banner .tt-banner-x{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:22px;height:22px;border:0;border-radius:50%;background:rgba(255,255,255,.22);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}' +
+      '#demo-banner .tt-banner-x:hover{background:rgba(255,255,255,.4)}';
     (document.head || document.documentElement).appendChild(s);
   }
 
   // ---------- 배너 ----------
   function injectBanner() {
+    try { if (sessionStorage.getItem('tt.demo.bannerClosed') === '1') return; } catch (e) {}
     if (document.getElementById('demo-banner')) return;
     var bar = document.createElement('div');
     bar.id = 'demo-banner';
-    bar.innerHTML = '🧭 <b>TripTogether 데모</b> — 둘러보기용 화면입니다. 저장·결제는 동작하지 않으며 로그인은 가상 계정으로 시뮬레이션됩니다.';
+    bar.innerHTML = '<span class="tt-banner-msg">🧭 <b>TripTogether 데모</b> — 둘러보기용 화면입니다. 저장·결제는 동작하지 않으며 로그인은 가상 계정으로 시뮬레이션됩니다.</span>' +
+      '<button type="button" class="tt-banner-x" aria-label="배너 닫기" title="이 세션 동안 숨기기">✕</button>';
     if (document.body) document.body.insertBefore(bar, document.body.firstChild);
+    var x = bar.querySelector('.tt-banner-x');
+    if (x) x.addEventListener('click', function () {
+      try { sessionStorage.setItem('tt.demo.bannerClosed', '1'); } catch (e) {}
+      bar.parentNode && bar.parentNode.removeChild(bar);
+    });
   }
 
   // ---------- 토스트 ----------
@@ -400,12 +411,36 @@
       }
     } catch (e) {}
   }
+  // 데이터 행이 있는데도 스냅샷에 박제된 stale 빈행('현재 조건에 맞는 항목 없음')·'0건' footer가
+  // 남은 테이블 교정 (admin-list-tools가 이미 enhanced 상태라 재실행하지 않는 경우).
+  function fixAdminListEmpty() {
+    try {
+      Array.prototype.forEach.call(document.querySelectorAll('table'), function (table) {
+        var tbody = table.querySelector('tbody'); if (!tbody) return;
+        var dataRows = Array.prototype.filter.call(tbody.querySelectorAll('tr'), function (r) {
+          if (r.getAttribute('data-admin-list-empty-row') === 'true') return false;
+          if (r.getAttribute('data-admin-list-original-empty-row') === 'true') return false;
+          if (r.children.length === 1 && r.children[0].hasAttribute('colspan')) return false;
+          return true;
+        });
+        if (!dataRows.length) return;
+        Array.prototype.forEach.call(tbody.querySelectorAll('tr[data-admin-list-empty-row="true"]'), function (r) { r.remove(); });
+        if (table.id) {
+          var f = document.querySelector('.adm-section-list-footer[data-table-id="' + table.id + '"]');
+          var info = f && f.querySelector('.js-admin-list-page-info, .adm-section-list-page-info');
+          if (info && /(^|\D)0\s*건/.test(info.textContent)) {
+            info.textContent = dataRows.length + '건 중 ' + dataRows.length + '건 표시 · 1/1쪽';
+          }
+        }
+      });
+    } catch (e) {}
+  }
   var _moPending = false;
   function startLinkObserver() {
     try {
       var mo = new MutationObserver(function () {
         if (_moPending) return; _moPending = true;
-        setTimeout(function () { _moPending = false; rewriteServerLinks(); dedupePagination(); }, 80);
+        setTimeout(function () { _moPending = false; rewriteServerLinks(); dedupePagination(); fixAdminListEmpty(); }, 80);
       });
       mo.observe(document.body || document.documentElement, { childList: true, subtree: true });
     } catch (e) {}
@@ -434,7 +469,8 @@
     rewriteServerLinks();   // /TripTogether 절대 링크 → 정적 경로 (전 페이지 공통)
     startLinkObserver();
     dedupePagination();
-    setTimeout(dedupePagination, 400);
+    fixAdminListEmpty();
+    setTimeout(function () { dedupePagination(); fixAdminListEmpty(); }, 400);
     // 관리자 크롬이면 게이트/관리자 처리 후 종료(일반 헤더 없음)
     if (handleAdminChrome()) return;
     rewriteUserHeader();
