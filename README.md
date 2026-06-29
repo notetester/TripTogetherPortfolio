@@ -1,36 +1,123 @@
 # TripTogether 🧳
 
-> 여행지 탐색 · AI 추천 · 코스 작성 · 커뮤니티 · 예약 · 포인트/지갑 · 관리자 운영을 하나로 묶은 **Spring Boot 기반 통합 여행 플랫폼**
+> 여행지 탐색 · AI 추천 · 코스 작성 · 커뮤니티 · 항공권/패키지 예약 · 포인트·지갑 보상 · 관리자 운영을 하나로 묶은 **Spring Boot 풀스택 통합 여행 플랫폼**
 
-[![Live Demo](https://img.shields.io/badge/▶_Live_Demo-GitHub_Pages-2ea44f?logo=github)](https://notetester.github.io/TripTogetherPortfolio/)
-[![Docs](https://img.shields.io/badge/📖_기술_설명서-VitePress-0ea5a4)](https://notetester.github.io/TripTogetherPortfolio/docs/)
-![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0-6db33f?logo=springboot&logoColor=white)
-![MyBatis](https://img.shields.io/badge/MyBatis-3-red)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-4479a1?logo=mysql&logoColor=white)
-![JSP](https://img.shields.io/badge/View-JSP%2FJSTL-555)
+<p align="center">
+  <a href="https://notetester.github.io/TripTogetherPortfolio/"><img src="https://img.shields.io/badge/▶_Live_Demo-둘러보기-2ea44f?style=for-the-badge&logo=github" alt="Live Demo"></a>
+  <a href="https://notetester.github.io/TripTogetherPortfolio/docs/"><img src="https://img.shields.io/badge/📖_기술_설명서-읽기-0ea5a4?style=for-the-badge" alt="Docs"></a>
+  <a href="SECURITY.md"><img src="https://img.shields.io/badge/🔐_보안_정책-SECURITY-555?style=for-the-badge" alt="Security"></a>
+</p>
 
-| | |
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-21-orange?logo=openjdk" alt="Java 21">
+  <img src="https://img.shields.io/badge/Spring_Boot-4.0-6db33f?logo=springboot&logoColor=white" alt="Spring Boot 4">
+  <img src="https://img.shields.io/badge/MyBatis-3-red" alt="MyBatis">
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479a1?logo=mysql&logoColor=white" alt="MySQL">
+  <img src="https://img.shields.io/badge/View-JSP%2FJSTL-555" alt="JSP/JSTL">
+  <img src="https://img.shields.io/badge/License-MIT-blue" alt="MIT License">
+</p>
+
+<p align="center">
+  <a href="https://notetester.github.io/TripTogetherPortfolio/"><b>▶ 라이브 데모</b></a> ·
+  <a href="https://notetester.github.io/TripTogetherPortfolio/docs/"><b>📖 기술 설명서</b></a> ·
+  <a href="SECURITY.md"><b>🔐 보안 처리</b></a> ·
+  <a href="#-아키텍처-한눈에"><b>🧱 아키텍처</b></a> ·
+  <a href="#-기술-하이라이트"><b>✨ 기술 하이라이트</b></a>
+</p>
+
+<p align="center">
+  <a href="https://notetester.github.io/TripTogetherPortfolio/"><img src="demo/docs/screenshots/home.png" width="760" alt="TripTogether 홈 화면"></a>
+</p>
+
+> ℹ️ 이 저장소는 비공개로 개발한 **팀 프로젝트의 공개 포트폴리오 미러**입니다. 전체 커밋 이력은 그대로 보존하되, 민감정보(API 키·비밀번호·DB 정보 등)만 [`git filter-repo`로 전 커밋 이력에서 제거](SECURITY.md)했습니다.
+
+## 🔎 한눈에 보기
+
+| 항목 | 내용 |
 | --- | --- |
-| ▶ **라이브 데모** | <https://notetester.github.io/TripTogetherPortfolio/> — 백엔드 없이 화면을 둘러보는 정적 데모 |
-| 📖 **기능별 기술 설명서** | <https://notetester.github.io/TripTogetherPortfolio/docs/> — 도메인별 *무엇을·왜·어떻게* 정리 |
-| 🔐 **보안 / 민감정보 처리** | [SECURITY.md](SECURITY.md) — API 키·비밀번호를 전 커밋 이력에서 제거 |
+| **무엇** | 여행의 *탐색 → 계획 → 예약 → 공유* 전 과정을 하나로 잇는 통합 여행 플랫폼 |
+| **형태** | 4인 팀 풀스택 프로젝트 (Spring Boot + JSP 서버 사이드 렌더링) |
+| **규모** | Java 약 460개 파일 · **21여 개 기능 모듈** · MySQL 약 **125개 테이블** · 4개 국어 |
+| **스택** | Java 21 · Spring Boot 4 · Spring MVC/AOP · MyBatis · MySQL · JSP/JSTL · WAR |
+| **AI 연동** | OpenAI GPT · Google Gemini · Anthropic Claude · Perspective (멀티모델) |
+| **외부 연동** | Kakao/Naver/Google OAuth · Toss Payments · Cloudinary · Google Maps · AWS WAFv2 |
+| **라이브 데모** | <https://notetester.github.io/TripTogetherPortfolio/> |
+| **기술 설명서** | <https://notetester.github.io/TripTogetherPortfolio/docs/> |
 
-[![홈 화면](demo/docs/screenshots/home.png)](https://notetester.github.io/TripTogetherPortfolio/)
+## ✨ 소개
 
 TripTogether는 여행지 탐색, AI 추천, 여행 코스 작성, 커뮤니티, 항공권 예매, 여행 패키지 예약, 포인트 상점, 지갑/보상 시스템, 관리자 운영 기능을 하나로 묶은 Spring Boot 기반 통합 여행 플랫폼입니다.
 
-사용자는 여행지를 탐색하고 상세 페이지에서 리뷰, 좋아요, 신고, 지도, 항공권, 패키지 정보를 함께 확인할 수 있습니다. 이후 캐시와 마일리지를 사용해 예약을 진행하고, 활동 보상으로 포인트와 경험치를 획득하며, 아이템샵에서 꾸미기 아이템을 구매하고 장착할 수 있습니다.
+**사용자**는 여행지를 탐색하고 상세 페이지에서 리뷰·좋아요·신고·지도·항공권·패키지 정보를 함께 확인합니다. 이후 캐시와 마일리지로 예약을 진행하고, 활동 보상으로 포인트·경험치를 획득하며, 아이템샵에서 꾸미기 아이템을 구매·장착합니다.
 
-관리자는 회원, 신고, 커뮤니티, 여행지, 패키지, 예약/결제, 차단, 번역, AI 사용량 등을 운영 화면에서 관리할 수 있습니다. 최고관리자는 일반 관리자 권한과 조직/직책 기반 권한 정책을 관리합니다.
+**관리자**는 회원·신고·커뮤니티·여행지·패키지·예약/결제·차단·번역·AI 사용량을 운영 화면에서 관리하고, **최고관리자**는 일반 관리자 권한과 조직/직책 기반 권한 정책을 관리합니다.
 
-> ℹ️ 이 저장소는 비공개 팀 프로젝트의 **공개 포트폴리오 미러**입니다. 전체 커밋 이력은 그대로 보존하되, 민감정보(API 키·비밀번호 등)만 [`git filter-repo`로 전 이력에서 제거](SECURITY.md)했습니다.
+## 🏆 기술 하이라이트
 
-### 👥 기여자
+> 단순 CRUD를 넘어, 운영·보안·AI까지 고려한 설계를 지향했습니다. 각 항목의 상세는 [기술 설명서](https://notetester.github.io/TripTogetherPortfolio/docs/)에서 다룹니다.
 
-이 프로젝트는 **이정국 · 정원일 · 신성륜 · 박서진** 4인 팀으로 개발했습니다. 각 기여는 커밋 이력에서 확인할 수 있습니다.
+- **🤖 멀티모델 AI 오케스트레이션** — 멀티턴 여행 도우미·일정 생성(OpenAI GPT), 사이트 안내 챗봇·여행지 추천(Gemini), 문의 답변 초안(Claude), 댓글 독성 판정(Perspective)을 용도별로 분리하고 등급별 쿼터·폴백을 적용 → [AI 통합](https://notetester.github.io/TripTogetherPortfolio/docs/ai.html)
+- **🛡️ 이중 인가 모델** — 8종 인터셉터 체인(경로 단위) + AOP `@RequireLogin`/`@RequireAdmin`(메서드 단위) + `@LoginUser` 리졸버로 컨트롤러의 인가 보일러플레이트 제거 → [아키텍처](https://notetester.github.io/TripTogetherPortfolio/docs/architecture.html)
+- **🚦 신고 → AI 모더레이션 → 3-스트라이크 상태머신** — 신고 누적과 Perspective 독성 점수에 따라 콘텐츠를 `BLUR`/`BLOCKED`로 전이시키는 상태 기반 모더레이션 → [커뮤니티·신고](https://notetester.github.io/TripTogetherPortfolio/docs/community.html)
+- **🔑 OAuth 3사 + 로그인 위험도 평가** — Kakao·Naver·Google 소셜 로그인과 자체 세션, 로그인 위험 신호 평가 및 차단/해제 신청 흐름 → [인증·보안](https://notetester.github.io/TripTogetherPortfolio/docs/auth.html)
+- **⚙️ 정책 테이블 외부화** — 포인트·경험치·등급·레벨업 보상과 모더레이션 임계값을 코드가 아닌 DB 정책 테이블로 운영해 무중단 조정 가능 → [공통·인프라](https://notetester.github.io/TripTogetherPortfolio/docs/common.html)
+- **🗂️ 이력 중심 데이터 운영** — 결제·지갑·포인트·EXP·등급·차단을 각각 이력 테이블로 분리하고, 삭제/차단은 물리 삭제가 아닌 상태값(`*_status`)으로 처리해 추적성 확보 → [관리자·운영](https://notetester.github.io/TripTogetherPortfolio/docs/admin.html)
+- **🔔 SSE 실시간 알림** — 댓글·채택·신고 등 이벤트를 크로스 모듈에서 발행해 헤더 벨/토스트로 실시간 푸시 → [문의·알림](https://notetester.github.io/TripTogetherPortfolio/docs/inquiry.html)
+- **🌐 4개 국어 국제화(i18n)** — ko/en/ja/zh 언어팩으로 모든 사용자 노출 문자열을 외부화(JSP·JS 하드코딩 금지 규칙) → [공통·인프라](https://notetester.github.io/TripTogetherPortfolio/docs/common.html)
+- **🔐 공개 전 보안 스크럽** — 공개에 앞서 `git filter-repo`로 모든 API 키·비밀번호를 **전 커밋 이력**에서 제거하고, GitHub Actions 배포에 **시크릿 스캔 게이트**를 추가 → [SECURITY.md](SECURITY.md)
 
-### 📂 저장소 구성
+## 🖼️ 화면 미리보기
+
+> [라이브 데모](https://notetester.github.io/TripTogetherPortfolio/)는 백엔드 없이 가상 데이터로 동작합니다. (로그인 화면에서 아무 값이나 입력하면 데모 계정으로 진입)
+
+| 홈 | 커뮤니티 | 게시글 |
+| :---: | :---: | :---: |
+| [<img src="demo/docs/screenshots/home.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/) | [<img src="demo/docs/screenshots/community.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/community/list.html) | [<img src="demo/docs/screenshots/community-post.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/community/1.html) |
+| **여행 패키지** | **패키지 상세** | **포인트샵** |
+| [<img src="demo/docs/screenshots/packages.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/packages.html) | [<img src="demo/docs/screenshots/package-detail.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/packages.html) | [<img src="demo/docs/screenshots/shop.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/shop.html) |
+| **마이페이지** | **관리자 대시보드** | **관리자 · 보안** |
+| [<img src="demo/docs/screenshots/mypage.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/mypage.html) | [<img src="demo/docs/screenshots/admin-dashboard.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin.html) | [<img src="demo/docs/screenshots/admin-security.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin.html) |
+
+## 🧱 아키텍처 한눈에
+
+모놀리식이지만 모든 기능을 `org.triptogether.{module}` 단위로 나누고, 각 모듈이 동일한 **4계층(`controller → service → mapper → vo`)** 골격을 공유하도록 강제했습니다. 인증/인가는 자체 세션 + 인터셉터 체인 + AOP 조합으로 처리하고, Spring Security는 CSRF 보호 용도로만 부분 도입했습니다.
+
+```mermaid
+flowchart LR
+    C[Client] --> T[Tomcat / DispatcherServlet]
+    T --> I["인터셉터 preHandle 체인<br/>i18n · IP차단 · 활동로그 · 로그인 · 관리자"]
+    I --> R["@LoginUser 리졸버"]
+    R --> A{"AOP 인가<br/>@RequireLogin / @RequireAdmin"}
+    A -->|통과| CT[Controller] --> SV[Service] --> MP[MyBatis Mapper] --> DB[(MySQL)]
+    A -->|실패| EX[GlobalExceptionHandler<br/>401 / 403]
+    CT --> P["인터셉터 postHandle<br/>관리자모드 · 알림 주입"] --> V[JSP View] --> H[HTML]
+```
+
+전체 요청 흐름·인터셉터 표·이중 인가 모델·MyBatis 매핑은 **[아키텍처 문서](https://notetester.github.io/TripTogetherPortfolio/docs/architecture.html)** 에 정리했습니다.
+
+## 📚 기능별 기술 설명서
+
+각 도메인이 *무엇을·왜·어떻게* 구현됐는지 실제 코드 기준으로 정리한 [VitePress 설명서](https://notetester.github.io/TripTogetherPortfolio/docs/)입니다.
+
+| 문서 | 내용 |
+| --- | --- |
+| [프로젝트 개요](https://notetester.github.io/TripTogetherPortfolio/docs/overview.html) | 모듈 지도·핵심 설계 방향·규모 |
+| [아키텍처](https://notetester.github.io/TripTogetherPortfolio/docs/architecture.html) | 4계층·인터셉터·AOP·요청 흐름·MyBatis |
+| [인증 · 계정 · 보안](https://notetester.github.io/TripTogetherPortfolio/docs/auth.html) | 세션·OAuth 3사·이메일 인증·BCrypt·로그인 위험도 |
+| [커뮤니티 · 신고](https://notetester.github.io/TripTogetherPortfolio/docs/community.html) | 게시글·댓글·태그·독성 감지·신고 상태머신 |
+| [여행 코스 · AI 일정](https://notetester.github.io/TripTogetherPortfolio/docs/courses.html) | 방문지 순서·GPT 구조화 출력 일정 생성 |
+| [탐색 · 커머스](https://notetester.github.io/TripTogetherPortfolio/docs/explore.html) | 탐색·추천·패키지·항공권·지갑/포인트샵 |
+| [AI 통합](https://notetester.github.io/TripTogetherPortfolio/docs/ai.html) | Claude·Gemini·GPT·Perspective 멀티모델 |
+| [관리자 · 운영](https://notetester.github.io/TripTogetherPortfolio/docs/admin.html) | 운영 화면·감사 로그·권한 그룹·최고관리자 |
+| [문의 · 알림 · 마이페이지](https://notetester.github.io/TripTogetherPortfolio/docs/inquiry.html) | 1:1 문의·SSE 알림·프로필·소셜 연동 |
+| [공통 · 인프라 · i18n](https://notetester.github.io/TripTogetherPortfolio/docs/common.html) | 인터셉터·MyBatis·파일 업로드·4개 국어 |
+| [설계 결정 (ADR 종합)](https://notetester.github.io/TripTogetherPortfolio/docs/decisions.html) | 14편의 아키텍처 결정 기록 + 보안 스크럽 |
+
+## 👥 기여자
+
+이 프로젝트는 **이정국 · 정원일 · 신성륜 · 박서진** 4인 팀으로 개발했습니다. 각자의 기여 내역은 커밋 이력에서 확인할 수 있습니다.
+
+## 📂 저장소 구성
 
 ```
 TripTogetherPortfolio/
@@ -38,8 +125,12 @@ TripTogetherPortfolio/
 ├── demo/            # 라이브 데모용 정적 스냅샷 (GitHub Pages 루트)
 ├── portfolio-docs/  # 기능별 기술 설명서 소스 (VitePress → /docs)
 ├── docs/            # 설계 결정(ADR) 및 운영 문서
-└── .github/workflows/pages.yml   # 데모+문서 GitHub Pages 자동 배포
+├── .github/workflows/pages.yml   # 데모 + 문서 GitHub Pages 자동 배포
+├── SECURITY.md      # 민감정보 제거·보안 정책
+└── TripTogetherDB.sql  # 전체 DB 스키마
 ```
+
+> 아래는 각 기능을 더 깊이 다루는 **상세 기술 문서**입니다. (요약·시각 자료는 위 [기술 설명서](https://notetester.github.io/TripTogetherPortfolio/docs/) 참고)
 
 ---
 
