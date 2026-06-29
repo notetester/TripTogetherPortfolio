@@ -100,6 +100,7 @@
       '.tt-acct-btn.admin .m{color:#dc2626}' +
       // 페이징 정렬 강제(좌하단 세로로 깨지는 문제 교정 — 정보 좌측 / 이전·다음 우측)
       '.adm-section-list-footer{display:flex !important;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap}' +
+      '.adm-section-list-footer.tt-deduped-footer{display:none !important}' +
       '.adm-section-list-footer .adm-section-list-page-tools{display:flex !important;flex-direction:row !important;align-items:center;gap:6px;margin-left:auto}' +
       '.adm-local-pagination{display:flex !important;flex-direction:row !important;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap;padding:10px 16px 12px;width:100%}' +
       '.adm-local-pagination .adm-local-page-info{font-size:12px;color:#94a3b8;white-space:nowrap}' +
@@ -407,9 +408,18 @@
   function dedupePagination() {
     try {
       if (document.querySelector('.adm-local-pagination') && document.querySelector('.adm-section-list-footer')) {
-        Array.prototype.forEach.call(document.querySelectorAll('.adm-section-list-footer'), function (el) { el.style.display = 'none'; });
+        Array.prototype.forEach.call(document.querySelectorAll('.adm-section-list-footer'), function (el) {
+          el.classList.add('tt-deduped-footer');
+          el.setAttribute('aria-hidden', 'true');
+          el.style.setProperty('display', 'none', 'important');
+        });
       }
     } catch (e) {}
+  }
+  function schedulePaginationDedupe() {
+    [80, 250, 600, 1200, 2400].forEach(function (ms) {
+      setTimeout(function () { dedupePagination(); }, ms);
+    });
   }
   // 데이터 행이 있는데도 스냅샷에 박제된 stale 빈행('현재 조건에 맞는 항목 없음')·'0건' footer가
   // 남은 테이블 교정 (admin-list-tools가 이미 enhanced 상태라 재실행하지 않는 경우).
@@ -470,7 +480,8 @@
     startLinkObserver();
     dedupePagination();
     fixAdminListEmpty();
-    setTimeout(function () { dedupePagination(); fixAdminListEmpty(); }, 400);
+    schedulePaginationDedupe();
+    setTimeout(function () { fixAdminListEmpty(); }, 400);
     // 관리자 크롬이면 게이트/관리자 처리 후 종료(일반 헤더 없음)
     if (handleAdminChrome()) return;
     rewriteUserHeader();
