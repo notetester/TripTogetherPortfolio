@@ -1,0 +1,674 @@
+<!DOCTYPE html><html lang="ko"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../TripTogetherFavicon.png">
+    <title>급여/역량 현황 — TripTogether SuperAdmin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="../resources/css/admin/admin.css">
+    <link rel="stylesheet" href="../resources/css/superAdmin/superadmin.css">
+</head>
+<body>
+<script>
+(function(){
+    // 구버전 키(sa_theme) → 신규 키(tt_theme) 일회성 마이그레이션
+    var legacy = localStorage.getItem('sa_theme');
+    if (legacy !== null) {
+        if (!localStorage.getItem('tt_theme')) {
+            localStorage.setItem('tt_theme', legacy === 'sa-light' ? 'light' : 'dark');
+        }
+        localStorage.removeItem('sa_theme');
+    }
+    // superAdmin 기본 테마는 다크. tt_theme === 'light' 일 때만 sa-light 적용
+    var t = localStorage.getItem('tt_theme');
+    if (t === 'light') document.body.classList.add('sa-light');
+})();
+</script>
+<div class="adm-shell">
+    <aside class="adm-sidebar" id="adm-sidebar">
+        <a class="adm-brand" href="/TripTogether/superAdmin">
+            <div class="adm-brand-icon">🔑</div>
+            <div>
+                <div class="adm-brand-text">TripTogether</div>
+                <div class="adm-brand-sub">Super Admin</div>
+            </div>
+        </a>
+
+        <nav class="adm-nav">
+            <div class="adm-nav-section">관리자 관리</div>
+            <a class="adm-nav-item " href="../superAdmin/members.html">
+                <span class="adm-nav-icon">👤</span> 관리자 목록
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/org.html">
+                <span class="adm-nav-icon">🏢</span> 조직도
+            </a>
+
+            <div class="adm-nav-section sa-nav-section-spaced">권한 관리</div>
+            <a class="adm-nav-item " href="../superAdmin/permissions.html">
+                <span class="adm-nav-icon">🔑</span> 권한 항목
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/groups.html">
+                <span class="adm-nav-icon">🔐</span> 권한 그룹
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/permission-codes.html">
+                <span class="adm-nav-icon">🗂️</span> 권한 템플릿
+            </a>
+
+            <div class="adm-nav-section sa-nav-section-spaced">현황 분석</div>
+            <a class="adm-nav-item active" href="../superAdmin/salary.html">
+                <span class="adm-nav-icon">💰</span> 급여/역량 현황
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/stats.html">
+                <span class="adm-nav-icon">📊</span> 통계 대시보드
+            </a>
+
+            <div class="sa-nav-aux-wrap">
+                <a class="adm-nav-item sa-nav-aux" href="../admin.html">
+                    <span class="adm-nav-icon">↩️</span> 관리자 패널
+                </a>
+                <a class="adm-nav-item sa-nav-aux sa-nav-aux-site" href="../index.html" target="_blank">
+                    <span class="adm-nav-icon">↗️</span> 사이트 보기
+                </a>
+            </div>
+        </nav>
+
+        <div class="adm-sidebar-foot">
+            <div class="adm-user-chip">
+                <div class="adm-user-av">최</div>
+                <div>
+                    <div class="adm-user-name">최고관리자</div>
+                    <div class="adm-user-role">최고관리자</div>
+                </div>
+                <a href="/TripTogether/auth/logout" class="adm-logout" title="로그아웃">⏏</a>
+            </div>
+        </div>
+    </aside>
+
+    <div class="adm-main">
+        <div class="adm-topbar">
+            <button type="button" class="adm-nav-toggle" id="sidebar-toggle" aria-label="메뉴" aria-expanded="false" aria-controls="adm-sidebar">
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+            </button>
+            <div class="adm-topbar-title">급여/역량 현황</div>
+            <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="테마 변경">☀️ 밝게</button>
+            <div class="adm-topbar-path">
+                <span>SuperAdmin</span>
+                <span>급여/역량 현황</span>
+            </div>
+        </div>
+        <div id="adm-toast-container"></div>
+<script>
+(function(){
+    var btn = document.getElementById('saThemeBtn');
+    var isLight = document.body.classList.contains('sa-light');
+    if (btn) btn.textContent = isLight
+        ? '🌙 어둡게'
+        : '☀️ 밝게';
+})();
+
+function saToggleTheme() {
+    var body = document.body;
+    var btn  = document.getElementById('saThemeBtn');
+    if (body.classList.contains('sa-light')) {
+        body.classList.remove('sa-light');
+        localStorage.setItem('tt_theme', 'dark');
+        if (btn) btn.textContent = '☀️ 밝게';
+    } else {
+        body.classList.add('sa-light');
+        localStorage.setItem('tt_theme', 'light');
+        if (btn) btn.textContent = '🌙 어둡게';
+    }
+}
+</script>
+
+
+<div class="adm-content sa-salary-page">
+    <div class="adm-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">
+                급여·역량 현황 일람표
+                <span class="adm-section-total-inline">2명</span>
+            </div>
+            <div class="sa-card-subtitle">전체 관리자의 직급·역량·급여 정보를 확인하고 수정합니다.</div>
+        </div>
+        <div class="adm-card-body sa-table-card-body">
+
+            
+            <form method="get" action="/TripTogether/superAdmin/salary" class="sa-salary-toolbar" id="salaryFilterForm">
+                <input type="text" name="keyword" value="" placeholder="닉네임·부서·직책 검색…" class="adm-input sa-salary-keyword">
+                <input type="text" name="filterDepartment" value="" placeholder="부서 필터" class="adm-input sa-salary-filter">
+                <input type="text" name="filterPermissionCode" value="" placeholder="실효권한 필터" class="adm-input sa-salary-filter">
+                <select name="filterAccountStatus" class="adm-select sa-salary-status">
+                    <option value="">계정상태 전체</option>
+                    <option value="ACTIVE">활성</option>
+                    <option value="BLOCKED">차단</option>
+                    <option value="DORMANT">휴면</option>
+                    <option value="DELETED">탈퇴</option>
+                </select>
+                <input type="hidden" name="pageSize" value="20">
+                <button type="submit" class="adm-btn adm-btn-primary">검색</button>
+                <a href="../superAdmin/salary.html" class="adm-btn adm-btn-ghost">초기화</a>
+                <div class="sa-salary-actions">
+                    <button type="button" class="adm-btn adm-btn-ghost" onclick="triggerSalaryUpload()">⬆ Excel 업로드</button>
+                    <input type="file" id="salaryUploadInput" accept=".xlsx,.xls" class="sa-hidden-file" onchange="handleSalaryFile(event)">
+                    <a href="/TripTogether/superAdmin/salary/export?keyword=&filterDepartment=&filterPermissionCode=&filterAccountStatus=" class="adm-btn adm-btn-ghost">
+                        ⬇ Excel 내보내기
+                    </a>
+                    <span class="sa-salary-count">2명</span>
+                </div>
+            </form>
+
+            <div class="adm-section-list-toolbar adm-admin-list-controlbar js-admin-list-tools-toolbar" data-table-id="salaryTable"><div class="adm-admin-list-selection adm-admin-list-bulkbar" aria-live="polite" aria-hidden="true"><span class="adm-admin-list-selected-count">선택 0건</span><button type="button" class="adm-btn adm-btn-ghost js-admin-list-clear-selection" disabled="">선택 해제</button></div><div class="adm-admin-list-toolcluster"><div class="adm-admin-list-primary-tools js-admin-list-primary-tools"><label class="adm-admin-list-tool adm-section-list-mode"><span>로드 방식</span><select class="adm-select js-admin-list-mode" title="전체 로드 시 최대 500건까지 서버에서 다시 불러옵니다."><option value="page">페이지 로드</option><option value="full">전체 로드</option></select></label><label class="adm-admin-list-tool adm-section-list-size"><span>표시</span><select class="adm-select js-admin-list-page-size"><option value="10">10</option><option value="20" selected="">20</option><option value="50">50</option><option value="100">100</option><option value="all">전체</option></select></label><div class="adm-export-control adm-admin-list-export-tool"><select class="adm-select js-admin-list-export-format"><option value="csv">CSV</option><option value="excel">Excel</option></select><div class="adm-export-menu"><button type="button" class="adm-btn adm-btn-ghost js-export-toggle">내보내기 ▾</button><div class="adm-export-dropdown"><button type="button" class="js-admin-list-export" data-scope="page">현재 페이지 내보내기</button><button type="button" class="js-admin-list-export" data-scope="filtered">검색 결과 내보내기</button><button type="button" class="js-admin-list-export js-admin-list-export-selected" data-scope="selected" disabled="">선택 내보내기 (0)</button></div></div></div></div><div class="adm-admin-list-overflow-menu js-admin-list-overflow-menu has-items"><button type="button" class="adm-btn adm-btn-ghost adm-admin-list-overflow-toggle js-admin-list-overflow-toggle" aria-expanded="false">옵션 ▾</button><div class="adm-admin-list-overflow-panel js-admin-list-overflow-panel"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-sort-reset" style="display:none;">↺ 정렬 초기화</button><div class="adm-admin-list-tool adm-section-list-filter"><select class="adm-select js-admin-list-field" title="현재 화면 기준 필드"><option value="all">현재 화면 전체</option><option value="1">닉네임</option><option value="2">부서</option><option value="3">팀</option><option value="4">직책코드</option><option value="5">직함</option><option value="6">직급(Rank)</option><option value="7">연차</option><option value="8">티어</option><option value="9">레벨</option><option value="10">밴드</option><option value="11">그레이드</option><option value="12">스텝</option><option value="13">실효권한</option><option value="14">상급자</option><option value="15">급여 편집</option></select><div class="adm-search-box adm-section-list-search"><span class="adm-search-ico adm-admin-list-search-ico" aria-hidden="true"></span><input type="text" class="adm-input js-admin-list-keyword" placeholder="현재 화면 내 검색"></div><button type="button" class="adm-btn adm-btn-ghost js-admin-list-filter-reset">↺ 필터 초기화</button></div></div></div></div></div><div class="sa-table-scroll">
+                <table class="sa-salary-table adm-admin-list-table adm-admin-list-server-table" id="salaryTable" data-admin-list-ignore="true" data-admin-list-tools-enhanced="true" data-admin-list-server-sort="true">
+                    <thead>
+                        <tr>
+                            <th class="adm-admin-list-check-cell" style="width: 42px; text-align: center;"><input type="checkbox" class="adm-check js-admin-list-check-all" data-table-id="salaryTable" data-admin-list-select-all="true" aria-label="전체 선택"></th><th onclick="saSalaryThClick(this)">닉네임</th>
+                            <th onclick="saSalaryThClick(this)">부서</th>
+                            <th onclick="saSalaryThClick(this)">팀</th>
+                            <th onclick="saSalaryThClick(this)">직책코드</th>
+                            <th onclick="saSalaryThClick(this)">직함</th>
+                            <th onclick="saSalaryThClick(this)">직급(Rank)</th>
+                            <th onclick="saSalaryThClick(this)">연차</th>
+                            <th onclick="saSalaryThClick(this)">티어</th>
+                            <th onclick="saSalaryThClick(this)">레벨</th>
+                            <th onclick="saSalaryThClick(this)">밴드</th>
+                            <th onclick="saSalaryThClick(this)">그레이드</th>
+                            <th onclick="saSalaryThClick(this)">스텝</th>
+                            <th onclick="saSalaryThClick(this)">실효권한</th>
+                            <th onclick="saSalaryThClick(this)">상급자</th>
+                            <th onclick="saSalaryThClick(this)">급여 편집</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        
+                        
+                        
+                        
+                    <tr data-idx="3" data-seniority="" data-tier="" data-level="" data-band="" data-grade="" data-step="" data-nickname="보안관리자" data-admin-list-orig-order="0" data-admin-list-visible="true" style="">
+                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td><td>
+                                <a href="/TripTogether/superAdmin/members/3/edit" class="sa-salary-name">보안관리자</a>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                
+                                —
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                
+                                —
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                
+                                —
+                            </td>
+                            <td></td>
+                            <td>
+                                <button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button>
+                            </td>
+                        </tr><tr data-idx="2" data-seniority="" data-tier="" data-level="" data-band="" data-grade="" data-step="" data-nickname="운영관리자" data-admin-list-orig-order="1" data-admin-list-visible="true" style="">
+                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td><td>
+                                <a href="../superAdmin/members/2/edit.html" class="sa-salary-name">운영관리자</a>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                
+                                —
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                
+                                —
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                
+                                —
+                            </td>
+                            <td></td>
+                            <td>
+                                <button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button>
+                            </td>
+                        </tr></tbody>
+                </table>
+            </div><div class="adm-section-list-footer js-admin-list-tools-footer" data-table-id="salaryTable"><span class="adm-section-list-page-info js-admin-list-page-info">2건 중 2건 표시 · 1/1쪽</span><div class="adm-section-list-page-tools"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev" disabled="">이전</button><button type="button" class="adm-btn adm-btn-ghost js-admin-list-next" disabled="">다음</button></div></div>
+
+            
+
+            
+            
+
+        </div>
+    </div>
+</div>
+
+
+<div class="adm-modal-overlay" id="salaryEditModal">
+    <div class="adm-modal sa-modal-xs">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="salaryEditTitle">급여/역량 편집</div>
+            <button class="adm-modal-close" onclick="closeModal('salaryEditModal')">✕</button>
+        </div>
+        <div class="adm-modal-body">
+            <div class="sa-salary-edit-grid">
+                <div class="sa-form-group">
+                    <label class="sa-form-label">숙련도 (Seniority)</label>
+                    <select class="adm-select sa-full-select" id="se_seniority">
+                        <option value="">-- 선택 --</option>
+                        <option value="어소시에이트">어소시에이트</option>
+                        <option value="주니어">주니어</option>
+                        <option value="미드레벨">미드레벨</option>
+                        <option value="시니어">시니어</option>
+                        <option value="리드">리드</option>
+                        <option value="프린시펄">프린시펄</option>
+                        <option value="스태프">스태프</option>
+                        <option value="펠로우">펠로우</option>
+                    </select>
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">직무티어 (Tier)</label>
+                    <select class="adm-select sa-full-select" id="se_tier">
+                        <option value="">-- 선택 --</option>
+                        <option>T1</option><option>T2</option><option>T3</option><option>T4</option><option>T5</option>
+                    </select>
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">직무단계 (Level)</label>
+                    <select class="adm-select sa-full-select" id="se_level">
+                        <option value="">-- 선택 --</option>
+                        <option>L1</option><option>L2</option><option>L3</option><option>L4</option>
+                        <option>L5</option><option>L6</option><option>L7</option>
+                    </select>
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">급여구간 (Band)</label>
+                    <select class="adm-select sa-full-select" id="se_band">
+                        <option value="">-- 선택 --</option>
+                        <option>B1</option><option>B2</option><option>B3</option><option>B4</option><option>B5</option>
+                        <option>B6</option><option>B7</option><option>B8</option><option>B9</option><option>B10</option>
+                    </select>
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">급여등급 (Grade)</label>
+                    <select class="adm-select sa-full-select" id="se_grade">
+                        <option value="">-- 선택 --</option>
+                        <option>G1</option><option>G2</option><option>G3</option><option>G4</option><option>G5</option>
+                        <option>G6</option><option>G7</option><option>G8</option><option>G9</option><option>G10</option>
+                    </select>
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">호봉 (Step)</label>
+                    <select class="adm-select sa-full-select" id="se_step">
+                        <option value="">-- 선택 --</option>
+                        <option value="1호봉">1호봉</option>
+                        <option value="2호봉">2호봉</option>
+                        <option value="3호봉">3호봉</option>
+                        <option value="4호봉">4호봉</option>
+                        <option value="5호봉">5호봉</option>
+                        <option value="6호봉">6호봉</option>
+                        <option value="7호봉">7호봉</option>
+                        <option value="8호봉">8호봉</option>
+                        <option value="9호봉">9호봉</option>
+                        <option value="10호봉">10호봉</option>
+                        <option value="11호봉">11호봉</option>
+                        <option value="12호봉">12호봉</option>
+                        <option value="13호봉">13호봉</option>
+                        <option value="14호봉">14호봉</option>
+                        <option value="15호봉">15호봉</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('salaryEditModal')">취소</button>
+            <button class="adm-btn adm-btn-primary" onclick="saveSalary()">저장</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="adm-modal-overlay" id="salaryUploadPreviewModal">
+    <div class="adm-modal sa-modal-xl">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title">급여/역량 엑셀 업로드 미리보기</div>
+            <button class="adm-modal-close" onclick="closeModal('salaryUploadPreviewModal')">✕</button>
+        </div>
+        <div class="adm-modal-body">
+            <div id="salaryPreviewSummary" class="sa-preview-summary"></div>
+            <div id="salaryPreviewWarn" class="sa-preview-warning"></div>
+            <div class="sa-preview-table-wrap">
+                <table class="sa-salary-table sa-preview-table" id="salaryPreviewTable" data-admin-list-ignore="true">
+                    <thead>
+                        <tr>
+                            <th class="sa-preview-row-col" onclick="saSalaryThClick(this)">행</th>
+                            <th class="sa-preview-state-col" onclick="saSalaryThClick(this)">상태</th>
+                            <th class="sa-preview-name-col" onclick="saSalaryThClick(this)">닉네임</th>
+                            <th class="sa-preview-email-col" onclick="saSalaryThClick(this)">이메일</th>
+                            <th onclick="saSalaryThClick(this)">변경 내용</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salaryPreviewTbody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('salaryUploadPreviewModal')">취소</button>
+            <button class="adm-btn adm-btn-primary" id="salaryApplyBtn" onclick="applySalaryUpload()">적용</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const CTX = '/TripTogether';
+let currentSalaryIdx = null;
+let salaryPreviewRows = [];
+const SALARY_MESSAGES = {
+    editTitleSuffix: '급여\/역량 편집',
+    saved: '저장되었습니다.',
+    saveFailed: '저장 실패',
+    validating: '파일 검증 중…',
+    previewFailed: '미리보기 실패',
+    networkError: '네트워크 오류',
+    total: '총',
+    changed: '변경',
+    unchanged: '미변경',
+    error: '오류',
+    errorExcluded: '오류 행은 적용 대상에서 제외되며, 변경 행만 반영됨.',
+    statusChange: '변경',
+    statusError: '오류',
+    statusUnchanged: '미변경',
+    genericError: '오류',
+    noChanges: '변경 없음',
+    willApply: '{0}행 적용',
+    noRowsToApply: '변경할 행이 없음',
+    applyConfirm: '{0}행을 적용하시겠습니까?',
+    appliedCompleted: '{0}행 적용 완료',
+    applyFailed: '적용 실패',
+    fieldLabels: {
+        Seniority: '숙련도 (Seniority)',
+        Tier: '직무티어 (Tier)',
+        Level: '직무단계 (Level)',
+        Band: '급여구간 (Band)',
+        Grade: '급여등급 (Grade)',
+        Step: '호봉 (Step)'
+    }
+};
+
+function openSalaryEdit(row) {
+    currentSalaryIdx = row.getAttribute('data-idx');
+    document.getElementById('salaryEditTitle').textContent = (row.getAttribute('data-nickname') || '') + SALARY_MESSAGES.editTitleSuffix;
+    setSelect('se_seniority', row.getAttribute('data-seniority'));
+    setSelect('se_tier',      row.getAttribute('data-tier'));
+    setSelect('se_level',     row.getAttribute('data-level'));
+    setSelect('se_band',      row.getAttribute('data-band'));
+    setSelect('se_grade',     row.getAttribute('data-grade'));
+    setSelect('se_step',      row.getAttribute('data-step'));
+    document.getElementById('salaryEditModal').classList.add('open');
+}
+
+function setSelect(id, val) {
+    const el = document.getElementById(id);
+    el.value = val || '';
+}
+
+function saveSalary() {
+    const params = new URLSearchParams({
+        adminSeniority: document.getElementById('se_seniority').value,
+        adminTier:      document.getElementById('se_tier').value,
+        adminLevel:     document.getElementById('se_level').value,
+        adminBand:      document.getElementById('se_band').value,
+        adminGrade:     document.getElementById('se_grade').value,
+        adminStep:      document.getElementById('se_step').value
+    });
+    fetch(CTX + '/superAdmin/members/' + currentSalaryIdx + '/salary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: params.toString()
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) { adm_toast(SALARY_MESSAGES.saved); closeModal('salaryEditModal'); location.reload(); }
+        else adm_toast(data.message || SALARY_MESSAGES.saveFailed, 'error');
+    });
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function triggerSalaryUpload() {
+    document.getElementById('salaryUploadInput').value = '';
+    document.getElementById('salaryUploadInput').click();
+}
+
+function handleSalaryFile(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('file', file);
+    adm_toast(SALARY_MESSAGES.validating);
+    fetch(CTX + '/superAdmin/salary/upload/preview', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: fd
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!data.success) { adm_toast(data.message || SALARY_MESSAGES.previewFailed, 'error'); return; }
+        renderSalaryPreview(data.preview);
+        document.getElementById('salaryUploadPreviewModal').classList.add('open');
+    })
+    .catch(() => adm_toast(SALARY_MESSAGES.networkError, 'error'));
+}
+
+function renderSalaryPreview(preview) {
+    salaryPreviewRows = preview.rows || [];
+    const changeCnt    = preview.changeCount    || 0;
+    const unchangedCnt = preview.unchangedCount || 0;
+    const errorCnt     = preview.errorCount     || 0;
+    const totalCnt     = preview.totalCount     || salaryPreviewRows.length;
+
+    document.getElementById('salaryPreviewSummary').innerHTML =
+        '<span>' + SALARY_MESSAGES.total + ' <b>' + totalCnt + '</b>' + '행' + '</span>' +
+        '<span class="sa-preview-summary-change">' + SALARY_MESSAGES.changed + ' <b>' + changeCnt + '</b></span>' +
+        '<span class="sa-preview-summary-muted">' + SALARY_MESSAGES.unchanged + ' <b>' + unchangedCnt + '</b></span>' +
+        '<span class="sa-preview-summary-error">' + SALARY_MESSAGES.error + ' <b>' + errorCnt + '</b></span>';
+
+    const warnEl = document.getElementById('salaryPreviewWarn');
+    if (errorCnt > 0) {
+        warnEl.classList.add('is-visible');
+        warnEl.textContent = SALARY_MESSAGES.errorExcluded;
+    } else {
+        warnEl.classList.remove('is-visible');
+    }
+
+    const tbody = document.getElementById('salaryPreviewTbody');
+    tbody.innerHTML = '';
+    salaryPreviewRows.forEach(r => {
+        const tr = document.createElement('tr');
+
+        let badge;
+        if (r.status === 'CHANGE') {
+            badge = '<span class="sa-preview-badge is-change">' + SALARY_MESSAGES.statusChange + '</span>';
+        } else if (r.status === 'ERROR') {
+            badge = '<span class="sa-preview-badge is-error">' + SALARY_MESSAGES.statusError + '</span>';
+        } else {
+            badge = '<span class="sa-preview-badge is-unchanged">' + SALARY_MESSAGES.statusUnchanged + '</span>';
+        }
+
+        let diffHtml;
+        if (r.status === 'ERROR') {
+            diffHtml = '<span class="sa-preview-error">' + escapeHtml(r.errorMessage || SALARY_MESSAGES.genericError) + '</span>';
+        } else if (r.status === 'CHANGE' && r.newValues) {
+            const parts = [];
+            Object.keys(r.newValues).forEach(k => {
+                const oldV = (r.oldValues && r.oldValues[k]) || '∅';
+                const newV = r.newValues[k] || '∅';
+                const label = SALARY_MESSAGES.fieldLabels[k] || k;
+                parts.push('<div><b>' + escapeHtml(label) + '</b>: <span class="sa-preview-old">' + escapeHtml(oldV) + '</span> → <span class="sa-preview-new">' + escapeHtml(newV) + '</span></div>');
+            });
+            diffHtml = parts.join('');
+        } else {
+            diffHtml = '<span class="sa-preview-muted">' + SALARY_MESSAGES.noChanges + '</span>';
+        }
+
+        tr.innerHTML =
+            '<td>' + (r.rowNumber || '') + '</td>' +
+            '<td>' + badge + '</td>' +
+            '<td>' + escapeHtml(r.nickname || '') + '</td>' +
+            '<td>' + escapeHtml(r.email || '') + '</td>' +
+            '<td class="sa-preview-diff-cell">' + diffHtml + '</td>';
+        tbody.appendChild(tr);
+    });
+
+    const btn = document.getElementById('salaryApplyBtn');
+    btn.textContent = SALARY_MESSAGES.willApply.replace('{0}', changeCnt);
+    btn.disabled = (changeCnt === 0);
+}
+
+function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+}
+
+function applySalaryUpload() {
+    const apply = salaryPreviewRows
+        .filter(r => r.status === 'CHANGE')
+        .map(r => ({
+            userIdx:   r.userIdx,
+            email:     r.email,
+            seniority: (r.newValues && r.newValues['Seniority']) || null,
+            tier:      (r.newValues && r.newValues['Tier'])      || null,
+            level:     (r.newValues && r.newValues['Level'])     || null,
+            band:      (r.newValues && r.newValues['Band'])      || null,
+            grade:     (r.newValues && r.newValues['Grade'])     || null,
+            step:      (r.newValues && r.newValues['Step'])      || null
+        }));
+
+    if (apply.length === 0) { adm_toast(SALARY_MESSAGES.noRowsToApply, 'error'); return; }
+    if (!confirm(SALARY_MESSAGES.applyConfirm.replace('{0}', apply.length))) return;
+
+    const btn = document.getElementById('salaryApplyBtn');
+    btn.disabled = true;
+
+    fetch(CTX + '/superAdmin/salary/upload/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({ rows: apply })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            adm_toast(SALARY_MESSAGES.appliedCompleted.replace('{0}', data.applied));
+            closeModal('salaryUploadPreviewModal');
+            location.reload();
+        } else {
+            adm_toast(data.message || SALARY_MESSAGES.applyFailed, 'error');
+            btn.disabled = false;
+        }
+    })
+    .catch(() => {
+        adm_toast(SALARY_MESSAGES.networkError, 'error');
+        btn.disabled = false;
+    });
+}
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function saSalaryThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('button, a[href], input:not([type="checkbox"]), select');
+    if (target) {
+        if (target.tagName === 'INPUT' || target.tagName === 'SELECT') target.focus();
+        else target.click();
+        return;
+    }
+    var anyBtn = firstRow.querySelector('button, a[href]');
+    if (anyBtn) anyBtn.click();
+}
+</script>
+
+
+<script>
+function adm_toast(msg, type = 'success') {
+    const c   = document.getElementById('adm-toast-container');
+    const el  = document.createElement('div');
+    el.className = 'adm-toast ' + type;
+    el.innerHTML = (type === 'success' ? '✅ ' : '❌ ') + msg;
+    c.appendChild(el);
+    setTimeout(() => { el.classList.add('is-hiding'); setTimeout(()=>el.remove(),300); }, 2800);
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.adm-modal-overlay.open').forEach(o => o.classList.remove('open'));
+    }
+});
+
+/* ── 사이드바 햄버거 드로어 ── */
+(function () {
+    var toggle   = document.getElementById('sidebar-toggle');
+    var sidebar  = document.getElementById('adm-sidebar');
+    var backdrop = document.getElementById('admBackdrop');
+    if (!toggle || !sidebar || !backdrop) return;
+
+    var mqDesktop = window.matchMedia('(min-width: 1024px)');
+
+    function openDrawer() {
+        sidebar.classList.add('open');
+        backdrop.hidden = false;
+        requestAnimationFrame(function () { backdrop.classList.add('is-open'); });
+        toggle.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('adm-nav-lock');
+    }
+    function closeDrawer() {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('is-open');
+        backdrop.hidden = true;
+        toggle.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('adm-nav-lock');
+    }
+    toggle.addEventListener('click', function () {
+        if (sidebar.classList.contains('open')) closeDrawer(); else openDrawer();
+    });
+    backdrop.addEventListener('click', closeDrawer);
+    sidebar.addEventListener('click', function (e) {
+        if (mqDesktop.matches) return;
+        var link = e.target.closest('a');
+        if (link) closeDrawer();
+    });
+    var onChange = function (e) { if (e.matches) closeDrawer(); };
+    if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', onChange);
+    else if (mqDesktop.addListener) mqDesktop.addListener(onChange);
+})();
+</script>
+<script src="../resources/js/admin/admin-list-tools.js"></script>
+    </div>
+    <div class="adm-backdrop" id="admBackdrop" hidden=""></div>
+</div>
+
+
+
+
+<script>window.__DEMO_BASE__="../";</script>
+<script src="../assets/demo-mock.js"></script>
+</body></html>

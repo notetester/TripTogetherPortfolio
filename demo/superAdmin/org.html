@@ -1,0 +1,298 @@
+<!DOCTYPE html><html lang="ko"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../TripTogetherFavicon.png">
+    <title>조직도 — TripTogether SuperAdmin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="../resources/css/admin/admin.css">
+    <link rel="stylesheet" href="../resources/css/superAdmin/superadmin.css">
+</head>
+<body>
+<script>
+(function(){
+    // 구버전 키(sa_theme) → 신규 키(tt_theme) 일회성 마이그레이션
+    var legacy = localStorage.getItem('sa_theme');
+    if (legacy !== null) {
+        if (!localStorage.getItem('tt_theme')) {
+            localStorage.setItem('tt_theme', legacy === 'sa-light' ? 'light' : 'dark');
+        }
+        localStorage.removeItem('sa_theme');
+    }
+    // superAdmin 기본 테마는 다크. tt_theme === 'light' 일 때만 sa-light 적용
+    var t = localStorage.getItem('tt_theme');
+    if (t === 'light') document.body.classList.add('sa-light');
+})();
+</script>
+<div class="adm-shell">
+    <aside class="adm-sidebar" id="adm-sidebar">
+        <a class="adm-brand" href="/TripTogether/superAdmin">
+            <div class="adm-brand-icon">🔑</div>
+            <div>
+                <div class="adm-brand-text">TripTogether</div>
+                <div class="adm-brand-sub">Super Admin</div>
+            </div>
+        </a>
+
+        <nav class="adm-nav">
+            <div class="adm-nav-section">관리자 관리</div>
+            <a class="adm-nav-item " href="../superAdmin/members.html">
+                <span class="adm-nav-icon">👤</span> 관리자 목록
+            </a>
+            <a class="adm-nav-item active" href="../superAdmin/org.html">
+                <span class="adm-nav-icon">🏢</span> 조직도
+            </a>
+
+            <div class="adm-nav-section sa-nav-section-spaced">권한 관리</div>
+            <a class="adm-nav-item " href="../superAdmin/permissions.html">
+                <span class="adm-nav-icon">🔑</span> 권한 항목
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/groups.html">
+                <span class="adm-nav-icon">🔐</span> 권한 그룹
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/permission-codes.html">
+                <span class="adm-nav-icon">🗂️</span> 권한 템플릿
+            </a>
+
+            <div class="adm-nav-section sa-nav-section-spaced">현황 분석</div>
+            <a class="adm-nav-item " href="../superAdmin/salary.html">
+                <span class="adm-nav-icon">💰</span> 급여/역량 현황
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/stats.html">
+                <span class="adm-nav-icon">📊</span> 통계 대시보드
+            </a>
+
+            <div class="sa-nav-aux-wrap">
+                <a class="adm-nav-item sa-nav-aux" href="../admin.html">
+                    <span class="adm-nav-icon">↩️</span> 관리자 패널
+                </a>
+                <a class="adm-nav-item sa-nav-aux sa-nav-aux-site" href="../index.html" target="_blank">
+                    <span class="adm-nav-icon">↗️</span> 사이트 보기
+                </a>
+            </div>
+        </nav>
+
+        <div class="adm-sidebar-foot">
+            <div class="adm-user-chip">
+                <div class="adm-user-av">최</div>
+                <div>
+                    <div class="adm-user-name">최고관리자</div>
+                    <div class="adm-user-role">최고관리자</div>
+                </div>
+                <a href="/TripTogether/auth/logout" class="adm-logout" title="로그아웃">⏏</a>
+            </div>
+        </div>
+    </aside>
+
+    <div class="adm-main">
+        <div class="adm-topbar">
+            <button type="button" class="adm-nav-toggle" id="sidebar-toggle" aria-label="메뉴" aria-expanded="false" aria-controls="adm-sidebar">
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+            </button>
+            <div class="adm-topbar-title">조직도</div>
+            <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="테마 변경">☀️ 밝게</button>
+            <div class="adm-topbar-path">
+                <span>SuperAdmin</span>
+                <span>조직도</span>
+            </div>
+        </div>
+        <div id="adm-toast-container"></div>
+<script>
+(function(){
+    var btn = document.getElementById('saThemeBtn');
+    var isLight = document.body.classList.contains('sa-light');
+    if (btn) btn.textContent = isLight
+        ? '🌙 어둡게'
+        : '☀️ 밝게';
+})();
+
+function saToggleTheme() {
+    var body = document.body;
+    var btn  = document.getElementById('saThemeBtn');
+    if (body.classList.contains('sa-light')) {
+        body.classList.remove('sa-light');
+        localStorage.setItem('tt_theme', 'dark');
+        if (btn) btn.textContent = '☀️ 밝게';
+    } else {
+        body.classList.add('sa-light');
+        localStorage.setItem('tt_theme', 'light');
+        if (btn) btn.textContent = '🌙 어둡게';
+    }
+}
+</script>
+
+
+<div class="adm-content sa-org-page">
+    <div class="adm-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">
+                관리자 계층 구조
+                <span class="adm-section-total-inline">총 2건</span>
+            </div>
+            <div class="sa-card-subtitle">상급자가 지정되지 않은 관리자는 최상위로 표시됩니다.</div>
+        </div>
+        <div class="adm-card-body">
+            <div id="org-chart"><div class="sa-org-tree"><div class="sa-org-node-wrap"><div class="sa-org-node"><div class="sa-org-avatar">운</div><div class="sa-org-info"><div class="sa-org-name">운영관리자</div></div><a href="../superAdmin/members/2/edit.html" class="sa-org-edit">수정</a></div></div><div class="sa-org-node-wrap"><div class="sa-org-node"><div class="sa-org-avatar">보</div><div class="sa-org-info"><div class="sa-org-name">보안관리자</div></div><a href="/TripTogether/superAdmin/members/3/edit" class="sa-org-edit">수정</a></div></div></div></div>
+            <div id="org-empty" class="sa-empty-cell sa-org-empty" hidden="">등록된 관리자가 없습니다.</div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+const CTX = '/TripTogether';
+const admins = [
+    
+    {
+        userIdx:    2,
+        nickname:   '운영관리자',
+        title:      '',
+        department: '',
+        permCode:   '',
+        posCode:    '',
+        manager:    null
+    },
+    
+    {
+        userIdx:    3,
+        nickname:   '보안관리자',
+        title:      '',
+        department: '',
+        permCode:   '',
+        posCode:    '',
+        manager:    null
+    }
+    
+];
+// 권한 코드 → 사람이 읽는 라벨 (ADMIN_PERMISSION_CODE_POLICY.display_name)
+const permCodeMap = {
+    
+};
+
+function buildTree(nodes) {
+    const map = {};
+    const roots = [];
+    nodes.forEach(n => { map[n.userIdx] = { ...n, children: [] }; });
+    nodes.forEach(n => {
+        if (n.manager && map[n.manager]) {
+            map[n.manager].children.push(map[n.userIdx]);
+        } else {
+            roots.push(map[n.userIdx]);
+        }
+    });
+    return roots;
+}
+
+// depth 0 (root) 와 1 (root 의 자식) 까지는 클래식 top-down,
+// depth 2+ (본부장의 자식 = 부서장 부터) 는 들여쓰기 트리로 전환해 가로 폭 절약.
+function renderNode(node, depth) {
+    depth = depth || 0;
+    var permLabel = (node.permCode && permCodeMap[node.permCode]) || node.permCode;
+    var permBadge = node.permCode
+        ? '<span class="sa-org-badge" title="' + node.permCode + '">' + permLabel + '</span>' : '';
+    var dept = node.department
+        ? '<div class="sa-org-dept">' + node.department + '</div>' : '';
+    var title = node.title
+        ? '<div class="sa-org-title">' + node.title + '</div>' : '';
+
+    var childrenClass = (depth >= 1)
+        ? 'sa-org-children sa-org-children-indent'
+        : 'sa-org-children';
+
+    var childrenHtml = node.children.length > 0
+        ? '<div class="' + childrenClass + '">'
+            + node.children.map(function(c) { return renderNode(c, depth + 1); }).join('')
+            + '</div>'
+        : '';
+
+    return '<div class="sa-org-node-wrap">'
+        + '<div class="sa-org-node">'
+        + '<div class="sa-org-avatar">' + (node.nickname ? node.nickname.charAt(0) : '?') + '</div>'
+        + '<div class="sa-org-info">'
+        + '<div class="sa-org-name">' + node.nickname + '</div>'
+        + title + dept + permBadge
+        + '</div>'
+        + '<a href="' + CTX + '/superAdmin/members/' + node.userIdx + '/edit" class="sa-org-edit">수정</a>'
+        + '</div>'
+        + childrenHtml
+        + '</div>';
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    if (admins.length === 0) {
+        document.getElementById('org-empty').hidden = false;
+        return;
+    }
+    var tree = buildTree(admins);
+    document.getElementById('org-chart').innerHTML =
+        '<div class="sa-org-tree">' + tree.map(function(r) { return renderNode(r, 0); }).join('') + '</div>';
+});
+</script>
+
+
+<script>
+function adm_toast(msg, type = 'success') {
+    const c   = document.getElementById('adm-toast-container');
+    const el  = document.createElement('div');
+    el.className = 'adm-toast ' + type;
+    el.innerHTML = (type === 'success' ? '✅ ' : '❌ ') + msg;
+    c.appendChild(el);
+    setTimeout(() => { el.classList.add('is-hiding'); setTimeout(()=>el.remove(),300); }, 2800);
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.adm-modal-overlay.open').forEach(o => o.classList.remove('open'));
+    }
+});
+
+/* ── 사이드바 햄버거 드로어 ── */
+(function () {
+    var toggle   = document.getElementById('sidebar-toggle');
+    var sidebar  = document.getElementById('adm-sidebar');
+    var backdrop = document.getElementById('admBackdrop');
+    if (!toggle || !sidebar || !backdrop) return;
+
+    var mqDesktop = window.matchMedia('(min-width: 1024px)');
+
+    function openDrawer() {
+        sidebar.classList.add('open');
+        backdrop.hidden = false;
+        requestAnimationFrame(function () { backdrop.classList.add('is-open'); });
+        toggle.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('adm-nav-lock');
+    }
+    function closeDrawer() {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('is-open');
+        backdrop.hidden = true;
+        toggle.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('adm-nav-lock');
+    }
+    toggle.addEventListener('click', function () {
+        if (sidebar.classList.contains('open')) closeDrawer(); else openDrawer();
+    });
+    backdrop.addEventListener('click', closeDrawer);
+    sidebar.addEventListener('click', function (e) {
+        if (mqDesktop.matches) return;
+        var link = e.target.closest('a');
+        if (link) closeDrawer();
+    });
+    var onChange = function (e) { if (e.matches) closeDrawer(); };
+    if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', onChange);
+    else if (mqDesktop.addListener) mqDesktop.addListener(onChange);
+})();
+</script>
+<script src="../resources/js/admin/admin-list-tools.js"></script>
+    </div>
+    <div class="adm-backdrop" id="admBackdrop" hidden=""></div>
+</div>
+
+
+
+
+<script>window.__DEMO_BASE__="../";</script>
+<script src="../assets/demo-mock.js"></script>
+</body></html>

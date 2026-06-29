@@ -1,0 +1,434 @@
+<!DOCTYPE html><html lang="ko"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../TripTogetherFavicon.png">
+    <title>통계 대시보드 — TripTogether SuperAdmin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="../resources/css/admin/admin.css">
+    <link rel="stylesheet" href="../resources/css/superAdmin/superadmin.css">
+</head>
+<body>
+<script>
+(function(){
+    // 구버전 키(sa_theme) → 신규 키(tt_theme) 일회성 마이그레이션
+    var legacy = localStorage.getItem('sa_theme');
+    if (legacy !== null) {
+        if (!localStorage.getItem('tt_theme')) {
+            localStorage.setItem('tt_theme', legacy === 'sa-light' ? 'light' : 'dark');
+        }
+        localStorage.removeItem('sa_theme');
+    }
+    // superAdmin 기본 테마는 다크. tt_theme === 'light' 일 때만 sa-light 적용
+    var t = localStorage.getItem('tt_theme');
+    if (t === 'light') document.body.classList.add('sa-light');
+})();
+</script>
+<div class="adm-shell">
+    <aside class="adm-sidebar" id="adm-sidebar">
+        <a class="adm-brand" href="/TripTogether/superAdmin">
+            <div class="adm-brand-icon">🔑</div>
+            <div>
+                <div class="adm-brand-text">TripTogether</div>
+                <div class="adm-brand-sub">Super Admin</div>
+            </div>
+        </a>
+
+        <nav class="adm-nav">
+            <div class="adm-nav-section">관리자 관리</div>
+            <a class="adm-nav-item " href="../superAdmin/members.html">
+                <span class="adm-nav-icon">👤</span> 관리자 목록
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/org.html">
+                <span class="adm-nav-icon">🏢</span> 조직도
+            </a>
+
+            <div class="adm-nav-section sa-nav-section-spaced">권한 관리</div>
+            <a class="adm-nav-item " href="../superAdmin/permissions.html">
+                <span class="adm-nav-icon">🔑</span> 권한 항목
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/groups.html">
+                <span class="adm-nav-icon">🔐</span> 권한 그룹
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/permission-codes.html">
+                <span class="adm-nav-icon">🗂️</span> 권한 템플릿
+            </a>
+
+            <div class="adm-nav-section sa-nav-section-spaced">현황 분석</div>
+            <a class="adm-nav-item " href="../superAdmin/salary.html">
+                <span class="adm-nav-icon">💰</span> 급여/역량 현황
+            </a>
+            <a class="adm-nav-item active" href="../superAdmin/stats.html">
+                <span class="adm-nav-icon">📊</span> 통계 대시보드
+            </a>
+
+            <div class="sa-nav-aux-wrap">
+                <a class="adm-nav-item sa-nav-aux" href="../admin.html">
+                    <span class="adm-nav-icon">↩️</span> 관리자 패널
+                </a>
+                <a class="adm-nav-item sa-nav-aux sa-nav-aux-site" href="../index.html" target="_blank">
+                    <span class="adm-nav-icon">↗️</span> 사이트 보기
+                </a>
+            </div>
+        </nav>
+
+        <div class="adm-sidebar-foot">
+            <div class="adm-user-chip">
+                <div class="adm-user-av">최</div>
+                <div>
+                    <div class="adm-user-name">최고관리자</div>
+                    <div class="adm-user-role">최고관리자</div>
+                </div>
+                <a href="/TripTogether/auth/logout" class="adm-logout" title="로그아웃">⏏</a>
+            </div>
+        </div>
+    </aside>
+
+    <div class="adm-main">
+        <div class="adm-topbar">
+            <button type="button" class="adm-nav-toggle" id="sidebar-toggle" aria-label="메뉴" aria-expanded="false" aria-controls="adm-sidebar">
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+            </button>
+            <div class="adm-topbar-title">통계 대시보드</div>
+            <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="테마 변경">☀️ 밝게</button>
+            <div class="adm-topbar-path">
+                <span>SuperAdmin</span>
+                <span>통계 대시보드</span>
+            </div>
+        </div>
+        <div id="adm-toast-container"></div>
+<script>
+(function(){
+    var btn = document.getElementById('saThemeBtn');
+    var isLight = document.body.classList.contains('sa-light');
+    if (btn) btn.textContent = isLight
+        ? '🌙 어둡게'
+        : '☀️ 밝게';
+})();
+
+function saToggleTheme() {
+    var body = document.body;
+    var btn  = document.getElementById('saThemeBtn');
+    if (body.classList.contains('sa-light')) {
+        body.classList.remove('sa-light');
+        localStorage.setItem('tt_theme', 'dark');
+        if (btn) btn.textContent = '☀️ 밝게';
+    } else {
+        body.classList.add('sa-light');
+        localStorage.setItem('tt_theme', 'light');
+        if (btn) btn.textContent = '🌙 어둡게';
+    }
+}
+</script>
+
+
+<div class="adm-content">
+
+    
+    <div class="sa-stats-summary">
+        <div class="sa-stats-kpi">
+            <div class="sa-stats-kpi-value">2</div>
+            <div class="sa-stats-kpi-label">총 관리자</div>
+        </div>
+        <div class="sa-stats-kpi">
+            <div class="sa-stats-kpi-value">1</div>
+            <div class="sa-stats-kpi-label">부서 수</div>
+        </div>
+        <div class="sa-stats-kpi">
+            <div class="sa-stats-kpi-value">1</div>
+            <div class="sa-stats-kpi-label">권한 종류</div>
+        </div>
+        <div class="sa-stats-kpi">
+            <div class="sa-stats-kpi-value">1</div>
+            <div class="sa-stats-kpi-label">직책 종류</div>
+        </div>
+    </div>
+
+    
+    <div class="sa-stats-grid">
+
+        <div class="adm-card sa-stats-card">
+            <div class="adm-card-head">
+                <div class="adm-card-title">직책 분포</div>
+            </div>
+            <div class="adm-card-body sa-chart-body">
+                <canvas id="chartPosition" style="display: block; box-sizing: border-box; height: 248px; width: 491px;" width="491" height="248"></canvas>
+            </div>
+        </div>
+
+        <div class="adm-card sa-stats-card">
+            <div class="adm-card-head">
+                <div class="adm-card-title">실효 권한 분포</div>
+            </div>
+            <div class="adm-card-body sa-chart-body">
+                <canvas id="chartPermCode" style="display: block; box-sizing: border-box; height: 248px; width: 491px;" width="491" height="248"></canvas>
+            </div>
+        </div>
+
+        <div class="adm-card sa-stats-card">
+            <div class="adm-card-head">
+                <div class="adm-card-title">티어 분포</div>
+            </div>
+            <div class="adm-card-body sa-chart-body">
+                <canvas id="chartTier" style="display: block; box-sizing: border-box; height: 245px; width: 491px;" width="491" height="245"></canvas>
+            </div>
+        </div>
+
+        <div class="adm-card sa-stats-card">
+            <div class="adm-card-head">
+                <div class="adm-card-title">부서 분포</div>
+            </div>
+            <div class="adm-card-body sa-chart-body">
+                <canvas id="chartDept" style="display: block; box-sizing: border-box; height: 245px; width: 491px;" width="491" height="245"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    
+    <div class="sa-stats-exception-grid">
+
+        <div class="adm-card">
+            <div class="adm-card-head">
+                <div class="adm-card-title">
+                    장기 미접속 관리자
+                    <span class="adm-section-total-inline">총 0건</span>
+                    <span class="sa-exception-count">(90일+)</span>
+                </div>
+            </div>
+            <div class="adm-card-body sa-table-card-body sa-table-scroll">
+                
+                    
+                        <div class="sa-exception-empty">해당 없음</div>
+                    
+                    
+                
+            </div>
+        </div>
+
+        <div class="adm-card">
+            <div class="adm-card-head">
+                <div class="adm-card-title">
+                    권한 없는 관리자
+                    <span class="adm-section-total-inline">총 2건</span>
+                </div>
+            </div>
+            <div class="adm-card-body sa-table-card-body sa-table-scroll">
+                
+                    
+                    
+                        <table class="sa-exception-table" data-admin-list-ignore="true">
+                            <thead><tr><th onclick="saStatsThClick(this)">닉네임</th><th onclick="saStatsThClick(this)">부서</th><th onclick="saStatsThClick(this)">직함</th></tr></thead>
+                            <tbody>
+                            
+                                <tr>
+                                    <td><a href="/TripTogether/superAdmin/members/3/edit">보안관리자</a></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            
+                                <tr>
+                                    <td><a href="../superAdmin/members/2/edit.html">운영관리자</a></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            
+                            </tbody>
+                        </table>
+                    
+                
+            </div>
+        </div>
+
+        <div class="adm-card">
+            <div class="adm-card-head">
+                <div class="adm-card-title">
+                    상급자 미지정 관리자
+                    <span class="adm-section-total-inline">총 2건</span>
+                </div>
+            </div>
+            <div class="adm-card-body sa-table-card-body sa-table-scroll">
+                
+                    
+                    
+                        <table class="sa-exception-table" data-admin-list-ignore="true">
+                            <thead><tr><th onclick="saStatsThClick(this)">닉네임</th><th onclick="saStatsThClick(this)">부서</th><th onclick="saStatsThClick(this)">직함</th></tr></thead>
+                            <tbody>
+                            
+                                <tr>
+                                    <td><a href="/TripTogether/superAdmin/members/3/edit">보안관리자</a></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            
+                                <tr>
+                                    <td><a href="../superAdmin/members/2/edit.html">운영관리자</a></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            
+                            </tbody>
+                        </table>
+                    
+                
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+const dataPosition = {
+    labels: ['미지정'],
+    counts: [2]
+};
+const dataPermCode = {
+    labels: ['미지정'],
+    counts: [2]
+};
+const dataTier = {
+    labels: ['미지정'],
+    counts: [2]
+};
+const dataDept = {
+    labels: ['미지정'],
+    counts: [2]
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    const PALETTE = [
+        '#6366f1','#8b5cf6','#06b6d4','#10b981',
+        '#f59e0b','#ef4444','#ec4899','#84cc16',
+        '#f97316','#3b82f6','#a855f7','#14b8a6'
+    ];
+
+    function donutChart(id, data) {
+        if (!data.labels.length) return;
+        new Chart(document.getElementById(id), {
+            type: 'doughnut',
+            data: {
+                labels: data.labels,
+                datasets: [{ data: data.counts, backgroundColor: PALETTE, borderWidth: 2, borderColor: '#1e2330' }]
+            },
+            options: {
+                plugins: {
+                    legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 12 } } }
+                },
+                cutout: '62%'
+            }
+        });
+    }
+
+    function barChart(id, data) {
+        if (!data.labels.length) return;
+        new Chart(document.getElementById(id), {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    data: data.counts,
+                    backgroundColor: PALETTE,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { color: '#2d3748' } },
+                    y: { ticks: { color: '#94a3b8', stepSize: 1 }, grid: { color: '#2d3748' }, beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    donutChart('chartPosition', dataPosition);
+    donutChart('chartPermCode', dataPermCode);
+    barChart('chartTier', dataTier);
+    barChart('chartDept', dataDept);
+})();
+
+/* ── 헤더 클릭: 첫 행의 같은 컬럼 셀 액션을 트리거 ── */
+function saStatsThClick(th) {
+    var table = th.closest('table');
+    var firstRow = table && table.querySelector('tbody tr');
+    if (!firstRow) return;
+    var cell = firstRow.children[th.cellIndex];
+    if (!cell) return;
+    var target = cell.querySelector('a[href], button');
+    if (target) { target.click(); return; }
+    var anyLink = firstRow.querySelector('a[href]');
+    if (anyLink) location.href = anyLink.getAttribute('href');
+}
+</script>
+
+
+<script>
+function adm_toast(msg, type = 'success') {
+    const c   = document.getElementById('adm-toast-container');
+    const el  = document.createElement('div');
+    el.className = 'adm-toast ' + type;
+    el.innerHTML = (type === 'success' ? '✅ ' : '❌ ') + msg;
+    c.appendChild(el);
+    setTimeout(() => { el.classList.add('is-hiding'); setTimeout(()=>el.remove(),300); }, 2800);
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.adm-modal-overlay.open').forEach(o => o.classList.remove('open'));
+    }
+});
+
+/* ── 사이드바 햄버거 드로어 ── */
+(function () {
+    var toggle   = document.getElementById('sidebar-toggle');
+    var sidebar  = document.getElementById('adm-sidebar');
+    var backdrop = document.getElementById('admBackdrop');
+    if (!toggle || !sidebar || !backdrop) return;
+
+    var mqDesktop = window.matchMedia('(min-width: 1024px)');
+
+    function openDrawer() {
+        sidebar.classList.add('open');
+        backdrop.hidden = false;
+        requestAnimationFrame(function () { backdrop.classList.add('is-open'); });
+        toggle.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('adm-nav-lock');
+    }
+    function closeDrawer() {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('is-open');
+        backdrop.hidden = true;
+        toggle.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('adm-nav-lock');
+    }
+    toggle.addEventListener('click', function () {
+        if (sidebar.classList.contains('open')) closeDrawer(); else openDrawer();
+    });
+    backdrop.addEventListener('click', closeDrawer);
+    sidebar.addEventListener('click', function (e) {
+        if (mqDesktop.matches) return;
+        var link = e.target.closest('a');
+        if (link) closeDrawer();
+    });
+    var onChange = function (e) { if (e.matches) closeDrawer(); };
+    if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', onChange);
+    else if (mqDesktop.addListener) mqDesktop.addListener(onChange);
+})();
+</script>
+<script src="../resources/js/admin/admin-list-tools.js"></script>
+    </div>
+    <div class="adm-backdrop" id="admBackdrop" hidden=""></div>
+</div>
+
+
+
+
+<script>window.__DEMO_BASE__="../";</script>
+<script src="../assets/demo-mock.js"></script>
+</body></html>

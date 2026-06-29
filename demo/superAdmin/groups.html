@@ -1,0 +1,537 @@
+<!DOCTYPE html><html lang="ko"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../TripTogetherFavicon.png">
+    <title>권한 그룹 관리 — TripTogether SuperAdmin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="../resources/css/admin/admin.css">
+    <link rel="stylesheet" href="../resources/css/superAdmin/superadmin.css">
+</head>
+<body>
+<script>
+(function(){
+    // 구버전 키(sa_theme) → 신규 키(tt_theme) 일회성 마이그레이션
+    var legacy = localStorage.getItem('sa_theme');
+    if (legacy !== null) {
+        if (!localStorage.getItem('tt_theme')) {
+            localStorage.setItem('tt_theme', legacy === 'sa-light' ? 'light' : 'dark');
+        }
+        localStorage.removeItem('sa_theme');
+    }
+    // superAdmin 기본 테마는 다크. tt_theme === 'light' 일 때만 sa-light 적용
+    var t = localStorage.getItem('tt_theme');
+    if (t === 'light') document.body.classList.add('sa-light');
+})();
+</script>
+<div class="adm-shell">
+    <aside class="adm-sidebar" id="adm-sidebar">
+        <a class="adm-brand" href="/TripTogether/superAdmin">
+            <div class="adm-brand-icon">🔑</div>
+            <div>
+                <div class="adm-brand-text">TripTogether</div>
+                <div class="adm-brand-sub">Super Admin</div>
+            </div>
+        </a>
+
+        <nav class="adm-nav">
+            <div class="adm-nav-section">관리자 관리</div>
+            <a class="adm-nav-item " href="../superAdmin/members.html">
+                <span class="adm-nav-icon">👤</span> 관리자 목록
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/org.html">
+                <span class="adm-nav-icon">🏢</span> 조직도
+            </a>
+
+            <div class="adm-nav-section sa-nav-section-spaced">권한 관리</div>
+            <a class="adm-nav-item " href="../superAdmin/permissions.html">
+                <span class="adm-nav-icon">🔑</span> 권한 항목
+            </a>
+            <a class="adm-nav-item active" href="../superAdmin/groups.html">
+                <span class="adm-nav-icon">🔐</span> 권한 그룹
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/permission-codes.html">
+                <span class="adm-nav-icon">🗂️</span> 권한 템플릿
+            </a>
+
+            <div class="adm-nav-section sa-nav-section-spaced">현황 분석</div>
+            <a class="adm-nav-item " href="../superAdmin/salary.html">
+                <span class="adm-nav-icon">💰</span> 급여/역량 현황
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/stats.html">
+                <span class="adm-nav-icon">📊</span> 통계 대시보드
+            </a>
+
+            <div class="sa-nav-aux-wrap">
+                <a class="adm-nav-item sa-nav-aux" href="../admin.html">
+                    <span class="adm-nav-icon">↩️</span> 관리자 패널
+                </a>
+                <a class="adm-nav-item sa-nav-aux sa-nav-aux-site" href="../index.html" target="_blank">
+                    <span class="adm-nav-icon">↗️</span> 사이트 보기
+                </a>
+            </div>
+        </nav>
+
+        <div class="adm-sidebar-foot">
+            <div class="adm-user-chip">
+                <div class="adm-user-av">최</div>
+                <div>
+                    <div class="adm-user-name">최고관리자</div>
+                    <div class="adm-user-role">최고관리자</div>
+                </div>
+                <a href="/TripTogether/auth/logout" class="adm-logout" title="로그아웃">⏏</a>
+            </div>
+        </div>
+    </aside>
+
+    <div class="adm-main">
+        <div class="adm-topbar">
+            <button type="button" class="adm-nav-toggle" id="sidebar-toggle" aria-label="메뉴" aria-expanded="false" aria-controls="adm-sidebar">
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+            </button>
+            <div class="adm-topbar-title">권한 그룹 관리</div>
+            <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="테마 변경">☀️ 밝게</button>
+            <div class="adm-topbar-path">
+                <span>SuperAdmin</span>
+                <span>권한 그룹 관리</span>
+            </div>
+        </div>
+        <div id="adm-toast-container"></div>
+<script>
+(function(){
+    var btn = document.getElementById('saThemeBtn');
+    var isLight = document.body.classList.contains('sa-light');
+    if (btn) btn.textContent = isLight
+        ? '🌙 어둡게'
+        : '☀️ 밝게';
+})();
+
+function saToggleTheme() {
+    var body = document.body;
+    var btn  = document.getElementById('saThemeBtn');
+    if (body.classList.contains('sa-light')) {
+        body.classList.remove('sa-light');
+        localStorage.setItem('tt_theme', 'dark');
+        if (btn) btn.textContent = '☀️ 밝게';
+    } else {
+        body.classList.add('sa-light');
+        localStorage.setItem('tt_theme', 'light');
+        if (btn) btn.textContent = '🌙 어둡게';
+    }
+}
+</script>
+
+
+<div class="adm-content sa-policy-admin-page">
+
+    
+    <div class="adm-card sa-policy-head-card">
+        <div class="adm-card-body">
+            <div class="sa-policy-head-row">
+                <div>
+                    <div class="sa-policy-head-title">
+                        권한 그룹 목록
+                        <span class="adm-section-total-inline">총 0건</span>
+                    </div>
+                    <div class="sa-card-subtitle">관리자에게 일괄 부여할 권한 묶음을 관리합니다.</div>
+                </div>
+                <button class="adm-btn adm-btn-primary" onclick="openCreateModal()">+ 그룹 생성</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="adm-card">
+        <div class="adm-card-body sa-table-card-body">
+            
+                
+                    <div class="sa-empty-cell sa-empty-cell-large">등록된 권한 그룹이 없습니다.</div>
+                
+                
+            
+        </div>
+    </div>
+</div>
+
+
+<div class="adm-modal-overlay" id="createModal">
+    <div class="adm-modal sa-modal-xs">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title">권한 그룹 생성</div>
+            <button class="adm-modal-close" onclick="closeModal('createModal')">✕</button>
+        </div>
+        <div class="adm-modal-body">
+            <div class="sa-form-grid sa-form-grid-single">
+                <div class="sa-form-group">
+                    <label class="sa-form-label">그룹 코드 <span class="sa-required">*</span></label>
+                    <input class="adm-input sa-uppercase-input" id="newGroupCode" type="text" placeholder="예: COMMUNITY_OPS">
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">표시명 <span class="sa-required">*</span></label>
+                    <input class="adm-input" id="newGroupName" type="text" placeholder="예: 커뮤니티 운영팀 기본 권한">
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">설명</label>
+                    <input class="adm-input" id="newGroupDesc" type="text" placeholder="그룹 설명 (선택)">
+                </div>
+            </div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('createModal')">취소</button>
+            <button class="adm-btn adm-btn-primary" onclick="createGroup()">생성</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="adm-modal-overlay" id="detailModal">
+    <div class="adm-modal sa-modal-md">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="detailModalTitle">상세</div>
+            <button class="adm-modal-close" onclick="closeModal('detailModal')">✕</button>
+        </div>
+        <div class="adm-modal-body">
+            <div class="sa-section-title">포함된 권한</div>
+            <div id="groupItemList" class="sa-modal-list-block">
+                <div class="sa-empty-cell is-compact">불러오는 중...</div>
+            </div>
+            <div class="sa-section-title">권한 추가</div>
+            <div class="sa-modal-inline-control">
+                <select class="adm-select" id="addPermSelect">
+                    <option value="">-- 권한 선택 --</option>
+                    
+                        <option value="SUPER_ADMIN">최고관리자 전체권한 (SUPER_ADMIN)</option>
+                    
+                </select>
+                <button class="adm-btn adm-btn-primary" onclick="addItem()">추가</button>
+            </div>
+            <div class="sa-section-title">소속 관리자</div>
+            <div class="sa-modal-inline-control is-tight">
+                <input class="adm-input" id="memberSearchInput" type="text" placeholder="닉네임 또는 아이디 검색" onkeydown="if(event.key==='Enter') searchMembersToAdd()">
+                <button class="adm-btn adm-btn-primary" onclick="searchMembersToAdd()">검색</button>
+            </div>
+            <div id="memberSearchResult" class="sa-modal-result"></div>
+            <div id="groupMemberList">
+                <div class="sa-empty-cell is-compact">불러오는 중...</div>
+            </div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('detailModal')">닫기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const CTX = '/TripTogether';
+let currentGroupCode = null;
+const GROUP_MESSAGES = {
+    required: '코드와 표시명은 필수입니다.',
+    createFailed: '생성 실패',
+    created: '그룹이 생성되었습니다.',
+    confirmActivate: '이 그룹을 활성화하시겠습니까?',
+    confirmDeactivate: '이 그룹을 비활성화하시겠습니까?',
+    updated: '변경되었습니다.',
+    updateFailed: '변경 실패',
+    detailSuffix: '상세',
+    loading: '불러오는 중...',
+    noPermissions: '포함된 권한이 없습니다.',
+    noMembers: '소속 관리자가 없습니다.',
+    searchRequired: '검색어를 입력하세요.',
+    searchEmpty: '검색 결과가 없습니다.',
+    addAction: '추가',
+    removeAction: '삭제',
+    confirmAddMember: '{0}을(를) 그룹에 추가하시겠습니까?',
+    memberAdded: '추가되었습니다.',
+    memberAddFailed: '추가 실패',
+    confirmRemoveMember: '이 관리자를 그룹에서 해제하시겠습니까?',
+    memberRemoved: '해제되었습니다.',
+    memberRemoveFailed: '해제 실패',
+    permissionRequired: '권한을 선택하세요.',
+    permissionAdded: '권한이 추가되었습니다.',
+    permissionAddFailed: '추가 실패',
+    confirmRemovePermission: '이 권한을 그룹에서 제거하시겠습니까?',
+    permissionRemoved: '권한이 제거되었습니다.',
+    permissionRemoveFailed: '제거 실패',
+    confirmDeleteEmpty: '이 그룹을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
+    confirmDeleteWithMembers: '이 그룹을 삭제하시겠습니까?\n소속 관리자 {0}명의 그룹 배정이 해제되고 그룹 기반 권한이 박탈됩니다.',
+    deleted: '그룹이 삭제되었습니다.',
+    deleteFailed: '삭제 실패',
+    itemCount: '권한 {0}개'
+};
+
+function formatGroupMessage(template) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return template.replace(/\u007B(\d+)\u007D/g, function(_, idx) {
+        return args[idx] !== undefined ? args[idx] : '';
+    });
+}
+
+function openCreateModal() {
+    document.getElementById('newGroupCode').value = '';
+    document.getElementById('newGroupName').value = '';
+    document.getElementById('newGroupDesc').value = '';
+    document.getElementById('createModal').classList.add('open');
+}
+
+function createGroup() {
+    const code = document.getElementById('newGroupCode').value.trim().toUpperCase();
+    const name = document.getElementById('newGroupName').value.trim();
+    const desc = document.getElementById('newGroupDesc').value.trim();
+    if (!code || !name) { adm_toast(GROUP_MESSAGES.required, 'error'); return; }
+
+    const params = new URLSearchParams({ groupCode: code, displayName: name, description: desc });
+    fetch(CTX + '/superAdmin/groups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: params.toString()
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) { adm_toast(GROUP_MESSAGES.created); closeModal('createModal'); location.reload(); }
+        else adm_toast(data.message || GROUP_MESSAGES.createFailed, 'error');
+    });
+}
+
+function toggleGroup(groupCode, active) {
+    const msg = active ? GROUP_MESSAGES.confirmActivate : GROUP_MESSAGES.confirmDeactivate;
+    if (!confirm(msg)) return;
+    fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(groupCode) + '/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: 'active=' + active
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) { adm_toast(GROUP_MESSAGES.updated); location.reload(); }
+        else adm_toast(data.message || GROUP_MESSAGES.updateFailed, 'error');
+    });
+}
+
+function openDetailModal(groupCode, groupName) {
+    currentGroupCode = groupCode;
+    document.getElementById('detailModalTitle').textContent = groupName + ' - ' + GROUP_MESSAGES.detailSuffix;
+    document.getElementById('detailModal').classList.add('open');
+    loadGroupItems();
+    loadGroupMembers();
+}
+
+function loadGroupItems() {
+    document.getElementById('groupItemList').innerHTML = '<div class="sa-empty-cell is-compact">' + GROUP_MESSAGES.loading + '</div>';
+    fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(currentGroupCode))
+        .then(r => r.json())
+        .then(data => {
+            var items = data.items || [];
+            if (items.length === 0) {
+                document.getElementById('groupItemList').innerHTML = '<div class="sa-soft-empty is-padded">' + GROUP_MESSAGES.noPermissions + '</div>';
+            } else {
+                document.getElementById('groupItemList').innerHTML = items.map(i => `
+                    <div class="sa-group-item-row">
+                        <span class="sa-group-item-name">${i.displayName}</span>
+                        <span class="sa-group-item-code">${i.permissionCode}</span>
+                        <button class="adm-btn adm-btn-sm adm-btn-danger"
+                                data-code="${i.permissionCode}"
+                                onclick="removeItem(this.getAttribute('data-code'))">${GROUP_MESSAGES.removeAction}</button>
+                    </div>`).join('');
+            }
+            var btn = document.querySelector('.sa-group-row button[data-code="' + currentGroupCode + '"]');
+            if (btn) {
+                var cnt = btn.closest('.sa-group-row').querySelector('.sa-group-cnt');
+                if (cnt) cnt.textContent = formatGroupMessage(GROUP_MESSAGES.itemCount, items.length);
+            }
+        });
+}
+
+function loadGroupMembers() {
+    document.getElementById('groupMemberList').innerHTML = '<div class="sa-empty-cell is-compact">' + GROUP_MESSAGES.loading + '</div>';
+    fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(currentGroupCode) + '/members')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.members || data.members.length === 0) {
+                document.getElementById('groupMemberList').innerHTML = '<div class="sa-soft-empty is-padded">' + GROUP_MESSAGES.noMembers + '</div>';
+                return;
+            }
+            document.getElementById('groupMemberList').innerHTML = data.members.map(m => `
+                <div class="sa-group-item-row">
+                    <span class="sa-group-item-name">${m.nickname}</span>
+                        <span class="sa-group-item-code">${m.userId}</span>
+                        <button class="adm-btn adm-btn-sm adm-btn-danger"
+                                data-uid="${m.userIdx}"
+                                onclick="revokeMemberGroup(this.getAttribute('data-uid'))">${GROUP_MESSAGES.removeAction}</button>
+                </div>`).join('');
+        });
+}
+
+function searchMembersToAdd() {
+    const keyword = document.getElementById('memberSearchInput').value.trim();
+    if (!keyword) { adm_toast(GROUP_MESSAGES.searchRequired, 'error'); return; }
+    fetch(CTX + '/superAdmin/admins/search?keyword=' + encodeURIComponent(keyword) + '&excludeGroupCode=' + encodeURIComponent(currentGroupCode))
+        .then(r => r.json())
+        .then(data => {
+            var users = data.users || [];
+            if (users.length === 0) {
+                document.getElementById('memberSearchResult').innerHTML = '<div class="sa-soft-empty">' + GROUP_MESSAGES.searchEmpty + '</div>';
+                return;
+            }
+            document.getElementById('memberSearchResult').innerHTML =
+                '<div class="sa-dynamic-list">' +
+                users.map(u => `
+                    <div class="sa-group-item-row sa-clickable-row" data-uid="${u.userIdx}"
+                         onclick="addMemberToGroup(this.getAttribute('data-uid'), '${u.nickname}')">
+                        <span class="sa-group-item-name">${u.nickname}</span>
+                        <span class="sa-group-item-code">${u.userId}</span>
+                        <span class="sa-action-link">${GROUP_MESSAGES.addAction}</span>
+                    </div>`).join('') + '</div>';
+        });
+}
+
+function addMemberToGroup(userIdx, nickname) {
+    if (!confirm(formatGroupMessage(GROUP_MESSAGES.confirmAddMember, nickname))) return;
+    fetch(CTX + '/superAdmin/members/' + userIdx + '/groups/assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: 'groupCode=' + encodeURIComponent(currentGroupCode)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            adm_toast(GROUP_MESSAGES.memberAdded);
+            document.getElementById('memberSearchResult').innerHTML = '';
+            document.getElementById('memberSearchInput').value = '';
+            loadGroupMembers();
+        } else adm_toast(data.message || GROUP_MESSAGES.memberAddFailed, 'error');
+    });
+}
+
+function revokeMemberGroup(userIdx) {
+    if (!confirm(GROUP_MESSAGES.confirmRemoveMember)) return;
+    fetch(CTX + '/superAdmin/members/' + userIdx + '/groups/revoke', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: 'groupCode=' + encodeURIComponent(currentGroupCode)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) { adm_toast(GROUP_MESSAGES.memberRemoved); loadGroupMembers(); }
+        else adm_toast(data.message || GROUP_MESSAGES.memberRemoveFailed, 'error');
+    });
+}
+
+function addItem() {
+    const permCode = document.getElementById('addPermSelect').value;
+    if (!permCode) { adm_toast(GROUP_MESSAGES.permissionRequired, 'error'); return; }
+    fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(currentGroupCode) + '/items/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: 'permissionCode=' + encodeURIComponent(permCode)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) { adm_toast(GROUP_MESSAGES.permissionAdded); loadGroupItems(); }
+        else adm_toast(data.message || GROUP_MESSAGES.permissionAddFailed, 'error');
+    });
+}
+
+function removeItem(permCode) {
+    if (!confirm(GROUP_MESSAGES.confirmRemovePermission)) return;
+    fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(currentGroupCode) + '/items/remove', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: 'permissionCode=' + encodeURIComponent(permCode)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) { adm_toast(GROUP_MESSAGES.permissionRemoved); loadGroupItems(); }
+        else adm_toast(data.message || GROUP_MESSAGES.permissionRemoveFailed, 'error');
+    });
+}
+
+function deleteGroup(groupCode) {
+    fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(groupCode) + '/members')
+        .then(r => r.json())
+        .then(data => {
+            var memberCount = (data.members || []).length;
+            var msg = memberCount > 0
+                ? formatGroupMessage(GROUP_MESSAGES.confirmDeleteWithMembers, memberCount)
+                : GROUP_MESSAGES.confirmDeleteEmpty;
+            if (!confirm(msg)) return;
+            fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(groupCode) + '/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) { adm_toast(GROUP_MESSAGES.deleted); location.reload(); }
+                else adm_toast(d.message || GROUP_MESSAGES.deleteFailed, 'error');
+            });
+        });
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+</script>
+
+
+<script>
+function adm_toast(msg, type = 'success') {
+    const c   = document.getElementById('adm-toast-container');
+    const el  = document.createElement('div');
+    el.className = 'adm-toast ' + type;
+    el.innerHTML = (type === 'success' ? '✅ ' : '❌ ') + msg;
+    c.appendChild(el);
+    setTimeout(() => { el.classList.add('is-hiding'); setTimeout(()=>el.remove(),300); }, 2800);
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.adm-modal-overlay.open').forEach(o => o.classList.remove('open'));
+    }
+});
+
+/* ── 사이드바 햄버거 드로어 ── */
+(function () {
+    var toggle   = document.getElementById('sidebar-toggle');
+    var sidebar  = document.getElementById('adm-sidebar');
+    var backdrop = document.getElementById('admBackdrop');
+    if (!toggle || !sidebar || !backdrop) return;
+
+    var mqDesktop = window.matchMedia('(min-width: 1024px)');
+
+    function openDrawer() {
+        sidebar.classList.add('open');
+        backdrop.hidden = false;
+        requestAnimationFrame(function () { backdrop.classList.add('is-open'); });
+        toggle.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('adm-nav-lock');
+    }
+    function closeDrawer() {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('is-open');
+        backdrop.hidden = true;
+        toggle.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('adm-nav-lock');
+    }
+    toggle.addEventListener('click', function () {
+        if (sidebar.classList.contains('open')) closeDrawer(); else openDrawer();
+    });
+    backdrop.addEventListener('click', closeDrawer);
+    sidebar.addEventListener('click', function (e) {
+        if (mqDesktop.matches) return;
+        var link = e.target.closest('a');
+        if (link) closeDrawer();
+    });
+    var onChange = function (e) { if (e.matches) closeDrawer(); };
+    if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', onChange);
+    else if (mqDesktop.addListener) mqDesktop.addListener(onChange);
+})();
+</script>
+<script src="../resources/js/admin/admin-list-tools.js"></script>
+    </div>
+    <div class="adm-backdrop" id="admBackdrop" hidden=""></div>
+</div>
+
+
+
+
+<script>window.__DEMO_BASE__="../";</script>
+<script src="../assets/demo-mock.js"></script>
+</body></html>

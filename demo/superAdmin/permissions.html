@@ -1,0 +1,506 @@
+<!DOCTYPE html><html lang="ko"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../TripTogetherFavicon.png">
+    <title>권한 항목 관리 — TripTogether SuperAdmin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="../resources/css/admin/admin.css">
+    <link rel="stylesheet" href="../resources/css/superAdmin/superadmin.css">
+</head>
+<body>
+<script>
+(function(){
+    // 구버전 키(sa_theme) → 신규 키(tt_theme) 일회성 마이그레이션
+    var legacy = localStorage.getItem('sa_theme');
+    if (legacy !== null) {
+        if (!localStorage.getItem('tt_theme')) {
+            localStorage.setItem('tt_theme', legacy === 'sa-light' ? 'light' : 'dark');
+        }
+        localStorage.removeItem('sa_theme');
+    }
+    // superAdmin 기본 테마는 다크. tt_theme === 'light' 일 때만 sa-light 적용
+    var t = localStorage.getItem('tt_theme');
+    if (t === 'light') document.body.classList.add('sa-light');
+})();
+</script>
+<div class="adm-shell">
+    <aside class="adm-sidebar" id="adm-sidebar">
+        <a class="adm-brand" href="/TripTogether/superAdmin">
+            <div class="adm-brand-icon">🔑</div>
+            <div>
+                <div class="adm-brand-text">TripTogether</div>
+                <div class="adm-brand-sub">Super Admin</div>
+            </div>
+        </a>
+
+        <nav class="adm-nav">
+            <div class="adm-nav-section">관리자 관리</div>
+            <a class="adm-nav-item " href="../superAdmin/members.html">
+                <span class="adm-nav-icon">👤</span> 관리자 목록
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/org.html">
+                <span class="adm-nav-icon">🏢</span> 조직도
+            </a>
+
+            <div class="adm-nav-section sa-nav-section-spaced">권한 관리</div>
+            <a class="adm-nav-item active" href="../superAdmin/permissions.html">
+                <span class="adm-nav-icon">🔑</span> 권한 항목
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/groups.html">
+                <span class="adm-nav-icon">🔐</span> 권한 그룹
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/permission-codes.html">
+                <span class="adm-nav-icon">🗂️</span> 권한 템플릿
+            </a>
+
+            <div class="adm-nav-section sa-nav-section-spaced">현황 분석</div>
+            <a class="adm-nav-item " href="../superAdmin/salary.html">
+                <span class="adm-nav-icon">💰</span> 급여/역량 현황
+            </a>
+            <a class="adm-nav-item " href="../superAdmin/stats.html">
+                <span class="adm-nav-icon">📊</span> 통계 대시보드
+            </a>
+
+            <div class="sa-nav-aux-wrap">
+                <a class="adm-nav-item sa-nav-aux" href="../admin.html">
+                    <span class="adm-nav-icon">↩️</span> 관리자 패널
+                </a>
+                <a class="adm-nav-item sa-nav-aux sa-nav-aux-site" href="../index.html" target="_blank">
+                    <span class="adm-nav-icon">↗️</span> 사이트 보기
+                </a>
+            </div>
+        </nav>
+
+        <div class="adm-sidebar-foot">
+            <div class="adm-user-chip">
+                <div class="adm-user-av">최</div>
+                <div>
+                    <div class="adm-user-name">최고관리자</div>
+                    <div class="adm-user-role">최고관리자</div>
+                </div>
+                <a href="/TripTogether/auth/logout" class="adm-logout" title="로그아웃">⏏</a>
+            </div>
+        </div>
+    </aside>
+
+    <div class="adm-main">
+        <div class="adm-topbar">
+            <button type="button" class="adm-nav-toggle" id="sidebar-toggle" aria-label="메뉴" aria-expanded="false" aria-controls="adm-sidebar">
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+            </button>
+            <div class="adm-topbar-title">권한 항목 관리</div>
+            <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="테마 변경">☀️ 밝게</button>
+            <div class="adm-topbar-path">
+                <span>SuperAdmin</span>
+                <span>권한 항목 관리</span>
+            </div>
+        </div>
+        <div id="adm-toast-container"></div>
+<script>
+(function(){
+    var btn = document.getElementById('saThemeBtn');
+    var isLight = document.body.classList.contains('sa-light');
+    if (btn) btn.textContent = isLight
+        ? '🌙 어둡게'
+        : '☀️ 밝게';
+})();
+
+function saToggleTheme() {
+    var body = document.body;
+    var btn  = document.getElementById('saThemeBtn');
+    if (body.classList.contains('sa-light')) {
+        body.classList.remove('sa-light');
+        localStorage.setItem('tt_theme', 'dark');
+        if (btn) btn.textContent = '☀️ 밝게';
+    } else {
+        body.classList.add('sa-light');
+        localStorage.setItem('tt_theme', 'light');
+        if (btn) btn.textContent = '🌙 어둡게';
+    }
+}
+</script>
+
+
+<div class="adm-content sa-policy-admin-page">
+
+    <div class="adm-card sa-policy-head-card">
+        <div class="adm-card-body">
+            <div class="sa-policy-head-row">
+                <div>
+                    <div class="sa-policy-head-title">
+                        개별 권한 코드 목록
+                        <span class="adm-section-total-inline">총 1건</span>
+                    </div>
+                    <div class="sa-card-subtitle">권한 그룹·번들의 기본 단위입니다. 신중하게 추가/삭제하세요.</div>
+                </div>
+                <button class="adm-btn adm-btn-primary" onclick="openCreateModal()">+ 권한 생성</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="adm-card">
+        <div class="adm-card-body sa-table-card-body">
+            
+                
+                
+                    
+                    
+                    <div class="sa-group-row ">
+                        <div>
+                            <span class="sa-group-code">SUPER_ADMIN</span>
+                        </div>
+                        <div class="sa-group-main">
+                            <div class="sa-group-name">최고관리자 전체권한</div>
+                            <div class="sa-group-desc"></div>
+                        </div>
+                        <div class="sa-group-cnt">직접 부여 1명</div>
+                        <div class="sa-row-actions">
+                            
+                                <span class="adm-badge adm-badge-green">활성</span>
+                                
+                            
+                        </div>
+                        <div class="sa-row-actions">
+                            <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="SUPER_ADMIN" data-name="최고관리자 전체권한" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                            
+                                
+                                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="SUPER_ADMIN" onclick="togglePerm(this.getAttribute('data-code'), false)">비활성화</button>
+                                
+                                
+                            
+                            <button class="adm-btn adm-btn-sm sa-muted-button" data-code="SUPER_ADMIN" data-usage="1" onclick="deletePerm(this.getAttribute('data-code'), this.getAttribute('data-usage'))">삭제</button>
+                        </div>
+                    </div>
+                    
+                
+            
+        </div>
+    </div>
+</div>
+
+
+<div class="adm-modal-overlay" id="createModal">
+    <div class="adm-modal sa-modal-xs">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title">개별 권한 생성</div>
+            <button class="adm-modal-close" onclick="closeModal('createModal')">✕</button>
+        </div>
+        <div class="adm-modal-body">
+            <div class="sa-form-grid sa-form-grid-single">
+                <div class="sa-form-group">
+                    <label class="sa-form-label">권한 코드 <span class="sa-required">*</span></label>
+                    <input class="adm-input sa-uppercase-input" id="newCode" type="text" placeholder="예: EXPLORE_ADMIN">
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">표시명 <span class="sa-required">*</span></label>
+                    <input class="adm-input" id="newName" type="text" placeholder="예: 여행지 관리자">
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">설명</label>
+                    <input class="adm-input" id="newDesc" type="text" placeholder="설명 (선택)">
+                </div>
+            </div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('createModal')">취소</button>
+            <button class="adm-btn adm-btn-primary" onclick="createPerm()">생성</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="adm-modal-overlay" id="detailModal">
+    <div class="adm-modal sa-modal-md">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="detailModalTitle">상세</div>
+            <button class="adm-modal-close" onclick="closeModal('detailModal')">✕</button>
+        </div>
+        <div class="adm-modal-body">
+            <div class="sa-section-title">포함된 권한 그룹</div>
+            <div id="groupList" class="sa-modal-list-block">
+                <div class="sa-empty-cell is-small">불러오는 중...</div>
+            </div>
+            <div class="sa-section-title">포함된 권한 템플릿</div>
+            <div id="codeList" class="sa-modal-list-block">
+                <div class="sa-empty-cell is-small">불러오는 중...</div>
+            </div>
+            <div class="sa-section-title">직접 부여된 관리자</div>
+            <div class="sa-modal-inline-control is-tight">
+                <input class="adm-input" id="adminSearchInput" type="text" placeholder="닉네임 또는 아이디 검색" onkeydown="if(event.key==='Enter') searchAdminsToGrant()">
+                <button class="adm-btn adm-btn-primary" onclick="searchAdminsToGrant()">검색</button>
+            </div>
+            <div id="adminSearchResult" class="sa-modal-result"></div>
+            <div id="adminList">
+                <div class="sa-empty-cell is-small">불러오는 중...</div>
+            </div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('detailModal')">닫기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const CTX = '/TripTogether';
+let currentPermCode = null;
+const PERMISSION_MESSAGES = {
+    required: '코드와 표시명은 필수입니다.',
+    createFailed: '생성 실패',
+    created: '생성되었습니다.',
+    confirmActivate: '이 권한을 활성화하시겠습니까?',
+    confirmDeactivate: '이 권한을 비활성화하시겠습니까?',
+    updated: '변경되었습니다.',
+    updateFailed: '변경 실패',
+    confirmDeleteEmpty: '이 권한을 삭제하시겠습니까?\n그룹·번들에 포함된 경우도 함께 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.',
+    confirmDeleteWithUsage: '이 권한을 삭제하시겠습니까?\n현재 {0}명에게 직접 부여되어 있습니다.\n그룹·번들에 포함된 경우도 함께 삭제됩니다.',
+    deleted: '삭제되었습니다.',
+    deleteFailed: '삭제 실패',
+    detailSuffix: '상세',
+    noGroups: '포함된 그룹이 없습니다.',
+    noTemplates: '포함된 템플릿이 없습니다.',
+    noAdmins: '직접 부여된 관리자가 없습니다.',
+    revokeAction: '해제',
+    searchRequired: '검색어를 입력하세요.',
+    searchEmpty: '검색 결과가 없습니다.',
+    grantAction: '+ 부여',
+    confirmGrantAdmin: '{0}에게 이 권한을 부여하시겠습니까?',
+    granted: '부여되었습니다.',
+    grantFailed: '부여 실패',
+    confirmRevokeAdmin: '이 관리자의 권한을 해제하시겠습니까?',
+    revoked: '해제되었습니다.',
+    revokeFailed: '해제 실패'
+};
+
+function formatPermissionMessage(template) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return template.replace(/\u007B(\d+)\u007D/g, function(_, idx) {
+        return args[idx] !== undefined ? args[idx] : '';
+    });
+}
+
+function openCreateModal() {
+    document.getElementById('newCode').value = '';
+    document.getElementById('newName').value = '';
+    document.getElementById('newDesc').value = '';
+    document.getElementById('createModal').classList.add('open');
+}
+
+function createPerm() {
+    const code = document.getElementById('newCode').value.trim().toUpperCase();
+    const name = document.getElementById('newName').value.trim();
+    const desc = document.getElementById('newDesc').value.trim();
+    if (!code || !name) { adm_toast(PERMISSION_MESSAGES.required, 'error'); return; }
+
+    const params = new URLSearchParams({ permissionCode: code, displayName: name, description: desc });
+    fetch(CTX + '/superAdmin/permissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: params.toString()
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) { adm_toast(PERMISSION_MESSAGES.created); closeModal('createModal'); location.reload(); }
+        else adm_toast(data.message || PERMISSION_MESSAGES.createFailed, 'error');
+    });
+}
+
+function togglePerm(code, active) {
+    const msg = active ? PERMISSION_MESSAGES.confirmActivate : PERMISSION_MESSAGES.confirmDeactivate;
+    if (!confirm(msg)) return;
+    fetch(CTX + '/superAdmin/permissions/' + encodeURIComponent(code) + '/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: 'active=' + active
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) { adm_toast(PERMISSION_MESSAGES.updated); location.reload(); }
+        else adm_toast(data.message || PERMISSION_MESSAGES.updateFailed, 'error');
+    });
+}
+
+function deletePerm(code, usageCount) {
+    var cnt = parseInt(usageCount) || 0;
+    var msg = cnt > 0
+        ? formatPermissionMessage(PERMISSION_MESSAGES.confirmDeleteWithUsage, cnt)
+        : PERMISSION_MESSAGES.confirmDeleteEmpty;
+    if (!confirm(msg)) return;
+    fetch(CTX + '/superAdmin/permissions/' + encodeURIComponent(code) + '/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) { adm_toast(PERMISSION_MESSAGES.deleted); location.reload(); }
+        else adm_toast(data.message || PERMISSION_MESSAGES.deleteFailed, 'error');
+    });
+}
+
+function openDetailModal(code, name) {
+    currentPermCode = code;
+    document.getElementById('detailModalTitle').textContent = name + ' (' + code + ') - ' + PERMISSION_MESSAGES.detailSuffix;
+    document.getElementById('detailModal').classList.add('open');
+    loadDetail();
+}
+
+function loadDetail() {
+    fetch(CTX + '/superAdmin/permissions/' + encodeURIComponent(currentPermCode))
+        .then(r => r.json())
+        .then(data => {
+            var groups = data.groups || [];
+            var codes  = data.codes  || [];
+            var admins = data.admins || [];
+
+            document.getElementById('groupList').innerHTML = groups.length === 0
+                ? '<div class="sa-soft-empty">' + PERMISSION_MESSAGES.noGroups + '</div>'
+                : groups.map(g => `
+                    <div class="sa-group-item-row">
+                        <span class="sa-group-item-name">${g.displayName}</span>
+                        <span class="sa-group-item-code">${g.groupCode}</span>
+                    </div>`).join('');
+
+            document.getElementById('codeList').innerHTML = codes.length === 0
+                ? '<div class="sa-soft-empty">' + PERMISSION_MESSAGES.noTemplates + '</div>'
+                : codes.map(c => `
+                    <div class="sa-group-item-row">
+                        <span class="sa-group-item-name">${c.displayName}</span>
+                        <span class="sa-group-item-code">${c.adminPermissionCode}</span>
+                    </div>`).join('');
+
+            document.getElementById('adminList').innerHTML = admins.length === 0
+                ? '<div class="sa-soft-empty">' + PERMISSION_MESSAGES.noAdmins + '</div>'
+                : admins.map(m => `
+                    <div class="sa-group-item-row">
+                        <span class="sa-group-item-name">${m.nickname}</span>
+                        <span class="sa-group-item-code">${m.userId}</span>
+                        <button class="adm-btn adm-btn-sm adm-btn-danger"
+                                data-uid="${m.userIdx}"
+                                onclick="revokeAdmin(this.getAttribute('data-uid'))">${PERMISSION_MESSAGES.revokeAction}</button>
+                    </div>`).join('');
+        });
+}
+
+function searchAdminsToGrant() {
+    const keyword = document.getElementById('adminSearchInput').value.trim();
+    if (!keyword) { adm_toast(PERMISSION_MESSAGES.searchRequired, 'error'); return; }
+    fetch(CTX + '/superAdmin/admins/search?keyword=' + encodeURIComponent(keyword) + '&excludePermissionCode=' + encodeURIComponent(currentPermCode))
+        .then(r => r.json())
+        .then(data => {
+            var users = data.users || [];
+            if (users.length === 0) {
+                document.getElementById('adminSearchResult').innerHTML = '<div class="sa-soft-empty">' + PERMISSION_MESSAGES.searchEmpty + '</div>';
+                return;
+            }
+            document.getElementById('adminSearchResult').innerHTML =
+                '<div class="sa-dynamic-list">' +
+                users.map(u => `
+                    <div class="sa-group-item-row sa-clickable-row" data-uid="${u.userIdx}"
+                         onclick="grantToAdmin(this.getAttribute('data-uid'), '${u.nickname}')">
+                        <span class="sa-group-item-name">${u.nickname}</span>
+                        <span class="sa-group-item-code">${u.userId}</span>
+                        <span class="sa-action-link">${PERMISSION_MESSAGES.grantAction}</span>
+                    </div>`).join('') + '</div>';
+        });
+}
+
+function grantToAdmin(userIdx, nickname) {
+    if (!confirm(formatPermissionMessage(PERMISSION_MESSAGES.confirmGrantAdmin, nickname))) return;
+    fetch(CTX + '/superAdmin/permissions/' + encodeURIComponent(currentPermCode) + '/grant/' + userIdx, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            adm_toast(PERMISSION_MESSAGES.granted);
+            document.getElementById('adminSearchResult').innerHTML = '';
+            document.getElementById('adminSearchInput').value = '';
+            loadDetail();
+        } else adm_toast(data.message || PERMISSION_MESSAGES.grantFailed, 'error');
+    });
+}
+
+function revokeAdmin(userIdx) {
+    if (!confirm(PERMISSION_MESSAGES.confirmRevokeAdmin)) return;
+    fetch(CTX + '/superAdmin/permissions/' + encodeURIComponent(currentPermCode) + '/revoke/' + userIdx, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) { adm_toast(PERMISSION_MESSAGES.revoked); loadDetail(); }
+        else adm_toast(data.message || PERMISSION_MESSAGES.revokeFailed, 'error');
+    });
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+</script>
+
+
+<script>
+function adm_toast(msg, type = 'success') {
+    const c   = document.getElementById('adm-toast-container');
+    const el  = document.createElement('div');
+    el.className = 'adm-toast ' + type;
+    el.innerHTML = (type === 'success' ? '✅ ' : '❌ ') + msg;
+    c.appendChild(el);
+    setTimeout(() => { el.classList.add('is-hiding'); setTimeout(()=>el.remove(),300); }, 2800);
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.adm-modal-overlay.open').forEach(o => o.classList.remove('open'));
+    }
+});
+
+/* ── 사이드바 햄버거 드로어 ── */
+(function () {
+    var toggle   = document.getElementById('sidebar-toggle');
+    var sidebar  = document.getElementById('adm-sidebar');
+    var backdrop = document.getElementById('admBackdrop');
+    if (!toggle || !sidebar || !backdrop) return;
+
+    var mqDesktop = window.matchMedia('(min-width: 1024px)');
+
+    function openDrawer() {
+        sidebar.classList.add('open');
+        backdrop.hidden = false;
+        requestAnimationFrame(function () { backdrop.classList.add('is-open'); });
+        toggle.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('adm-nav-lock');
+    }
+    function closeDrawer() {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('is-open');
+        backdrop.hidden = true;
+        toggle.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('adm-nav-lock');
+    }
+    toggle.addEventListener('click', function () {
+        if (sidebar.classList.contains('open')) closeDrawer(); else openDrawer();
+    });
+    backdrop.addEventListener('click', closeDrawer);
+    sidebar.addEventListener('click', function (e) {
+        if (mqDesktop.matches) return;
+        var link = e.target.closest('a');
+        if (link) closeDrawer();
+    });
+    var onChange = function (e) { if (e.matches) closeDrawer(); };
+    if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', onChange);
+    else if (mqDesktop.addListener) mqDesktop.addListener(onChange);
+})();
+</script>
+<script src="../resources/js/admin/admin-list-tools.js"></script>
+    </div>
+    <div class="adm-backdrop" id="admBackdrop" hidden=""></div>
+</div>
+
+
+
+
+<script>window.__DEMO_BASE__="../";</script>
+<script src="../assets/demo-mock.js"></script>
+</body></html>

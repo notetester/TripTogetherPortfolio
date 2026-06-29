@@ -1,0 +1,94 @@
+<html><head></head><body>
+        
+            <input type="checkbox" class="adm-check js-business-row-check" value="4" onchange="updateBusinessBulkBar()">
+        
+        
+            <button type="button" class="adm-cell-link js-open-member-context" data-user-idx="7" data-default-tab="actions">
+                <span class="mem-name">여행가김철수</span>
+                <span class="mem-uid">
+                    
+                        @kimcs
+                        
+                    
+                </span>
+                <span class="adm-cell-link-note">현재 3건</span>
+            </button>
+        
+        
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="role">
+                <span class="role-badge BUSINESS">
+                    
+                        비즈니스
+                        
+                        
+                    
+                </span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        
+        
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="company">
+                <span class="adm-business-company-name">철수트래블</span>
+                <span class="adm-cell-link-note adm-business-company-number">
+                    사업자번호:
+                    
+                        456-78-90123
+                        
+                    
+                </span>
+                <span class="adm-cell-link-note">
+                    담당자 김철수 · 010-7777-8888
+                </span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+            
+                <div class="adm-business-description-cell">개인 가이드로 활동하다 정식 등록 신청합니다.</div>
+                <div class="adm-tr-inline js-admin-translation-widget" data-label="비즈니스 신청 소개글 번역" data-source-type="BUSINESS_APPLICATION" data-source-idx="4" data-field-name="description" data-default-source-lang="ko" data-source-text="개인 가이드로 활동하다 정식 등록 신청합니다."></div>
+            
+        
+        
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="4">
+                <span class="status-badge PENDING">
+                    
+                        검토 대기
+                        
+                        
+                        
+                    
+                </span>
+                
+                
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+            
+        
+        
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="4">
+                <span>26. 6. 14. 오후 4:18</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        
+        
+            
+                
+                    <div class="business-review-actions js-business-review-actions" id="business-review-actions-4">
+                        <form method="post" class="js-business-review-form" action="/TripTogether/admin/business-applications/4/approve">
+                            <button type="submit" class="adm-row-btn detail" onclick="return confirm('이 신청을 승인하고 회원 권한을 변경할까요?')">승인</button>
+                        </form>
+                        <form method="post" class="js-business-review-form" action="/TripTogether/admin/business-applications/4/reject">
+                            <input class="adm-input" name="rejectReason" maxlength="500" placeholder="반려 사유" required="">
+                            <button type="submit" class="adm-row-btn danger">반려</button>
+                        </form>
+                    </div>
+                
+                
+            
+        
+    
+
+
+
+
+<script>window.__DEMO_BASE__="../../";</script>
+<script src="../../assets/demo-mock.js"></script>
+</body></html>
