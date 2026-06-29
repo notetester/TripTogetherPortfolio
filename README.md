@@ -66,17 +66,31 @@ TripTogether는 여행지 탐색, AI 추천, 여행 코스 작성, 커뮤니티,
 - **🌐 4개 국어 국제화(i18n)** — ko/en/ja/zh 언어팩으로 모든 사용자 노출 문자열을 외부화(JSP·JS 하드코딩 금지 규칙) → [공통·인프라](https://notetester.github.io/TripTogetherPortfolio/docs/common.html)
 - **🔐 공개 전 보안 스크럽** — 공개에 앞서 `git filter-repo`로 모든 API 키·비밀번호를 **전 커밋 이력**에서 제거하고, GitHub Actions 배포에 **시크릿 스캔 게이트**를 추가 → [SECURITY.md](SECURITY.md)
 
+## 🔑 데모 로그인 안내
+
+[라이브 데모](https://notetester.github.io/TripTogetherPortfolio/)는 **로그아웃 상태로 시작**합니다. 로그인 화면에서 아래 6개 가상 계정 중 하나로 로그인하면 일반/관리자 화면을 둘러볼 수 있습니다. (모두 가상 목 데이터이며 서버 통신은 없습니다.)
+
+| 로그인 방식 | 계정(닉네임) | 자격증명 | 역할 |
+| --- | --- | --- | --- |
+| 카카오 | 카카오여행가 | 소셜 버튼 클릭 | 일반 |
+| 네이버 | 네이버여행러 | 소셜 버튼 클릭 | 일반 |
+| 구글 | 구글트래블러 | 소셜 버튼 클릭 | 일반 |
+| 이메일 | 이메일여행가 | `user@test.com` / `1234` | 일반 |
+| 아이디 | 여행가김철수 | `user` / `1234` | 일반 |
+| **아이디(관리자)** | **최고관리자** | **`admin` / `1234`** | **관리자** 🛠 |
+
+> 로그인 페이지의 **🧪 데모 계정 선택 패널**에서 원클릭으로 로그인하거나, 폼/소셜 버튼에 위 자격증명을 사용해도 됩니다.
+> 관리자 페이지는 **관리자 계정으로 로그인**해야 열리며(미로그인 시 안내 게이트 표시), 주소 끝에 `?demoacct=admin` 을 붙이면 관리자 화면으로 바로 진입할 수 있습니다.
+
 ## 🖼️ 화면 미리보기
 
-> [라이브 데모](https://notetester.github.io/TripTogetherPortfolio/)는 백엔드 없이 가상 데이터로 동작합니다. (로그인 화면에서 아무 값이나 입력하면 데모 계정으로 진입)
-
-| 홈 | 커뮤니티 | 게시글 |
+| 홈 | 커뮤니티 | 여행 패키지 |
 | :---: | :---: | :---: |
-| [<img src="demo/docs/screenshots/home.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/) | [<img src="demo/docs/screenshots/community.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/community/list.html) | [<img src="demo/docs/screenshots/community-post.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/community/1.html) |
-| **여행 패키지** | **패키지 상세** | **포인트샵** |
-| [<img src="demo/docs/screenshots/packages.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/packages.html) | [<img src="demo/docs/screenshots/package-detail.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/packages.html) | [<img src="demo/docs/screenshots/shop.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/shop.html) |
-| **마이페이지** | **관리자 대시보드** | **관리자 · 보안** |
-| [<img src="demo/docs/screenshots/mypage.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/mypage.html) | [<img src="demo/docs/screenshots/admin-dashboard.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin.html) | [<img src="demo/docs/screenshots/admin-security.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin.html) |
+| [<img src="demo/docs/screenshots/home.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/) | [<img src="demo/docs/screenshots/community.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/community/list.html) | [<img src="demo/docs/screenshots/packages.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/packages.html) |
+| **마이페이지** | **포인트샵** | **커뮤니티 게시글** |
+| [<img src="demo/docs/screenshots/mypage.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/mypage.html) | [<img src="demo/docs/screenshots/shop.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/shop.html) | [<img src="demo/docs/screenshots/community-post.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/community/1.html) |
+| **🛠 관리자 대시보드** | **🛠 관리자 · 회원 관리** | **🛠 관리자 · 보안/차단** |
+| [<img src="demo/docs/screenshots/admin-dashboard.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin.html?demoacct=admin) | [<img src="demo/docs/screenshots/admin-members.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin/members.html?demoacct=admin) | [<img src="demo/docs/screenshots/admin-security.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin/blocks.html?demoacct=admin) |
 
 ## 🧱 아키텍처 한눈에
 
