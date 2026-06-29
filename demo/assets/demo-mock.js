@@ -53,6 +53,22 @@
   //   demoacct 파라미터를 지우기 전에 계정을 먼저 설정해야 한다.
   applyDeepLink();
 
+  // ---------- history 가로채기 ----------
+  // 정적 데모인데 페이지 스크립트가 history.replaceState/pushState로 URL을
+  // 서버 컨텍스트(/TripTogether/...)로 바꿔 주소창을 오염시키고 새로고침 시 404를 유발한다.
+  // /TripTogether/ 절대경로로의 history 변경은 무시한다. ('/TripTogetherPortfolio/'는 영향 없음)
+  try {
+    var _rs = history.replaceState, _ps = history.pushState;
+    history.replaceState = function (s, t, u) {
+      if (typeof u === 'string' && /\/TripTogether\//.test(u)) return;
+      return _rs.apply(history, arguments);
+    };
+    history.pushState = function (s, t, u) {
+      if (typeof u === 'string' && /\/TripTogether\//.test(u)) return;
+      return _ps.apply(history, arguments);
+    };
+  } catch (e) {}
+
   // ---------- 스타일 주입 ----------
   function injectStyles() {
     if (document.getElementById('tt-demo-style')) return;
@@ -81,7 +97,13 @@
       '.tt-acct-btn.admin{grid-column:1 / -1;border-color:#fecaca;background:#fef2f2}' +
       '.tt-acct-btn .m{font-size:13px;font-weight:700;color:#0f172a}' +
       '.tt-acct-btn .c{font-size:11px;color:#64748b}' +
-      '.tt-acct-btn.admin .m{color:#dc2626}';
+      '.tt-acct-btn.admin .m{color:#dc2626}' +
+      // 페이징 정렬 강제(좌하단 세로로 깨지는 문제 교정 — 정보 좌측 / 이전·다음 우측)
+      '.adm-section-list-footer{display:flex !important;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap}' +
+      '.adm-section-list-footer .adm-section-list-page-tools{display:flex !important;flex-direction:row !important;align-items:center;gap:6px;margin-left:auto}' +
+      '.adm-local-pagination{display:flex !important;flex-direction:row !important;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap;padding:10px 16px 12px;width:100%}' +
+      '.adm-local-pagination .adm-local-page-info{font-size:12px;color:#94a3b8;white-space:nowrap}' +
+      '.adm-local-pagination .adm-local-page-actions{display:flex !important;flex-direction:row !important;align-items:center;gap:6px;margin-left:auto}';
     (document.head || document.documentElement).appendChild(s);
   }
 
@@ -370,12 +392,20 @@
       else { a.setAttribute('href', '#'); a.dataset.ttAction = 'missing'; }
     });
   }
+  // 페이징 중복 제거: 공유 footer + 로컬 페이징이 둘 다 있으면 기능형 로컬만 남기고 공유 footer 숨김
+  function dedupePagination() {
+    try {
+      if (document.querySelector('.adm-local-pagination') && document.querySelector('.adm-section-list-footer')) {
+        Array.prototype.forEach.call(document.querySelectorAll('.adm-section-list-footer'), function (el) { el.style.display = 'none'; });
+      }
+    } catch (e) {}
+  }
   var _moPending = false;
   function startLinkObserver() {
     try {
       var mo = new MutationObserver(function () {
         if (_moPending) return; _moPending = true;
-        setTimeout(function () { _moPending = false; rewriteServerLinks(); }, 80);
+        setTimeout(function () { _moPending = false; rewriteServerLinks(); dedupePagination(); }, 80);
       });
       mo.observe(document.body || document.documentElement, { childList: true, subtree: true });
     } catch (e) {}
@@ -403,6 +433,8 @@
     injectBanner();
     rewriteServerLinks();   // /TripTogether 절대 링크 → 정적 경로 (전 페이지 공통)
     startLinkObserver();
+    dedupePagination();
+    setTimeout(dedupePagination, 400);
     // 관리자 크롬이면 게이트/관리자 처리 후 종료(일반 헤더 없음)
     if (handleAdminChrome()) return;
     rewriteUserHeader();
