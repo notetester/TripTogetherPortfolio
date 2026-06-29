@@ -1,10 +1,45 @@
-# TripTogether
+# TripTogether 🧳
+
+> 여행지 탐색 · AI 추천 · 코스 작성 · 커뮤니티 · 예약 · 포인트/지갑 · 관리자 운영을 하나로 묶은 **Spring Boot 기반 통합 여행 플랫폼**
+
+[![Live Demo](https://img.shields.io/badge/▶_Live_Demo-GitHub_Pages-2ea44f?logo=github)](https://notetester.github.io/TripTogetherPortfolio/)
+[![Docs](https://img.shields.io/badge/📖_기술_설명서-VitePress-0ea5a4)](https://notetester.github.io/TripTogetherPortfolio/docs/)
+![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0-6db33f?logo=springboot&logoColor=white)
+![MyBatis](https://img.shields.io/badge/MyBatis-3-red)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479a1?logo=mysql&logoColor=white)
+![JSP](https://img.shields.io/badge/View-JSP%2FJSTL-555)
+
+| | |
+| --- | --- |
+| ▶ **라이브 데모** | <https://notetester.github.io/TripTogetherPortfolio/> — 백엔드 없이 화면을 둘러보는 정적 데모 |
+| 📖 **기능별 기술 설명서** | <https://notetester.github.io/TripTogetherPortfolio/docs/> — 도메인별 *무엇을·왜·어떻게* 정리 |
+| 🔐 **보안 / 민감정보 처리** | [SECURITY.md](SECURITY.md) — API 키·비밀번호를 전 커밋 이력에서 제거 |
+
+[![홈 화면](demo/docs/screenshots/home.png)](https://notetester.github.io/TripTogetherPortfolio/)
 
 TripTogether는 여행지 탐색, AI 추천, 여행 코스 작성, 커뮤니티, 항공권 예매, 여행 패키지 예약, 포인트 상점, 지갑/보상 시스템, 관리자 운영 기능을 하나로 묶은 Spring Boot 기반 통합 여행 플랫폼입니다.
 
 사용자는 여행지를 탐색하고 상세 페이지에서 리뷰, 좋아요, 신고, 지도, 항공권, 패키지 정보를 함께 확인할 수 있습니다. 이후 캐시와 마일리지를 사용해 예약을 진행하고, 활동 보상으로 포인트와 경험치를 획득하며, 아이템샵에서 꾸미기 아이템을 구매하고 장착할 수 있습니다.
 
 관리자는 회원, 신고, 커뮤니티, 여행지, 패키지, 예약/결제, 차단, 번역, AI 사용량 등을 운영 화면에서 관리할 수 있습니다. 최고관리자는 일반 관리자 권한과 조직/직책 기반 권한 정책을 관리합니다.
+
+> ℹ️ 이 저장소는 비공개 팀 프로젝트의 **공개 포트폴리오 미러**입니다. 전체 커밋 이력은 그대로 보존하되, 민감정보(API 키·비밀번호 등)만 [`git filter-repo`로 전 이력에서 제거](SECURITY.md)했습니다.
+
+### 👥 기여자
+
+이 프로젝트는 **이정국 · 정원일 · 신성륜 · 박서진** 4인 팀으로 개발했습니다. 각 기여는 커밋 이력에서 확인할 수 있습니다.
+
+### 📂 저장소 구성
+
+```
+TripTogetherPortfolio/
+├── src/             # 애플리케이션 소스 (Spring Boot · MyBatis · JSP)
+├── demo/            # 라이브 데모용 정적 스냅샷 (GitHub Pages 루트)
+├── portfolio-docs/  # 기능별 기술 설명서 소스 (VitePress → /docs)
+├── docs/            # 설계 결정(ADR) 및 운영 문서
+└── .github/workflows/pages.yml   # 데모+문서 GitHub Pages 자동 배포
+```
 
 ---
 
