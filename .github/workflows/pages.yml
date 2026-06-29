@@ -1,0 +1,68 @@
+name: Deploy Pages (demo + docs)
+
+# 라이브 데모(루트) + 기능 설명서(/docs)를 하나의 GitHub Pages 사이트로 발행한다.
+#  - 루트(/)            : demo/ 의 정적 스냅샷
+#  - /docs/             : portfolio-docs/ 의 VitePress 빌드 결과
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'demo/**'
+      - 'portfolio-docs/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 공개 발행 전 시크릿 게이트 — 키/비밀번호 패턴 발견 시 배포 중단
+      - name: Secret scan gate
+        run: |
+          if grep -rInE 'AIza[0-9A-Za-z_-]{20,}|sk-ant-[0-9A-Za-z_-]{20,}|sk-proj-[0-9A-Za-z_-]{20,}|GOCSPX-[0-9A-Za-z_-]{15,}|team1pass' demo portfolio-docs; then
+            echo "::error::secret-like string detected in demo/ or portfolio-docs/ — aborting deploy"
+            exit 1
+          fi
+          echo "secret scan passed"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build VitePress docs
+        working-directory: portfolio-docs
+        run: |
+          npm install
+          npm run docs:build
+
+      - name: Assemble Pages site (demo at /, docs at /docs)
+        run: |
+          rm -rf _site && mkdir -p _site/docs
+          cp -r demo/. _site/
+          cp -r portfolio-docs/.vitepress/dist/. _site/docs/
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
