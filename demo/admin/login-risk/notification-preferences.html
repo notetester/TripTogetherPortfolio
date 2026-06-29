@@ -1,0 +1,934 @@
+<!DOCTYPE html><html lang="ko"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../TripTogetherFavicon.png">
+    <title>보안 알림 설정 — TripTogether Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../resources/css/admin/admin.css">
+</head>
+<body>
+<script>
+(function(){
+    // 구버전 키(sa_theme) → 신규 키(tt_theme) 일회성 마이그레이션
+    var legacy = localStorage.getItem('sa_theme');
+    if (legacy !== null) {
+        if (!localStorage.getItem('tt_theme')) {
+            localStorage.setItem('tt_theme', legacy === 'sa-light' ? 'light' : 'dark');
+        }
+        localStorage.removeItem('sa_theme');
+    }
+    // admin 기본 테마는 다크. tt_theme === 'light' 일 때만 sa-light 적용
+    var t = localStorage.getItem('tt_theme');
+    if (t === 'light') document.body.classList.add('sa-light');
+})();
+</script>
+<div class="adm-shell">
+    <aside class="adm-sidebar" id="adm-sidebar">
+        <a class="adm-brand" href="../../admin.html">
+            <div class="adm-brand-icon">🌐</div>
+            <div>
+                <div class="adm-brand-text">TripTogether</div>
+                <div class="adm-brand-sub">Admin Panel</div>
+            </div>
+        </a>
+
+        <nav class="adm-nav">
+
+            <div class="adm-nav-section">메인</div>
+            <a class="adm-nav-item " href="../../admin.html">
+                <span class="adm-nav-icon">📊</span> 대시보드
+            </a>
+
+
+
+            <div class="adm-nav-group open" data-group="member-auth">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('member-auth')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">회원 / 인증</span>
+                </button>
+                <div class="adm-nav-group-body">
+
+                    <a class="adm-nav-item " href="../../admin/members.html">
+                        <span class="adm-nav-icon">👥</span> 회원 관리
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/business-applications.html">
+                        <span class="adm-nav-icon">🏢</span> 기업 신청
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/email-verifications.html">
+                        <span class="adm-nav-icon">📧</span> 이메일 액션 요청
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/email-tokens.html">
+                        <span class="adm-nav-icon">🔗</span> 이메일 액션 토큰
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/provider-configs.html">
+                        <span class="adm-nav-icon">🔌</span> Provider 설정
+                    </a>
+                    <a class="adm-nav-item " href="/TripTogether/admin/login-risk/provider-health-history">
+                        <span class="adm-nav-icon">🩺</span> Provider 헬스체크 이력
+                    </a>
+                    <a class="adm-nav-item active" href="/TripTogether/admin/login-risk/notification-preferences">
+                        <span class="adm-nav-icon">🔔</span> 알림 설정
+                    </a>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="adm-nav-group" data-group="blocking">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('blocking')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">보안 / 차단</span>
+                </button>
+                <div class="adm-nav-group-body">
+
+                    <a class="adm-nav-item " href="../../admin/blocks.html">
+                        <span class="adm-nav-icon">⛔</span> 차단 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/login-risk/policies.html">
+                        <span class="adm-nav-icon">⚙️</span> 정책 설정
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/reviews.html">
+                        <span class="adm-nav-icon">🧯</span> 로그인 위험 검토
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/assessments.html">
+                        <span class="adm-nav-icon">🧠</span> 외부 위험 판단
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/security-assessments.html">
+                        <span class="adm-nav-icon">🛡️</span> 보안 위험 판단
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/security-reviews.html">
+                        <span class="adm-nav-icon">🧾</span> 일반 검토 큐
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/appeal-policy.html">
+                        <span class="adm-nav-icon">📜</span> 이의제기 정책
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/appeals.html">
+                        <span class="adm-nav-icon">📮</span> 이의제기
+                    </a>
+                    <a class="adm-nav-item " href="/TripTogether/admin/login-risk/waf-sync">
+                        <span class="adm-nav-icon">🌐</span> WAF 동기화
+                    </a>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="adm-nav-group" data-group="security">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('security')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">보안·감사</span>
+                </button>
+                <div class="adm-nav-group-body">
+                    <a class="adm-nav-item " href="../../admin/logins.html">
+                        <span class="adm-nav-icon">🔐</span> 로그인 감사
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/security.html">
+                        <span class="adm-nav-icon">🛡️</span> 보안 이력
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/activity-logs.html">
+                        <span class="adm-nav-icon">🧭</span> 일반 활동 로그
+                    </a>
+                </div>
+            </div>
+
+
+
+
+            <div class="adm-nav-group" data-group="operations">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('operations')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">운영</span>
+                </button>
+                <div class="adm-nav-group-body">
+
+                    <a class="adm-nav-item " href="../../admin/finance.html">
+                        <span class="adm-nav-icon">💰</span> 내지갑 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/inquiries.html">
+                        <span class="adm-nav-icon">📩</span> 문의 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/reports.html">
+                        <span class="adm-nav-icon">🚨</span> 신고 관리
+                    </a>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="adm-nav-group" data-group="content">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('content')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">콘텐츠</span>
+                </button>
+                <div class="adm-nav-group-body">
+
+                    <a class="adm-nav-item " href="../../admin/community.html">
+                        <span class="adm-nav-icon">📝</span> 커뮤니티 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/explore.html">
+                        <span class="adm-nav-icon">📍</span> 여행지 관리
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/packages.html">
+                        <span class="adm-nav-icon">🎁</span> 패키지 상품 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/courses.html">
+                        <span class="adm-nav-icon">🗺️</span> 코스 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/ads.html">
+                        <span class="adm-nav-icon">📢</span> 광고 관리
+                    </a>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="adm-nav-group" data-group="ai">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('ai')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">AI 관리</span>
+                </button>
+                <div class="adm-nav-group-body">
+
+                    <a class="adm-nav-item " href="../../admin/ai-helper.html">
+                        <span class="adm-nav-icon">🤖</span> AI 도우미 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/ai-helper/chatbot.html">
+                        <span class="adm-nav-icon">💬</span> AI 챗봇 관리
+                    </a>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="adm-nav-group" data-group="system">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('system')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">시스템</span>
+                </button>
+                <div class="adm-nav-group-body">
+
+                    <a class="adm-nav-item " href="../../admin/runtime-settings.html">
+                        <span class="adm-nav-icon">🧩</span> 런타임 설정
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/initial-settings.html">
+                        <span class="adm-nav-icon">📦</span> 초기설정 관리
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/policy-history.html">
+                        <span class="adm-nav-icon">🧾</span> 통합 정책 이력
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/policies.html">
+                        <span class="adm-nav-icon">⚙️</span> 정책 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/moderation.html">
+                        <span class="adm-nav-icon">🧰</span> 콘텐츠 검열 정책
+                    </a>
+
+
+                    <a class="adm-nav-item " href="/TripTogether/superAdmin">
+                        <span class="adm-nav-icon">🔑</span> 관리자 계정 관리
+                    </a>
+
+                </div>
+            </div>
+
+
+            <div style="margin-top:16px; padding: 0 10px;">
+                <a class="adm-nav-item adm-nav-ext" href="../../index.html" target="_blank">
+                    <span class="adm-nav-icon">↗️</span> 사이트 보기
+                </a>
+            </div>
+        </nav>
+
+        <script>
+        (function(){
+            var KEY = 'adm_nav_groups';
+            var state = {};
+            try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e) { state = {}; }
+
+            // active 항목이 속한 그룹은 자동 펼침
+            document.querySelectorAll('.adm-nav-item.active').forEach(function(item){
+                var g = item.closest('.adm-nav-group');
+                if (g) {
+                    g.classList.add('open');
+                    state[g.getAttribute('data-group')] = true;
+                }
+            });
+            // 저장된 상태 복원
+            document.querySelectorAll('.adm-nav-group').forEach(function(g){
+                if (state[g.getAttribute('data-group')]) g.classList.add('open');
+            });
+
+            window.admToggleNavGroup = function(key){
+                var g = document.querySelector('.adm-nav-group[data-group="' + key + '"]');
+                if (!g) return;
+                g.classList.toggle('open');
+                state[key] = g.classList.contains('open');
+                try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+            };
+        })();
+        </script>
+
+        <div class="adm-sidebar-foot">
+            <div class="adm-user-chip">
+                <div class="adm-user-av">최</div>
+                <div>
+                    <div class="adm-user-name">최고관리자</div>
+                    <div class="adm-user-role">관리자</div>
+                </div>
+                <a href="/TripTogether/auth/logout" class="adm-logout" title="로그아웃">⏏</a>
+            </div>
+        </div>
+    </aside>
+
+    <div class="adm-main">
+        <div class="adm-topbar">
+            <button type="button" class="adm-nav-toggle" id="sidebar-toggle" aria-label="메뉴" aria-expanded="false" aria-controls="adm-sidebar">
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+            </button>
+            <div class="adm-topbar-title">보안 알림 설정</div>
+            <div class="adm-topbar-controls">
+                <label class="adm-topbar-select-wrap" for="admLangSel" title="관리자 페이지 언어 변경">
+                    <span class="adm-topbar-tool-label">언어</span>
+                    <select class="adm-select adm-topbar-select" id="admLangSel" aria-label="관리자 페이지 언어 변경">
+                        <option value="ko" selected="">한국어</option>
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                        <option value="zh">中文</option>
+                    </select>
+                </label>
+                <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="테마 변경">☀️ 밝게</button>
+            </div>
+            <div class="adm-topbar-path">
+                <span>Admin</span>
+                <span>보안 알림 설정</span>
+            </div>
+        </div>
+        <div id="adm-toast-container"></div>
+
+
+<script>
+(function(){
+    var btn = document.getElementById('saThemeBtn');
+    var isLight = document.body.classList.contains('sa-light');
+    if (btn) btn.textContent = isLight ? '🌙 어둡게' : '☀️ 밝게';
+})();
+
+function saToggleTheme() {
+    var body = document.body;
+    var btn  = document.getElementById('saThemeBtn');
+    if (body.classList.contains('sa-light')) {
+        body.classList.remove('sa-light');
+        localStorage.setItem('tt_theme', 'dark');
+        if (btn) btn.textContent = '☀️ 밝게';
+    } else {
+        body.classList.add('sa-light');
+        localStorage.setItem('tt_theme', 'light');
+        if (btn) btn.textContent = '🌙 어둡게';
+    }
+}
+
+(function(){
+    var langSel = document.getElementById('admLangSel');
+    if (!langSel) return;
+    langSel.addEventListener('change', function() {
+        var url = new URL(window.location.href);
+        url.searchParams.set('lang', this.value);
+        window.location.href = url.toString();
+    });
+})();
+</script>
+
+
+<style>
+  .adm-notifPref-page .np-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+  }
+  .adm-notifPref-page .np-channel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+  }
+  .adm-notifPref-page .np-channel-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #f1f5f9;
+  }
+  .adm-notifPref-page .np-channel-ico {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: rgba(59, 130, 246, .16);
+      font-size: 17px;
+  }
+  .adm-notifPref-page .np-switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      color: #94a3b8;
+      white-space: nowrap;
+  }
+  .adm-notifPref-page .np-switch input { display: none; }
+  .adm-notifPref-page .np-switch .np-track {
+      width: 40px;
+      height: 22px;
+      border-radius: 999px;
+      background: #475569;
+      position: relative;
+      transition: background .15s ease;
+      flex: 0 0 auto;
+  }
+  .adm-notifPref-page .np-switch .np-track::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform .15s ease;
+  }
+  .adm-notifPref-page .np-switch input:checked + .np-track { background: #22c55e; }
+  .adm-notifPref-page .np-switch input:checked + .np-track::after { transform: translateX(18px); }
+  .adm-notifPref-page .np-switch input:checked ~ .np-switch-state { color: #4ade80; }
+  .adm-notifPref-page .np-field { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+  .adm-notifPref-page .np-field-label { font-size: 12px; font-weight: 700; color: #cbd5e1; }
+  .adm-notifPref-page .np-hint { font-size: 11px; color: #94a3b8; line-height: 1.5; }
+  .adm-notifPref-page .np-mask-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .adm-notifPref-page .np-mask-row .adm-input { flex: 1 1 220px; min-width: 0; }
+  .adm-notifPref-page .np-verified {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 800;
+      background: rgba(34, 197, 94, .16); color: #4ade80; white-space: nowrap;
+  }
+  .adm-notifPref-page .np-pending {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 800;
+      background: rgba(234, 179, 8, .16); color: #facc15; white-space: nowrap;
+  }
+  .adm-notifPref-page .np-event-table th,
+  .adm-notifPref-page .np-event-table td { vertical-align: middle; }
+  .adm-notifPref-page .np-event-name { font-weight: 700; color: #e2e8f0; }
+  .adm-notifPref-page .np-event-desc { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  .adm-notifPref-page .np-sev {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 58px; padding: 3px 8px; border-radius: 6px;
+      font-size: 11px; font-weight: 800;
+  }
+  .adm-notifPref-page .np-sev-critical { background: rgba(239, 68, 68, .18); color: #f87171; }
+  .adm-notifPref-page .np-sev-high { background: rgba(249, 115, 22, .18); color: #fb923c; }
+  .adm-notifPref-page .np-sev-medium { background: rgba(234, 179, 8, .18); color: #facc15; }
+  .adm-notifPref-page .np-sev-low { background: rgba(96, 165, 250, .18); color: #93c5fd; }
+  .adm-notifPref-page .np-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700;
+      background: rgba(148, 163, 184, .14); color: #cbd5e1; margin: 2px 3px 2px 0;
+  }
+  .adm-notifPref-page .np-thresh-input {
+      width: 84px; text-align: center;
+  }
+  .adm-notifPref-page .np-quiet-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+  }
+  .adm-notifPref-page .np-status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 800;
+      white-space: nowrap;
+  }
+  .adm-notifPref-page .np-st-sent { background: rgba(34, 197, 94, .16); color: #4ade80; }
+  .adm-notifPref-page .np-st-failed { background: rgba(239, 68, 68, .16); color: #f87171; }
+  .adm-notifPref-page .np-st-retry { background: rgba(234, 179, 8, .16); color: #facc15; }
+  .adm-notifPref-page .np-st-muted { background: rgba(148, 163, 184, .16); color: #cbd5e1; }
+  .adm-notifPref-page .np-ch-ico { font-size: 14px; margin-right: 5px; }
+  .adm-notifPref-page .np-summary-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px; margin-bottom: 18px;
+  }
+  body.sa-light .adm-notifPref-page .np-channel-title { color: #1e293b; }
+  body.sa-light .adm-notifPref-page .np-field-label { color: #475569; }
+  body.sa-light .adm-notifPref-page .np-hint,
+  body.sa-light .adm-notifPref-page .np-event-desc { color: #64748b; }
+  body.sa-light .adm-notifPref-page .np-event-name { color: #1e293b; }
+  body.sa-light .adm-notifPref-page .np-switch .np-track { background: #cbd5e1; }
+  @media (max-width: 900px) {
+      .adm-notifPref-page .np-grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="adm-content adm-governance-page adm-notifPref-page">
+    <div class="adm-page-head">
+        <div>
+            <h1>보안 알림 설정</h1>
+            <p class="adm-page-desc">로그인 위험·차단·이의제기·Provider 장애 등 보안 이벤트를 어떤 채널로, 어떤 임계값에서, 어떤 시간대에 알릴지 설정합니다.</p>
+        </div>
+        <div class="adm-actions">
+            <a class="adm-btn adm-btn-ghost" href="../../admin/login-risk/policies.html">정책 설정</a>
+            <a class="adm-btn adm-btn-ghost" href="../../admin/login-risk/provider-configs.html">Provider 설정</a>
+            <a class="adm-btn adm-btn-primary" href="#" onclick="return false;">설정 저장</a>
+        </div>
+    </div>
+
+    <!-- 요약 통계 -->
+    <div class="np-summary-grid">
+        <div class="adm-card adm-stat">
+            <div class="adm-stat-label">활성 채널</div>
+            <div class="adm-stat-value">2 / 3</div>
+            <div class="adm-stat-sub">이메일 · 슬랙 사용</div>
+        </div>
+        <div class="adm-card adm-stat">
+            <div class="adm-stat-label">24시간 발송</div>
+            <div class="adm-stat-value">37건</div>
+            <div class="adm-stat-sub">성공 34 · 실패 2 · 묵음 1</div>
+        </div>
+        <div class="adm-card adm-stat">
+            <div class="adm-stat-label">활성 이벤트 규칙</div>
+            <div class="adm-stat-value">6 / 7</div>
+            <div class="adm-stat-sub">CRITICAL 즉시 발송</div>
+        </div>
+        <div class="adm-card adm-stat">
+            <div class="adm-stat-label">야간 묵음</div>
+            <div class="adm-stat-value">사용 중</div>
+            <div class="adm-stat-sub">23:00 ~ 07:00 (KST)</div>
+        </div>
+    </div>
+
+    <!-- 알림 채널 -->
+    <div class="np-grid-2">
+        <!-- 이메일 -->
+        <div class="adm-card">
+            <div class="adm-card-body">
+                <div class="np-channel-head">
+                    <div class="np-channel-title"><span class="np-channel-ico">📧</span> 이메일</div>
+                    <label class="np-switch">
+                        <input type="checkbox" checked>
+                        <span class="np-track"></span>
+                        <span class="np-switch-state">사용</span>
+                    </label>
+                </div>
+                <div class="np-field">
+                    <span class="np-field-label">수신 주소</span>
+                    <div class="np-mask-row">
+                        <input class="adm-input" type="text" value="sec-***@triptogether.co.kr" readonly>
+                        <span class="np-verified">✔ 인증됨</span>
+                    </div>
+                    <span class="np-hint">보안팀 공용 메일함. 실제 주소는 마스킹 처리되어 표시됩니다.</span>
+                </div>
+                <div class="np-field">
+                    <span class="np-field-label">참조(CC)</span>
+                    <input class="adm-input" type="text" value="oncall-***@triptogether.co.kr" readonly>
+                </div>
+                <div class="np-field">
+                    <span class="np-field-label">최소 발송 심각도</span>
+                    <select class="adm-select">
+                        <option>LOW 이상</option>
+                        <option selected>MEDIUM 이상</option>
+                        <option>HIGH 이상</option>
+                        <option>CRITICAL만</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 슬랙 -->
+        <div class="adm-card">
+            <div class="adm-card-body">
+                <div class="np-channel-head">
+                    <div class="np-channel-title"><span class="np-channel-ico">💬</span> 슬랙</div>
+                    <label class="np-switch">
+                        <input type="checkbox" checked>
+                        <span class="np-track"></span>
+                        <span class="np-switch-state">사용</span>
+                    </label>
+                </div>
+                <div class="np-field">
+                    <span class="np-field-label">채널</span>
+                    <div class="np-mask-row">
+                        <input class="adm-input" type="text" value="#sec-alerts" readonly>
+                        <span class="np-verified">✔ 연결됨</span>
+                    </div>
+                    <span class="np-hint">Incoming Webhook URL은 hooks.slack.com/services/T***/B***/**** 형태로 마스킹됩니다.</span>
+                </div>
+                <div class="np-field">
+                    <span class="np-field-label">멘션 대상 (CRITICAL)</span>
+                    <input class="adm-input" type="text" value="@security-oncall" readonly>
+                </div>
+                <div class="np-field">
+                    <span class="np-field-label">최소 발송 심각도</span>
+                    <select class="adm-select">
+                        <option>LOW 이상</option>
+                        <option>MEDIUM 이상</option>
+                        <option selected>HIGH 이상</option>
+                        <option>CRITICAL만</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 웹훅 (전체 폭) -->
+    <div class="adm-card" style="margin-bottom:18px;">
+        <div class="adm-card-body">
+            <div class="np-channel-head">
+                <div class="np-channel-title"><span class="np-channel-ico">🪝</span> 사용자 정의 Webhook</div>
+                <label class="np-switch">
+                    <input type="checkbox">
+                    <span class="np-track"></span>
+                    <span class="np-switch-state">미사용</span>
+                </label>
+            </div>
+            <div class="np-quiet-grid" style="margin-top:14px;">
+                <div class="np-field" style="margin-top:0;">
+                    <span class="np-field-label">Endpoint URL</span>
+                    <input class="adm-input" type="text" value="https://hooks.example.com/sec/****" readonly>
+                </div>
+                <div class="np-field" style="margin-top:0;">
+                    <span class="np-field-label">서명 시크릿</span>
+                    <div class="np-mask-row">
+                        <input class="adm-input" type="text" value="whsec_••••••••••••" readonly>
+                        <span class="np-pending">⚠ 미검증</span>
+                    </div>
+                </div>
+                <div class="np-field" style="margin-top:0;">
+                    <span class="np-field-label">재시도 횟수</span>
+                    <input class="adm-input np-thresh-input" type="number" value="3" readonly>
+                </div>
+                <div class="np-field" style="margin-top:0;">
+                    <span class="np-field-label">타임아웃(ms)</span>
+                    <input class="adm-input np-thresh-input" type="number" value="2000" readonly>
+                </div>
+            </div>
+            <span class="np-hint" style="display:block; margin-top:12px;">현재 비활성 상태입니다. 활성화하려면 Endpoint 검증과 서명 시크릿 확인이 필요합니다.</span>
+        </div>
+    </div>
+
+    <!-- 이벤트별 알림 규칙 -->
+    <div class="adm-card" style="margin-bottom:18px;">
+        <div class="adm-card-header">
+            <div class="adm-card-title">이벤트별 알림 규칙</div>
+            <div class="adm-muted">이벤트별로 발송 여부·심각도 임계값·채널을 지정합니다.</div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-table-wrap">
+                <table class="adm-table np-event-table" data-admin-list-ignore="hard">
+                    <thead>
+                        <tr>
+                            <th>이벤트</th>
+                            <th>심각도</th>
+                            <th>발송 임계값</th>
+                            <th>채널</th>
+                            <th style="text-align:center;">알림</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="np-event-name">로그인 위험 임계 초과</div>
+                                <div class="np-event-desc">AI 위험 점수가 설정 임계값을 넘은 로그인 시도</div>
+                            </td>
+                            <td><span class="np-sev np-sev-high">HIGH</span></td>
+                            <td><input class="adm-input np-thresh-input" type="number" value="70" readonly> <span class="np-hint">점 이상</span></td>
+                            <td><span class="np-chip">📧 이메일</span><span class="np-chip">💬 슬랙</span></td>
+                            <td style="text-align:center;">
+                                <label class="np-switch"><input type="checkbox" checked><span class="np-track"></span></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="np-event-name">자동 차단 발생</div>
+                                <div class="np-event-desc">정책에 의해 IP 또는 계정이 자동 차단됨</div>
+                            </td>
+                            <td><span class="np-sev np-sev-critical">CRITICAL</span></td>
+                            <td><input class="adm-input np-thresh-input" type="number" value="1" readonly> <span class="np-hint">건 즉시</span></td>
+                            <td><span class="np-chip">📧 이메일</span><span class="np-chip">💬 슬랙</span></td>
+                            <td style="text-align:center;">
+                                <label class="np-switch"><input type="checkbox" checked><span class="np-track"></span></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="np-event-name">이의제기 접수</div>
+                                <div class="np-event-desc">사용자가 차단·제재에 대한 이의제기를 제출함</div>
+                            </td>
+                            <td><span class="np-sev np-sev-medium">MEDIUM</span></td>
+                            <td><input class="adm-input np-thresh-input" type="number" value="1" readonly> <span class="np-hint">건마다</span></td>
+                            <td><span class="np-chip">📧 이메일</span></td>
+                            <td style="text-align:center;">
+                                <label class="np-switch"><input type="checkbox" checked><span class="np-track"></span></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="np-event-name">Provider 장애</div>
+                                <div class="np-event-desc">WAF·IP 평판 등 외부 Provider 헬스체크 실패</div>
+                            </td>
+                            <td><span class="np-sev np-sev-high">HIGH</span></td>
+                            <td><input class="adm-input np-thresh-input" type="number" value="2" readonly> <span class="np-hint">회 연속</span></td>
+                            <td><span class="np-chip">💬 슬랙</span></td>
+                            <td style="text-align:center;">
+                                <label class="np-switch"><input type="checkbox" checked><span class="np-track"></span></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="np-event-name">크리덴셜 스터핑 의심</div>
+                                <div class="np-event-desc">단일 IP에서 다중 계정 로그인 실패 급증</div>
+                            </td>
+                            <td><span class="np-sev np-sev-high">HIGH</span></td>
+                            <td><input class="adm-input np-thresh-input" type="number" value="20" readonly> <span class="np-hint">회/10분</span></td>
+                            <td><span class="np-chip">📧 이메일</span><span class="np-chip">💬 슬랙</span></td>
+                            <td style="text-align:center;">
+                                <label class="np-switch"><input type="checkbox" checked><span class="np-track"></span></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="np-event-name">신규 기기·지역 로그인</div>
+                                <div class="np-event-desc">평소와 다른 기기 지문 또는 해외 지역 첫 로그인</div>
+                            </td>
+                            <td><span class="np-sev np-sev-medium">MEDIUM</span></td>
+                            <td><input class="adm-input np-thresh-input" type="number" value="45" readonly> <span class="np-hint">점 이상</span></td>
+                            <td><span class="np-chip">📧 이메일</span></td>
+                            <td style="text-align:center;">
+                                <label class="np-switch"><input type="checkbox" checked><span class="np-track"></span></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="np-event-name">비밀번호 재설정 남용</div>
+                                <div class="np-event-desc">동일 계정·IP의 반복적인 재설정 요청</div>
+                            </td>
+                            <td><span class="np-sev np-sev-low">LOW</span></td>
+                            <td><input class="adm-input np-thresh-input" type="number" value="5" readonly> <span class="np-hint">회/시간</span></td>
+                            <td><span class="np-chip">📧 이메일</span></td>
+                            <td style="text-align:center;">
+                                <label class="np-switch"><input type="checkbox"><span class="np-track"></span></label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 야간 묵음 -->
+    <div class="adm-card" style="margin-bottom:18px;">
+        <div class="adm-card-header">
+            <div class="adm-card-title">야간 묵음 시간대</div>
+            <label class="np-switch">
+                <input type="checkbox" checked>
+                <span class="np-track"></span>
+                <span class="np-switch-state">사용</span>
+            </label>
+        </div>
+        <div class="adm-card-body">
+            <div class="np-quiet-grid">
+                <div class="np-field" style="margin-top:0;">
+                    <span class="np-field-label">묵음 시작</span>
+                    <input class="adm-input" type="time" value="23:00" readonly>
+                </div>
+                <div class="np-field" style="margin-top:0;">
+                    <span class="np-field-label">묵음 종료</span>
+                    <input class="adm-input" type="time" value="07:00" readonly>
+                </div>
+                <div class="np-field" style="margin-top:0;">
+                    <span class="np-field-label">기준 시간대</span>
+                    <select class="adm-select">
+                        <option selected>Asia/Seoul (KST)</option>
+                        <option>UTC</option>
+                    </select>
+                </div>
+                <div class="np-field" style="margin-top:0;">
+                    <span class="np-field-label">CRITICAL 예외</span>
+                    <label class="np-switch" style="margin-top:6px;">
+                        <input type="checkbox" checked>
+                        <span class="np-track"></span>
+                        <span class="np-switch-state">묵음 무시</span>
+                    </label>
+                </div>
+            </div>
+            <span class="np-hint" style="display:block; margin-top:12px;">묵음 시간대에는 MEDIUM 이하 알림이 보류되어 다음 날 07:00에 묶음 요약으로 발송됩니다. CRITICAL 알림은 예외 설정에 따라 즉시 발송됩니다.</span>
+        </div>
+    </div>
+
+    <!-- 최근 발송된 알림 -->
+    <div class="adm-card">
+        <div class="adm-card-header">
+            <div class="adm-card-title">최근 발송된 알림</div>
+            <div class="adm-muted">최근 7건</div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-table-wrap">
+                <table class="adm-table" data-admin-list-ignore="hard">
+                    <thead>
+                        <tr>
+                            <th>발송 시각</th>
+                            <th>이벤트</th>
+                            <th>심각도</th>
+                            <th>채널</th>
+                            <th>대상</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2026-06-29 08:42</td>
+                            <td>자동 차단 발생</td>
+                            <td><span class="np-sev np-sev-critical">CRITICAL</span></td>
+                            <td><span class="np-ch-ico">📧</span>이메일 · <span class="np-ch-ico">💬</span>슬랙</td>
+                            <td>203.0.113.42</td>
+                            <td><span class="np-status-badge np-st-sent">✔ 발송됨</span></td>
+                        </tr>
+                        <tr>
+                            <td>2026-06-29 08:31</td>
+                            <td>로그인 위험 임계 초과</td>
+                            <td><span class="np-sev np-sev-high">HIGH</span></td>
+                            <td><span class="np-ch-ico">💬</span>슬랙</td>
+                            <td>user***@naver.com</td>
+                            <td><span class="np-status-badge np-st-sent">✔ 발송됨</span></td>
+                        </tr>
+                        <tr>
+                            <td>2026-06-29 07:58</td>
+                            <td>Provider 장애</td>
+                            <td><span class="np-sev np-sev-high">HIGH</span></td>
+                            <td><span class="np-ch-ico">💬</span>슬랙</td>
+                            <td>WAF-CF-EDGE</td>
+                            <td><span class="np-status-badge np-st-retry">↻ 재시도 1회</span></td>
+                        </tr>
+                        <tr>
+                            <td>2026-06-29 06:14</td>
+                            <td>크리덴셜 스터핑 의심</td>
+                            <td><span class="np-sev np-sev-high">HIGH</span></td>
+                            <td><span class="np-ch-ico">📧</span>이메일 · <span class="np-ch-ico">💬</span>슬랙</td>
+                            <td>198.51.100.23</td>
+                            <td><span class="np-status-badge np-st-muted">🌙 묵음 보류</span></td>
+                        </tr>
+                        <tr>
+                            <td>2026-06-28 22:07</td>
+                            <td>이의제기 접수</td>
+                            <td><span class="np-sev np-sev-medium">MEDIUM</span></td>
+                            <td><span class="np-ch-ico">📧</span>이메일</td>
+                            <td>lee***@daum.net</td>
+                            <td><span class="np-status-badge np-st-sent">✔ 발송됨</span></td>
+                        </tr>
+                        <tr>
+                            <td>2026-06-28 19:33</td>
+                            <td>신규 기기·지역 로그인</td>
+                            <td><span class="np-sev np-sev-medium">MEDIUM</span></td>
+                            <td><span class="np-ch-ico">📧</span>이메일</td>
+                            <td>kim***@gmail.com</td>
+                            <td><span class="np-status-badge np-st-failed">✖ 실패 (반송)</span></td>
+                        </tr>
+                        <tr>
+                            <td>2026-06-28 15:21</td>
+                            <td>자동 차단 발생</td>
+                            <td><span class="np-sev np-sev-critical">CRITICAL</span></td>
+                            <td><span class="np-ch-ico">📧</span>이메일 · <span class="np-ch-ico">💬</span>슬랙</td>
+                            <td>192.0.2.88</td>
+                            <td><span class="np-status-badge np-st-sent">✔ 발송됨</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+/* ── 사이드바 햄버거 드로어 ── */
+(function () {
+    var toggle   = document.getElementById('sidebar-toggle');
+    var sidebar  = document.getElementById('adm-sidebar');
+    var backdrop = document.getElementById('admBackdrop');
+    if (!toggle || !sidebar || !backdrop) return;
+
+    var mqDesktop = window.matchMedia('(min-width: 1024px)');
+
+    function openDrawer() {
+        sidebar.classList.add('open');
+        backdrop.hidden = false;
+        requestAnimationFrame(function () { backdrop.classList.add('is-open'); });
+        toggle.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('adm-nav-lock');
+    }
+    function closeDrawer() {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('is-open');
+        backdrop.hidden = true;
+        toggle.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('adm-nav-lock');
+    }
+    toggle.addEventListener('click', function () {
+        if (sidebar.classList.contains('open')) closeDrawer(); else openDrawer();
+    });
+    backdrop.addEventListener('click', closeDrawer);
+    sidebar.addEventListener('click', function (e) {
+        if (mqDesktop.matches) return;
+        var link = e.target.closest('a');
+        if (link) closeDrawer();
+    });
+    var onChange = function (e) { if (e.matches) closeDrawer(); };
+    if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', onChange);
+    else if (mqDesktop.addListener) mqDesktop.addListener(onChange);
+})();
+</script>
+    </div>
+    <div class="adm-backdrop" id="admBackdrop" hidden=""></div>
+</div>
+
+
+
+
+<script>window.__DEMO_BASE__="../../";</script>
+<script src="../../assets/demo-mock.js"></script>
+</body></html>

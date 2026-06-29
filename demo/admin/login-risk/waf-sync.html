@@ -1,0 +1,699 @@
+<!DOCTYPE html><html lang="ko"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../TripTogetherFavicon.png">
+    <title>WAF 동기화 — TripTogether Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../resources/css/admin/admin.css">
+</head>
+<body>
+<script>
+(function(){
+    // 구버전 키(sa_theme) → 신규 키(tt_theme) 일회성 마이그레이션
+    var legacy = localStorage.getItem('sa_theme');
+    if (legacy !== null) {
+        if (!localStorage.getItem('tt_theme')) {
+            localStorage.setItem('tt_theme', legacy === 'sa-light' ? 'light' : 'dark');
+        }
+        localStorage.removeItem('sa_theme');
+    }
+    // admin 기본 테마는 다크. tt_theme === 'light' 일 때만 sa-light 적용
+    var t = localStorage.getItem('tt_theme');
+    if (t === 'light') document.body.classList.add('sa-light');
+})();
+</script>
+<div class="adm-shell">
+    <aside class="adm-sidebar" id="adm-sidebar">
+        <a class="adm-brand" href="../../admin.html">
+            <div class="adm-brand-icon">🌐</div>
+            <div>
+                <div class="adm-brand-text">TripTogether</div>
+                <div class="adm-brand-sub">Admin Panel</div>
+            </div>
+        </a>
+
+        <nav class="adm-nav">
+
+            <div class="adm-nav-section">메인</div>
+            <a class="adm-nav-item " href="../../admin.html">
+                <span class="adm-nav-icon">📊</span> 대시보드
+            </a>
+
+
+
+            <div class="adm-nav-group" data-group="member-auth">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('member-auth')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">회원 / 인증</span>
+                </button>
+                <div class="adm-nav-group-body">
+
+                    <a class="adm-nav-item " href="../../admin/members.html">
+                        <span class="adm-nav-icon">👥</span> 회원 관리
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/business-applications.html">
+                        <span class="adm-nav-icon">🏢</span> 기업 신청
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/email-verifications.html">
+                        <span class="adm-nav-icon">📧</span> 이메일 액션 요청
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/email-tokens.html">
+                        <span class="adm-nav-icon">🔗</span> 이메일 액션 토큰
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/provider-configs.html">
+                        <span class="adm-nav-icon">🔌</span> Provider 설정
+                    </a>
+                    <a class="adm-nav-item " href="/TripTogether/admin/login-risk/provider-health-history">
+                        <span class="adm-nav-icon">🩺</span> Provider 헬스체크 이력
+                    </a>
+                    <a class="adm-nav-item " href="/TripTogether/admin/login-risk/notification-preferences">
+                        <span class="adm-nav-icon">🔔</span> 알림 설정
+                    </a>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="adm-nav-group open" data-group="blocking">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('blocking')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">보안 / 차단</span>
+                </button>
+                <div class="adm-nav-group-body">
+
+                    <a class="adm-nav-item " href="../../admin/blocks.html">
+                        <span class="adm-nav-icon">⛔</span> 차단 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/login-risk/policies.html">
+                        <span class="adm-nav-icon">⚙️</span> 정책 설정
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/reviews.html">
+                        <span class="adm-nav-icon">🧯</span> 로그인 위험 검토
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/assessments.html">
+                        <span class="adm-nav-icon">🧠</span> 외부 위험 판단
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/security-assessments.html">
+                        <span class="adm-nav-icon">🛡️</span> 보안 위험 판단
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/security-reviews.html">
+                        <span class="adm-nav-icon">🧾</span> 일반 검토 큐
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/appeal-policy.html">
+                        <span class="adm-nav-icon">📜</span> 이의제기 정책
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/login-risk/appeals.html">
+                        <span class="adm-nav-icon">📮</span> 이의제기
+                    </a>
+                    <a class="adm-nav-item active" href="../../admin/login-risk/waf-sync.html">
+                        <span class="adm-nav-icon">🌐</span> WAF 동기화
+                    </a>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="adm-nav-group" data-group="security">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('security')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">보안·감사</span>
+                </button>
+                <div class="adm-nav-group-body">
+                    <a class="adm-nav-item " href="../../admin/logins.html">
+                        <span class="adm-nav-icon">🔐</span> 로그인 감사
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/security.html">
+                        <span class="adm-nav-icon">🛡️</span> 보안 이력
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/activity-logs.html">
+                        <span class="adm-nav-icon">🧭</span> 일반 활동 로그
+                    </a>
+                </div>
+            </div>
+
+
+
+
+            <div class="adm-nav-group" data-group="operations">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('operations')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">운영</span>
+                </button>
+                <div class="adm-nav-group-body">
+
+                    <a class="adm-nav-item " href="../../admin/finance.html">
+                        <span class="adm-nav-icon">💰</span> 내지갑 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/inquiries.html">
+                        <span class="adm-nav-icon">📩</span> 문의 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/reports.html">
+                        <span class="adm-nav-icon">🚨</span> 신고 관리
+                    </a>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="adm-nav-group" data-group="content">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('content')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">콘텐츠</span>
+                </button>
+                <div class="adm-nav-group-body">
+
+                    <a class="adm-nav-item " href="../../admin/community.html">
+                        <span class="adm-nav-icon">📝</span> 커뮤니티 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/explore.html">
+                        <span class="adm-nav-icon">📍</span> 여행지 관리
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/packages.html">
+                        <span class="adm-nav-icon">🎁</span> 패키지 상품 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/courses.html">
+                        <span class="adm-nav-icon">🗺️</span> 코스 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/ads.html">
+                        <span class="adm-nav-icon">📢</span> 광고 관리
+                    </a>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="adm-nav-group" data-group="ai">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('ai')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">AI 관리</span>
+                </button>
+                <div class="adm-nav-group-body">
+
+                    <a class="adm-nav-item " href="../../admin/ai-helper.html">
+                        <span class="adm-nav-icon">🤖</span> AI 도우미 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/ai-helper/chatbot.html">
+                        <span class="adm-nav-icon">💬</span> AI 챗봇 관리
+                    </a>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="adm-nav-group" data-group="system">
+                <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('system')">
+                    <span class="adm-nav-group-caret">▸</span>
+                    <span class="adm-nav-group-title">시스템</span>
+                </button>
+                <div class="adm-nav-group-body">
+
+                    <a class="adm-nav-item " href="../../admin/runtime-settings.html">
+                        <span class="adm-nav-icon">🧩</span> 런타임 설정
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/initial-settings.html">
+                        <span class="adm-nav-icon">📦</span> 초기설정 관리
+                    </a>
+                    <a class="adm-nav-item " href="../../admin/policy-history.html">
+                        <span class="adm-nav-icon">🧾</span> 통합 정책 이력
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/policies.html">
+                        <span class="adm-nav-icon">⚙️</span> 정책 관리
+                    </a>
+
+
+                    <a class="adm-nav-item " href="../../admin/moderation.html">
+                        <span class="adm-nav-icon">🧰</span> 콘텐츠 검열 정책
+                    </a>
+
+
+                    <a class="adm-nav-item " href="/TripTogether/superAdmin">
+                        <span class="adm-nav-icon">🔑</span> 관리자 계정 관리
+                    </a>
+
+                </div>
+            </div>
+
+
+            <div style="margin-top:16px; padding: 0 10px;">
+                <a class="adm-nav-item adm-nav-ext" href="../../index.html" target="_blank">
+                    <span class="adm-nav-icon">↗️</span> 사이트 보기
+                </a>
+            </div>
+        </nav>
+
+        <script>
+        (function(){
+            var KEY = 'adm_nav_groups';
+            var state = {};
+            try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e) { state = {}; }
+
+            // active 항목이 속한 그룹은 자동 펼침
+            document.querySelectorAll('.adm-nav-item.active').forEach(function(item){
+                var g = item.closest('.adm-nav-group');
+                if (g) {
+                    g.classList.add('open');
+                    state[g.getAttribute('data-group')] = true;
+                }
+            });
+            // 저장된 상태 복원
+            document.querySelectorAll('.adm-nav-group').forEach(function(g){
+                if (state[g.getAttribute('data-group')]) g.classList.add('open');
+            });
+
+            window.admToggleNavGroup = function(key){
+                var g = document.querySelector('.adm-nav-group[data-group="' + key + '"]');
+                if (!g) return;
+                g.classList.toggle('open');
+                state[key] = g.classList.contains('open');
+                try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+            };
+        })();
+        </script>
+
+        <div class="adm-sidebar-foot">
+            <div class="adm-user-chip">
+                <div class="adm-user-av">최</div>
+                <div>
+                    <div class="adm-user-name">최고관리자</div>
+                    <div class="adm-user-role">관리자</div>
+                </div>
+                <a href="/TripTogether/auth/logout" class="adm-logout" title="로그아웃">⏏</a>
+            </div>
+        </div>
+    </aside>
+
+    <div class="adm-main">
+        <div class="adm-topbar">
+            <button type="button" class="adm-nav-toggle" id="sidebar-toggle" aria-label="메뉴" aria-expanded="false" aria-controls="adm-sidebar">
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+            </button>
+            <div class="adm-topbar-title">WAF 동기화</div>
+            <div class="adm-topbar-controls">
+                <label class="adm-topbar-select-wrap" for="admLangSel" title="관리자 페이지 언어 변경">
+                    <span class="adm-topbar-tool-label">언어</span>
+                    <select class="adm-select adm-topbar-select" id="admLangSel" aria-label="관리자 페이지 언어 변경">
+                        <option value="ko" selected="">한국어</option>
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                        <option value="zh">中文</option>
+                    </select>
+                </label>
+                <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="테마 변경">☀️ 밝게</button>
+            </div>
+            <div class="adm-topbar-path">
+                <span>Admin</span>
+                <span>WAF 동기화</span>
+            </div>
+        </div>
+        <div id="adm-toast-container"></div>
+
+
+<script>
+(function(){
+    var btn = document.getElementById('saThemeBtn');
+    var isLight = document.body.classList.contains('sa-light');
+    if (btn) btn.textContent = isLight ? '🌙 어둡게' : '☀️ 밝게';
+})();
+
+function saToggleTheme() {
+    var body = document.body;
+    var btn  = document.getElementById('saThemeBtn');
+    if (body.classList.contains('sa-light')) {
+        body.classList.remove('sa-light');
+        localStorage.setItem('tt_theme', 'dark');
+        if (btn) btn.textContent = '☀️ 밝게';
+    } else {
+        body.classList.add('sa-light');
+        localStorage.setItem('tt_theme', 'light');
+        if (btn) btn.textContent = '🌙 어둡게';
+    }
+}
+
+(function(){
+    var langSel = document.getElementById('admLangSel');
+    if (!langSel) return;
+    langSel.addEventListener('change', function() {
+        var url = new URL(window.location.href);
+        url.searchParams.set('lang', this.value);
+        window.location.href = url.toString();
+    });
+})();
+</script>
+
+<style>
+  .adm-wafSync-page .waf-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+  }
+  .adm-wafSync-page .waf-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 18px 20px;
+      border: 1px solid rgba(148, 163, 184, .16);
+      border-radius: 14px;
+      background: #161b27;
+  }
+  .adm-wafSync-page .waf-stat-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .01em;
+  }
+  .adm-wafSync-page .waf-stat-value {
+      color: #f8fafc;
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.1;
+  }
+  .adm-wafSync-page .waf-stat-sub {
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 600;
+  }
+  .adm-wafSync-page .waf-stat-value.is-pending { color: #fbbf24; }
+  .adm-wafSync-page .waf-target-cell {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: #e2e8f0;
+  }
+  .adm-wafSync-page .waf-rules-num {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: #cbd5e1;
+  }
+  .adm-wafSync-page .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.2;
+      background: rgba(148, 163, 184, .14);
+      color: #cbd5e1;
+      white-space: nowrap;
+  }
+  .adm-wafSync-page .chip.target-AWS { background:#fef3c7; color:#854d0e; }
+  .adm-wafSync-page .chip.target-CF  { background:#ffedd5; color:#9a3412; }
+  .adm-wafSync-page .chip.op-ADD     { background:#dcfce7; color:#166534; }
+  .adm-wafSync-page .chip.op-DELETE  { background:#fee2e2; color:#991b1b; }
+  .adm-wafSync-page .chip.op-UPDATE  { background:#dbeafe; color:#1e40af; }
+  .adm-wafSync-page .chip.st-OK      { background:#dcfce7; color:#166534; }
+  .adm-wafSync-page .chip.st-PARTIAL { background:#fef3c7; color:#854d0e; }
+  .adm-wafSync-page .chip.st-FAIL    { background:#fee2e2; color:#991b1b; }
+  .adm-wafSync-page .waf-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+  }
+  .adm-wafSync-page .waf-toolbar-meta {
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 600;
+  }
+  body.sa-light .adm-wafSync-page .waf-stat {
+      background: #fff;
+      border-color: #e2e8f0;
+  }
+  body.sa-light .adm-wafSync-page .waf-stat-label { color: #64748b; }
+  body.sa-light .adm-wafSync-page .waf-stat-value { color: #1e293b; }
+  body.sa-light .adm-wafSync-page .waf-stat-sub { color: #94a3b8; }
+  body.sa-light .adm-wafSync-page .waf-target-cell { color: #334155; }
+  body.sa-light .adm-wafSync-page .waf-rules-num { color: #475569; }
+  body.sa-light .adm-wafSync-page .waf-toolbar-meta { color: #64748b; }
+  @media (max-width: 900px) {
+      .adm-wafSync-page .waf-stat-grid {
+          grid-template-columns: 1fr;
+      }
+  }
+</style>
+
+<div class="adm-content adm-governance-page adm-wafSync-page">
+    <div class="adm-page-head">
+        <div>
+            <h1>WAF 동기화</h1>
+            <p class="adm-page-desc">차단 정책에서 생성된 WAF 규칙을 AWS WAFv2 / Cloudflare 엣지에 동기화하고, 반영 이력과 결과를 추적합니다.</p>
+        </div>
+        <div class="adm-actions">
+            <button type="button" class="adm-btn adm-btn-primary" id="wafSyncNow">⟳ 지금 동기화</button>
+            <a class="adm-btn" href="../../admin/login-risk/provider-configs.html">Provider 설정</a>
+            <a class="adm-btn" href="../../admin/blocks.html">차단 관리</a>
+        </div>
+    </div>
+
+    <div class="waf-stat-grid">
+        <div class="waf-stat">
+            <span class="waf-stat-label">🎯 동기화 대상</span>
+            <span class="waf-stat-value">2</span>
+            <span class="waf-stat-sub">AWS WAFv2 (서울) · Cloudflare 엣지</span>
+        </div>
+        <div class="waf-stat">
+            <span class="waf-stat-label">🕒 마지막 동기화</span>
+            <span class="waf-stat-value">08:42</span>
+            <span class="waf-stat-sub">2026-06-29 · 성공 · 14개 규칙 반영</span>
+        </div>
+        <div class="waf-stat">
+            <span class="waf-stat-label">⏳ 대기 변경</span>
+            <span class="waf-stat-value is-pending">7</span>
+            <span class="waf-stat-sub">추가 4 · 갱신 2 · 삭제 1</span>
+        </div>
+    </div>
+
+    <div class="adm-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">동기화 이력</div>
+            <div class="waf-toolbar">
+                <span class="waf-toolbar-meta">최근 12건 표시</span>
+            </div>
+        </div>
+        <div class="adm-card-body" style="padding:0;">
+            <div class="adm-table-wrap">
+                <table class="adm-table">
+                    <thead>
+                        <tr>
+                            <th style="width:54px;">#</th>
+                            <th>대상</th>
+                            <th>작업</th>
+                            <th style="text-align:right;">반영 규칙 수</th>
+                            <th>상태</th>
+                            <th>수행자</th>
+                            <th>시각</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2841</td>
+                            <td><span class="waf-target-cell"><span class="chip target-AWS">AWS WAFv2</span></span></td>
+                            <td><span class="chip op-UPDATE">규칙 갱신</span></td>
+                            <td style="text-align:right;"><span class="waf-rules-num">14</span></td>
+                            <td><span class="chip st-OK">성공</span></td>
+                            <td>최고관리자</td>
+                            <td>2026-06-29 08:42</td>
+                        </tr>
+                        <tr>
+                            <td>2840</td>
+                            <td><span class="waf-target-cell"><span class="chip target-CF">Cloudflare</span></span></td>
+                            <td><span class="chip op-ADD">규칙 추가</span></td>
+                            <td style="text-align:right;"><span class="waf-rules-num">6</span></td>
+                            <td><span class="chip st-OK">성공</span></td>
+                            <td>자동 스케줄러</td>
+                            <td>2026-06-29 08:40</td>
+                        </tr>
+                        <tr>
+                            <td>2839</td>
+                            <td><span class="waf-target-cell"><span class="chip target-AWS">AWS WAFv2</span></span></td>
+                            <td><span class="chip op-ADD">규칙 추가</span></td>
+                            <td style="text-align:right;"><span class="waf-rules-num">3</span></td>
+                            <td><span class="chip st-PARTIAL">부분성공</span></td>
+                            <td>보안운영팀</td>
+                            <td>2026-06-29 07:55</td>
+                        </tr>
+                        <tr>
+                            <td>2838</td>
+                            <td><span class="waf-target-cell"><span class="chip target-CF">Cloudflare</span></span></td>
+                            <td><span class="chip op-DELETE">규칙 삭제</span></td>
+                            <td style="text-align:right;"><span class="waf-rules-num">2</span></td>
+                            <td><span class="chip st-OK">성공</span></td>
+                            <td>최고관리자</td>
+                            <td>2026-06-29 07:31</td>
+                        </tr>
+                        <tr>
+                            <td>2837</td>
+                            <td><span class="waf-target-cell"><span class="chip target-AWS">AWS WAFv2</span></span></td>
+                            <td><span class="chip op-UPDATE">규칙 갱신</span></td>
+                            <td style="text-align:right;"><span class="waf-rules-num">9</span></td>
+                            <td><span class="chip st-OK">성공</span></td>
+                            <td>자동 스케줄러</td>
+                            <td>2026-06-29 06:10</td>
+                        </tr>
+                        <tr>
+                            <td>2836</td>
+                            <td><span class="waf-target-cell"><span class="chip target-CF">Cloudflare</span></span></td>
+                            <td><span class="chip op-ADD">규칙 추가</span></td>
+                            <td style="text-align:right;"><span class="waf-rules-num">5</span></td>
+                            <td><span class="chip st-FAIL">실패</span></td>
+                            <td>보안운영팀</td>
+                            <td>2026-06-29 05:48</td>
+                        </tr>
+                        <tr>
+                            <td>2835</td>
+                            <td><span class="waf-target-cell"><span class="chip target-AWS">AWS WAFv2</span></span></td>
+                            <td><span class="chip op-DELETE">규칙 삭제</span></td>
+                            <td style="text-align:right;"><span class="waf-rules-num">1</span></td>
+                            <td><span class="chip st-OK">성공</span></td>
+                            <td>최고관리자</td>
+                            <td>2026-06-29 04:22</td>
+                        </tr>
+                        <tr>
+                            <td>2834</td>
+                            <td><span class="waf-target-cell"><span class="chip target-CF">Cloudflare</span></span></td>
+                            <td><span class="chip op-UPDATE">규칙 갱신</span></td>
+                            <td style="text-align:right;"><span class="waf-rules-num">11</span></td>
+                            <td><span class="chip st-OK">성공</span></td>
+                            <td>자동 스케줄러</td>
+                            <td>2026-06-29 03:00</td>
+                        </tr>
+                        <tr>
+                            <td>2833</td>
+                            <td><span class="waf-target-cell"><span class="chip target-AWS">AWS WAFv2</span></span></td>
+                            <td><span class="chip op-ADD">규칙 추가</span></td>
+                            <td style="text-align:right;"><span class="waf-rules-num">4</span></td>
+                            <td><span class="chip st-PARTIAL">부분성공</span></td>
+                            <td>보안운영팀</td>
+                            <td>2026-06-28 23:14</td>
+                        </tr>
+                        <tr>
+                            <td>2832</td>
+                            <td><span class="waf-target-cell"><span class="chip target-CF">Cloudflare</span></span></td>
+                            <td><span class="chip op-DELETE">규칙 삭제</span></td>
+                            <td style="text-align:right;"><span class="waf-rules-num">3</span></td>
+                            <td><span class="chip st-OK">성공</span></td>
+                            <td>자동 스케줄러</td>
+                            <td>2026-06-28 21:37</td>
+                        </tr>
+                        <tr>
+                            <td>2831</td>
+                            <td><span class="waf-target-cell"><span class="chip target-AWS">AWS WAFv2</span></span></td>
+                            <td><span class="chip op-UPDATE">규칙 갱신</span></td>
+                            <td style="text-align:right;"><span class="waf-rules-num">8</span></td>
+                            <td><span class="chip st-OK">성공</span></td>
+                            <td>최고관리자</td>
+                            <td>2026-06-28 19:05</td>
+                        </tr>
+                        <tr>
+                            <td>2830</td>
+                            <td><span class="waf-target-cell"><span class="chip target-CF">Cloudflare</span></span></td>
+                            <td><span class="chip op-ADD">규칙 추가</span></td>
+                            <td style="text-align:right;"><span class="waf-rules-num">7</span></td>
+                            <td><span class="chip st-FAIL">실패</span></td>
+                            <td>자동 스케줄러</td>
+                            <td>2026-06-28 17:42</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* 데모용: "지금 동기화" 버튼 → 토스트만 표시 (실제 호출 없음) */
+(function(){
+    var btn = document.getElementById('wafSyncNow');
+    if (!btn) return;
+    function showToast(msg, type){
+        var box = document.getElementById('adm-toast-container');
+        if (!box) { alert(msg); return; }
+        var t = document.createElement('div');
+        t.className = 'adm-toast ' + (type || 'success');
+        t.textContent = msg;
+        box.appendChild(t);
+        setTimeout(function(){
+            t.classList.add('is-hiding');
+            setTimeout(function(){ if (t.parentNode) t.parentNode.removeChild(t); }, 320);
+        }, 2600);
+    }
+    btn.addEventListener('click', function(){
+        showToast('동기화 요청을 큐에 등록했습니다 (데모)', 'success');
+    });
+})();
+</script>
+
+<script>
+/* 사이드바 토글 / 모바일 드로어 (템플릿 동작 유지) */
+(function () {
+    var toggle = document.getElementById('sidebar-toggle');
+    var sidebar = document.getElementById('adm-sidebar');
+    var backdrop = document.getElementById('admBackdrop');
+    if (!toggle || !sidebar) return;
+
+    function openDrawer() {
+        sidebar.classList.add('is-open');
+        if (backdrop) backdrop.hidden = false;
+        toggle.setAttribute('aria-expanded', 'true');
+    }
+    function closeDrawer() {
+        sidebar.classList.remove('is-open');
+        if (backdrop) backdrop.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+    }
+    toggle.addEventListener('click', function () {
+        if (sidebar.classList.contains('is-open')) closeDrawer(); else openDrawer();
+    });
+    if (backdrop) backdrop.addEventListener('click', closeDrawer);
+
+    var mqDesktop = window.matchMedia('(min-width: 1024px)');
+    var onChange = function (e) { if (e.matches) closeDrawer(); };
+    if (mqDesktop.addEventListener) mqDesktop.addEventListener('change', onChange);
+    else if (mqDesktop.addListener) mqDesktop.addListener(onChange);
+})();
+</script>
+    </div>
+    <div class="adm-backdrop" id="admBackdrop" hidden=""></div>
+</div>
+
+<script>window.__DEMO_BASE__="../../";</script>
+<script src="../../assets/demo-mock.js"></script>
+</body></html>

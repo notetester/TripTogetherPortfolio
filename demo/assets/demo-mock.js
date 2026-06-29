@@ -49,6 +49,9 @@
       }
     } catch (e) {}
   }
+  // ★ 동기 즉시 실행: 페이지 스크립트가 DOMContentLoaded에서 URL을 바꿔
+  //   demoacct 파라미터를 지우기 전에 계정을 먼저 설정해야 한다.
+  applyDeepLink();
 
   // ---------- 스타일 주입 ----------
   function injectStyles() {
@@ -327,6 +330,13 @@
   };
 
   // ---------- 서버 절대경로 링크 가로채기 ----------
+  // 정적 파일로 매핑되는 서버 경로는 해당 정적 페이지로 이동시킨다.
+  var LINKMAP = {
+    '/TripTogether/admin/login-risk/provider-health-history': 'admin/login-risk/provider-health-history.html',
+    '/TripTogether/admin/login-risk/notification-preferences': 'admin/login-risk/notification-preferences.html',
+    '/TripTogether/admin/login-risk/waf-sync': 'admin/login-risk/waf-sync.html',
+    '/TripTogether/superAdmin': 'superAdmin/members.html'
+  };
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('a[href]');
     if (!a) return;
@@ -334,6 +344,8 @@
     if (href.indexOf('/TripTogether/') === 0) {
       // 로그아웃 링크는 데모 로그아웃으로
       if (/auth\/logout/.test(href)) { e.preventDefault(); logout(); return; }
+      var base = href.split('?')[0].split('#')[0].replace(/\/$/, '');
+      if (LINKMAP[base]) { e.preventDefault(); location.href = BASE + LINKMAP[base]; return; }
       e.preventDefault();
       toast('이 화면은 데모에 포함되지 않았습니다.');
     }
@@ -341,7 +353,6 @@
 
   // ---------- 초기화 ----------
   function init() {
-    applyDeepLink();
     injectStyles();
     injectBanner();
     // 관리자 크롬이면 게이트/관리자 처리 후 종료(일반 헤더 없음)
