@@ -455,7 +455,437 @@ window.ADMIN_TRANSLATION_UI = {
         </div>
     </div>
 
-    
+    <form method="post" action="#" class="adm-card adm-login-policy-card adm-overflow-visible" onsubmit="return false;">
+        <div class="adm-card-header adm-login-policy-card-head">
+            <div class="adm-login-policy-titleblock">
+                <div class="adm-card-title">계정 로그인 연속 실패 잠금</div>
+                <div class="adm-muted">LOGIN_FAIL_ACCOUNT_LOCK · ACCOUNT · BLOCK</div>
+            </div>
+            <div class="adm-login-policy-controls">
+                <label class="adm-check adm-login-policy-active">
+                    <input type="checkbox" name="active" checked>
+                    활성화
+                </label>
+                <button type="submit" class="adm-btn adm-btn-primary">저장</button>
+            </div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-grid adm-login-policy-metric-grid">
+                <label>관찰 시간(분)
+                    <input class="adm-input" type="number" name="observationMinutes" value="30">
+                </label>
+                <label>임계 횟수
+                    <input class="adm-input" type="number" name="thresholdCount" value="5">
+                </label>
+                <label>고유 계정 임계값
+                    <input class="adm-input" type="number" name="distinctAccountThreshold" value="0">
+                </label>
+                <label>잠금 시간(분)
+                    <input class="adm-input" type="number" name="lockDurationMinutes" value="15">
+                </label>
+                <label>사전 경고 횟수
+                    <input class="adm-input" type="number" name="warningBeforeCount" value="2">
+                </label>
+                <label>심각도
+                    <select class="adm-select" name="reviewSeverity">
+                        <option value="LOW">LOW</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="HIGH" selected>HIGH</option>
+                        <option value="CRITICAL">CRITICAL</option>
+                    </select>
+                </label>
+                <label>알림 분류
+                    <input class="adm-input" type="text" name="notificationCategory" value="ACCOUNT_LOCK">
+                </label>
+                <label>AI 위험 점수 임계값
+                    <input class="adm-input" type="number" name="aiRiskScoreThreshold" value="0">
+                </label>
+            </div>
+
+            <div class="adm-login-policy-toggle-grid">
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="resetOnSuccess" checked>
+                    <span>로그인 성공 시 카운트 초기화</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="requireAdminReview">
+                    <span>관리자 검토 필수</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="aiAssistEnabled">
+                    <span>AI 보조 판단 사용</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="wafSyncEnabled">
+                    <span>WAF 동기화</span>
+                </label>
+            </div>
+
+            <label class="adm-login-policy-description">설명
+                <textarea class="adm-input" name="description" rows="2">동일 계정에서 30분 내 비밀번호 5회 연속 실패 시 15분간 로그인을 잠급니다. 2회 실패 시점부터 사전 경고를 노출합니다.</textarea>
+            </label>
+        </div>
+    </form>
+
+    <form method="post" action="#" class="adm-card adm-login-policy-card adm-overflow-visible" onsubmit="return false;">
+        <div class="adm-card-header adm-login-policy-card-head">
+            <div class="adm-login-policy-titleblock">
+                <div class="adm-card-title">IP 기반 분산 로그인 실패 차단</div>
+                <div class="adm-muted">LOGIN_FAIL_IP_BLOCK · IP · BLOCK</div>
+            </div>
+            <div class="adm-login-policy-controls">
+                <label class="adm-check adm-login-policy-active">
+                    <input type="checkbox" name="active" checked>
+                    활성화
+                </label>
+                <button type="submit" class="adm-btn adm-btn-primary">저장</button>
+            </div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-grid adm-login-policy-metric-grid">
+                <label>관찰 시간(분)
+                    <input class="adm-input" type="number" name="observationMinutes" value="10">
+                </label>
+                <label>임계 횟수
+                    <input class="adm-input" type="number" name="thresholdCount" value="20">
+                </label>
+                <label>고유 계정 임계값
+                    <input class="adm-input" type="number" name="distinctAccountThreshold" value="5">
+                </label>
+                <label>잠금 시간(분)
+                    <input class="adm-input" type="number" name="lockDurationMinutes" value="60">
+                </label>
+                <label>사전 경고 횟수
+                    <input class="adm-input" type="number" name="warningBeforeCount" value="0">
+                </label>
+                <label>심각도
+                    <select class="adm-select" name="reviewSeverity">
+                        <option value="LOW">LOW</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="HIGH">HIGH</option>
+                        <option value="CRITICAL" selected>CRITICAL</option>
+                    </select>
+                </label>
+                <label>알림 분류
+                    <input class="adm-input" type="text" name="notificationCategory" value="IP_ABUSE">
+                </label>
+                <label>AI 위험 점수 임계값
+                    <input class="adm-input" type="number" name="aiRiskScoreThreshold" value="0">
+                </label>
+            </div>
+
+            <div class="adm-login-policy-toggle-grid">
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="resetOnSuccess">
+                    <span>로그인 성공 시 카운트 초기화</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="requireAdminReview" checked>
+                    <span>관리자 검토 필수</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="aiAssistEnabled">
+                    <span>AI 보조 판단 사용</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="wafSyncEnabled" checked>
+                    <span>WAF 동기화</span>
+                </label>
+            </div>
+
+            <label class="adm-login-policy-description">설명
+                <textarea class="adm-input" name="description" rows="2">단일 IP에서 10분 내 20회 이상, 5개 이상 서로 다른 계정에 로그인 실패가 발생하면 크리덴셜 스터핑으로 간주하여 60분간 차단하고 WAF에 동기화합니다.</textarea>
+            </label>
+        </div>
+    </form>
+
+    <form method="post" action="#" class="adm-card adm-login-policy-card adm-overflow-visible" onsubmit="return false;">
+        <div class="adm-card-header adm-login-policy-card-head">
+            <div class="adm-login-policy-titleblock">
+                <div class="adm-card-title">신규 기기·지역 로그인 검토</div>
+                <div class="adm-muted">NEW_DEVICE_GEO_REVIEW · DEVICE · REVIEW</div>
+            </div>
+            <div class="adm-login-policy-controls">
+                <label class="adm-check adm-login-policy-active">
+                    <input type="checkbox" name="active" checked>
+                    활성화
+                </label>
+                <button type="submit" class="adm-btn adm-btn-primary">저장</button>
+            </div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-grid adm-login-policy-metric-grid">
+                <label>관찰 시간(분)
+                    <input class="adm-input" type="number" name="observationMinutes" value="1440">
+                </label>
+                <label>임계 횟수
+                    <input class="adm-input" type="number" name="thresholdCount" value="1">
+                </label>
+                <label>고유 계정 임계값
+                    <input class="adm-input" type="number" name="distinctAccountThreshold" value="0">
+                </label>
+                <label>잠금 시간(분)
+                    <input class="adm-input" type="number" name="lockDurationMinutes" value="0">
+                </label>
+                <label>사전 경고 횟수
+                    <input class="adm-input" type="number" name="warningBeforeCount" value="0">
+                </label>
+                <label>심각도
+                    <select class="adm-select" name="reviewSeverity">
+                        <option value="LOW">LOW</option>
+                        <option value="MEDIUM" selected>MEDIUM</option>
+                        <option value="HIGH">HIGH</option>
+                        <option value="CRITICAL">CRITICAL</option>
+                    </select>
+                </label>
+                <label>알림 분류
+                    <input class="adm-input" type="text" name="notificationCategory" value="NEW_DEVICE">
+                </label>
+                <label>AI 위험 점수 임계값
+                    <input class="adm-input" type="number" name="aiRiskScoreThreshold" value="45">
+                </label>
+            </div>
+
+            <div class="adm-login-policy-toggle-grid">
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="resetOnSuccess">
+                    <span>로그인 성공 시 카운트 초기화</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="requireAdminReview" checked>
+                    <span>관리자 검토 필수</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="aiAssistEnabled" checked>
+                    <span>AI 보조 판단 사용</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="wafSyncEnabled">
+                    <span>WAF 동기화</span>
+                </label>
+            </div>
+
+            <label class="adm-login-policy-description">설명
+                <textarea class="adm-input" name="description" rows="2">평소와 다른 기기 지문 또는 해외 지역에서 첫 로그인이 감지되면 검토 큐에 등록합니다. AI 위험 점수 45점 이상이면 추가 본인 확인을 요구합니다.</textarea>
+            </label>
+        </div>
+    </form>
+
+    <form method="post" action="#" class="adm-card adm-login-policy-card adm-overflow-visible" onsubmit="return false;">
+        <div class="adm-card-header adm-login-policy-card-head">
+            <div class="adm-login-policy-titleblock">
+                <div class="adm-card-title">비밀번호 재설정 남용 경고</div>
+                <div class="adm-muted">PASSWORD_RESET_ABUSE · EMAIL · WARN</div>
+            </div>
+            <div class="adm-login-policy-controls">
+                <label class="adm-check adm-login-policy-active">
+                    <input type="checkbox" name="active" checked>
+                    활성화
+                </label>
+                <button type="submit" class="adm-btn adm-btn-primary">저장</button>
+            </div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-grid adm-login-policy-metric-grid">
+                <label>관찰 시간(분)
+                    <input class="adm-input" type="number" name="observationMinutes" value="60">
+                </label>
+                <label>임계 횟수
+                    <input class="adm-input" type="number" name="thresholdCount" value="4">
+                </label>
+                <label>고유 계정 임계값
+                    <input class="adm-input" type="number" name="distinctAccountThreshold" value="3">
+                </label>
+                <label>잠금 시간(분)
+                    <input class="adm-input" type="number" name="lockDurationMinutes" value="0">
+                </label>
+                <label>사전 경고 횟수
+                    <input class="adm-input" type="number" name="warningBeforeCount" value="2">
+                </label>
+                <label>심각도
+                    <select class="adm-select" name="reviewSeverity">
+                        <option value="LOW">LOW</option>
+                        <option value="MEDIUM" selected>MEDIUM</option>
+                        <option value="HIGH">HIGH</option>
+                        <option value="CRITICAL">CRITICAL</option>
+                    </select>
+                </label>
+                <label>알림 분류
+                    <input class="adm-input" type="text" name="notificationCategory" value="RESET_ABUSE">
+                </label>
+                <label>AI 위험 점수 임계값
+                    <input class="adm-input" type="number" name="aiRiskScoreThreshold" value="0">
+                </label>
+            </div>
+
+            <div class="adm-login-policy-toggle-grid">
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="resetOnSuccess" checked>
+                    <span>로그인 성공 시 카운트 초기화</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="requireAdminReview">
+                    <span>관리자 검토 필수</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="aiAssistEnabled">
+                    <span>AI 보조 판단 사용</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="wafSyncEnabled">
+                    <span>WAF 동기화</span>
+                </label>
+            </div>
+
+            <label class="adm-login-policy-description">설명
+                <textarea class="adm-input" name="description" rows="2">1시간 내 동일 이메일로 비밀번호 재설정 요청이 4회를 초과하면 사용자에게 경고 메일을 발송하고 보안 이력에 기록합니다.</textarea>
+            </label>
+        </div>
+    </form>
+
+    <form method="post" action="#" class="adm-card adm-login-policy-card adm-overflow-visible" onsubmit="return false;">
+        <div class="adm-card-header adm-login-policy-card-head">
+            <div class="adm-login-policy-titleblock">
+                <div class="adm-card-title">AI 위험 스코어 자동 검토</div>
+                <div class="adm-muted">AI_RISK_AUTO_REVIEW · SESSION · REVIEW</div>
+            </div>
+            <div class="adm-login-policy-controls">
+                <label class="adm-check adm-login-policy-active">
+                    <input type="checkbox" name="active" checked>
+                    활성화
+                </label>
+                <button type="submit" class="adm-btn adm-btn-primary">저장</button>
+            </div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-grid adm-login-policy-metric-grid">
+                <label>관찰 시간(분)
+                    <input class="adm-input" type="number" name="observationMinutes" value="0">
+                </label>
+                <label>임계 횟수
+                    <input class="adm-input" type="number" name="thresholdCount" value="1">
+                </label>
+                <label>고유 계정 임계값
+                    <input class="adm-input" type="number" name="distinctAccountThreshold" value="0">
+                </label>
+                <label>잠금 시간(분)
+                    <input class="adm-input" type="number" name="lockDurationMinutes" value="0">
+                </label>
+                <label>사전 경고 횟수
+                    <input class="adm-input" type="number" name="warningBeforeCount" value="0">
+                </label>
+                <label>심각도
+                    <select class="adm-select" name="reviewSeverity">
+                        <option value="LOW">LOW</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="HIGH" selected>HIGH</option>
+                        <option value="CRITICAL">CRITICAL</option>
+                    </select>
+                </label>
+                <label>알림 분류
+                    <input class="adm-input" type="text" name="notificationCategory" value="AI_RISK">
+                </label>
+                <label>AI 위험 점수 임계값
+                    <input class="adm-input" type="number" name="aiRiskScoreThreshold" value="75">
+                </label>
+            </div>
+
+            <div class="adm-login-policy-toggle-grid">
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="resetOnSuccess">
+                    <span>로그인 성공 시 카운트 초기화</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="requireAdminReview" checked>
+                    <span>관리자 검토 필수</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="aiAssistEnabled" checked>
+                    <span>AI 보조 판단 사용</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="wafSyncEnabled">
+                    <span>WAF 동기화</span>
+                </label>
+            </div>
+
+            <label class="adm-login-policy-description">설명
+                <textarea class="adm-input" name="description" rows="2">외부 위험 판단 모델이 산출한 종합 위험 점수가 75점 이상인 세션을 자동으로 검토 큐에 올립니다. AI 보조 판단 결과를 함께 첨부합니다.</textarea>
+            </label>
+        </div>
+    </form>
+
+    <form method="post" action="#" class="adm-card adm-login-policy-card adm-overflow-visible" onsubmit="return false;">
+        <div class="adm-card-header adm-login-policy-card-head">
+            <div class="adm-login-policy-titleblock">
+                <div class="adm-card-title">봇·자동화 의심 트래픽 차단</div>
+                <div class="adm-muted">BOT_AUTOMATION_BLOCK · IP · BLOCK</div>
+            </div>
+            <div class="adm-login-policy-controls">
+                <label class="adm-check adm-login-policy-active">
+                    <input type="checkbox" name="active">
+                    활성화
+                </label>
+                <button type="submit" class="adm-btn adm-btn-primary">저장</button>
+            </div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-grid adm-login-policy-metric-grid">
+                <label>관찰 시간(분)
+                    <input class="adm-input" type="number" name="observationMinutes" value="5">
+                </label>
+                <label>임계 횟수
+                    <input class="adm-input" type="number" name="thresholdCount" value="40">
+                </label>
+                <label>고유 계정 임계값
+                    <input class="adm-input" type="number" name="distinctAccountThreshold" value="10">
+                </label>
+                <label>잠금 시간(분)
+                    <input class="adm-input" type="number" name="lockDurationMinutes" value="120">
+                </label>
+                <label>사전 경고 횟수
+                    <input class="adm-input" type="number" name="warningBeforeCount" value="0">
+                </label>
+                <label>심각도
+                    <select class="adm-select" name="reviewSeverity">
+                        <option value="LOW">LOW</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="HIGH">HIGH</option>
+                        <option value="CRITICAL" selected>CRITICAL</option>
+                    </select>
+                </label>
+                <label>알림 분류
+                    <input class="adm-input" type="text" name="notificationCategory" value="BOT_TRAFFIC">
+                </label>
+                <label>AI 위험 점수 임계값
+                    <input class="adm-input" type="number" name="aiRiskScoreThreshold" value="60">
+                </label>
+            </div>
+
+            <div class="adm-login-policy-toggle-grid">
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="resetOnSuccess">
+                    <span>로그인 성공 시 카운트 초기화</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="requireAdminReview" checked>
+                    <span>관리자 검토 필수</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="aiAssistEnabled" checked>
+                    <span>AI 보조 판단 사용</span>
+                </label>
+                <label class="adm-check adm-login-policy-toggle">
+                    <input type="checkbox" name="wafSyncEnabled" checked>
+                    <span>WAF 동기화</span>
+                </label>
+            </div>
+
+            <label class="adm-login-policy-description">설명
+                <textarea class="adm-input" name="description" rows="2">초안 상태입니다. User-Agent 위조와 비정상 요청 빈도를 기준으로 봇 트래픽을 차단할 예정이며, 오탐 검증을 위해 현재 비활성으로 두었습니다.</textarea>
+            </label>
+        </div>
+    </form>
 </div>
 
 

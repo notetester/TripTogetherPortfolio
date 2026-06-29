@@ -474,7 +474,7 @@ window.ADMIN_TRANSLATION_UI = {
             <div>
                 <div class="adm-card-title">
                     정책 변경 이력
-                    <span class="adm-section-total-inline">총 0건</span>
+                    <span class="adm-section-total-inline">총 9건</span>
                 </div>
                 <div class="adm-muted">각 정책 도메인의 변경 이력을 최신순으로 통합 조회합니다.</div>
             </div>
@@ -493,13 +493,253 @@ window.ADMIN_TRANSLATION_UI = {
                     </tr>
                     </thead>
                     <tbody>
-                    
-                    
-                        <tr data-admin-list-original-empty-row="true" style="display: none;"><td colspan="6" class="adm-empty">정책 변경 이력이 없습니다.</td></tr>
-                    
-                    <tr data-admin-list-empty-row="true"><td colspan="7" style="text-align: center; color: rgb(100, 116, 139); padding: 28px 12px;">현재 조건에 맞는 항목이 없습니다.</td></tr></tbody>
+                    <tr data-row-id="1">
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-check"></td>
+                        <td>2026-06-28 21:14</td>
+                        <td><span class="adm-badge">LOGIN_RISK_POLICY</span></td>
+                        <td>LOGIN_FAIL_LOCK</td>
+                        <td>UPDATE</td>
+                        <td>#1 (adminvictor)</td>
+                        <td>
+                            <details class="adm-policy-history-details">
+                                <summary>스냅샷 보기</summary>
+                                <div class="adm-policy-snapshot-grid">
+                                    <div>
+                                        <div class="adm-muted">이전</div>
+                                        <pre class="js-policy-before adm-policy-snapshot-pre">{"enabled": true, "maxFailCount": 5, "lockMinutes": 10, "notifyAdmin": false}</pre>
+                                    </div>
+                                    <div>
+                                        <div class="adm-muted">이후</div>
+                                        <pre class="js-policy-after adm-policy-snapshot-pre">{"enabled": true, "maxFailCount": 3, "lockMinutes": 30, "notifyAdmin": true}</pre>
+                                    </div>
+                                </div>
+                                <div class="adm-policy-diff-block">
+                                    <button type="button" class="adm-btn adm-btn-ghost js-policy-diff-run">변경점 보기</button>
+                                    <pre class="js-policy-diff adm-policy-snapshot-pre adm-policy-diff-output"></pre>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr data-row-id="2">
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-check"></td>
+                        <td>2026-06-28 17:42</td>
+                        <td><span class="adm-badge">RUNTIME_SETTING</span></td>
+                        <td>chatbot.daily.quota.bronze</td>
+                        <td>UPDATE</td>
+                        <td>#1 (adminvictor)</td>
+                        <td>
+                            <details class="adm-policy-history-details">
+                                <summary>스냅샷 보기</summary>
+                                <div class="adm-policy-snapshot-grid">
+                                    <div>
+                                        <div class="adm-muted">이전</div>
+                                        <pre class="js-policy-before adm-policy-snapshot-pre">{"value": "20", "unit": "count/day"}</pre>
+                                    </div>
+                                    <div>
+                                        <div class="adm-muted">이후</div>
+                                        <pre class="js-policy-after adm-policy-snapshot-pre">{"value": "40", "unit": "count/day"}</pre>
+                                    </div>
+                                </div>
+                                <div class="adm-policy-diff-block">
+                                    <button type="button" class="adm-btn adm-btn-ghost js-policy-diff-run">변경점 보기</button>
+                                    <pre class="js-policy-diff adm-policy-snapshot-pre adm-policy-diff-output"></pre>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr data-row-id="3">
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-check"></td>
+                        <td>2026-06-27 14:03</td>
+                        <td><span class="adm-badge">SECURITY_APPEAL_POLICY</span></td>
+                        <td>APPEAL_WINDOW</td>
+                        <td>UPDATE</td>
+                        <td>#4 (admin_seo)</td>
+                        <td>
+                            <details class="adm-policy-history-details">
+                                <summary>스냅샷 보기</summary>
+                                <div class="adm-policy-snapshot-grid">
+                                    <div>
+                                        <div class="adm-muted">이전</div>
+                                        <pre class="js-policy-before adm-policy-snapshot-pre">{"acceptAppeal": true, "appealDays": 7, "autoReviewHours": 48, "maxAppealsPerUser": 1}</pre>
+                                    </div>
+                                    <div>
+                                        <div class="adm-muted">이후</div>
+                                        <pre class="js-policy-after adm-policy-snapshot-pre">{"acceptAppeal": true, "appealDays": 14, "autoReviewHours": 24, "maxAppealsPerUser": 2}</pre>
+                                    </div>
+                                </div>
+                                <div class="adm-policy-diff-block">
+                                    <button type="button" class="adm-btn adm-btn-ghost js-policy-diff-run">변경점 보기</button>
+                                    <pre class="js-policy-diff adm-policy-snapshot-pre adm-policy-diff-output"></pre>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr data-row-id="4">
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-check"></td>
+                        <td>2026-06-27 09:51</td>
+                        <td><span class="adm-badge">PROVIDER_CONFIG</span></td>
+                        <td>KAKAO_OAUTH</td>
+                        <td>UPDATE</td>
+                        <td>#1 (adminvictor)</td>
+                        <td>
+                            <details class="adm-policy-history-details">
+                                <summary>스냅샷 보기</summary>
+                                <div class="adm-policy-snapshot-grid">
+                                    <div>
+                                        <div class="adm-muted">이전</div>
+                                        <pre class="js-policy-before adm-policy-snapshot-pre">{"enabled": true, "scope": "profile_nickname", "timeoutMs": 3000, "retryCount": 1}</pre>
+                                    </div>
+                                    <div>
+                                        <div class="adm-muted">이후</div>
+                                        <pre class="js-policy-after adm-policy-snapshot-pre">{"enabled": true, "scope": "profile_nickname,account_email", "timeoutMs": 5000, "retryCount": 2}</pre>
+                                    </div>
+                                </div>
+                                <div class="adm-policy-diff-block">
+                                    <button type="button" class="adm-btn adm-btn-ghost js-policy-diff-run">변경점 보기</button>
+                                    <pre class="js-policy-diff adm-policy-snapshot-pre adm-policy-diff-output"></pre>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr data-row-id="5">
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-check"></td>
+                        <td>2026-06-26 22:30</td>
+                        <td><span class="adm-badge">SYSTEM_POLICY</span></td>
+                        <td>PASSWORD_RULE</td>
+                        <td>UPDATE</td>
+                        <td>#4 (admin_seo)</td>
+                        <td>
+                            <details class="adm-policy-history-details">
+                                <summary>스냅샷 보기</summary>
+                                <div class="adm-policy-snapshot-grid">
+                                    <div>
+                                        <div class="adm-muted">이전</div>
+                                        <pre class="js-policy-before adm-policy-snapshot-pre">{"minLength": 8, "requireSpecial": false, "requireNumber": true, "expireDays": 0}</pre>
+                                    </div>
+                                    <div>
+                                        <div class="adm-muted">이후</div>
+                                        <pre class="js-policy-after adm-policy-snapshot-pre">{"minLength": 10, "requireSpecial": true, "requireNumber": true, "expireDays": 90}</pre>
+                                    </div>
+                                </div>
+                                <div class="adm-policy-diff-block">
+                                    <button type="button" class="adm-btn adm-btn-ghost js-policy-diff-run">변경점 보기</button>
+                                    <pre class="js-policy-diff adm-policy-snapshot-pre adm-policy-diff-output"></pre>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr data-row-id="6">
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-check"></td>
+                        <td>2026-06-26 11:18</td>
+                        <td><span class="adm-badge">LOGIN_RISK_POLICY</span></td>
+                        <td>GEO_VELOCITY</td>
+                        <td>CREATE</td>
+                        <td>#1 (adminvictor)</td>
+                        <td>
+                            <details class="adm-policy-history-details">
+                                <summary>스냅샷 보기</summary>
+                                <div class="adm-policy-snapshot-grid">
+                                    <div>
+                                        <div class="adm-muted">이전</div>
+                                        <pre class="js-policy-before adm-policy-snapshot-pre"></pre>
+                                    </div>
+                                    <div>
+                                        <div class="adm-muted">이후</div>
+                                        <pre class="js-policy-after adm-policy-snapshot-pre">{"enabled": true, "maxKmPerHour": 900, "action": "REVIEW", "severity": "HIGH"}</pre>
+                                    </div>
+                                </div>
+                                <div class="adm-policy-diff-block">
+                                    <button type="button" class="adm-btn adm-btn-ghost js-policy-diff-run">변경점 보기</button>
+                                    <pre class="js-policy-diff adm-policy-snapshot-pre adm-policy-diff-output"></pre>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr data-row-id="7">
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-check"></td>
+                        <td>2026-06-25 16:47</td>
+                        <td><span class="adm-badge">RUNTIME_SETTING</span></td>
+                        <td>community.upload.maxSizeMb</td>
+                        <td>UPDATE</td>
+                        <td>#7 (admin_park)</td>
+                        <td>
+                            <details class="adm-policy-history-details">
+                                <summary>스냅샷 보기</summary>
+                                <div class="adm-policy-snapshot-grid">
+                                    <div>
+                                        <div class="adm-muted">이전</div>
+                                        <pre class="js-policy-before adm-policy-snapshot-pre">{"value": "5", "unit": "MB"}</pre>
+                                    </div>
+                                    <div>
+                                        <div class="adm-muted">이후</div>
+                                        <pre class="js-policy-after adm-policy-snapshot-pre">{"value": "10", "unit": "MB"}</pre>
+                                    </div>
+                                </div>
+                                <div class="adm-policy-diff-block">
+                                    <button type="button" class="adm-btn adm-btn-ghost js-policy-diff-run">변경점 보기</button>
+                                    <pre class="js-policy-diff adm-policy-snapshot-pre adm-policy-diff-output"></pre>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr data-row-id="8">
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-check"></td>
+                        <td>2026-06-24 19:22</td>
+                        <td><span class="adm-badge">PROVIDER_CONFIG</span></td>
+                        <td>GOOGLE_OAUTH</td>
+                        <td>DELETE</td>
+                        <td>#1 (adminvictor)</td>
+                        <td>
+                            <details class="adm-policy-history-details">
+                                <summary>스냅샷 보기</summary>
+                                <div class="adm-policy-snapshot-grid">
+                                    <div>
+                                        <div class="adm-muted">이전</div>
+                                        <pre class="js-policy-before adm-policy-snapshot-pre">{"enabled": false, "scope": "openid,email", "timeoutMs": 4000, "retryCount": 1, "note": "테스트용 임시 설정"}</pre>
+                                    </div>
+                                    <div>
+                                        <div class="adm-muted">이후</div>
+                                        <pre class="js-policy-after adm-policy-snapshot-pre"></pre>
+                                    </div>
+                                </div>
+                                <div class="adm-policy-diff-block">
+                                    <button type="button" class="adm-btn adm-btn-ghost js-policy-diff-run">변경점 보기</button>
+                                    <pre class="js-policy-diff adm-policy-snapshot-pre adm-policy-diff-output"></pre>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr data-row-id="9">
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-check"></td>
+                        <td>2026-06-23 10:05</td>
+                        <td><span class="adm-badge">SYSTEM_POLICY</span></td>
+                        <td>SIGNUP_RULE</td>
+                        <td>UPDATE</td>
+                        <td>#4 (admin_seo)</td>
+                        <td>
+                            <details class="adm-policy-history-details">
+                                <summary>스냅샷 보기</summary>
+                                <div class="adm-policy-snapshot-grid">
+                                    <div>
+                                        <div class="adm-muted">이전</div>
+                                        <pre class="js-policy-before adm-policy-snapshot-pre">{"emailVerifyRequired": true, "allowSocialOnly": true, "minAge": 0, "termsVersion": "1.0"}</pre>
+                                    </div>
+                                    <div>
+                                        <div class="adm-muted">이후</div>
+                                        <pre class="js-policy-after adm-policy-snapshot-pre">{"emailVerifyRequired": true, "allowSocialOnly": true, "minAge": 14, "termsVersion": "1.2"}</pre>
+                                    </div>
+                                </div>
+                                <div class="adm-policy-diff-block">
+                                    <button type="button" class="adm-btn adm-btn-ghost js-policy-diff-run">변경점 보기</button>
+                                    <pre class="js-policy-diff adm-policy-snapshot-pre adm-policy-diff-output"></pre>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr data-admin-list-original-empty-row="true" style="display: none;"><td colspan="7" class="adm-empty">정책 변경 이력이 없습니다.</td></tr>
+                    <tr data-admin-list-empty-row="true" style="display: none;"><td colspan="7" style="text-align: center; color: rgb(100, 116, 139); padding: 28px 12px;">현재 조건에 맞는 항목이 없습니다.</td></tr></tbody>
                 </table>
-            </div><div class="adm-section-list-footer js-admin-list-tools-footer" data-table-id="admSectionListTable0"><span class="adm-section-list-page-info js-admin-list-page-info">0건 중 0건 표시 · 1/1쪽</span><div class="adm-section-list-page-tools"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev" disabled="">이전</button><button type="button" class="adm-btn adm-btn-ghost js-admin-list-next" disabled="">다음</button></div></div>
+            </div><div class="adm-section-list-footer js-admin-list-tools-footer" data-table-id="admSectionListTable0"><span class="adm-section-list-page-info js-admin-list-page-info">9건 중 9건 표시 · 1/1쪽</span><div class="adm-section-list-page-tools"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev" disabled="">이전</button><button type="button" class="adm-btn adm-btn-ghost js-admin-list-next" disabled="">다음</button></div></div>
         </div>
     </div>
 </div>

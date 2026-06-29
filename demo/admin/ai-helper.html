@@ -456,19 +456,19 @@ window.ADMIN_TRANSLATION_UI = {
         <div class="adm-ai-kpi-grid">
             <div class="adm-card adm-ai-kpi-card">
                 <div class="adm-ai-kpi-label">🧭 전체 세션 수</div>
-                <div class="adm-ai-kpi-value is-sky">0</div>
+                <div class="adm-ai-kpi-value is-sky">1,284</div>
             </div>
             <div class="adm-card adm-ai-kpi-card">
                 <div class="adm-ai-kpi-label">💬 전체 메시지 수</div>
-                <div class="adm-ai-kpi-value is-blue">0</div>
+                <div class="adm-ai-kpi-value is-blue">9,627</div>
             </div>
             <div class="adm-card adm-ai-kpi-card">
                 <div class="adm-ai-kpi-label">📅 오늘 생성 세션</div>
-                <div class="adm-ai-kpi-value is-green">0</div>
+                <div class="adm-ai-kpi-value is-green">37</div>
             </div>
             <div class="adm-card adm-ai-kpi-card">
                 <div class="adm-ai-kpi-label">👤 이용 유저 수</div>
-                <div class="adm-ai-kpi-value is-purple">0</div>
+                <div class="adm-ai-kpi-value is-purple">412</div>
             </div>
         </div>
 
@@ -485,7 +485,7 @@ window.ADMIN_TRANSLATION_UI = {
             <div class="adm-card-head adm-ai-list-head">
                 <div class="adm-card-title">
                     대화 세션
-                    <span class="adm-section-total-inline">총 0건</span>
+                    <span class="adm-section-total-inline">총 1,284건</span>
                 </div>
             </div>
             <div class="adm-section-list-toolbar adm-admin-list-controlbar js-admin-list-tools-toolbar" data-table-id="admSectionListTable0"><div class="adm-admin-list-selection adm-admin-list-bulkbar" aria-live="polite" aria-hidden="true"><span class="adm-admin-list-selected-count">선택 0건</span><button type="button" class="adm-btn adm-btn-ghost js-admin-list-clear-selection" disabled="">선택 해제</button></div><div class="adm-admin-list-toolcluster"><div class="adm-admin-list-primary-tools js-admin-list-primary-tools"><label class="adm-admin-list-tool adm-section-list-mode"><span>로드 방식</span><select class="adm-select js-admin-list-mode" title="전체 로드 시 최대 500건까지 서버에서 다시 불러옵니다."><option value="page">페이지 로드</option><option value="full">전체 로드</option></select></label><label class="adm-admin-list-tool adm-section-list-size"><span>표시</span><select class="adm-select js-admin-list-page-size"><option value="10">10</option><option value="20" selected="">20</option><option value="50">50</option><option value="100">100</option><option value="all">전체</option></select></label><div class="adm-export-control adm-admin-list-export-tool"><select class="adm-select js-admin-list-export-format"><option value="csv">CSV</option><option value="excel">Excel</option></select><div class="adm-export-menu"><button type="button" class="adm-btn adm-btn-ghost js-export-toggle">내보내기 ▾</button><div class="adm-export-dropdown"><button type="button" class="js-admin-list-export" data-scope="page">현재 페이지 내보내기</button><button type="button" class="js-admin-list-export" data-scope="filtered">검색 결과 내보내기</button><button type="button" class="js-admin-list-export js-admin-list-export-selected" data-scope="selected" disabled="">선택 내보내기 (0)</button></div></div></div></div><div class="adm-admin-list-overflow-menu js-admin-list-overflow-menu has-items"><button type="button" class="adm-btn adm-btn-ghost adm-admin-list-overflow-toggle js-admin-list-overflow-toggle" aria-expanded="false">옵션 ▾</button><div class="adm-admin-list-overflow-panel js-admin-list-overflow-panel"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-sort-reset" style="display:none;">↺ 정렬 초기화</button><div class="adm-admin-list-tool adm-section-list-filter"><select class="adm-select js-admin-list-field" title="현재 화면 기준 필드"><option value="all">현재 화면 전체</option><option value="1">세션 ID</option><option value="2">제목</option><option value="3">유저</option><option value="4">메시지 수</option><option value="5">생성일</option><option value="6">마지막 활동</option></select><div class="adm-search-box adm-section-list-search"><span class="adm-search-ico adm-admin-list-search-ico" aria-hidden="true"></span><input type="text" class="adm-input js-admin-list-keyword" placeholder="현재 화면 내 검색"></div><button type="button" class="adm-btn adm-btn-ghost js-admin-list-filter-reset">↺ 필터 초기화</button></div></div></div></div></div><div class="adm-table-wrap">
@@ -511,8 +511,138 @@ window.ADMIN_TRANSLATION_UI = {
                     </tr>
                 </thead>
                 <tbody>
-                    
-                        
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>#1284</td>
+                        <td>제주 3박4일 렌터카 코스 추천</td>
+                        <td>여행좋아민지<div class="adm-ai-subtext">minji**@gmail.com · #2041</div></td>
+                        <td class="adm-ai-number-cell"><span class="adm-ai-count-btn adm-ai-role-badge is-user">38</span></td>
+                        <td>2026-06-29 14:12</td>
+                        <td>2026-06-29 15:03</td>
+                        <td class="adm-ai-action-cell">
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="viewAssistantMessages(1284)">보기</button>
+                            <button type="button" class="adm-btn adm-btn-ghost adm-ai-status-link is-deleted" onclick="deleteAssistantSession(1284)">삭제</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>#1283</td>
+                        <td>부산 가족여행 2박3일 일정 짜줘</td>
+                        <td>부산갈매기<div class="adm-ai-subtext">kim***@naver.com · #1877</div></td>
+                        <td class="adm-ai-number-cell"><span class="adm-ai-count-btn adm-ai-role-badge is-user">24</span></td>
+                        <td>2026-06-29 11:48</td>
+                        <td>2026-06-29 12:31</td>
+                        <td class="adm-ai-action-cell">
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="viewAssistantMessages(1283)">보기</button>
+                            <button type="button" class="adm-btn adm-btn-ghost adm-ai-status-link is-deleted" onclick="deleteAssistantSession(1283)">삭제</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>#1281</td>
+                        <td>강릉 당일치기 카페 투어 추천</td>
+                        <td>커피러버<div class="adm-ai-subtext">lee***@gmail.com · #3102</div></td>
+                        <td class="adm-ai-number-cell"><span class="adm-ai-count-btn adm-ai-role-badge is-user">9</span></td>
+                        <td>2026-06-28 19:20</td>
+                        <td>2026-06-28 19:44</td>
+                        <td class="adm-ai-action-cell">
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="viewAssistantMessages(1281)">보기</button>
+                            <button type="button" class="adm-btn adm-btn-ghost adm-ai-status-link is-deleted" onclick="deleteAssistantSession(1281)">삭제</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>#1278</td>
+                        <td>오사카 4일 일정 + 맛집 정리</td>
+                        <td>일본덕후준호<div class="adm-ai-subtext">junho**@kakao.com · #1490</div></td>
+                        <td class="adm-ai-number-cell"><span class="adm-ai-count-btn adm-ai-role-badge is-user">31</span></td>
+                        <td>2026-06-28 09:05</td>
+                        <td>2026-06-28 10:52</td>
+                        <td class="adm-ai-action-cell">
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="viewAssistantMessages(1278)">보기</button>
+                            <button type="button" class="adm-btn adm-btn-ghost adm-ai-status-link is-deleted" onclick="deleteAssistantSession(1278)">삭제</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>#1275</td>
+                        <td>경주 역사 유적 코스 + 숙소 추천</td>
+                        <td>역덕박서연<div class="adm-ai-subtext">seoyeon**@gmail.com · #2688</div></td>
+                        <td class="adm-ai-number-cell"><span class="adm-ai-count-btn adm-ai-role-badge is-user">17</span></td>
+                        <td>2026-06-27 16:33</td>
+                        <td>2026-06-27 17:09</td>
+                        <td class="adm-ai-action-cell">
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="viewAssistantMessages(1275)">보기</button>
+                            <button type="button" class="adm-btn adm-btn-ghost adm-ai-status-link is-deleted" onclick="deleteAssistantSession(1275)">삭제</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>#1270</td>
+                        <td>혼자 떠나는 전주 한옥마을 1박2일</td>
+                        <td>혼행지수<div class="adm-ai-subtext">jisoo**@naver.com · #3417</div></td>
+                        <td class="adm-ai-number-cell"><span class="adm-ai-count-btn adm-ai-role-badge is-user">12</span></td>
+                        <td>2026-06-26 21:14</td>
+                        <td>2026-06-26 21:40</td>
+                        <td class="adm-ai-action-cell">
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="viewAssistantMessages(1270)">보기</button>
+                            <button type="button" class="adm-btn adm-btn-ghost adm-ai-status-link is-deleted" onclick="deleteAssistantSession(1270)">삭제</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>#1266</td>
+                        <td>방콕 자유여행 5일 환전·교통 팁</td>
+                        <td>태국가자<div class="adm-ai-subtext">choi***@gmail.com · #1955</div></td>
+                        <td class="adm-ai-number-cell"><span class="adm-ai-count-btn adm-ai-role-badge is-user">27</span></td>
+                        <td>2026-06-25 13:02</td>
+                        <td>2026-06-25 14:18</td>
+                        <td class="adm-ai-action-cell">
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="viewAssistantMessages(1266)">보기</button>
+                            <button type="button" class="adm-btn adm-btn-ghost adm-ai-status-link is-deleted" onclick="deleteAssistantSession(1266)">삭제</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>#1261</td>
+                        <td>속초 + 양양 서핑 2박3일 코스</td>
+                        <td>서핑하는도윤<div class="adm-ai-subtext">doyoon**@kakao.com · #2230</div></td>
+                        <td class="adm-ai-number-cell"><span class="adm-ai-count-btn adm-ai-role-badge is-user">15</span></td>
+                        <td>2026-06-24 18:47</td>
+                        <td>2026-06-24 19:25</td>
+                        <td class="adm-ai-action-cell">
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="viewAssistantMessages(1261)">보기</button>
+                            <button type="button" class="adm-btn adm-btn-ghost adm-ai-status-link is-deleted" onclick="deleteAssistantSession(1261)">삭제</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>#1255</td>
+                        <td>여수 밤바다 1박2일 데이트 코스</td>
+                        <td>여수밤바다<div class="adm-ai-subtext">han***@gmail.com · #1604</div></td>
+                        <td class="adm-ai-number-cell"><span class="adm-ai-count-btn adm-ai-role-badge is-user">21</span></td>
+                        <td>2026-06-22 20:11</td>
+                        <td>2026-06-22 20:58</td>
+                        <td class="adm-ai-action-cell">
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="viewAssistantMessages(1255)">보기</button>
+                            <button type="button" class="adm-btn adm-btn-ghost adm-ai-status-link is-deleted" onclick="deleteAssistantSession(1255)">삭제</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>#1248</td>
+                        <td>다낭 + 호이안 4박5일 가족 일정</td>
+                        <td>베트남러버<div class="adm-ai-subtext">jung***@naver.com · #2912</div></td>
+                        <td class="adm-ai-number-cell"><span class="adm-ai-count-btn adm-ai-muted">4</span></td>
+                        <td>2026-06-20 10:26</td>
+                        <td>2026-06-20 10:39</td>
+                        <td class="adm-ai-action-cell">
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="viewAssistantMessages(1248)">보기</button>
+                            <button type="button" class="adm-btn adm-btn-ghost adm-ai-status-link is-deleted" onclick="deleteAssistantSession(1248)">삭제</button>
+                        </td>
+                    </tr>
+
+
                             <tr data-admin-list-original-empty-row="true" style="display: none;"><td colspan="7" class="adm-local-empty-cell">세션이 없습니다.</td></tr>
                         
                         

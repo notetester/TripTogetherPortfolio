@@ -485,7 +485,7 @@ window.ADMIN_TRANSLATION_UI = {
         <div class="adm-card-head ea-card-head">
             <div class="adm-card-title">
                 로그인 위험 외부 판단
-                <span class="ea-total-label" id="eaTotalLabel">총 0건</span>
+                <span class="ea-total-label" id="eaTotalLabel">총 10건</span>
             </div>
             <div class="adm-export-control ea-export-control">
                 <select class="adm-select ea-export-format" id="eaExportFormat">
@@ -548,8 +548,324 @@ window.ADMIN_TRANSLATION_UI = {
                 </tr>
                 </thead>
                 <tbody id="eaTableBody">
-                
-                <tr class="ea-empty-row"><td colspan="8" class="ea-empty-cell">외부 판단 데이터가 없습니다.</td></tr></tbody>
+
+                <tr data-row-id="20471"
+                    data-sort-source="AI_MODEL|TripGuard AI"
+                    data-sort-target="IP:203.0.113.45"
+                    data-sort-risk="CRITICAL|94"
+                    data-sort-recommend="BLOCK_IP"
+                    data-sort-status="APPLIED"
+                    data-sort-date="202606290312">
+                    <td class="ea-cell-check"><input type="checkbox" class="js-ea-row-check" value="20471" onchange="eaUpdateBulkCount()" aria-label="row-select"></td>
+                    <td>
+                        <div class="adm-external-assessment-primary">AI_MODEL</div>
+                        <div class="adm-page-muted">TripGuard AI</div>
+                        <div class="adm-page-muted">TG-RISK-LLM v3.2</div>
+                    </td>
+                    <td>
+                        <div>IP: 203.0.113.45</div>
+                        <div class="adm-page-muted">kim***@gmail.com / 여행러김</div>
+                        <div class="adm-page-muted">IP: 203.0.113.45</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary" style="color:#f87171;">CRITICAL</div>
+                        <div class="adm-page-muted">score 94</div>
+                        <div class="adm-page-muted">confidence 0.97</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary">BLOCK_IP</div>
+                        <div class="adm-page-muted">단시간 다지역 로그인 + 자격증명 스터핑 패턴</div>
+                    </td>
+                    <td><div class="adm-external-assessment-evidence">5분간 7개국에서 동일 계정 로그인 시도. 23회 연속 비밀번호 실패 후 성공. Tor 출구 노드 IP, 사용자 평소 디바이스 지문과 불일치.</div></td>
+                    <td><span class="adm-badge" style="background:rgba(16,185,129,.16);border-color:rgba(16,185,129,.4);color:#6ee7b7;">APPLIED</span></td>
+                    <td>2026-06-29 03:12</td>
+                </tr>
+
+                <tr data-row-id="20468"
+                    data-sort-source="POLICY_AUTHORITY|KISA 침해대응센터"
+                    data-sort-target="IP:198.51.100.22"
+                    data-sort-risk="CRITICAL|91"
+                    data-sort-recommend="BLOCK_IP"
+                    data-sort-status="APPLIED"
+                    data-sort-date="202606290047">
+                    <td class="ea-cell-check"><input type="checkbox" class="js-ea-row-check" value="20468" onchange="eaUpdateBulkCount()" aria-label="row-select"></td>
+                    <td>
+                        <div class="adm-external-assessment-primary">POLICY_AUTHORITY</div>
+                        <div class="adm-page-muted">KISA 침해대응센터</div>
+                        <div class="adm-page-muted">C-TAS feed</div>
+                    </td>
+                    <td>
+                        <div>IP: 198.51.100.22</div>
+                        <div class="adm-page-muted">IP: 198.51.100.22</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary" style="color:#f87171;">CRITICAL</div>
+                        <div class="adm-page-muted">score 91</div>
+                        <div class="adm-page-muted">confidence 0.99</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary">BLOCK_IP</div>
+                        <div class="adm-page-muted">국가 위협 인텔리전스 블랙리스트 등재 IP</div>
+                    </td>
+                    <td><div class="adm-external-assessment-evidence">KISA C-TAS 악성 IP 피드 일치. 봇넷 C&amp;C 경유지로 보고됨. 최근 30일 내 다수 사이트 대상 자동화 공격 이력.</div></td>
+                    <td><span class="adm-badge" style="background:rgba(16,185,129,.16);border-color:rgba(16,185,129,.4);color:#6ee7b7;">APPLIED</span></td>
+                    <td>2026-06-29 00:47</td>
+                </tr>
+
+                <tr data-row-id="20455"
+                    data-sort-source="RULE_ALGORITHM|속도제한 엔진"
+                    data-sort-target="USER:lee***@naver.com"
+                    data-sort-risk="HIGH|78"
+                    data-sort-recommend="REQUIRE_MFA"
+                    data-sort-status="PROPOSED"
+                    data-sort-date="202606282138">
+                    <td class="ea-cell-check"><input type="checkbox" class="js-ea-row-check" value="20455" onchange="eaUpdateBulkCount()" aria-label="row-select"></td>
+                    <td>
+                        <div class="adm-external-assessment-primary">RULE_ALGORITHM</div>
+                        <div class="adm-page-muted">속도제한 엔진</div>
+                        <div class="adm-page-muted">velocity-rule v1.8</div>
+                    </td>
+                    <td>
+                        <div>USER: lee***@naver.com</div>
+                        <div class="adm-page-muted">park_jisoo / 박지수</div>
+                        <div class="adm-page-muted">IP: 192.0.2.118</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary" style="color:#fb923c;">HIGH</div>
+                        <div class="adm-page-muted">score 78</div>
+                        <div class="adm-page-muted">confidence 0.86</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary">REQUIRE_MFA</div>
+                        <div class="adm-page-muted">신규 디바이스 + 비정상 시간대 로그인</div>
+                    </td>
+                    <td><div class="adm-external-assessment-evidence">새벽 4시 미등록 디바이스에서 로그인. 직전 로그인 위치(서울)와 2시간 만에 1,200km 이동 불가능 패턴(impossible travel).</div></td>
+                    <td><span class="adm-badge" style="background:rgba(245,158,11,.16);border-color:rgba(245,158,11,.42);color:#fcd34d;">PROPOSED</span></td>
+                    <td>2026-06-28 21:38</td>
+                </tr>
+
+                <tr data-row-id="20442"
+                    data-sort-source="ASSESSMENT_PIPELINE|통합 위험 파이프라인"
+                    data-sort-target="IP:192.0.2.77"
+                    data-sort-risk="HIGH|72"
+                    data-sort-recommend="CHALLENGE_CAPTCHA"
+                    data-sort-status="PROPOSED"
+                    data-sort-date="202606281902">
+                    <td class="ea-cell-check"><input type="checkbox" class="js-ea-row-check" value="20442" onchange="eaUpdateBulkCount()" aria-label="row-select"></td>
+                    <td>
+                        <div class="adm-external-assessment-primary">ASSESSMENT_PIPELINE</div>
+                        <div class="adm-page-muted">통합 위험 파이프라인</div>
+                        <div class="adm-page-muted">pipeline-agg v2.0</div>
+                    </td>
+                    <td>
+                        <div>IP: 192.0.2.77</div>
+                        <div class="adm-page-muted">IP: 192.0.2.77</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary" style="color:#fb923c;">HIGH</div>
+                        <div class="adm-page-muted">score 72</div>
+                        <div class="adm-page-muted">confidence 0.81</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary">CHALLENGE_CAPTCHA</div>
+                        <div class="adm-page-muted">데이터센터 ASN + 다수 계정 시도</div>
+                    </td>
+                    <td><div class="adm-external-assessment-evidence">AWS 데이터센터 대역에서 1시간 내 18개 서로 다른 계정 로그인 시도. User-Agent 회전 탐지. 3개 신호 가중합으로 HIGH 산정.</div></td>
+                    <td><span class="adm-badge" style="background:rgba(245,158,11,.16);border-color:rgba(245,158,11,.42);color:#fcd34d;">PROPOSED</span></td>
+                    <td>2026-06-28 19:02</td>
+                </tr>
+
+                <tr data-row-id="20430"
+                    data-sort-source="AI_MODEL|TripGuard AI"
+                    data-sort-target="USER:choi***@gmail.com"
+                    data-sort-risk="MEDIUM|55"
+                    data-sort-recommend="MONITOR"
+                    data-sort-status="APPLIED"
+                    data-sort-date="202606281433">
+                    <td class="ea-cell-check"><input type="checkbox" class="js-ea-row-check" value="20430" onchange="eaUpdateBulkCount()" aria-label="row-select"></td>
+                    <td>
+                        <div class="adm-external-assessment-primary">AI_MODEL</div>
+                        <div class="adm-page-muted">TripGuard AI</div>
+                        <div class="adm-page-muted">TG-RISK-LLM v3.2</div>
+                    </td>
+                    <td>
+                        <div>USER: choi***@gmail.com</div>
+                        <div class="adm-page-muted">choi_minjun / 최민준</div>
+                        <div class="adm-page-muted">IP: 203.0.113.9</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary" style="color:#fbbf24;">MEDIUM</div>
+                        <div class="adm-page-muted">score 55</div>
+                        <div class="adm-page-muted">confidence 0.74</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary">MONITOR</div>
+                        <div class="adm-page-muted">해외 출장 추정, 추가 관찰 권고</div>
+                    </td>
+                    <td><div class="adm-external-assessment-evidence">평소와 다른 국가(일본)에서 로그인했으나 동일 디바이스 지문 일치. 사전 등록된 출장 일정과 부합. 위험도 중간으로 하향.</div></td>
+                    <td><span class="adm-badge" style="background:rgba(16,185,129,.16);border-color:rgba(16,185,129,.4);color:#6ee7b7;">APPLIED</span></td>
+                    <td>2026-06-28 14:33</td>
+                </tr>
+
+                <tr data-row-id="20418"
+                    data-sort-source="RULE_ALGORITHM|지오펜스 규칙"
+                    data-sort-target="IP:198.51.100.140"
+                    data-sort-risk="MEDIUM|49"
+                    data-sort-recommend="MONITOR"
+                    data-sort-status="IGNORED"
+                    data-sort-date="202606280958">
+                    <td class="ea-cell-check"><input type="checkbox" class="js-ea-row-check" value="20418" onchange="eaUpdateBulkCount()" aria-label="row-select"></td>
+                    <td>
+                        <div class="adm-external-assessment-primary">RULE_ALGORITHM</div>
+                        <div class="adm-page-muted">지오펜스 규칙</div>
+                        <div class="adm-page-muted">geo-rule v1.3</div>
+                    </td>
+                    <td>
+                        <div>IP: 198.51.100.140</div>
+                        <div class="adm-page-muted">jung***@daum.net / 정서연</div>
+                        <div class="adm-page-muted">IP: 198.51.100.140</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary" style="color:#fbbf24;">MEDIUM</div>
+                        <div class="adm-page-muted">score 49</div>
+                        <div class="adm-page-muted">confidence 0.68</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary">MONITOR</div>
+                        <div class="adm-page-muted">VPN 사용 의심, 영향도 낮음</div>
+                    </td>
+                    <td><div class="adm-external-assessment-evidence">상용 VPN 대역에서 접속. 계정 활동 이력 정상, 결제·개인정보 변경 없음. 관리자 검토 후 무시 처리.</div></td>
+                    <td><span class="adm-badge" style="background:rgba(100,116,139,.18);border-color:rgba(100,116,139,.38);color:#94a3b8;">IGNORED</span></td>
+                    <td>2026-06-28 09:58</td>
+                </tr>
+
+                <tr data-row-id="20405"
+                    data-sort-source="POLICY_AUTHORITY|금융보안원"
+                    data-sort-target="IP:203.0.113.201"
+                    data-sort-risk="HIGH|81"
+                    data-sort-recommend="BLOCK_IP"
+                    data-sort-status="PENDING"
+                    data-sort-date="202606272211">
+                    <td class="ea-cell-check"><input type="checkbox" class="js-ea-row-check" value="20405" onchange="eaUpdateBulkCount()" aria-label="row-select"></td>
+                    <td>
+                        <div class="adm-external-assessment-primary">POLICY_AUTHORITY</div>
+                        <div class="adm-page-muted">금융보안원</div>
+                        <div class="adm-page-muted">FSI threat feed</div>
+                    </td>
+                    <td>
+                        <div>IP: 203.0.113.201</div>
+                        <div class="adm-page-muted">IP: 203.0.113.201</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary" style="color:#fb923c;">HIGH</div>
+                        <div class="adm-page-muted">score 81</div>
+                        <div class="adm-page-muted">confidence 0.93</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary">BLOCK_IP</div>
+                        <div class="adm-page-muted">피싱 인프라 연관 IP, 검토 대기</div>
+                    </td>
+                    <td><div class="adm-external-assessment-evidence">금융보안원 위협 피드에서 피싱 사이트 호스팅 IP로 분류. 자동 차단 보류 후 관리자 최종 판단 대기 중.</div></td>
+                    <td><span class="adm-badge" style="background:rgba(59,130,246,.16);border-color:rgba(59,130,246,.42);color:#93c5fd;">PENDING</span></td>
+                    <td>2026-06-27 22:11</td>
+                </tr>
+
+                <tr data-row-id="20392"
+                    data-sort-source="AI_MODEL|TripGuard AI"
+                    data-sort-target="USER:yoon***@gmail.com"
+                    data-sort-risk="LOW|22"
+                    data-sort-recommend="ALLOW"
+                    data-sort-status="APPLIED"
+                    data-sort-date="202606271640">
+                    <td class="ea-cell-check"><input type="checkbox" class="js-ea-row-check" value="20392" onchange="eaUpdateBulkCount()" aria-label="row-select"></td>
+                    <td>
+                        <div class="adm-external-assessment-primary">AI_MODEL</div>
+                        <div class="adm-page-muted">TripGuard AI</div>
+                        <div class="adm-page-muted">TG-RISK-LLM v3.2</div>
+                    </td>
+                    <td>
+                        <div>USER: yoon***@gmail.com</div>
+                        <div class="adm-page-muted">yoon_haeun / 윤하은</div>
+                        <div class="adm-page-muted">IP: 192.0.2.31</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary" style="color:#34d399;">LOW</div>
+                        <div class="adm-page-muted">score 22</div>
+                        <div class="adm-page-muted">confidence 0.95</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary">ALLOW</div>
+                        <div class="adm-page-muted">정상 패턴, 추가 조치 불필요</div>
+                    </td>
+                    <td><div class="adm-external-assessment-evidence">등록 디바이스·평소 위치·평소 시간대 모두 일치. 최근 90일 위험 신호 없음. 정상 로그인으로 판정.</div></td>
+                    <td><span class="adm-badge" style="background:rgba(16,185,129,.16);border-color:rgba(16,185,129,.4);color:#6ee7b7;">APPLIED</span></td>
+                    <td>2026-06-27 16:40</td>
+                </tr>
+
+                <tr data-row-id="20381"
+                    data-sort-source="RULE_ALGORITHM|로그인 빈도 규칙"
+                    data-sort-target="IP:198.51.100.66"
+                    data-sort-risk="MEDIUM|58"
+                    data-sort-recommend="CHALLENGE_CAPTCHA"
+                    data-sort-status="APPLIED"
+                    data-sort-date="202606270921">
+                    <td class="ea-cell-check"><input type="checkbox" class="js-ea-row-check" value="20381" onchange="eaUpdateBulkCount()" aria-label="row-select"></td>
+                    <td>
+                        <div class="adm-external-assessment-primary">RULE_ALGORITHM</div>
+                        <div class="adm-page-muted">로그인 빈도 규칙</div>
+                        <div class="adm-page-muted">freq-rule v1.1</div>
+                    </td>
+                    <td>
+                        <div>IP: 198.51.100.66</div>
+                        <div class="adm-page-muted">kang***@naver.com / 강도현</div>
+                        <div class="adm-page-muted">IP: 198.51.100.66</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary" style="color:#fbbf24;">MEDIUM</div>
+                        <div class="adm-page-muted">score 58</div>
+                        <div class="adm-page-muted">confidence 0.77</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary">CHALLENGE_CAPTCHA</div>
+                        <div class="adm-page-muted">짧은 시간 반복 로그인 실패</div>
+                    </td>
+                    <td><div class="adm-external-assessment-evidence">10분간 동일 계정 9회 로그인 실패. 비밀번호 분실 추정이나 자동화 가능성 배제 불가. 캡차 적용으로 완화.</div></td>
+                    <td><span class="adm-badge" style="background:rgba(16,185,129,.16);border-color:rgba(16,185,129,.4);color:#6ee7b7;">APPLIED</span></td>
+                    <td>2026-06-27 09:21</td>
+                </tr>
+
+                <tr data-row-id="20369"
+                    data-sort-source="ASSESSMENT_PIPELINE|통합 위험 파이프라인"
+                    data-sort-target="USER:seo***@gmail.com"
+                    data-sort-risk="LOW|18"
+                    data-sort-recommend="ALLOW"
+                    data-sort-status="IGNORED"
+                    data-sort-date="202606262355">
+                    <td class="ea-cell-check"><input type="checkbox" class="js-ea-row-check" value="20369" onchange="eaUpdateBulkCount()" aria-label="row-select"></td>
+                    <td>
+                        <div class="adm-external-assessment-primary">ASSESSMENT_PIPELINE</div>
+                        <div class="adm-page-muted">통합 위험 파이프라인</div>
+                        <div class="adm-page-muted">pipeline-agg v2.0</div>
+                    </td>
+                    <td>
+                        <div>USER: seo***@gmail.com</div>
+                        <div class="adm-page-muted">seo_yujin / 서유진</div>
+                        <div class="adm-page-muted">IP: 203.0.113.150</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary" style="color:#34d399;">LOW</div>
+                        <div class="adm-page-muted">score 18</div>
+                        <div class="adm-page-muted">confidence 0.90</div>
+                    </td>
+                    <td>
+                        <div class="adm-external-assessment-primary">ALLOW</div>
+                        <div class="adm-page-muted">저위험 신호, 자동 무시</div>
+                    </td>
+                    <td><div class="adm-external-assessment-evidence">신규 브라우저 업데이트로 인한 지문 미세 변경. 위치·디바이스·계정 활동 모두 정상 범위. 자동 무시 임계값 이하.</div></td>
+                    <td><span class="adm-badge" style="background:rgba(100,116,139,.18);border-color:rgba(100,116,139,.38);color:#94a3b8;">IGNORED</span></td>
+                    <td>2026-06-26 23:55</td>
+                </tr>
+                </tbody>
             </table>
             <div class="ea-empty adm-is-hidden" id="eaEmptyState">외부 판단 데이터가 없습니다.</div>
         </div>

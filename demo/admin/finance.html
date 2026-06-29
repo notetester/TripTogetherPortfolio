@@ -503,7 +503,7 @@ window.ADMIN_TRANSLATION_UI = {
         </div>
         <div class="adm-card adm-finance-stat-card">
             <div class="adm-finance-stat-label">오늘 충전</div>
-            <div class="adm-finance-summary-value">0</div>
+            <div class="adm-finance-summary-value is-positive">180,000</div>
         </div>
         <div class="adm-card adm-finance-stat-card">
             <div class="adm-finance-stat-label">최근 30일 충전</div>
@@ -524,14 +524,48 @@ window.ADMIN_TRANSLATION_UI = {
                             전체 보기 →
                         </a>
                     </div>
-                    
-                        
-                            <div class="adm-finance-widget-empty">
-                                최근 환불 이력이 없습니다.
-                            </div>
-                        
-                        
-                    
+                    <table class="adm-finance-mini-table">
+                        <thead>
+                            <tr>
+                                <th>회원</th>
+                                <th>금액</th>
+                                <th>상태</th>
+                                <th>일시</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>여행가김철수</td>
+                                <td class="adm-finance-mini-amount">30,000 원</td>
+                                <td><span class="status-badge COMPLETED">완료</span></td>
+                                <td class="adm-finance-mini-time">06-28 14:22</td>
+                            </tr>
+                            <tr>
+                                <td>한지우</td>
+                                <td class="adm-finance-mini-amount">10,000 원</td>
+                                <td><span class="status-badge COMPLETED">완료</span></td>
+                                <td class="adm-finance-mini-time">06-27 19:05</td>
+                            </tr>
+                            <tr>
+                                <td>장미네VIP</td>
+                                <td class="adm-finance-mini-amount">50,000 원</td>
+                                <td><span class="status-badge PENDING">대기</span></td>
+                                <td class="adm-finance-mini-time">06-27 11:48</td>
+                            </tr>
+                            <tr>
+                                <td>송가을</td>
+                                <td class="adm-finance-mini-amount">5,000 원</td>
+                                <td><span class="status-badge REJECTED">거부</span></td>
+                                <td class="adm-finance-mini-time">06-26 09:31</td>
+                            </tr>
+                            <tr>
+                                <td>정하늘</td>
+                                <td class="adm-finance-mini-amount">20,000 원</td>
+                                <td><span class="status-badge COMPLETED">완료</span></td>
+                                <td class="adm-finance-mini-time">06-25 16:10</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             
 
@@ -548,18 +582,18 @@ window.ADMIN_TRANSLATION_UI = {
                         <div>
                             <div class="adm-finance-policy-mini-label">🔒 충전 한도</div>
                             <div class="adm-finance-policy-mini-value">
-                                
-                                
-                                0<span class="adm-finance-policy-mini-total"> / 0</span>
+
+
+                                4<span class="adm-finance-policy-mini-total"> / 5</span>
                             </div>
                             <div class="adm-finance-policy-mini-note">활성 / 전체</div>
                         </div>
                         <div>
                             <div class="adm-finance-policy-mini-label">✨ 적립률</div>
                             <div class="adm-finance-policy-mini-value">
-                                
-                                
-                                0<span class="adm-finance-policy-mini-total"> / 0</span>
+
+
+                                3<span class="adm-finance-policy-mini-total"> / 4</span>
                             </div>
                             <div class="adm-finance-policy-mini-note">활성 / 전체</div>
                         </div>
@@ -694,522 +728,402 @@ window.ADMIN_TRANSLATION_UI = {
                     
                 
             <tr data-admin-list-orig-order="0" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>1</td>
                                 <td>최고관리자</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">admin***@triptogether.kr</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        플래티넘
                                     </span>
                                 </td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">1,250,000</td>
+                                <td class="adm-align-right">3,200</td>
+                                <td class="adm-align-right">18,400</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/1" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="1" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>2</td>
                                 <td>운영관리자</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">ops***@triptogether.kr</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        플래티넘
                                     </span>
                                 </td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">980,000</td>
+                                <td class="adm-align-right">2,750</td>
+                                <td class="adm-align-right">14,900</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/2" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="2" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>3</td>
                                 <td>보안관리자</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">sec***@triptogether.kr</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        골드
                                     </span>
                                 </td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">420,000</td>
+                                <td class="adm-align-right">1,150</td>
+                                <td class="adm-align-right">9,300</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/3" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="3" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>7</td>
                                 <td>제주드림투어</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">jeju***@naver.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        골드
                                     </span>
                                 </td>
+                                <td class="adm-align-right">1,640,000</td>
                                 <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">22,100</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/7" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="4" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>8</td>
                                 <td>부산바다여행</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">busan***@daum.net</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        실버
                                     </span>
                                 </td>
+                                <td class="adm-align-right">385,000</td>
                                 <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">6,750</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/8" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="5" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>9</td>
                                 <td>글로벌패키지</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">global***@gmail.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        다이아
                                     </span>
                                 </td>
+                                <td class="adm-align-right">2,310,000</td>
                                 <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">41,500</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/9" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="6" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>12</td>
                                 <td>여행가김철수</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">kim***@gmail.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        골드
                                     </span>
                                 </td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">512,000</td>
+                                <td class="adm-align-right">1,800</td>
+                                <td class="adm-align-right">11,200</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/12" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="7" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>13</td>
                                 <td>이영자트래블</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">lee***@naver.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        실버
                                     </span>
                                 </td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">148,000</td>
+                                <td class="adm-align-right">640</td>
+                                <td class="adm-align-right">4,300</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/13" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="8" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>15</td>
                                 <td>박민호</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">park***@gmail.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        브론즈
                                     </span>
                                 </td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">62,000</td>
+                                <td class="adm-align-right">120</td>
+                                <td class="adm-align-right">1,540</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/15" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="9" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>18</td>
                                 <td>초보여행자</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">newbie***@daum.net</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        브론즈
                                     </span>
                                 </td>
+                                <td class="adm-align-right">30,000</td>
                                 <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">450</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/18" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="10" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>21</td>
                                 <td>정하늘</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">jung***@gmail.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        실버
                                     </span>
                                 </td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">205,000</td>
+                                <td class="adm-align-right">520</td>
+                                <td class="adm-align-right">5,900</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/21" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="11" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>23</td>
                                 <td>윤서진여행</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">yoon***@naver.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        골드
                                     </span>
                                 </td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">473,000</td>
+                                <td class="adm-align-right">1,340</td>
+                                <td class="adm-align-right">8,800</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/23" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="12" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>26</td>
                                 <td>한지우</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">han***@gmail.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        다이아
                                     </span>
                                 </td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">1,180,000</td>
+                                <td class="adm-align-right">2,900</td>
+                                <td class="adm-align-right">27,600</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/26" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="13" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>29</td>
                                 <td>임도현</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">lim***@kakao.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        실버
                                     </span>
                                 </td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">96,000</td>
+                                <td class="adm-align-right">310</td>
+                                <td class="adm-align-right">3,100</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/29" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="14" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>31</td>
                                 <td>송가을</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">song***@gmail.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        브론즈
                                     </span>
                                 </td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">44,000</td>
+                                <td class="adm-align-right">80</td>
+                                <td class="adm-align-right">920</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/31" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="15" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>34</td>
                                 <td>장미네VIP</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">jang***@naver.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        플래티넘
                                     </span>
                                 </td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">3,050,000</td>
+                                <td class="adm-align-right">4,100</td>
+                                <td class="adm-align-right">52,300</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/34" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="16" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>37</td>
                                 <td>배경윤</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">bae***@gmail.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        브론즈
                                     </span>
                                 </td>
+                                <td class="adm-align-right">18,000</td>
                                 <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">260</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge ACTIVE">활성</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/37" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="17" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>40</td>
                                 <td>오래된계정</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">old***@hanmail.net</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        브론즈
                                     </span>
                                 </td>
+                                <td class="adm-align-right">7,500</td>
                                 <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
-                                <td class="adm-align-right">0</td>
+                                <td class="adm-align-right">40</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge DORMANT">휴면</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/40" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="18" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>42</td>
                                 <td>광고스팸러</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">spam***@gmail.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        브론즈
                                     </span>
                                 </td>
                                 <td class="adm-align-right">0</td>
                                 <td class="adm-align-right">0</td>
                                 <td class="adm-align-right">0</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge BLOCKED">차단</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/42" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>
                             </tr><tr data-admin-list-orig-order="19" data-admin-list-visible="true" style="">
-                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td></td>
+                                <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td><td>44</td>
                                 <td>비방유저</td>
-                                <td class="adm-finance-email-cell"></td>
+                                <td class="adm-finance-email-cell">troll***@naver.com</td>
                                 <td>
                                     <span class="adm-finance-grade-pill">
-                                        
+                                        브론즈
                                     </span>
                                 </td>
                                 <td class="adm-align-right">0</td>
                                 <td class="adm-align-right">0</td>
                                 <td class="adm-align-right">0</td>
                                 <td>
-                                    
-                                        
-                                            <span class="adm-badge adm-badge-green">활성</span>
-                                        
-                                        
-                                        
-                                    
+                                    <span class="status-badge BLOCKED">차단</span>
                                 </td>
                                 <td>
-                                    <a href="/TripTogether/admin/finance/users/" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
+                                    <a href="/TripTogether/admin/finance/users/44" class="adm-btn adm-btn-ghost adm-finance-detail-btn">
                                         상세
                                     </a>
                                 </td>

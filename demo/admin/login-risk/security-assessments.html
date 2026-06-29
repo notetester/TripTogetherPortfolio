@@ -497,7 +497,7 @@ window.ADMIN_TRANSLATION_UI = {
         <div class="adm-card-head sra-card-head">
             <div class="adm-card-title">
                 보안 위험 판단
-                <span class="sra-total-label" id="sraTotalLabel">총 4건</span>
+                <span class="sra-total-label" id="sraTotalLabel">총 10건</span>
             </div>
             <div class="adm-export-control sra-export-control">
                 <select class="adm-select sra-export-format" id="sraExportFormat">
@@ -570,41 +570,30 @@ window.ADMIN_TRANSLATION_UI = {
                 </tr>
                 </thead>
                 <tbody id="sraTableBody">
-                
-                    
-                
-                    
-                
-                    
-                
-                    
-                
-                <tr data-row-id="1" data-subject-type="USER" data-decision-status="PROPOSED" data-sort-source="LOGIN|RULE_ENGINE|무차별 대입 탐지" data-sort-target="USER:19" data-sort-risk="|" data-sort-recommend="" data-sort-status="PROPOSED" data-sort-date="202606161418">
+                <tr data-row-id="1" data-subject-type="USER" data-decision-status="PROPOSED" data-sort-source="LOGIN|RULE_ALGORITHM|무차별 대입 탐지" data-sort-target="USER:19" data-sort-risk="CRITICAL|94" data-sort-recommend="계정 즉시 차단" data-sort-status="PROPOSED" data-sort-date="202606281842">
                         <td class="sra-cell-check"><input type="checkbox" class="js-sra-row-check" value="1" onchange="sraUpdateBulkCount()" aria-label="row-select"></td>
                         <td>
-                            <div class="adm-security-assessment-primary">LOGIN</div>
-                            <div class="adm-page-muted">RULE_ENGINE</div>
+                            <div class="adm-security-assessment-primary">LOGIN_RISK</div>
+                            <div class="adm-page-muted">RULE_ALGORITHM</div>
                             <div class="adm-page-muted">무차별 대입 탐지</div>
                         </td>
                         <td>
                             <div>USER: 19</div>
-                            <div class="adm-page-muted">spammer1 / 광고스팸러</div>
-                            
+                            <div class="adm-page-muted">spammer*** / 광고스팸러</div>
+                            <div class="adm-page-muted">203.0.113.47</div>
                         </td>
                         <td>
-                            <div class="adm-security-assessment-primary"></div>
-                            
-                            
+                            <div class="adm-security-assessment-primary"><span class="adm-badge" style="background:rgba(220,38,38,.16);border-color:rgba(248,113,113,.5);color:#fca5a5;">CRITICAL</span></div>
+                            <div class="adm-page-muted">위험점수 94 / 100</div>
                         </td>
                         <td>
-                            <div class="adm-security-assessment-primary"></div>
-                            <div class="adm-page-muted"></div>
+                            <div class="adm-security-assessment-primary">계정 즉시 차단</div>
+                            <div class="adm-page-muted">USER + IP 동시 차단</div>
                         </td>
-                        <td><div class="adm-security-assessment-evidence"></div></td>
-                        <td><span class="adm-badge">PROPOSED</span></td>
-                        <td>2026-06-16 14:18</td>
+                        <td><div class="adm-security-assessment-evidence">10분간 동일 계정에 312회 로그인 실패. 5개 IP에서 사전 단어 기반 비밀번호 대입 패턴 일치. 직전 24시간 성공 로그인 0건.</div></td>
+                        <td><span class="adm-badge" style="background:rgba(217,119,6,.16);border-color:rgba(251,191,36,.5);color:#fbbf24;">PROPOSED</span></td>
+                        <td>2026-06-28 18:42</td>
                         <td>
-                            
                                 <div class="adm-security-assessment-row-actions">
                                     <form method="post" action="/TripTogether/admin/login-risk/security-assessments/1/create-review">
                                         <input type="hidden" name="severity" value="">
@@ -612,40 +601,35 @@ window.ADMIN_TRANSLATION_UI = {
                                         <input type="hidden" name="detailMessage" value="">
                                         <button class="adm-btn adm-btn-ghost" type="submit">검토 큐 등록</button>
                                     </form>
-                                    
                                         <form method="post" action="/TripTogether/admin/login-risk/security-assessments/1/apply-user-block">
                                             <button class="adm-btn adm-btn-danger" type="submit">계정 차단 적용</button>
                                         </form>
-                                    
                                 </div>
-                            
                         </td>
-                    </tr><tr data-row-id="2" data-subject-type="USER" data-decision-status="PROPOSED" data-sort-source="LOGIN|RULE_ENGINE|봇 트래픽 탐지" data-sort-target="USER:20" data-sort-risk="|" data-sort-recommend="" data-sort-status="PROPOSED" data-sort-date="202606161118">
+                    </tr><tr data-row-id="2" data-subject-type="USER" data-decision-status="APPLIED" data-sort-source="LOGIN|AI_MODEL|봇 트래픽 탐지" data-sort-target="USER:20" data-sort-risk="HIGH|81" data-sort-recommend="계정 차단" data-sort-status="APPLIED" data-sort-date="202606281107">
                         <td class="sra-cell-check"><input type="checkbox" class="js-sra-row-check" value="2" onchange="sraUpdateBulkCount()" aria-label="row-select"></td>
                         <td>
-                            <div class="adm-security-assessment-primary">LOGIN</div>
-                            <div class="adm-page-muted">RULE_ENGINE</div>
+                            <div class="adm-security-assessment-primary">LOGIN_RISK</div>
+                            <div class="adm-page-muted">AI_MODEL</div>
                             <div class="adm-page-muted">봇 트래픽 탐지</div>
                         </td>
                         <td>
                             <div>USER: 20</div>
-                            <div class="adm-page-muted">abuser1 / 비방유저</div>
-                            
+                            <div class="adm-page-muted">abuser*** / 비방유저</div>
+                            <div class="adm-page-muted">198.51.100.22</div>
                         </td>
                         <td>
-                            <div class="adm-security-assessment-primary"></div>
-                            
-                            
+                            <div class="adm-security-assessment-primary"><span class="adm-badge" style="background:rgba(234,88,12,.16);border-color:rgba(251,146,60,.5);color:#fdba74;">HIGH</span></div>
+                            <div class="adm-page-muted">위험점수 81 / 100</div>
                         </td>
                         <td>
-                            <div class="adm-security-assessment-primary"></div>
-                            <div class="adm-page-muted"></div>
+                            <div class="adm-security-assessment-primary">계정 차단</div>
+                            <div class="adm-page-muted">자동화 클라이언트</div>
                         </td>
-                        <td><div class="adm-security-assessment-evidence"></div></td>
-                        <td><span class="adm-badge">PROPOSED</span></td>
-                        <td>2026-06-16 11:18</td>
+                        <td><div class="adm-security-assessment-evidence">User-Agent 헤더 위조 및 비정상 요청 간격(평균 0.3초) 탐지. 동일 세션에서 47개 게시글 자동 작성. AI 분류기 봇 확률 0.91.</div></td>
+                        <td><span class="adm-badge" style="background:rgba(22,163,74,.16);border-color:rgba(74,222,128,.5);color:#86efac;">APPLIED</span></td>
+                        <td>2026-06-28 11:07</td>
                         <td>
-                            
                                 <div class="adm-security-assessment-row-actions">
                                     <form method="post" action="/TripTogether/admin/login-risk/security-assessments/2/create-review">
                                         <input type="hidden" name="severity" value="">
@@ -653,81 +637,35 @@ window.ADMIN_TRANSLATION_UI = {
                                         <input type="hidden" name="detailMessage" value="">
                                         <button class="adm-btn adm-btn-ghost" type="submit">검토 큐 등록</button>
                                     </form>
-                                    
                                         <form method="post" action="/TripTogether/admin/login-risk/security-assessments/2/apply-user-block">
                                             <button class="adm-btn adm-btn-danger" type="submit">계정 차단 적용</button>
                                         </form>
-                                    
                                 </div>
-                            
                         </td>
-                    </tr><tr data-row-id="4" data-subject-type="USER" data-decision-status="PROPOSED" data-sort-source="LOGIN|RULE_ENGINE|비정상 위치 로그인" data-sort-target="USER:9" data-sort-risk="|" data-sort-recommend="" data-sort-status="PROPOSED" data-sort-date="202606151618">
-                        <td class="sra-cell-check"><input type="checkbox" class="js-sra-row-check" value="4" onchange="sraUpdateBulkCount()" aria-label="row-select"></td>
-                        <td>
-                            <div class="adm-security-assessment-primary">LOGIN</div>
-                            <div class="adm-page-muted">RULE_ENGINE</div>
-                            <div class="adm-page-muted">비정상 위치 로그인</div>
-                        </td>
-                        <td>
-                            <div>USER: 9</div>
-                            <div class="adm-page-muted">parkmh / 박민호</div>
-                            
-                        </td>
-                        <td>
-                            <div class="adm-security-assessment-primary"></div>
-                            
-                            
-                        </td>
-                        <td>
-                            <div class="adm-security-assessment-primary"></div>
-                            <div class="adm-page-muted"></div>
-                        </td>
-                        <td><div class="adm-security-assessment-evidence"></div></td>
-                        <td><span class="adm-badge">PROPOSED</span></td>
-                        <td>2026-06-15 16:18</td>
-                        <td>
-                            
-                                <div class="adm-security-assessment-row-actions">
-                                    <form method="post" action="/TripTogether/admin/login-risk/security-assessments/4/create-review">
-                                        <input type="hidden" name="severity" value="">
-                                        <input type="hidden" name="summary" value="">
-                                        <input type="hidden" name="detailMessage" value="">
-                                        <button class="adm-btn adm-btn-ghost" type="submit">검토 큐 등록</button>
-                                    </form>
-                                    
-                                        <form method="post" action="/TripTogether/admin/login-risk/security-assessments/4/apply-user-block">
-                                            <button class="adm-btn adm-btn-danger" type="submit">계정 차단 적용</button>
-                                        </form>
-                                    
-                                </div>
-                            
-                        </td>
-                    </tr><tr data-row-id="3" data-subject-type="POST" data-decision-status="PROPOSED" data-sort-source="CONTENT|AI_MODERATION|AI 스팸 탐지" data-sort-target="POST:1" data-sort-risk="|" data-sort-recommend="" data-sort-status="PROPOSED" data-sort-date="202606141618">
+                    </tr><tr data-row-id="3" data-subject-type="POST" data-decision-status="PROPOSED" data-sort-source="CONTENT|AI_MODEL|AI 스팸 탐지" data-sort-target="POST:1" data-sort-risk="HIGH|76" data-sort-recommend="게시글 블라인드" data-sort-status="PROPOSED" data-sort-date="202606271533">
                         <td class="sra-cell-check"><input type="checkbox" class="js-sra-row-check" value="3" onchange="sraUpdateBulkCount()" aria-label="row-select"></td>
                         <td>
-                            <div class="adm-security-assessment-primary">CONTENT</div>
-                            <div class="adm-page-muted">AI_MODERATION</div>
+                            <div class="adm-security-assessment-primary">CONTENT_MODERATION</div>
+                            <div class="adm-page-muted">AI_MODEL</div>
                             <div class="adm-page-muted">AI 스팸 탐지</div>
                         </td>
                         <td>
                             <div>POST: 1</div>
-                            <div class="adm-page-muted">kimcs / 여행가김철수</div>
-                            
+                            <div class="adm-page-muted">kim***@gmail.com / 여행가김철수</div>
+                            <div class="adm-page-muted">커뮤니티 게시글</div>
                         </td>
                         <td>
-                            <div class="adm-security-assessment-primary"></div>
-                            
-                            
+                            <div class="adm-security-assessment-primary"><span class="adm-badge" style="background:rgba(234,88,12,.16);border-color:rgba(251,146,60,.5);color:#fdba74;">HIGH</span></div>
+                            <div class="adm-page-muted">위험점수 76 / 100</div>
                         </td>
                         <td>
-                            <div class="adm-security-assessment-primary"></div>
-                            <div class="adm-page-muted"></div>
+                            <div class="adm-security-assessment-primary">게시글 블라인드</div>
+                            <div class="adm-page-muted">검토 큐 이관 권고</div>
                         </td>
-                        <td><div class="adm-security-assessment-evidence"></div></td>
-                        <td><span class="adm-badge">PROPOSED</span></td>
-                        <td>2026-06-14 16:18</td>
+                        <td><div class="adm-security-assessment-evidence">외부 도박 사이트 단축 URL 4개 포함. 동일 문구가 24시간 내 9개 게시글에 반복 게재. 콘텐츠 분류기 스팸 확률 0.88.</div></td>
+                        <td><span class="adm-badge" style="background:rgba(217,119,6,.16);border-color:rgba(251,191,36,.5);color:#fbbf24;">PROPOSED</span></td>
+                        <td>2026-06-27 15:33</td>
                         <td>
-                            
                                 <div class="adm-security-assessment-row-actions">
                                     <form method="post" action="/TripTogether/admin/login-risk/security-assessments/3/create-review">
                                         <input type="hidden" name="severity" value="">
@@ -735,9 +673,250 @@ window.ADMIN_TRANSLATION_UI = {
                                         <input type="hidden" name="detailMessage" value="">
                                         <button class="adm-btn adm-btn-ghost" type="submit">검토 큐 등록</button>
                                     </form>
-                                    
                                 </div>
-                            
+                        </td>
+                    </tr><tr data-row-id="4" data-subject-type="USER" data-decision-status="PENDING" data-sort-source="LOGIN|AI_MODEL|비정상 위치 로그인" data-sort-target="USER:9" data-sort-risk="MEDIUM|58" data-sort-recommend="추가 인증 요구" data-sort-status="PENDING" data-sort-date="202606271019">
+                        <td class="sra-cell-check"><input type="checkbox" class="js-sra-row-check" value="4" onchange="sraUpdateBulkCount()" aria-label="row-select"></td>
+                        <td>
+                            <div class="adm-security-assessment-primary">LOGIN_RISK</div>
+                            <div class="adm-page-muted">AI_MODEL</div>
+                            <div class="adm-page-muted">비정상 위치 로그인</div>
+                        </td>
+                        <td>
+                            <div>USER: 9</div>
+                            <div class="adm-page-muted">park***@naver.com / 박민호</div>
+                            <div class="adm-page-muted">192.0.2.140</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary"><span class="adm-badge" style="background:rgba(202,138,4,.16);border-color:rgba(250,204,21,.5);color:#fde047;">MEDIUM</span></div>
+                            <div class="adm-page-muted">위험점수 58 / 100</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary">추가 인증 요구</div>
+                            <div class="adm-page-muted">이메일 OTP</div>
+                        </td>
+                        <td><div class="adm-security-assessment-evidence">최근 로그인 국가(대한민국)와 다른 지역 IP에서 접속. 디바이스 지문 미등록. 단, 비밀번호 정상 일치 — 자동 차단 대신 본인확인 권고.</div></td>
+                        <td><span class="adm-badge" style="background:rgba(37,99,235,.16);border-color:rgba(96,165,250,.5);color:#93c5fd;">PENDING</span></td>
+                        <td>2026-06-27 10:19</td>
+                        <td>
+                                <div class="adm-security-assessment-row-actions">
+                                    <form method="post" action="/TripTogether/admin/login-risk/security-assessments/4/create-review">
+                                        <input type="hidden" name="severity" value="">
+                                        <input type="hidden" name="summary" value="">
+                                        <input type="hidden" name="detailMessage" value="">
+                                        <button class="adm-btn adm-btn-ghost" type="submit">검토 큐 등록</button>
+                                    </form>
+                                        <form method="post" action="/TripTogether/admin/login-risk/security-assessments/4/apply-user-block">
+                                            <button class="adm-btn adm-btn-danger" type="submit">계정 차단 적용</button>
+                                        </form>
+                                </div>
+                        </td>
+                    </tr><tr data-row-id="5" data-subject-type="IP" data-decision-status="APPLIED" data-sort-source="IP|POLICY_AUTHORITY|위협 인텔리전스 매칭" data-sort-target="IP:203.0.113.88" data-sort-risk="CRITICAL|97" data-sort-recommend="IP 차단" data-sort-status="APPLIED" data-sort-date="202606261947">
+                        <td class="sra-cell-check"><input type="checkbox" class="js-sra-row-check" value="5" onchange="sraUpdateBulkCount()" aria-label="row-select"></td>
+                        <td>
+                            <div class="adm-security-assessment-primary">IP_REPUTATION</div>
+                            <div class="adm-page-muted">POLICY_AUTHORITY</div>
+                            <div class="adm-page-muted">위협 인텔리전스 매칭</div>
+                        </td>
+                        <td>
+                            <div>IP: 203.0.113.88</div>
+                            <div class="adm-page-muted">데이터센터 / 알 수 없음</div>
+                            <div class="adm-page-muted">최근 7일 1,204회 요청</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary"><span class="adm-badge" style="background:rgba(220,38,38,.16);border-color:rgba(248,113,113,.5);color:#fca5a5;">CRITICAL</span></div>
+                            <div class="adm-page-muted">위험점수 97 / 100</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary">IP 차단</div>
+                            <div class="adm-page-muted">WAF 동기화 완료</div>
+                        </td>
+                        <td><div class="adm-security-assessment-evidence">외부 위협 피드(AbuseIPDB 신뢰도 100%) 등재 IP. 다수 사이트에서 크리덴셜 스터핑 출처로 보고됨. 정책기관 권고에 따라 자동 차단 적용.</div></td>
+                        <td><span class="adm-badge" style="background:rgba(22,163,74,.16);border-color:rgba(74,222,128,.5);color:#86efac;">APPLIED</span></td>
+                        <td>2026-06-26 19:47</td>
+                        <td>
+                                <div class="adm-security-assessment-row-actions">
+                                    <form method="post" action="/TripTogether/admin/login-risk/security-assessments/5/create-review">
+                                        <input type="hidden" name="severity" value="">
+                                        <input type="hidden" name="summary" value="">
+                                        <input type="hidden" name="detailMessage" value="">
+                                        <button class="adm-btn adm-btn-ghost" type="submit">검토 큐 등록</button>
+                                    </form>
+                                </div>
+                        </td>
+                    </tr><tr data-row-id="6" data-subject-type="USER" data-decision-status="IGNORED" data-sort-source="USER|RULE_ALGORITHM|동시 세션 이상" data-sort-target="USER:14" data-sort-risk="LOW|29" data-sort-recommend="조치 불필요" data-sort-status="IGNORED" data-sort-date="202606261408">
+                        <td class="sra-cell-check"><input type="checkbox" class="js-sra-row-check" value="6" onchange="sraUpdateBulkCount()" aria-label="row-select"></td>
+                        <td>
+                            <div class="adm-security-assessment-primary">USER_SECURITY</div>
+                            <div class="adm-page-muted">RULE_ALGORITHM</div>
+                            <div class="adm-page-muted">동시 세션 이상</div>
+                        </td>
+                        <td>
+                            <div>USER: 14</div>
+                            <div class="adm-page-muted">lee***@gmail.com / 이수진</div>
+                            <div class="adm-page-muted">192.0.2.31</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary"><span class="adm-badge" style="background:rgba(15,118,110,.16);border-color:rgba(45,212,191,.5);color:#5eead4;">LOW</span></div>
+                            <div class="adm-page-muted">위험점수 29 / 100</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary">조치 불필요</div>
+                            <div class="adm-page-muted">오탐 처리</div>
+                        </td>
+                        <td><div class="adm-security-assessment-evidence">PC·모바일 2개 기기 동시 접속 탐지. 두 기기 모두 등록된 신뢰 디바이스이며 동일 도시 IP — 정상 사용 패턴으로 판단해 무시 처리.</div></td>
+                        <td><span class="adm-badge" style="background:rgba(71,85,105,.28);border-color:rgba(148,163,184,.4);color:#cbd5e1;">IGNORED</span></td>
+                        <td>2026-06-26 14:08</td>
+                        <td>
+                                <div class="adm-security-assessment-row-actions">
+                                    <form method="post" action="/TripTogether/admin/login-risk/security-assessments/6/create-review">
+                                        <input type="hidden" name="severity" value="">
+                                        <input type="hidden" name="summary" value="">
+                                        <input type="hidden" name="detailMessage" value="">
+                                        <button class="adm-btn adm-btn-ghost" type="submit">검토 큐 등록</button>
+                                    </form>
+                                        <form method="post" action="/TripTogether/admin/login-risk/security-assessments/6/apply-user-block">
+                                            <button class="adm-btn adm-btn-danger" type="submit">계정 차단 적용</button>
+                                        </form>
+                                </div>
+                        </td>
+                    </tr><tr data-row-id="7" data-subject-type="POST" data-decision-status="PROPOSED" data-sort-source="CONTENT|AI_MODEL|혐오 표현 탐지" data-sort-target="POST:42" data-sort-risk="HIGH|72" data-sort-recommend="게시글 블라인드" data-sort-status="PROPOSED" data-sort-date="202606252231">
+                        <td class="sra-cell-check"><input type="checkbox" class="js-sra-row-check" value="7" onchange="sraUpdateBulkCount()" aria-label="row-select"></td>
+                        <td>
+                            <div class="adm-security-assessment-primary">CONTENT_MODERATION</div>
+                            <div class="adm-page-muted">AI_MODEL</div>
+                            <div class="adm-page-muted">혐오 표현 탐지</div>
+                        </td>
+                        <td>
+                            <div>POST: 42</div>
+                            <div class="adm-page-muted">choi***@daum.net / 최영호</div>
+                            <div class="adm-page-muted">커뮤니티 댓글</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary"><span class="adm-badge" style="background:rgba(234,88,12,.16);border-color:rgba(251,146,60,.5);color:#fdba74;">HIGH</span></div>
+                            <div class="adm-page-muted">위험점수 72 / 100</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary">게시글 블라인드</div>
+                            <div class="adm-page-muted">작성자 경고</div>
+                        </td>
+                        <td><div class="adm-security-assessment-evidence">특정 집단 대상 비하 표현 다수 검출. 안전성 분류기 toxicity 0.84. 신고 3건 누적 — 자동 블라인드 후 운영자 최종 확인 권고.</div></td>
+                        <td><span class="adm-badge" style="background:rgba(217,119,6,.16);border-color:rgba(251,191,36,.5);color:#fbbf24;">PROPOSED</span></td>
+                        <td>2026-06-25 22:31</td>
+                        <td>
+                                <div class="adm-security-assessment-row-actions">
+                                    <form method="post" action="/TripTogether/admin/login-risk/security-assessments/7/create-review">
+                                        <input type="hidden" name="severity" value="">
+                                        <input type="hidden" name="summary" value="">
+                                        <input type="hidden" name="detailMessage" value="">
+                                        <button class="adm-btn adm-btn-ghost" type="submit">검토 큐 등록</button>
+                                    </form>
+                                </div>
+                        </td>
+                    </tr><tr data-row-id="8" data-subject-type="USER" data-decision-status="PROPOSED" data-sort-source="USER|ASSESSMENT_PIPELINE|크리덴셜 유출 매칭" data-sort-target="USER:27" data-sort-risk="HIGH|79" data-sort-recommend="비밀번호 재설정 강제" data-sort-status="PROPOSED" data-sort-date="202606250915">
+                        <td class="sra-cell-check"><input type="checkbox" class="js-sra-row-check" value="8" onchange="sraUpdateBulkCount()" aria-label="row-select"></td>
+                        <td>
+                            <div class="adm-security-assessment-primary">USER_SECURITY</div>
+                            <div class="adm-page-muted">ASSESSMENT_PIPELINE</div>
+                            <div class="adm-page-muted">크리덴셜 유출 매칭</div>
+                        </td>
+                        <td>
+                            <div>USER: 27</div>
+                            <div class="adm-page-muted">jung***@gmail.com / 정다은</div>
+                            <div class="adm-page-muted">198.51.100.77</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary"><span class="adm-badge" style="background:rgba(234,88,12,.16);border-color:rgba(251,146,60,.5);color:#fdba74;">HIGH</span></div>
+                            <div class="adm-page-muted">위험점수 79 / 100</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary">비밀번호 재설정 강제</div>
+                            <div class="adm-page-muted">세션 전체 만료</div>
+                        </td>
+                        <td><div class="adm-security-assessment-evidence">외부 유출 자격증명 DB(HIBP)에서 동일 이메일·해시 일치. 계정 탈취 위험으로 분류 — 강제 비밀번호 재설정 및 활성 세션 무효화 권고.</div></td>
+                        <td><span class="adm-badge" style="background:rgba(217,119,6,.16);border-color:rgba(251,191,36,.5);color:#fbbf24;">PROPOSED</span></td>
+                        <td>2026-06-25 09:15</td>
+                        <td>
+                                <div class="adm-security-assessment-row-actions">
+                                    <form method="post" action="/TripTogether/admin/login-risk/security-assessments/8/create-review">
+                                        <input type="hidden" name="severity" value="">
+                                        <input type="hidden" name="summary" value="">
+                                        <input type="hidden" name="detailMessage" value="">
+                                        <button class="adm-btn adm-btn-ghost" type="submit">검토 큐 등록</button>
+                                    </form>
+                                        <form method="post" action="/TripTogether/admin/login-risk/security-assessments/8/apply-user-block">
+                                            <button class="adm-btn adm-btn-danger" type="submit">계정 차단 적용</button>
+                                        </form>
+                                </div>
+                        </td>
+                    </tr><tr data-row-id="9" data-subject-type="IP" data-decision-status="PENDING" data-sort-source="IP|RULE_ALGORITHM|레이트 리밋 초과" data-sort-target="IP:192.0.2.205" data-sort-risk="MEDIUM|54" data-sort-recommend="레이트 리밋 강화" data-sort-status="PENDING" data-sort-date="202606241636">
+                        <td class="sra-cell-check"><input type="checkbox" class="js-sra-row-check" value="9" onchange="sraUpdateBulkCount()" aria-label="row-select"></td>
+                        <td>
+                            <div class="adm-security-assessment-primary">IP_REPUTATION</div>
+                            <div class="adm-page-muted">RULE_ALGORITHM</div>
+                            <div class="adm-page-muted">레이트 리밋 초과</div>
+                        </td>
+                        <td>
+                            <div>IP: 192.0.2.205</div>
+                            <div class="adm-page-muted">국내 ISP / 대한민국</div>
+                            <div class="adm-page-muted">1분당 420 요청</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary"><span class="adm-badge" style="background:rgba(202,138,4,.16);border-color:rgba(250,204,21,.5);color:#fde047;">MEDIUM</span></div>
+                            <div class="adm-page-muted">위험점수 54 / 100</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary">레이트 리밋 강화</div>
+                            <div class="adm-page-muted">차단 보류 / 관찰</div>
+                        </td>
+                        <td><div class="adm-security-assessment-evidence">검색 API에 짧은 시간 집중 요청. 봇 시그니처 미확인이며 정상 사용자 가능성 존재 — 즉시 차단 대신 임시 레이트 리밋 적용 후 관찰 권고.</div></td>
+                        <td><span class="adm-badge" style="background:rgba(37,99,235,.16);border-color:rgba(96,165,250,.5);color:#93c5fd;">PENDING</span></td>
+                        <td>2026-06-24 16:36</td>
+                        <td>
+                                <div class="adm-security-assessment-row-actions">
+                                    <form method="post" action="/TripTogether/admin/login-risk/security-assessments/9/create-review">
+                                        <input type="hidden" name="severity" value="">
+                                        <input type="hidden" name="summary" value="">
+                                        <input type="hidden" name="detailMessage" value="">
+                                        <button class="adm-btn adm-btn-ghost" type="submit">검토 큐 등록</button>
+                                    </form>
+                                </div>
+                        </td>
+                    </tr><tr data-row-id="10" data-subject-type="USER" data-decision-status="IGNORED" data-sort-source="LOGIN|AI_MODEL|신규 기기 로그인" data-sort-target="USER:6" data-sort-risk="LOW|22" data-sort-recommend="조치 불필요" data-sort-status="IGNORED" data-sort-date="202606240803">
+                        <td class="sra-cell-check"><input type="checkbox" class="js-sra-row-check" value="10" onchange="sraUpdateBulkCount()" aria-label="row-select"></td>
+                        <td>
+                            <div class="adm-security-assessment-primary">LOGIN_RISK</div>
+                            <div class="adm-page-muted">AI_MODEL</div>
+                            <div class="adm-page-muted">신규 기기 로그인</div>
+                        </td>
+                        <td>
+                            <div>USER: 6</div>
+                            <div class="adm-page-muted">han***@kakao.com / 한지우</div>
+                            <div class="adm-page-muted">192.0.2.9</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary"><span class="adm-badge" style="background:rgba(15,118,110,.16);border-color:rgba(45,212,191,.5);color:#5eead4;">LOW</span></div>
+                            <div class="adm-page-muted">위험점수 22 / 100</div>
+                        </td>
+                        <td>
+                            <div class="adm-security-assessment-primary">조치 불필요</div>
+                            <div class="adm-page-muted">정상 패턴</div>
+                        </td>
+                        <td><div class="adm-security-assessment-evidence">신규 기기에서 로그인했으나 동일 도시·통신사 IP, 이메일 OTP 인증 정상 통과. 위험 요소 낮음으로 판단해 무시 처리.</div></td>
+                        <td><span class="adm-badge" style="background:rgba(71,85,105,.28);border-color:rgba(148,163,184,.4);color:#cbd5e1;">IGNORED</span></td>
+                        <td>2026-06-24 08:03</td>
+                        <td>
+                                <div class="adm-security-assessment-row-actions">
+                                    <form method="post" action="/TripTogether/admin/login-risk/security-assessments/10/create-review">
+                                        <input type="hidden" name="severity" value="">
+                                        <input type="hidden" name="summary" value="">
+                                        <input type="hidden" name="detailMessage" value="">
+                                        <button class="adm-btn adm-btn-ghost" type="submit">검토 큐 등록</button>
+                                    </form>
+                                        <form method="post" action="/TripTogether/admin/login-risk/security-assessments/10/apply-user-block">
+                                            <button class="adm-btn adm-btn-danger" type="submit">계정 차단 적용</button>
+                                        </form>
+                                </div>
                         </td>
                     </tr></tbody>
             </table>

@@ -431,7 +431,7 @@ window.ADMIN_TRANSLATION_UI = {
       <form id="emailTokenSearchForm" method="get" action="/TripTogether/admin/email-tokens">
         <input type="hidden" name="page" value="1">
         <input type="hidden" name="size" value="30">
-        <input type="hidden" name="mode" value="SERVER">
+        <input type="hidden" name="mode" value="CLIENT">
         <input type="hidden" name="sortField" value="">
         <input type="hidden" name="sortDir" value="DESC">
         <input type="hidden" name="dateFilter" value="">
@@ -497,8 +497,8 @@ window.ADMIN_TRANSLATION_UI = {
           <label class="adm-email-tool-item adm-email-tool adm-email-mode-tool">
             <span class="adm-email-tool-label">로드 방식</span>
             <select class="adm-select" id="emailTokenModeSelect" title="로드 방식" onchange="changeEmailTokenMode(this.value)">
-              <option value="CLIENT" title="한 번에 전부 받아 클라이언트에서 정렬·페이지 처리. 데이터 적을 때 즉답성 좋음.">전체 로드</option>
-              <option value="SERVER" title="정렬·페이지마다 DB 호출. 데이터 많을 때 메모리·전송량 절약." selected="">페이지 단위</option>
+              <option value="CLIENT" title="한 번에 전부 받아 클라이언트에서 정렬·페이지 처리. 데이터 적을 때 즉답성 좋음." selected="">전체 로드</option>
+              <option value="SERVER" title="정렬·페이지마다 DB 호출. 데이터 많을 때 메모리·전송량 절약.">페이지 단위</option>
             </select>
           </label>
           <label class="adm-email-tool-item adm-email-tool adm-email-size-tool">
@@ -535,8 +535,137 @@ window.ADMIN_TRANSLATION_UI = {
           <th onclick="openFirstEmailTokenDetail()">상세 보기</th>
         </tr></thead>
         <tbody id="emailTokenRowsBody">
-        
-        <tr class="adm-local-empty"><td colspan="10" class="adm-local-empty-cell">조회 결과가 없습니다.</td></tr>
+
+        <tr class="js-email-token-row" data-created-at="2026-06-28 09:42:15" data-member="user_kimminji" data-purpose="RESET_PW" data-target-email="kim***@gmail.com" data-used="USED" data-used-at="2026-06-28 09:47:03" data-expires-at="2026-06-28 10:12:15" data-request-id="ec3f7a21" data-original-index="2">
+          <td class="adm-email-check-cell"><input type="checkbox" class="adm-check js-email-token-row-check" value="ec3f7a21" aria-label="행 선택"></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-date="2026-06-28" onclick="filterByDate(this.dataset.date)"><span>2026.06.28 09:42:15</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="user_kimminji" onclick="applyKeywordFilter(this)"><span>김민지</span><span class="adm-cell-link-note">@user_kimminji</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="RESET_PW" onclick="applySelectFilter(this)"><span>비밀번호 재설정</span><span class="adm-cell-link-note">동일 목적</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="kim***@gmail.com" onclick="applyKeywordFilter(this)"><span class="adm-cell-break">kim***@gmail.com</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="used" data-param-value="USED" onclick="applySelectFilter(this)"><span class="adm-tag-badge">사용됨</span></button></td>
+          <td><span>2026.06.28 09:47:03</span></td>
+          <td><span class="adm-cell-link-note">2026.06.28 10:12:15</span></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="ec3f7a21" onclick="applyKeywordFilter(this)"><span class="adm-flow-id">ec3f7a21···9bd4</span></button></td>
+          <td><button type="button" class="adm-row-btn detail" data-time="2026.06.28 09:42:15" data-user="김민지 (@user_kimminji)" data-purpose="비밀번호 재설정" data-email="kim***@gmail.com" data-used="사용됨" data-used-at="2026.06.28 09:47:03" data-expires-at="2026.06.28 10:12:15" data-request-id="ec3f7a21-7c5e-4a18-9f02-1d6b3e0a9bd4" data-flow-trace="flow-2026062809-a31f" onclick="openTokenDetail(this)">상세 보기</button></td>
+        </tr>
+
+        <tr class="js-email-token-row" data-created-at="2026-06-28 14:08:51" data-member="user_parkjh" data-purpose="VERIFY" data-target-email="park***@naver.com" data-used="USED" data-used-at="2026-06-28 14:10:22" data-expires-at="2026-06-29 14:08:51" data-request-id="a91be004" data-original-index="1">
+          <td class="adm-email-check-cell"><input type="checkbox" class="adm-check js-email-token-row-check" value="a91be004" aria-label="행 선택"></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-date="2026-06-28" onclick="filterByDate(this.dataset.date)"><span>2026.06.28 14:08:51</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="user_parkjh" onclick="applyKeywordFilter(this)"><span>박지훈</span><span class="adm-cell-link-note">@user_parkjh</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="VERIFY" onclick="applySelectFilter(this)"><span>이메일 인증</span><span class="adm-cell-link-note">동일 목적</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="park***@naver.com" onclick="applyKeywordFilter(this)"><span class="adm-cell-break">park***@naver.com</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="used" data-param-value="USED" onclick="applySelectFilter(this)"><span class="adm-tag-badge">사용됨</span></button></td>
+          <td><span>2026.06.28 14:10:22</span></td>
+          <td><span class="adm-cell-link-note">2026.06.29 14:08:51</span></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="a91be004" onclick="applyKeywordFilter(this)"><span class="adm-flow-id">a91be004···c7e2</span></button></td>
+          <td><button type="button" class="adm-row-btn detail" data-time="2026.06.28 14:08:51" data-user="박지훈 (@user_parkjh)" data-purpose="이메일 인증" data-email="park***@naver.com" data-used="사용됨" data-used-at="2026.06.28 14:10:22" data-expires-at="2026.06.29 14:08:51" data-request-id="a91be004-2f3a-4d9c-8e10-77b0a5f4c7e2" data-flow-trace="flow-2026062814-b88c" onclick="openTokenDetail(this)">상세 보기</button></td>
+        </tr>
+
+        <tr class="js-email-token-row" data-created-at="2026-06-27 21:33:10" data-member="user_leesy" data-purpose="FIND_ID" data-target-email="lee***@daum.net" data-used="UNUSED" data-used-at="" data-expires-at="2026-06-27 21:58:10" data-request-id="5d72c8af" data-original-index="3">
+          <td class="adm-email-check-cell"><input type="checkbox" class="adm-check js-email-token-row-check" value="5d72c8af" aria-label="행 선택"></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-date="2026-06-27" onclick="filterByDate(this.dataset.date)"><span>2026.06.27 21:33:10</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="user_leesy" onclick="applyKeywordFilter(this)"><span>이서연</span><span class="adm-cell-link-note">@user_leesy</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="FIND_ID" onclick="applySelectFilter(this)"><span>아이디 찾기</span><span class="adm-cell-link-note">동일 목적</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="lee***@daum.net" onclick="applyKeywordFilter(this)"><span class="adm-cell-break">lee***@daum.net</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="used" data-param-value="UNUSED" onclick="applySelectFilter(this)"><span class="adm-cell-link-note">미사용 · 만료</span></button></td>
+          <td><span class="adm-cell-link-note">-</span></td>
+          <td><span class="adm-cell-link-note">2026.06.27 21:58:10</span></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="5d72c8af" onclick="applyKeywordFilter(this)"><span class="adm-flow-id">5d72c8af···40a1</span></button></td>
+          <td><button type="button" class="adm-row-btn detail" data-time="2026.06.27 21:33:10" data-user="이서연 (@user_leesy)" data-purpose="아이디 찾기" data-email="lee***@daum.net" data-used="미사용 (만료됨)" data-used-at="" data-expires-at="2026.06.27 21:58:10" data-request-id="5d72c8af-9b1d-4c66-a2f7-3e5901cb40a1" data-flow-trace="flow-2026062721-c2d9" onclick="openTokenDetail(this)">상세 보기</button></td>
+        </tr>
+
+        <tr class="js-email-token-row" data-created-at="2026-06-29 08:17:44" data-member="user_jeongdh" data-purpose="PROFILE_EMAIL" data-target-email="jeong***@kakao.com" data-used="UNUSED" data-used-at="" data-expires-at="2026-06-29 08:42:44" data-request-id="bf60e913" data-original-index="0">
+          <td class="adm-email-check-cell"><input type="checkbox" class="adm-check js-email-token-row-check" value="bf60e913" aria-label="행 선택"></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-date="2026-06-29" onclick="filterByDate(this.dataset.date)"><span>2026.06.29 08:17:44</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="user_jeongdh" onclick="applyKeywordFilter(this)"><span>정도현</span><span class="adm-cell-link-note">@user_jeongdh</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="PROFILE_EMAIL" onclick="applySelectFilter(this)"><span>프로필 이메일 변경</span><span class="adm-cell-link-note">동일 목적</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="jeong***@kakao.com" onclick="applyKeywordFilter(this)"><span class="adm-cell-break">jeong***@kakao.com</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="used" data-param-value="UNUSED" onclick="applySelectFilter(this)"><span class="adm-cell-link-note">미사용 · 대기</span></button></td>
+          <td><span class="adm-cell-link-note">-</span></td>
+          <td><span class="adm-cell-link-note">2026.06.29 08:42:44</span></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="bf60e913" onclick="applyKeywordFilter(this)"><span class="adm-flow-id">bf60e913···18f5</span></button></td>
+          <td><button type="button" class="adm-row-btn detail" data-time="2026.06.29 08:17:44" data-user="정도현 (@user_jeongdh)" data-purpose="프로필 이메일 변경" data-email="jeong***@kakao.com" data-used="미사용 (대기중)" data-used-at="" data-expires-at="2026.06.29 08:42:44" data-request-id="bf60e913-44a2-4b7e-9c81-0af6d23718f5" data-flow-trace="flow-2026062908-d4a7" onclick="openTokenDetail(this)">상세 보기</button></td>
+        </tr>
+
+        <tr class="js-email-token-row" data-created-at="2026-06-26 16:55:02" data-member="user_choihn" data-purpose="RESET_PW" data-target-email="choi***@gmail.com" data-used="USED" data-used-at="2026-06-26 17:01:38" data-expires-at="2026-06-26 17:20:02" data-request-id="73a4f1cd" data-original-index="4">
+          <td class="adm-email-check-cell"><input type="checkbox" class="adm-check js-email-token-row-check" value="73a4f1cd" aria-label="행 선택"></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-date="2026-06-26" onclick="filterByDate(this.dataset.date)"><span>2026.06.26 16:55:02</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="user_choihn" onclick="applyKeywordFilter(this)"><span>최하늘</span><span class="adm-cell-link-note">@user_choihn</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="RESET_PW" onclick="applySelectFilter(this)"><span>비밀번호 재설정</span><span class="adm-cell-link-note">동일 목적</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="choi***@gmail.com" onclick="applyKeywordFilter(this)"><span class="adm-cell-break">choi***@gmail.com</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="used" data-param-value="USED" onclick="applySelectFilter(this)"><span class="adm-tag-badge">사용됨</span></button></td>
+          <td><span>2026.06.26 17:01:38</span></td>
+          <td><span class="adm-cell-link-note">2026.06.26 17:20:02</span></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="73a4f1cd" onclick="applyKeywordFilter(this)"><span class="adm-flow-id">73a4f1cd···6b30</span></button></td>
+          <td><button type="button" class="adm-row-btn detail" data-time="2026.06.26 16:55:02" data-user="최하늘 (@user_choihn)" data-purpose="비밀번호 재설정" data-email="choi***@gmail.com" data-used="사용됨" data-used-at="2026.06.26 17:01:38" data-expires-at="2026.06.26 17:20:02" data-request-id="73a4f1cd-5e90-4a23-b1f8-2c44e9d76b30" data-flow-trace="flow-2026062616-e5b1" onclick="openTokenDetail(this)">상세 보기</button></td>
+        </tr>
+
+        <tr class="js-email-token-row" data-created-at="2026-06-26 11:20:37" data-member="user_yoonsa" data-purpose="VERIFY" data-target-email="yoon***@nate.com" data-used="UNUSED" data-used-at="" data-expires-at="2026-06-27 11:20:37" data-request-id="2c8e5b6f" data-original-index="5">
+          <td class="adm-email-check-cell"><input type="checkbox" class="adm-check js-email-token-row-check" value="2c8e5b6f" aria-label="행 선택"></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-date="2026-06-26" onclick="filterByDate(this.dataset.date)"><span>2026.06.26 11:20:37</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="user_yoonsa" onclick="applyKeywordFilter(this)"><span>윤서아</span><span class="adm-cell-link-note">@user_yoonsa</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="VERIFY" onclick="applySelectFilter(this)"><span>이메일 인증</span><span class="adm-cell-link-note">동일 목적</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="yoon***@nate.com" onclick="applyKeywordFilter(this)"><span class="adm-cell-break">yoon***@nate.com</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="used" data-param-value="UNUSED" onclick="applySelectFilter(this)"><span class="adm-cell-link-note">미사용 · 만료</span></button></td>
+          <td><span class="adm-cell-link-note">-</span></td>
+          <td><span class="adm-cell-link-note">2026.06.27 11:20:37</span></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="2c8e5b6f" onclick="applyKeywordFilter(this)"><span class="adm-flow-id">2c8e5b6f···aa72</span></button></td>
+          <td><button type="button" class="adm-row-btn detail" data-time="2026.06.26 11:20:37" data-user="윤서아 (@user_yoonsa)" data-purpose="이메일 인증" data-email="yoon***@nate.com" data-used="미사용 (만료됨)" data-used-at="" data-expires-at="2026.06.27 11:20:37" data-request-id="2c8e5b6f-1a07-4f55-93c2-6d8b0e34aa72" data-flow-trace="flow-2026062611-f0c2" onclick="openTokenDetail(this)">상세 보기</button></td>
+        </tr>
+
+        <tr class="js-email-token-row" data-created-at="2026-06-25 19:48:29" data-member="user_kanghj" data-purpose="RESET_PW" data-target-email="kang***@gmail.com" data-used="USED" data-used-at="2026-06-25 19:52:14" data-expires-at="2026-06-25 20:13:29" data-request-id="9e1d307b" data-original-index="6">
+          <td class="adm-email-check-cell"><input type="checkbox" class="adm-check js-email-token-row-check" value="9e1d307b" aria-label="행 선택"></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-date="2026-06-25" onclick="filterByDate(this.dataset.date)"><span>2026.06.25 19:48:29</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="user_kanghj" onclick="applyKeywordFilter(this)"><span>강현주</span><span class="adm-cell-link-note">@user_kanghj</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="RESET_PW" onclick="applySelectFilter(this)"><span>비밀번호 재설정</span><span class="adm-cell-link-note">동일 목적</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="kang***@gmail.com" onclick="applyKeywordFilter(this)"><span class="adm-cell-break">kang***@gmail.com</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="used" data-param-value="USED" onclick="applySelectFilter(this)"><span class="adm-tag-badge">사용됨</span></button></td>
+          <td><span>2026.06.25 19:52:14</span></td>
+          <td><span class="adm-cell-link-note">2026.06.25 20:13:29</span></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="9e1d307b" onclick="applyKeywordFilter(this)"><span class="adm-flow-id">9e1d307b···51c9</span></button></td>
+          <td><button type="button" class="adm-row-btn detail" data-time="2026.06.25 19:48:29" data-user="강현주 (@user_kanghj)" data-purpose="비밀번호 재설정" data-email="kang***@gmail.com" data-used="사용됨" data-used-at="2026.06.25 19:52:14" data-expires-at="2026.06.25 20:13:29" data-request-id="9e1d307b-6c44-4e91-8a30-1f7b9c2d51c9" data-flow-trace="flow-2026062519-a6d3" onclick="openTokenDetail(this)">상세 보기</button></td>
+        </tr>
+
+        <tr class="js-email-token-row" data-created-at="2026-06-25 10:05:53" data-member="user_imjw" data-purpose="FIND_ID" data-target-email="im***@hanmail.net" data-used="USED" data-used-at="2026-06-25 10:08:41" data-expires-at="2026-06-25 10:30:53" data-request-id="48fa9026" data-original-index="7">
+          <td class="adm-email-check-cell"><input type="checkbox" class="adm-check js-email-token-row-check" value="48fa9026" aria-label="행 선택"></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-date="2026-06-25" onclick="filterByDate(this.dataset.date)"><span>2026.06.25 10:05:53</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="user_imjw" onclick="applyKeywordFilter(this)"><span>임재원</span><span class="adm-cell-link-note">@user_imjw</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="FIND_ID" onclick="applySelectFilter(this)"><span>아이디 찾기</span><span class="adm-cell-link-note">동일 목적</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="im***@hanmail.net" onclick="applyKeywordFilter(this)"><span class="adm-cell-break">im***@hanmail.net</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="used" data-param-value="USED" onclick="applySelectFilter(this)"><span class="adm-tag-badge">사용됨</span></button></td>
+          <td><span>2026.06.25 10:08:41</span></td>
+          <td><span class="adm-cell-link-note">2026.06.25 10:30:53</span></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="48fa9026" onclick="applyKeywordFilter(this)"><span class="adm-flow-id">48fa9026···7d14</span></button></td>
+          <td><button type="button" class="adm-row-btn detail" data-time="2026.06.25 10:05:53" data-user="임재원 (@user_imjw)" data-purpose="아이디 찾기" data-email="im***@hanmail.net" data-used="사용됨" data-used-at="2026.06.25 10:08:41" data-expires-at="2026.06.25 10:30:53" data-request-id="48fa9026-3b18-4c72-9e05-8a61f3b07d14" data-flow-trace="flow-2026062510-b7e4" onclick="openTokenDetail(this)">상세 보기</button></td>
+        </tr>
+
+        <tr class="js-email-token-row" data-created-at="2026-06-24 22:14:08" data-member="user_songmr" data-purpose="PROFILE_EMAIL" data-target-email="song***@gmail.com" data-used="USED" data-used-at="2026-06-24 22:19:55" data-expires-at="2026-06-24 22:39:08" data-request-id="6b0c44e2" data-original-index="8">
+          <td class="adm-email-check-cell"><input type="checkbox" class="adm-check js-email-token-row-check" value="6b0c44e2" aria-label="행 선택"></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-date="2026-06-24" onclick="filterByDate(this.dataset.date)"><span>2026.06.24 22:14:08</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="user_songmr" onclick="applyKeywordFilter(this)"><span>송민서</span><span class="adm-cell-link-note">@user_songmr</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="PROFILE_EMAIL" onclick="applySelectFilter(this)"><span>프로필 이메일 변경</span><span class="adm-cell-link-note">동일 목적</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="song***@gmail.com" onclick="applyKeywordFilter(this)"><span class="adm-cell-break">song***@gmail.com</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="used" data-param-value="USED" onclick="applySelectFilter(this)"><span class="adm-tag-badge">사용됨</span></button></td>
+          <td><span>2026.06.24 22:19:55</span></td>
+          <td><span class="adm-cell-link-note">2026.06.24 22:39:08</span></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="6b0c44e2" onclick="applyKeywordFilter(this)"><span class="adm-flow-id">6b0c44e2···e8a3</span></button></td>
+          <td><button type="button" class="adm-row-btn detail" data-time="2026.06.24 22:14:08" data-user="송민서 (@user_songmr)" data-purpose="프로필 이메일 변경" data-email="song***@gmail.com" data-used="사용됨" data-used-at="2026.06.24 22:19:55" data-expires-at="2026.06.24 22:39:08" data-request-id="6b0c44e2-7f31-4a86-90d4-5c12b8a9e8a3" data-flow-trace="flow-2026062422-c8f5" onclick="openTokenDetail(this)">상세 보기</button></td>
+        </tr>
+
+        <tr class="js-email-token-row" data-created-at="2026-06-24 13:37:21" data-member="user_hanjy" data-purpose="VERIFY" data-target-email="han***@gmail.com" data-used="USED" data-used-at="2026-06-24 13:39:02" data-expires-at="2026-06-25 13:37:21" data-request-id="d05f7a18" data-original-index="9">
+          <td class="adm-email-check-cell"><input type="checkbox" class="adm-check js-email-token-row-check" value="d05f7a18" aria-label="행 선택"></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-date="2026-06-24" onclick="filterByDate(this.dataset.date)"><span>2026.06.24 13:37:21</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="user_hanjy" onclick="applyKeywordFilter(this)"><span>한지영</span><span class="adm-cell-link-note">@user_hanjy</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="VERIFY" onclick="applySelectFilter(this)"><span>이메일 인증</span><span class="adm-cell-link-note">동일 목적</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="han***@gmail.com" onclick="applyKeywordFilter(this)"><span class="adm-cell-break">han***@gmail.com</span></button></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-param-name="used" data-param-value="USED" onclick="applySelectFilter(this)"><span class="adm-tag-badge">사용됨</span></button></td>
+          <td><span>2026.06.24 13:39:02</span></td>
+          <td><span class="adm-cell-link-note">2026.06.25 13:37:21</span></td>
+          <td onclick="openEmailTokenCellAction(event, this)"><button type="button" class="adm-cell-link" data-keyword="d05f7a18" onclick="applyKeywordFilter(this)"><span class="adm-flow-id">d05f7a18···3f57</span></button></td>
+          <td><button type="button" class="adm-row-btn detail" data-time="2026.06.24 13:37:21" data-user="한지영 (@user_hanjy)" data-purpose="이메일 인증" data-email="han***@gmail.com" data-used="사용됨" data-used-at="2026.06.24 13:39:02" data-expires-at="2026.06.25 13:37:21" data-request-id="d05f7a18-8e22-4b40-a7c9-9b03f1de3f57" data-flow-trace="flow-2026062413-d9a6" onclick="openTokenDetail(this)">상세 보기</button></td>
+        </tr>
+
       </tbody></table>
     </div>
     <div class="adm-local-pagination adm-email-pagination" data-section="emailVerificationTokens" id="emailTokenPaging">
@@ -569,7 +698,7 @@ var EMAIL_TOKEN_MSG = {
   noResults: '조회 결과가 없습니다.'
 };
 var emailTokenState = {
-  mode: 'SERVER' === 'CLIENT' ? 'CLIENT' : 'SERVER',
+  mode: 'CLIENT' === 'CLIENT' ? 'CLIENT' : 'SERVER',
   page: Number('1' || 1) || 1,
   pageSize: Number('30' || 30) || 30,
   sortField: '',

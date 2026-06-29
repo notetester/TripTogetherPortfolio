@@ -6,6 +6,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../resources/css/admin/admin.css">
+    <style>
+      /* 데모 레이아웃 보정: 활동 로그 표 각 행에 박혀 있던 인라인 번역 위젯(.adm-tr-inline)이
+         항상 펼쳐져 행이 세로로 길어지고 페이지가 길쭉해지는 문제 해결.
+         번역 위젯은 운영 환경 전용 기능이라 정적 데모에서는 숨기고, 상세 요약은
+         "상세 보기" 모달에서 그대로 확인 가능. */
+      .adm-activity-section-table .adm-tr-inline { display: none !important; }
+      /* 표 행 높이를 한 줄로 정렬 — 셀 내용 세로 가운데 정렬 */
+      .adm-activity-section-table tbody td { vertical-align: middle; }
+      /* 코드 보조 메타(provider/auth-event)는 한 줄 유지 */
+      .adm-activity-section-table .adm-activity-code-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      /* 가로 스크롤 보장(고정 1560px 폭) */
+      .adm-table-wrap { overflow-x: auto; }
+    </style>
 </head>
 <body>
 <script>
@@ -586,8 +599,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.24" data-default-tab="activity">
+                    <span class="adm-activity-ip">203.0.113.24</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -603,7 +616,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:40" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/email-tokens" data-method="GET" data-status="200" data-response-ms="392" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#emailVerifications" data-ip="0:0:0:0:0:0:0:1" data-request-id="f8f79a62-83ed-457b-9903-6412865591fb" data-flow-trace="f8f79a62-83ed-457b-9903-6412865591fb" data-handler="AdminController#emailVerifications" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:40" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/email-tokens" data-method="GET" data-status="200" data-response-ms="392" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#emailVerifications" data-ip="203.0.113.24" data-request-id="f8f79a62-83ed-457b-9903-6412865591fb" data-flow-trace="f8f79a62-83ed-457b-9903-6412865591fb" data-handler="AdminController#emailVerifications" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -706,8 +719,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.24" data-default-tab="activity">
+                    <span class="adm-activity-ip">203.0.113.24</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -723,7 +736,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:37" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/email-verifications" data-method="GET" data-status="200" data-response-ms="450" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#emailVerificationRequests" data-ip="0:0:0:0:0:0:0:1" data-request-id="686ae98d-f431-4623-a053-bf67fb3ed06b" data-flow-trace="686ae98d-f431-4623-a053-bf67fb3ed06b" data-handler="AdminController#emailVerificationRequests" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:37" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/email-verifications" data-method="GET" data-status="200" data-response-ms="450" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#emailVerificationRequests" data-ip="203.0.113.24" data-request-id="686ae98d-f431-4623-a053-bf67fb3ed06b" data-flow-trace="686ae98d-f431-4623-a053-bf67fb3ed06b" data-handler="AdminController#emailVerificationRequests" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -826,8 +839,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.24" data-default-tab="activity">
+                    <span class="adm-activity-ip">203.0.113.24</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -843,7 +856,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:34" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/security/fragment" data-method="GET" data-status="200" data-response-ms="122" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#securityAuditRowsFragment" data-ip="0:0:0:0:0:0:0:1" data-request-id="98758a8f-733c-40b0-89ba-3e63f2733561" data-flow-trace="98758a8f-733c-40b0-89ba-3e63f2733561" data-handler="AdminController#securityAuditRowsFragment" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:34" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/security/fragment" data-method="GET" data-status="200" data-response-ms="122" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#securityAuditRowsFragment" data-ip="203.0.113.24" data-request-id="98758a8f-733c-40b0-89ba-3e63f2733561" data-flow-trace="98758a8f-733c-40b0-89ba-3e63f2733561" data-handler="AdminController#securityAuditRowsFragment" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -946,8 +959,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="198.51.100.17" data-default-tab="activity">
+                    <span class="adm-activity-ip">198.51.100.17</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -963,7 +976,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:31" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/security" data-method="GET" data-status="200" data-response-ms="8" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#securityAudit" data-ip="0:0:0:0:0:0:0:1" data-request-id="51c83496-35d2-41ce-906d-c9c8f6a3203b" data-flow-trace="51c83496-35d2-41ce-906d-c9c8f6a3203b" data-handler="AdminController#securityAudit" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:31" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/security" data-method="GET" data-status="200" data-response-ms="8" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#securityAudit" data-ip="198.51.100.17" data-request-id="51c83496-35d2-41ce-906d-c9c8f6a3203b" data-flow-trace="51c83496-35d2-41ce-906d-c9c8f6a3203b" data-handler="AdminController#securityAudit" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -1066,8 +1079,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="198.51.100.17" data-default-tab="activity">
+                    <span class="adm-activity-ip">198.51.100.17</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -1083,7 +1096,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:28" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/logins/fragment" data-method="GET" data-status="200" data-response-ms="129" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#loginAuditRowsFragment" data-ip="0:0:0:0:0:0:0:1" data-request-id="c7d4c4c4-3aeb-478a-9f2e-530c86997e20" data-flow-trace="c7d4c4c4-3aeb-478a-9f2e-530c86997e20" data-handler="AdminController#loginAuditRowsFragment" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:28" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/logins/fragment" data-method="GET" data-status="200" data-response-ms="129" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#loginAuditRowsFragment" data-ip="198.51.100.17" data-request-id="c7d4c4c4-3aeb-478a-9f2e-530c86997e20" data-flow-trace="c7d4c4c4-3aeb-478a-9f2e-530c86997e20" data-handler="AdminController#loginAuditRowsFragment" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -1186,8 +1199,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="192.0.2.88" data-default-tab="activity">
+                    <span class="adm-activity-ip">192.0.2.88</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -1203,7 +1216,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:25" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/logins" data-method="GET" data-status="200" data-response-ms="429" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#loginAudit" data-ip="0:0:0:0:0:0:0:1" data-request-id="6f1d3063-91a6-4eec-8cb7-bd87ff7e74ea" data-flow-trace="6f1d3063-91a6-4eec-8cb7-bd87ff7e74ea" data-handler="AdminController#loginAudit" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:25" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/logins" data-method="GET" data-status="200" data-response-ms="429" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#loginAudit" data-ip="192.0.2.88" data-request-id="6f1d3063-91a6-4eec-8cb7-bd87ff7e74ea" data-flow-trace="6f1d3063-91a6-4eec-8cb7-bd87ff7e74ea" data-handler="AdminController#loginAudit" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -1308,8 +1321,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.51" data-default-tab="activity">
+                    <span class="adm-activity-ip">203.0.113.51</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -1325,7 +1338,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:22" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/reports/1" data-method="GET" data-status="200" data-response-ms="343" data-success="SUCCESS" data-target=" / 1" data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#reportDetail" data-ip="0:0:0:0:0:0:0:1" data-request-id="70cccf16-f41e-4492-8b91-e9fde8025f36" data-flow-trace="70cccf16-f41e-4492-8b91-e9fde8025f36" data-handler="AdminController#reportDetail" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:22" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/reports/1" data-method="GET" data-status="200" data-response-ms="343" data-success="SUCCESS" data-target=" / 1" data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#reportDetail" data-ip="203.0.113.51" data-request-id="70cccf16-f41e-4492-8b91-e9fde8025f36" data-flow-trace="70cccf16-f41e-4492-8b91-e9fde8025f36" data-handler="AdminController#reportDetail" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -1420,16 +1433,16 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySelectFilter(this)">
-                <span>200</span>
-                <span class="adm-cell-link-note">성공</span>
+              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="FAIL" onclick="applySelectFilter(this)">
+                <span>403</span>
+                <span class="adm-cell-link-note">실패</span>
               </button>
             </td>
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.51" data-default-tab="activity">
+                    <span class="adm-activity-ip">203.0.113.51</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -1445,7 +1458,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="0:0:0:0:0:0:0:1" data-request-id="9a759d91-a03b-4cd6-a1cf-1a293fbd6591" data-flow-trace="9a759d91-a03b-4cd6-a1cf-1a293fbd6591" data-handler="NotificationSseController#subscribe" data-referer="./mypage/history" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="403" data-response-ms="0" data-success="FAIL" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="203.0.113.51" data-request-id="9a759d91-a03b-4cd6-a1cf-1a293fbd6591" data-flow-trace="9a759d91-a03b-4cd6-a1cf-1a293fbd6591" data-handler="NotificationSseController#subscribe" data-referer="./mypage/history" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -1466,8 +1479,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="7" data-default-tab="activity">여행가김철수</button>
-                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="7" data-default-tab="activity">@kimcs</button></div>
+                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="12" data-default-tab="activity">박서연</button>
+                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="12" data-default-tab="activity">@psy_trip</button></div>
                 
                 
               
@@ -1548,8 +1561,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="198.51.100.203" data-default-tab="activity">
+                    <span class="adm-activity-ip">198.51.100.203</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -1565,7 +1578,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="0:0:0:0:0:0:0:1" data-request-id="a7fe282b-6b9e-4311-b1a3-36d7a80711a1" data-flow-trace="a7fe282b-6b9e-4311-b1a3-36d7a80711a1" data-handler="NotificationSseController#subscribe" data-referer="./mypage/bookings/flights" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="박서연 (@psy_trip)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="198.51.100.203" data-request-id="a7fe282b-6b9e-4311-b1a3-36d7a80711a1" data-flow-trace="a7fe282b-6b9e-4311-b1a3-36d7a80711a1" data-handler="NotificationSseController#subscribe" data-referer="./mypage/bookings/flights" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -1660,16 +1673,16 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySelectFilter(this)">
-                <span>200</span>
-                <span class="adm-cell-link-note">성공</span>
+              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="FAIL" onclick="applySelectFilter(this)">
+                <span>429</span>
+                <span class="adm-cell-link-note">실패</span>
               </button>
             </td>
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="192.0.2.146" data-default-tab="activity">
+                    <span class="adm-activity-ip">192.0.2.146</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -1685,7 +1698,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="0:0:0:0:0:0:0:1" data-request-id="ad53923e-3225-4c29-9edc-851831bc8b43" data-flow-trace="ad53923e-3225-4c29-9edc-851831bc8b43" data-handler="NotificationSseController#subscribe" data-referer="./mypage/bookings/packages" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="429" data-response-ms="0" data-success="FAIL" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="192.0.2.146" data-request-id="ad53923e-3225-4c29-9edc-851831bc8b43" data-flow-trace="ad53923e-3225-4c29-9edc-851831bc8b43" data-handler="NotificationSseController#subscribe" data-referer="./mypage/bookings/packages" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -1706,8 +1719,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="7" data-default-tab="activity">여행가김철수</button>
-                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="7" data-default-tab="activity">@kimcs</button></div>
+                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="18" data-default-tab="activity">이도윤</button>
+                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="18" data-default-tab="activity">@dy.lee</button></div>
                 
                 
               
@@ -1788,8 +1801,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="192.0.2.146" data-default-tab="activity">
+                    <span class="adm-activity-ip">192.0.2.146</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -1805,7 +1818,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="0:0:0:0:0:0:0:1" data-request-id="0c982012-0d6f-49ec-a0f5-5f5f340aeaec" data-flow-trace="0c982012-0d6f-49ec-a0f5-5f5f340aeaec" data-handler="NotificationSseController#subscribe" data-referer="./mypage/edit-confirm?***" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="이도윤 (@dy.lee)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="192.0.2.146" data-request-id="0c982012-0d6f-49ec-a0f5-5f5f340aeaec" data-flow-trace="0c982012-0d6f-49ec-a0f5-5f5f340aeaec" data-handler="NotificationSseController#subscribe" data-referer="./mypage/edit-confirm?***" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -1900,16 +1913,16 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySelectFilter(this)">
-                <span>200</span>
-                <span class="adm-cell-link-note">성공</span>
+              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="FAIL" onclick="applySelectFilter(this)">
+                <span>401</span>
+                <span class="adm-cell-link-note">실패</span>
               </button>
             </td>
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.9" data-default-tab="activity">
+                    <span class="adm-activity-ip">203.0.113.9</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -1925,7 +1938,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="0:0:0:0:0:0:0:1" data-request-id="d4f1b348-9084-468c-87d6-575ab53ffc78" data-flow-trace="d4f1b348-9084-468c-87d6-575ab53ffc78" data-handler="NotificationSseController#subscribe" data-referer="./mypage/edit-confirm" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="401" data-response-ms="0" data-success="FAIL" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="203.0.113.9" data-request-id="d4f1b348-9084-468c-87d6-575ab53ffc78" data-flow-trace="d4f1b348-9084-468c-87d6-575ab53ffc78" data-handler="NotificationSseController#subscribe" data-referer="./mypage/edit-confirm" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -1946,8 +1959,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="7" data-default-tab="activity">여행가김철수</button>
-                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="7" data-default-tab="activity">@kimcs</button></div>
+                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="23" data-default-tab="activity">최지우</button>
+                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="23" data-default-tab="activity">@jiwoo_c</button></div>
                 
                 
               
@@ -2028,8 +2041,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="198.51.100.77" data-default-tab="activity">
+                    <span class="adm-activity-ip">198.51.100.77</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -2045,7 +2058,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="0:0:0:0:0:0:0:1" data-request-id="8b1467ba-7ea5-42c2-b28b-b141ac96baf4" data-flow-trace="8b1467ba-7ea5-42c2-b28b-b141ac96baf4" data-handler="NotificationSseController#subscribe" data-referer="./mypage" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="최지우 (@jiwoo_c)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="198.51.100.77" data-request-id="8b1467ba-7ea5-42c2-b28b-b141ac96baf4" data-flow-trace="8b1467ba-7ea5-42c2-b28b-b141ac96baf4" data-handler="NotificationSseController#subscribe" data-referer="./mypage" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -2140,16 +2153,16 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySelectFilter(this)">
-                <span>200</span>
-                <span class="adm-cell-link-note">성공</span>
+              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="FAIL" onclick="applySelectFilter(this)">
+                <span>400</span>
+                <span class="adm-cell-link-note">실패</span>
               </button>
             </td>
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="198.51.100.77" data-default-tab="activity">
+                    <span class="adm-activity-ip">198.51.100.77</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -2165,7 +2178,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="0:0:0:0:0:0:0:1" data-request-id="7a2bb384-028f-476e-a6b8-cbecd0b511e4" data-flow-trace="7a2bb384-028f-476e-a6b8-cbecd0b511e4" data-handler="NotificationSseController#subscribe" data-referer="./?***" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="400" data-response-ms="0" data-success="FAIL" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="198.51.100.77" data-request-id="7a2bb384-028f-476e-a6b8-cbecd0b511e4" data-flow-trace="7a2bb384-028f-476e-a6b8-cbecd0b511e4" data-handler="NotificationSseController#subscribe" data-referer="./?***" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -2186,8 +2199,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="7" data-default-tab="activity">여행가김철수</button>
-                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="7" data-default-tab="activity">@kimcs</button></div>
+                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="31" data-default-tab="activity">정하준</button>
+                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="31" data-default-tab="activity">@hajun</button></div>
                 
                 
               
@@ -2268,8 +2281,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="192.0.2.31" data-default-tab="activity">
+                    <span class="adm-activity-ip">192.0.2.31</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -2285,7 +2298,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="0:0:0:0:0:0:0:1" data-request-id="c6cb4421-252b-4d92-bd07-fd6602402018" data-flow-trace="c6cb4421-252b-4d92-bd07-fd6602402018" data-handler="NotificationSseController#subscribe" data-referer="./report/1" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="정하준 (@hajun)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="192.0.2.31" data-request-id="c6cb4421-252b-4d92-bd07-fd6602402018" data-flow-trace="c6cb4421-252b-4d92-bd07-fd6602402018" data-handler="NotificationSseController#subscribe" data-referer="./report/1" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -2380,16 +2393,16 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySelectFilter(this)">
-                <span>200</span>
-                <span class="adm-cell-link-note">성공</span>
+              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="FAIL" onclick="applySelectFilter(this)">
+                <span>404</span>
+                <span class="adm-cell-link-note">실패</span>
               </button>
             </td>
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.112" data-default-tab="activity">
+                    <span class="adm-activity-ip">203.0.113.112</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -2405,7 +2418,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="1" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="0:0:0:0:0:0:0:1" data-request-id="5b5c23b8-80e0-43b8-9cc4-c27c206948e2" data-flow-trace="5b5c23b8-80e0-43b8-9cc4-c27c206948e2" data-handler="NotificationSseController#subscribe" data-referer="./inquiry/1" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="404" data-response-ms="1" data-success="FAIL" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="203.0.113.112" data-request-id="5b5c23b8-80e0-43b8-9cc4-c27c206948e2" data-flow-trace="5b5c23b8-80e0-43b8-9cc4-c27c206948e2" data-handler="NotificationSseController#subscribe" data-referer="./inquiry/1" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -2426,8 +2439,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="7" data-default-tab="activity">여행가김철수</button>
-                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="7" data-default-tab="activity">@kimcs</button></div>
+                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="27" data-default-tab="activity">강민서</button>
+                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="27" data-default-tab="activity">@minseo_k</button></div>
                 
                 
               
@@ -2508,8 +2521,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="198.51.100.40" data-default-tab="activity">
+                    <span class="adm-activity-ip">198.51.100.40</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -2525,7 +2538,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="0:0:0:0:0:0:0:1" data-request-id="e2038619-1150-434a-b036-ee7c128562a0" data-flow-trace="e2038619-1150-434a-b036-ee7c128562a0" data-handler="NotificationSseController#subscribe" data-referer="./report/list" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="강민서 (@minseo_k)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="0" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="198.51.100.40" data-request-id="e2038619-1150-434a-b036-ee7c128562a0" data-flow-trace="e2038619-1150-434a-b036-ee7c128562a0" data-handler="NotificationSseController#subscribe" data-referer="./report/list" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -2546,8 +2559,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="7" data-default-tab="activity">여행가김철수</button>
-                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="7" data-default-tab="activity">@kimcs</button></div>
+                  <button type="button" class="adm-inline-link adm-activity-member-name js-open-member-context" data-user-idx="44" data-default-tab="activity">윤서준</button>
+                  <div class="mem-uid"><button type="button" class="adm-inline-link adm-activity-member-id js-open-member-context" data-user-idx="44" data-default-tab="activity">@seojun.y</button></div>
                 
                 
               
@@ -2621,15 +2634,15 @@ window.ADMIN_TRANSLATION_UI = {
             </td>
             <td>
               <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySelectFilter(this)">
-                <span>200</span>
+                <span>302</span>
                 <span class="adm-cell-link-note">성공</span>
               </button>
             </td>
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="192.0.2.205" data-default-tab="activity">
+                    <span class="adm-activity-ip">192.0.2.205</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -2645,7 +2658,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="여행가김철수 (@kimcs)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="200" data-response-ms="1" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="0:0:0:0:0:0:0:1" data-request-id="15eb945e-94fa-4b91-897c-f5c0fb6929db" data-flow-trace="15eb945e-94fa-4b91-897c-f5c0fb6929db" data-handler="NotificationSseController#subscribe" data-referer="./inquiry/8" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:20" data-user="윤서준 (@seojun.y)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="NotificationSseController#subscribe" data-provider="" data-auth-event="" data-uri="/TripTogether/sse/notifications" data-method="GET" data-status="302" data-response-ms="1" data-success="SUCCESS" data-target=" / " data-detail-summary="code=NotificationSseController#subscribe, handler=NotificationSseController#subscribe" data-ip="192.0.2.205" data-request-id="15eb945e-94fa-4b91-897c-f5c0fb6929db" data-flow-trace="15eb945e-94fa-4b91-897c-f5c0fb6929db" data-handler="NotificationSseController#subscribe" data-referer="./inquiry/8" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -2748,8 +2761,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="192.0.2.205" data-default-tab="activity">
+                    <span class="adm-activity-ip">192.0.2.205</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -2765,7 +2778,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:19" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/reports" data-method="GET" data-status="200" data-response-ms="344" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#reportList" data-ip="0:0:0:0:0:0:0:1" data-request-id="7892ca05-ecf3-4e3e-bb03-c34499dfe53e" data-flow-trace="7892ca05-ecf3-4e3e-bb03-c34499dfe53e" data-handler="AdminController#reportList" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:19" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/reports" data-method="GET" data-status="200" data-response-ms="344" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#reportList" data-ip="192.0.2.205" data-request-id="7892ca05-ecf3-4e3e-bb03-c34499dfe53e" data-flow-trace="7892ca05-ecf3-4e3e-bb03-c34499dfe53e" data-handler="AdminController#reportList" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -2870,8 +2883,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.66" data-default-tab="activity">
+                    <span class="adm-activity-ip">203.0.113.66</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -2887,7 +2900,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:16" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/inquiries/1" data-method="GET" data-status="200" data-response-ms="369" data-success="SUCCESS" data-target=" / 1" data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#inquiryDetail" data-ip="0:0:0:0:0:0:0:1" data-request-id="3f4e4663-330e-4835-a1ad-5cc661e9a040" data-flow-trace="3f4e4663-330e-4835-a1ad-5cc661e9a040" data-handler="AdminController#inquiryDetail" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:16" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/inquiries/1" data-method="GET" data-status="200" data-response-ms="369" data-success="SUCCESS" data-target=" / 1" data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#inquiryDetail" data-ip="203.0.113.66" data-request-id="3f4e4663-330e-4835-a1ad-5cc661e9a040" data-flow-trace="3f4e4663-330e-4835-a1ad-5cc661e9a040" data-handler="AdminController#inquiryDetail" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -2982,16 +2995,16 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySelectFilter(this)">
-                <span>200</span>
-                <span class="adm-cell-link-note">성공</span>
+              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="FAIL" onclick="applySelectFilter(this)">
+                <span>500</span>
+                <span class="adm-cell-link-note">실패</span>
               </button>
             </td>
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="198.51.100.150" data-default-tab="activity">
+                    <span class="adm-activity-ip">198.51.100.150</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -3007,7 +3020,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:12" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/inquiries" data-method="GET" data-status="200" data-response-ms="400" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#inquiryList" data-ip="0:0:0:0:0:0:0:1" data-request-id="69d2326b-c916-4e48-88b7-5dc4c640e533" data-flow-trace="69d2326b-c916-4e48-88b7-5dc4c640e533" data-handler="AdminController#inquiryList" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:12" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/inquiries" data-method="GET" data-status="500" data-response-ms="400" data-success="FAIL" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#inquiryList" data-ip="198.51.100.150" data-request-id="69d2326b-c916-4e48-88b7-5dc4c640e533" data-flow-trace="69d2326b-c916-4e48-88b7-5dc4c640e533" data-handler="AdminController#inquiryList" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -3110,8 +3123,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="192.0.2.12" data-default-tab="activity">
+                    <span class="adm-activity-ip">192.0.2.12</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -3127,7 +3140,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:09" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/packages" data-method="GET" data-status="200" data-response-ms="417" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#packageList" data-ip="0:0:0:0:0:0:0:1" data-request-id="9bfb59d8-96b2-429d-a817-37f1e8c196c2" data-flow-trace="9bfb59d8-96b2-429d-a817-37f1e8c196c2" data-handler="AdminController#packageList" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:09" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/packages" data-method="GET" data-status="200" data-response-ms="417" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#packageList" data-ip="192.0.2.12" data-request-id="9bfb59d8-96b2-429d-a817-37f1e8c196c2" data-flow-trace="9bfb59d8-96b2-429d-a817-37f1e8c196c2" data-handler="AdminController#packageList" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -3222,16 +3235,16 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySelectFilter(this)">
-                <span>200</span>
-                <span class="adm-cell-link-note">성공</span>
+              <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="FAIL" onclick="applySelectFilter(this)">
+                <span>401</span>
+                <span class="adm-cell-link-note">실패</span>
               </button>
             </td>
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.88" data-default-tab="activity">
+                    <span class="adm-activity-ip">203.0.113.88</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -3247,7 +3260,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:06" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/business-applications/fragment" data-method="GET" data-status="200" data-response-ms="179" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#businessApplicationRowsFragment" data-ip="0:0:0:0:0:0:0:1" data-request-id="10883032-7995-4411-9c8b-435360b8317a" data-flow-trace="10883032-7995-4411-9c8b-435360b8317a" data-handler="AdminController#businessApplicationRowsFragment" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:06" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/business-applications/fragment" data-method="GET" data-status="401" data-response-ms="179" data-success="FAIL" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#businessApplicationRowsFragment" data-ip="203.0.113.88" data-request-id="10883032-7995-4411-9c8b-435360b8317a" data-flow-trace="10883032-7995-4411-9c8b-435360b8317a" data-handler="AdminController#businessApplicationRowsFragment" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -3350,8 +3363,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.88" data-default-tab="activity">
+                    <span class="adm-activity-ip">203.0.113.88</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -3367,7 +3380,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:03" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/business-applications" data-method="GET" data-status="200" data-response-ms="437" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#businessApplicationList" data-ip="0:0:0:0:0:0:0:1" data-request-id="e5dc29ff-7fea-48bb-9ee6-128ec2a48fe1" data-flow-trace="e5dc29ff-7fea-48bb-9ee6-128ec2a48fe1" data-handler="AdminController#businessApplicationList" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:03" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/business-applications" data-method="GET" data-status="200" data-response-ms="437" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#businessApplicationList" data-ip="203.0.113.88" data-request-id="e5dc29ff-7fea-48bb-9ee6-128ec2a48fe1" data-flow-trace="e5dc29ff-7fea-48bb-9ee6-128ec2a48fe1" data-handler="AdminController#businessApplicationList" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -3470,8 +3483,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="198.51.100.5" data-default-tab="activity">
+                    <span class="adm-activity-ip">198.51.100.5</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -3487,7 +3500,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:00" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/members/fragment" data-method="GET" data-status="200" data-response-ms="141" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#memberRowsFragment" data-ip="0:0:0:0:0:0:0:1" data-request-id="fb2d9df9-76c1-4c0d-9d1b-0f043ea83ace" data-flow-trace="fb2d9df9-76c1-4c0d-9d1b-0f043ea83ace" data-handler="AdminController#memberRowsFragment" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:46:00" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/members/fragment" data-method="GET" data-status="200" data-response-ms="141" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#memberRowsFragment" data-ip="198.51.100.5" data-request-id="fb2d9df9-76c1-4c0d-9d1b-0f043ea83ace" data-flow-trace="fb2d9df9-76c1-4c0d-9d1b-0f043ea83ace" data-handler="AdminController#memberRowsFragment" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -3590,8 +3603,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="192.0.2.99" data-default-tab="activity">
+                    <span class="adm-activity-ip">192.0.2.99</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -3607,7 +3620,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:45:57" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/members" data-method="GET" data-status="200" data-response-ms="34" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#memberList" data-ip="0:0:0:0:0:0:0:1" data-request-id="f4bc920f-e44a-4202-9b02-a69c359e9575" data-flow-trace="f4bc920f-e44a-4202-9b02-a69c359e9575" data-handler="AdminController#memberList" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:45:57" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="ADMIN_ACCESS" data-provider="" data-auth-event="" data-uri="/TripTogether/admin/members" data-method="GET" data-status="200" data-response-ms="34" data-success="SUCCESS" data-target=" / " data-detail-summary="code=ADMIN_ACCESS, handler=AdminController#memberList" data-ip="192.0.2.99" data-request-id="f4bc920f-e44a-4202-9b02-a69c359e9575" data-flow-trace="f4bc920f-e44a-4202-9b02-a69c359e9575" data-handler="AdminController#memberList" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -3710,8 +3723,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.140" data-default-tab="activity">
+                    <span class="adm-activity-ip">203.0.113.140</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -3727,7 +3740,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:45:54" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="AdminController#dashboard" data-provider="" data-auth-event="" data-uri="/TripTogether/admin" data-method="GET" data-status="200" data-response-ms="13" data-success="SUCCESS" data-target=" / " data-detail-summary="code=AdminController#dashboard, handler=AdminController#dashboard" data-ip="0:0:0:0:0:0:0:1" data-request-id="00417838-d875-42dd-904a-5982003c8bd6" data-flow-trace="00417838-d875-42dd-904a-5982003c8bd6" data-handler="AdminController#dashboard" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:45:54" data-user="최고관리자 (@master)" data-domain="ADMIN" data-type="PAGE_VIEW" data-code="AdminController#dashboard" data-provider="" data-auth-event="" data-uri="/TripTogether/admin" data-method="GET" data-status="200" data-response-ms="13" data-success="SUCCESS" data-target=" / " data-detail-summary="code=AdminController#dashboard, handler=AdminController#dashboard" data-ip="203.0.113.140" data-request-id="00417838-d875-42dd-904a-5982003c8bd6" data-flow-trace="00417838-d875-42dd-904a-5982003c8bd6" data-handler="AdminController#dashboard" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -3830,8 +3843,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="198.51.100.61" data-default-tab="activity">
+                    <span class="adm-activity-ip">198.51.100.61</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -3847,7 +3860,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:45:53" data-user="최고관리자 (@master)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="HomeController#index" data-provider="" data-auth-event="" data-uri="/TripTogether/" data-method="GET" data-status="200" data-response-ms="13" data-success="SUCCESS" data-target=" / " data-detail-summary="code=HomeController#index, handler=HomeController#index" data-ip="0:0:0:0:0:0:0:1" data-request-id="f8950ce2-5e7b-470f-98c0-8a700eb8fe22" data-flow-trace="f8950ce2-5e7b-470f-98c0-8a700eb8fe22" data-handler="HomeController#index" data-referer="./auth/login" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:45:53" data-user="최고관리자 (@master)" data-domain="GENERAL" data-type="PAGE_VIEW" data-code="HomeController#index" data-provider="" data-auth-event="" data-uri="/TripTogether/" data-method="GET" data-status="200" data-response-ms="13" data-success="SUCCESS" data-target=" / " data-detail-summary="code=HomeController#index, handler=HomeController#index" data-ip="198.51.100.61" data-request-id="f8950ce2-5e7b-470f-98c0-8a700eb8fe22" data-flow-trace="f8950ce2-5e7b-470f-98c0-8a700eb8fe22" data-handler="HomeController#index" data-referer="./auth/login" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -3970,8 +3983,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="192.0.2.177" data-default-tab="activity">
+                    <span class="adm-activity-ip">192.0.2.177</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -3987,7 +4000,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:45:53" data-user="최고관리자 (@master)" data-domain="AUTH" data-type="ACTION" data-code="SUBMIT_LOGIN" data-provider="LOCAL" data-auth-event="LOGIN" data-uri="/TripTogether/auth/login" data-method="POST" data-status="200" data-response-ms="108" data-success="SUCCESS" data-target=" / " data-detail-summary="code=SUBMIT_LOGIN, handler=AuthController#loginProcess" data-ip="0:0:0:0:0:0:0:1" data-request-id="5abf370f-eb08-46da-b1bd-8d81a6542ee5" data-flow-trace="5abf370f-eb08-46da-b1bd-8d81a6542ee5" data-handler="AuthController#loginProcess" data-referer="./auth/login" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:45:53" data-user="최고관리자 (@master)" data-domain="AUTH" data-type="ACTION" data-code="SUBMIT_LOGIN" data-provider="LOCAL" data-auth-event="LOGIN" data-uri="/TripTogether/auth/login" data-method="POST" data-status="200" data-response-ms="108" data-success="SUCCESS" data-target=" / " data-detail-summary="code=SUBMIT_LOGIN, handler=AuthController#loginProcess" data-ip="192.0.2.177" data-request-id="5abf370f-eb08-46da-b1bd-8d81a6542ee5" data-flow-trace="5abf370f-eb08-46da-b1bd-8d81a6542ee5" data-handler="AuthController#loginProcess" data-referer="./auth/login" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>
@@ -4110,8 +4123,8 @@ window.ADMIN_TRANSLATION_UI = {
             <td>
               
                 
-                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="0:0:0:0:0:0:0:1" data-default-tab="activity">
-                    <span class="adm-activity-ip">0:0:0:0:0:0:0:1</span>
+                  <button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.33" data-default-tab="activity">
+                    <span class="adm-activity-ip">203.0.113.33</span>
                     <span class="adm-cell-link-note">동일 IP</span>
                   </button>
                 
@@ -4127,7 +4140,7 @@ window.ADMIN_TRANSLATION_UI = {
               </button>
             </td>
             <td>
-              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:45:52" data-user=" (@)" data-domain="AUTH" data-type="PAGE_VIEW" data-code="VIEW_LOGIN_PAGE" data-provider="LOCAL" data-auth-event="LOGIN" data-uri="/TripTogether/auth/login" data-method="GET" data-status="200" data-response-ms="7" data-success="SUCCESS" data-target=" / " data-detail-summary="code=VIEW_LOGIN_PAGE, handler=AuthController#loginPage" data-ip="0:0:0:0:0:0:0:1" data-request-id="e5eba578-ec92-468e-9484-17f0eb895049" data-flow-trace="e5eba578-ec92-468e-9484-17f0eb895049" data-handler="AuthController#loginPage" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
+              <button type="button" class="adm-row-btn detail" data-time="2026.06.16 17:45:52" data-user=" (@)" data-domain="AUTH" data-type="PAGE_VIEW" data-code="VIEW_LOGIN_PAGE" data-provider="LOCAL" data-auth-event="LOGIN" data-uri="/TripTogether/auth/login" data-method="GET" data-status="200" data-response-ms="7" data-success="SUCCESS" data-target=" / " data-detail-summary="code=VIEW_LOGIN_PAGE, handler=AuthController#loginPage" data-ip="203.0.113.33" data-request-id="e5eba578-ec92-468e-9484-17f0eb895049" data-flow-trace="e5eba578-ec92-468e-9484-17f0eb895049" data-handler="AuthController#loginPage" data-referer="" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36" onclick="openActivityDetail(this)">
                 상세 보기
               </button>
             </td>

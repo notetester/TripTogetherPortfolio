@@ -248,7 +248,7 @@ function saToggleTheme() {
         <div class="adm-card-head">
             <div class="adm-card-title">
                 관리자 목록
-                <span class="adm-section-total-inline">총 2건</span>
+                <span class="adm-section-total-inline">총 10건</span>
             </div>
             <div class="sa-list-head-actions">
                 <button type="button" class="adm-btn adm-btn-ghost" onclick="openGrantModal()">+ 관리자 등록</button>
@@ -287,30 +287,22 @@ function saToggleTheme() {
                                 <input type="checkbox" class="sa-cb row-cb js-admin-list-row-check" data-idx="2" data-nickname="운영관리자" onchange="onRowCbChange()" data-table-id="admSectionListTable0" data-admin-list-select="true">
                             </td>
                             <td>
-                                <div class="sa-member-name">운영관리자</div>
+                                <div class="sa-member-name">운영관리자 <span class="sa-code-badge is-green">SUPERADMIN</span></div>
                                 <div class="sa-member-id">admin01</div>
                             </td>
-                            <td>admin01@triptogether.demo</td>
-                            <td>-</td>
+                            <td>kim***@triptogether.demo</td>
+                            <td>운영총괄</td>
                             <td>
-                                
-                                
-                                -
+                                커뮤니티운영팀
+                                <div class="sa-muted-text">운영실</div>
                             </td>
                             <td>
-                                
-                                    
-                                    <span class="sa-muted-text">없음</span>
-                                
+                                <span class="sa-code-badge is-blue">SUPER_ADMIN</span>
                             </td>
                             <td>
-                                
-                                    <span class="adm-badge adm-badge-green">활성</span>
-                                    
-                                    
-                                
+                                <span class="status-badge ACTIVE">활성</span>
                             </td>
-                            <td>2026-06-16</td>
+                            <td>2026-06-02<div class="sa-muted-text">최근 06-28 14:22</div></td>
                             <td>
                                 <div class="sa-row-actions">
                                     <button class="adm-btn adm-btn-sm adm-btn-ghost" data-id="2" onclick="openDetailModal(this.getAttribute('data-id'))">권한</button>
@@ -323,30 +315,22 @@ function saToggleTheme() {
                                 <input type="checkbox" class="sa-cb row-cb js-admin-list-row-check" data-idx="3" data-nickname="보안관리자" onchange="onRowCbChange()" data-table-id="admSectionListTable0" data-admin-list-select="true">
                             </td>
                             <td>
-                                <div class="sa-member-name">보안관리자</div>
+                                <div class="sa-member-name">보안관리자 <span class="sa-code-badge is-blue">ADMIN</span></div>
                                 <div class="sa-member-id">admin02</div>
                             </td>
-                            <td>admin02@triptogether.demo</td>
-                            <td>-</td>
+                            <td>park***@triptogether.demo</td>
+                            <td>보안팀장</td>
                             <td>
-                                
-                                
-                                -
+                                보안팀
+                                <div class="sa-muted-text">정보보안실</div>
                             </td>
                             <td>
-                                
-                                    
-                                    <span class="sa-muted-text">없음</span>
-                                
+                                <span class="sa-code-badge is-blue">SECURITY_ADMIN</span>
                             </td>
                             <td>
-                                
-                                    <span class="adm-badge adm-badge-green">활성</span>
-                                    
-                                    
-                                
+                                <span class="status-badge ACTIVE">활성</span>
                             </td>
-                            <td>2026-06-16</td>
+                            <td>2026-06-03<div class="sa-muted-text">최근 06-29 09:41</div></td>
                             <td>
                                 <div class="sa-row-actions">
                                     <button class="adm-btn adm-btn-sm adm-btn-ghost" data-id="3" onclick="openDetailModal(this.getAttribute('data-id'))">권한</button>
@@ -354,9 +338,233 @@ function saToggleTheme() {
                                     <button class="adm-btn adm-btn-sm adm-btn-danger" data-id="3" data-nickname="보안관리자" onclick="revokeAdmin(this.getAttribute('data-id'), this.getAttribute('data-nickname'))">해제</button>
                                 </div>
                             </td>
+                        </tr><tr data-admin-list-orig-order="2" data-admin-list-visible="true" style="">
+                            <td class="sa-check-cell">
+                                <input type="checkbox" class="sa-cb row-cb js-admin-list-row-check" data-idx="4" data-nickname="콘텐츠매니저" onchange="onRowCbChange()" data-table-id="admSectionListTable0" data-admin-list-select="true">
+                            </td>
+                            <td>
+                                <div class="sa-member-name">콘텐츠매니저 <span class="sa-code-badge is-blue">ADMIN</span></div>
+                                <div class="sa-member-id">cms_lee</div>
+                            </td>
+                            <td>lee***@triptogether.demo</td>
+                            <td>선임매니저</td>
+                            <td>
+                                커뮤니티운영팀
+                                <div class="sa-muted-text">콘텐츠파트</div>
+                            </td>
+                            <td>
+                                <span class="sa-code-badge is-blue">COMMUNITY_OPS</span>
+                            </td>
+                            <td>
+                                <span class="status-badge ACTIVE">활성</span>
+                            </td>
+                            <td>2026-06-05<div class="sa-muted-text">최근 06-28 18:07</div></td>
+                            <td>
+                                <div class="sa-row-actions">
+                                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-id="4" onclick="openDetailModal(this.getAttribute('data-id'))">권한</button>
+                                    <a class="adm-btn adm-btn-sm adm-btn-ghost" href="../superAdmin/members/4/edit.html">편집</a>
+                                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-id="4" data-nickname="콘텐츠매니저" onclick="revokeAdmin(this.getAttribute('data-id'), this.getAttribute('data-nickname'))">해제</button>
+                                </div>
+                            </td>
+                        </tr><tr data-admin-list-orig-order="3" data-admin-list-visible="true" style="">
+                            <td class="sa-check-cell">
+                                <input type="checkbox" class="sa-cb row-cb js-admin-list-row-check" data-idx="5" data-nickname="고객지원리드" onchange="onRowCbChange()" data-table-id="admSectionListTable0" data-admin-list-select="true">
+                            </td>
+                            <td>
+                                <div class="sa-member-name">고객지원리드 <span class="sa-code-badge is-blue">ADMIN</span></div>
+                                <div class="sa-member-id">cs_choi</div>
+                            </td>
+                            <td>choi***@gmail.com</td>
+                            <td>CS팀장</td>
+                            <td>
+                                고객지원팀
+                                <div class="sa-muted-text">VOC파트</div>
+                            </td>
+                            <td>
+                                <span class="sa-code-badge is-blue">INQUIRY_ADMIN</span>
+                            </td>
+                            <td>
+                                <span class="status-badge ACTIVE">활성</span>
+                            </td>
+                            <td>2026-06-08<div class="sa-muted-text">최근 06-29 08:15</div></td>
+                            <td>
+                                <div class="sa-row-actions">
+                                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-id="5" onclick="openDetailModal(this.getAttribute('data-id'))">권한</button>
+                                    <a class="adm-btn adm-btn-sm adm-btn-ghost" href="../superAdmin/members/5/edit.html">편집</a>
+                                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-id="5" data-nickname="고객지원리드" onclick="revokeAdmin(this.getAttribute('data-id'), this.getAttribute('data-nickname'))">해제</button>
+                                </div>
+                            </td>
+                        </tr><tr data-admin-list-orig-order="4" data-admin-list-visible="true" style="">
+                            <td class="sa-check-cell">
+                                <input type="checkbox" class="sa-cb row-cb js-admin-list-row-check" data-idx="6" data-nickname="AI운영담당" onchange="onRowCbChange()" data-table-id="admSectionListTable0" data-admin-list-select="true">
+                            </td>
+                            <td>
+                                <div class="sa-member-name">AI운영담당 <span class="sa-code-badge is-blue">ADMIN</span></div>
+                                <div class="sa-member-id">ai_jung</div>
+                            </td>
+                            <td>jung***@triptogether.demo</td>
+                            <td>AI엔지니어</td>
+                            <td>
+                                AI팀
+                                <div class="sa-muted-text">모델운영파트</div>
+                            </td>
+                            <td>
+                                <span class="sa-code-badge is-blue">AI_CHATBOT_ADMIN</span>
+                            </td>
+                            <td>
+                                <span class="status-badge ACTIVE">활성</span>
+                            </td>
+                            <td>2026-06-11<div class="sa-muted-text">최근 06-27 22:53</div></td>
+                            <td>
+                                <div class="sa-row-actions">
+                                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-id="6" onclick="openDetailModal(this.getAttribute('data-id'))">권한</button>
+                                    <a class="adm-btn adm-btn-sm adm-btn-ghost" href="../superAdmin/members/6/edit.html">편집</a>
+                                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-id="6" data-nickname="AI운영담당" onclick="revokeAdmin(this.getAttribute('data-id'), this.getAttribute('data-nickname'))">해제</button>
+                                </div>
+                            </td>
+                        </tr><tr data-admin-list-orig-order="5" data-admin-list-visible="true" style="">
+                            <td class="sa-check-cell">
+                                <input type="checkbox" class="sa-cb row-cb js-admin-list-row-check" data-idx="7" data-nickname="결제정산관리" onchange="onRowCbChange()" data-table-id="admSectionListTable0" data-admin-list-select="true">
+                            </td>
+                            <td>
+                                <div class="sa-member-name">결제정산관리 <span class="sa-code-badge is-blue">ADMIN</span></div>
+                                <div class="sa-member-id">fin_kang</div>
+                            </td>
+                            <td>kang***@naver.com</td>
+                            <td>재무담당</td>
+                            <td>
+                                재무팀
+                                <div class="sa-muted-text">정산파트</div>
+                            </td>
+                            <td>
+                                <span class="sa-code-badge is-blue">FINANCE_ADMIN</span>
+                            </td>
+                            <td>
+                                <span class="status-badge DORMANT">휴면</span>
+                            </td>
+                            <td>2026-06-13<div class="sa-muted-text">최근 06-19 11:30</div></td>
+                            <td>
+                                <div class="sa-row-actions">
+                                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-id="7" onclick="openDetailModal(this.getAttribute('data-id'))">권한</button>
+                                    <a class="adm-btn adm-btn-sm adm-btn-ghost" href="../superAdmin/members/7/edit.html">편집</a>
+                                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-id="7" data-nickname="결제정산관리" onclick="revokeAdmin(this.getAttribute('data-id'), this.getAttribute('data-nickname'))">해제</button>
+                                </div>
+                            </td>
+                        </tr><tr data-admin-list-orig-order="6" data-admin-list-visible="true" style="">
+                            <td class="sa-check-cell">
+                                <input type="checkbox" class="sa-cb row-cb js-admin-list-row-check" data-idx="8" data-nickname="마케팅매니저" onchange="onRowCbChange()" data-table-id="admSectionListTable0" data-admin-list-select="true">
+                            </td>
+                            <td>
+                                <div class="sa-member-name">마케팅매니저 <span class="sa-code-badge is-blue">ADMIN</span></div>
+                                <div class="sa-member-id">mkt_yoon</div>
+                            </td>
+                            <td>yoon***@gmail.com</td>
+                            <td>그로스매니저</td>
+                            <td>
+                                마케팅팀
+                                <div class="sa-muted-text">퍼포먼스파트</div>
+                            </td>
+                            <td>
+                                <span class="sa-code-badge is-blue">MARKETING_ADMIN</span>
+                            </td>
+                            <td>
+                                <span class="status-badge ACTIVE">활성</span>
+                            </td>
+                            <td>2026-06-15<div class="sa-muted-text">최근 06-28 16:48</div></td>
+                            <td>
+                                <div class="sa-row-actions">
+                                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-id="8" onclick="openDetailModal(this.getAttribute('data-id'))">권한</button>
+                                    <a class="adm-btn adm-btn-sm adm-btn-ghost" href="../superAdmin/members/8/edit.html">편집</a>
+                                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-id="8" data-nickname="마케팅매니저" onclick="revokeAdmin(this.getAttribute('data-id'), this.getAttribute('data-nickname'))">해제</button>
+                                </div>
+                            </td>
+                        </tr><tr data-admin-list-orig-order="7" data-admin-list-visible="true" style="">
+                            <td class="sa-check-cell">
+                                <input type="checkbox" class="sa-cb row-cb js-admin-list-row-check" data-idx="9" data-nickname="여행에디터" onchange="onRowCbChange()" data-table-id="admSectionListTable0" data-admin-list-select="true">
+                            </td>
+                            <td>
+                                <div class="sa-member-name">여행에디터 <span class="sa-code-badge is-blue">ADMIN</span></div>
+                                <div class="sa-member-id">edit_seo</div>
+                            </td>
+                            <td>seo***@triptogether.demo</td>
+                            <td>콘텐츠에디터</td>
+                            <td>
+                                여행서비스팀
+                                <div class="sa-muted-text">기획파트</div>
+                            </td>
+                            <td>
+                                <span class="sa-code-badge is-blue">EXPLORE_ADMIN</span>
+                            </td>
+                            <td>
+                                <span class="status-badge BLOCKED">차단</span>
+                            </td>
+                            <td>2026-06-18<div class="sa-muted-text">최근 06-22 13:09</div></td>
+                            <td>
+                                <div class="sa-row-actions">
+                                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-id="9" onclick="openDetailModal(this.getAttribute('data-id'))">권한</button>
+                                    <a class="adm-btn adm-btn-sm adm-btn-ghost" href="../superAdmin/members/9/edit.html">편집</a>
+                                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-id="9" data-nickname="여행에디터" onclick="revokeAdmin(this.getAttribute('data-id'), this.getAttribute('data-nickname'))">해제</button>
+                                </div>
+                            </td>
+                        </tr><tr data-admin-list-orig-order="8" data-admin-list-visible="true" style="">
+                            <td class="sa-check-cell">
+                                <input type="checkbox" class="sa-cb row-cb js-admin-list-row-check" data-idx="10" data-nickname="인프라관리자" onchange="onRowCbChange()" data-table-id="admSectionListTable0" data-admin-list-select="true">
+                            </td>
+                            <td>
+                                <div class="sa-member-name">인프라관리자 <span class="sa-code-badge is-blue">ADMIN</span></div>
+                                <div class="sa-member-id">infra_oh</div>
+                            </td>
+                            <td>oh***@triptogether.demo</td>
+                            <td>DevOps 엔지니어</td>
+                            <td>
+                                인프라팀
+                                <div class="sa-muted-text">클라우드파트</div>
+                            </td>
+                            <td>
+                                <span class="sa-code-badge is-blue">SYSTEM_ADMIN</span>
+                            </td>
+                            <td>
+                                <span class="status-badge ACTIVE">활성</span>
+                            </td>
+                            <td>2026-06-20<div class="sa-muted-text">최근 06-29 07:02</div></td>
+                            <td>
+                                <div class="sa-row-actions">
+                                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-id="10" onclick="openDetailModal(this.getAttribute('data-id'))">권한</button>
+                                    <a class="adm-btn adm-btn-sm adm-btn-ghost" href="../superAdmin/members/10/edit.html">편집</a>
+                                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-id="10" data-nickname="인프라관리자" onclick="revokeAdmin(this.getAttribute('data-id'), this.getAttribute('data-nickname'))">해제</button>
+                                </div>
+                            </td>
+                        </tr><tr data-admin-list-orig-order="9" data-admin-list-visible="true" style="">
+                            <td class="sa-check-cell">
+                                <input type="checkbox" class="sa-cb row-cb js-admin-list-row-check" data-idx="11" data-nickname="개인정보담당" onchange="onRowCbChange()" data-table-id="admSectionListTable0" data-admin-list-select="true">
+                            </td>
+                            <td>
+                                <div class="sa-member-name">개인정보담당 <span class="sa-code-badge is-blue">ADMIN</span></div>
+                                <div class="sa-member-id">dpo_han</div>
+                            </td>
+                            <td>han***@triptogether.demo</td>
+                            <td>개인정보보호책임자</td>
+                            <td>
+                                개인정보보호팀
+                                <div class="sa-muted-text">컴플라이언스파트</div>
+                            </td>
+                            <td>
+                                <span class="sa-code-badge is-blue">PRIVACY_ADMIN</span>
+                            </td>
+                            <td>
+                                <span class="status-badge ACTIVE">활성</span>
+                            </td>
+                            <td>2026-06-24<div class="sa-muted-text">최근 06-28 19:36</div></td>
+                            <td>
+                                <div class="sa-row-actions">
+                                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-id="11" onclick="openDetailModal(this.getAttribute('data-id'))">권한</button>
+                                    <a class="adm-btn adm-btn-sm adm-btn-ghost" href="../superAdmin/members/11/edit.html">편집</a>
+                                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-id="11" data-nickname="개인정보담당" onclick="revokeAdmin(this.getAttribute('data-id'), this.getAttribute('data-nickname'))">해제</button>
+                                </div>
+                            </td>
                         </tr></tbody>
             </table>
-        </div><div class="adm-section-list-footer js-admin-list-tools-footer" data-table-id="admSectionListTable0"><span class="adm-section-list-page-info js-admin-list-page-info">2건 중 2건 표시 · 1/1쪽</span><div class="adm-section-list-page-tools"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev" disabled="">이전</button><button type="button" class="adm-btn adm-btn-ghost js-admin-list-next" disabled="">다음</button></div></div>
+        </div><div class="adm-section-list-footer js-admin-list-tools-footer" data-table-id="admSectionListTable0"><span class="adm-section-list-page-info js-admin-list-page-info">10건 중 10건 표시 · 1/1쪽</span><div class="adm-section-list-page-tools"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev" disabled="">이전</button><button type="button" class="adm-btn adm-btn-ghost js-admin-list-next" disabled="">다음</button></div></div>
     </div>
 
     

@@ -511,7 +511,7 @@ window.ADMIN_TRANSLATION_UI = {
         <div class="adm-card-head sr-card-head">
             <div class="adm-card-title">
                 일반 보안 검토 큐
-                <span class="sr-total-label" id="srTotalLabel">총 0건</span>
+                <span class="sr-total-label" id="srTotalLabel">총 9건</span>
             </div>
             <div class="adm-export-control sr-export-control">
                 <select class="adm-select sr-export-format" id="srExportFormat">
@@ -583,8 +583,219 @@ window.ADMIN_TRANSLATION_UI = {
                 </tr>
                 </thead>
                 <tbody id="srTableBody">
-                
-                <tr class="sr-empty-row"><td colspan="8" class="sr-empty-cell">검토 대상이 없습니다.</td></tr></tbody>
+
+                <tr data-row-id="2041"
+                    data-sort-status="PENDING" data-sort-severity="CRITICAL" data-sort-type="USER_SECURITY_REVIEW"
+                    data-sort-target="kim***@gmail.com" data-sort-summary="다중 IP 동시 로그인" data-sort-date="2026-06-27 23:18">
+                    <td class="sr-cell-check"><input type="checkbox" class="js-sr-row-check" value="2041" onchange="srUpdateBulkCount()" aria-label="select-2041"></td>
+                    <td><span class="sr-status-badge sr-status-pending">검토 대기</span></td>
+                    <td><span class="sr-severity sr-severity-critical">CRITICAL</span></td>
+                    <td><span class="sr-type-chip">USER_SECURITY_REVIEW</span></td>
+                    <td><span class="sr-target-link js-open-member-context" data-user-idx="2041">kim***@gmail.com<span class="sr-target-sub">@kimdohyun · #2041</span></span></td>
+                    <td>
+                        <div class="adm-security-review-summary">
+                            <strong>15분 내 서로 다른 4개 국가 IP에서 동시 로그인 시도</strong>
+                            <span>이상 위치 점프(서울→암스테르담→상파울루) + 2FA 우회 시도 2건. 외부 위험 판단 점수 92/100.</span>
+                        </div>
+                    </td>
+                    <td>2026-06-27 23:18</td>
+                    <td>
+                        <div class="adm-security-review-row-actions">
+                            <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-open" data-target="srDetail2041">상세</button>
+                            <button type="button" class="adm-btn adm-btn-primary">승인</button>
+                            <button type="button" class="adm-btn adm-btn-ghost">보류</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr data-row-id="2040"
+                    data-sort-status="PENDING" data-sort-severity="HIGH" data-sort-type="IP_RULE_REVIEW"
+                    data-sort-target="203.0.113.47" data-sort-summary="자동화 트래픽 의심 IP" data-sort-date="2026-06-27 18:42">
+                    <td class="sr-cell-check"><input type="checkbox" class="js-sr-row-check" value="2040" onchange="srUpdateBulkCount()" aria-label="select-2040"></td>
+                    <td><span class="sr-status-badge sr-status-pending">검토 대기</span></td>
+                    <td><span class="sr-severity sr-severity-high">HIGH</span></td>
+                    <td><span class="sr-type-chip">IP_RULE_REVIEW</span></td>
+                    <td><span class="sr-target-link js-open-ip-context" data-ip-address="203.0.113.47">203.0.113.47<span class="sr-target-sub">NL · 클라우드 호스팅</span></span></td>
+                    <td>
+                        <div class="adm-security-review-summary">
+                            <strong>동일 IP에서 1시간 내 로그인 실패 318회</strong>
+                            <span>크리덴셜 스터핑 패턴 탐지. User-Agent 단일 고정, 요청 간격 0.4초. WAF 임시 차단 권고 대상.</span>
+                        </div>
+                    </td>
+                    <td>2026-06-27 18:42</td>
+                    <td>
+                        <div class="adm-security-review-row-actions">
+                            <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-open" data-target="srDetail2040">상세</button>
+                            <button type="button" class="adm-btn adm-btn-primary">승인</button>
+                            <button type="button" class="adm-btn adm-btn-ghost">보류</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr data-row-id="2039"
+                    data-sort-status="HOLD" data-sort-severity="MEDIUM" data-sort-type="CONTENT_REVIEW"
+                    data-sort-target="이서연" data-sort-summary="커뮤니티 게시글 신고 누적" data-sort-date="2026-06-26 14:05">
+                    <td class="sr-cell-check"><input type="checkbox" class="js-sr-row-check" value="2039" onchange="srUpdateBulkCount()" aria-label="select-2039"></td>
+                    <td><span class="sr-status-badge sr-status-hold">보류</span></td>
+                    <td><span class="sr-severity sr-severity-medium">MEDIUM</span></td>
+                    <td><span class="sr-type-chip">CONTENT_REVIEW</span></td>
+                    <td><span class="sr-target-link js-open-member-context" data-user-idx="1882">lee***@naver.com<span class="sr-target-sub">이서연 · #1882</span></span></td>
+                    <td>
+                        <div class="adm-security-review-summary">
+                            <strong>광고성 외부 링크 반복 게시(7건) 신고 12건 누적</strong>
+                            <span>도배성 도메인 단축 URL 포함. 1차 경고 발송 후 추가 검토 대기 중. 작성자 소명 요청 보류 상태.</span>
+                        </div>
+                    </td>
+                    <td>2026-06-26 14:05</td>
+                    <td>
+                        <div class="adm-security-review-row-actions">
+                            <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-open" data-target="srDetail2039">상세</button>
+                            <button type="button" class="adm-btn adm-btn-primary">승인</button>
+                            <button type="button" class="adm-btn adm-btn-ghost">미승인</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr data-row-id="2038"
+                    data-sort-status="APPROVED" data-sort-severity="HIGH" data-sort-type="USER_SECURITY_REVIEW"
+                    data-sort-target="park***@daum.net" data-sort-summary="비밀번호 무차별 대입" data-sort-date="2026-06-26 09:31">
+                    <td class="sr-cell-check"><input type="checkbox" class="js-sr-row-check" value="2038" onchange="srUpdateBulkCount()" aria-label="select-2038"></td>
+                    <td><span class="sr-status-badge sr-status-approved">승인 완료</span></td>
+                    <td><span class="sr-severity sr-severity-high">HIGH</span></td>
+                    <td><span class="sr-type-chip">USER_SECURITY_REVIEW</span></td>
+                    <td><span class="sr-target-link js-open-member-context" data-user-idx="1640">park***@daum.net<span class="sr-target-sub">박민준 · #1640</span></span></td>
+                    <td>
+                        <div class="adm-security-review-summary">
+                            <strong>계정 대상 비밀번호 무차별 대입 차단 후 본인확인 승인</strong>
+                            <span>이메일 OTP 재인증 완료, 신규 기기 등록 정상 확인. 계정 잠금 해제 및 보안 알림 발송 처리됨.</span>
+                        </div>
+                    </td>
+                    <td>2026-06-26 09:31</td>
+                    <td>
+                        <div class="adm-security-review-row-actions">
+                            <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-open" data-target="srDetail2038">상세</button>
+                            <button type="button" class="adm-btn adm-btn-ghost" disabled="">처리됨</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr data-row-id="2037"
+                    data-sort-status="REJECTED" data-sort-severity="CRITICAL" data-sort-type="ACCOUNT_TAKEOVER"
+                    data-sort-target="choi***@gmail.com" data-sort-summary="계정 탈취 확정" data-sort-date="2026-06-25 21:47">
+                    <td class="sr-cell-check"><input type="checkbox" class="js-sr-row-check" value="2037" onchange="srUpdateBulkCount()" aria-label="select-2037"></td>
+                    <td><span class="sr-status-badge sr-status-rejected">미승인</span></td>
+                    <td><span class="sr-severity sr-severity-critical">CRITICAL</span></td>
+                    <td><span class="sr-type-chip">ACCOUNT_TAKEOVER</span></td>
+                    <td><span class="sr-target-link js-open-member-context" data-user-idx="1510">choi***@gmail.com<span class="sr-target-sub">최지우 · #1510</span></span></td>
+                    <td>
+                        <div class="adm-security-review-summary">
+                            <strong>탈취 확정 — 이메일/연락처 무단 변경 후 결제 시도</strong>
+                            <span>해외 VPN(198.51.100.22) 접속, 등록 이메일 변경 직후 포인트 환급 요청. 계정 동결 및 거래 취소 확정.</span>
+                        </div>
+                    </td>
+                    <td>2026-06-25 21:47</td>
+                    <td>
+                        <div class="adm-security-review-row-actions">
+                            <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-open" data-target="srDetail2037">상세</button>
+                            <button type="button" class="adm-btn adm-btn-ghost" disabled="">처리됨</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr data-row-id="2036"
+                    data-sort-status="PENDING" data-sort-severity="MEDIUM" data-sort-type="POLICY_AGENCY_REVIEW"
+                    data-sort-target="198.51.100.77" data-sort-summary="정책기관 차단 요청 IP" data-sort-date="2026-06-25 11:09">
+                    <td class="sr-cell-check"><input type="checkbox" class="js-sr-row-check" value="2036" onchange="srUpdateBulkCount()" aria-label="select-2036"></td>
+                    <td><span class="sr-status-badge sr-status-pending">검토 대기</span></td>
+                    <td><span class="sr-severity sr-severity-medium">MEDIUM</span></td>
+                    <td><span class="sr-type-chip">POLICY_AGENCY_REVIEW</span></td>
+                    <td><span class="sr-target-link js-open-ip-context" data-ip-address="198.51.100.77">198.51.100.77<span class="sr-target-sub">KISA 협조 대역</span></span></td>
+                    <td>
+                        <div class="adm-security-review-summary">
+                            <strong>외부 위협 인텔리전스 피드 기반 악성 IP 차단 검토</strong>
+                            <span>제3자 정책기관 판단(blocklist 등재) 수신. 자체 트래픽 영향도 확인 후 정책 반영 여부 결정 필요.</span>
+                        </div>
+                    </td>
+                    <td>2026-06-25 11:09</td>
+                    <td>
+                        <div class="adm-security-review-row-actions">
+                            <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-open" data-target="srDetail2036">상세</button>
+                            <button type="button" class="adm-btn adm-btn-primary">승인</button>
+                            <button type="button" class="adm-btn adm-btn-ghost">보류</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr data-row-id="2035"
+                    data-sort-status="APPROVED" data-sort-severity="LOW" data-sort-type="DEVICE_REVIEW"
+                    data-sort-target="jung***@kakao.com" data-sort-summary="신규 기기 로그인" data-sort-date="2026-06-24 16:52">
+                    <td class="sr-cell-check"><input type="checkbox" class="js-sr-row-check" value="2035" onchange="srUpdateBulkCount()" aria-label="select-2035"></td>
+                    <td><span class="sr-status-badge sr-status-approved">승인 완료</span></td>
+                    <td><span class="sr-severity sr-severity-low">LOW</span></td>
+                    <td><span class="sr-type-chip">DEVICE_REVIEW</span></td>
+                    <td><span class="sr-target-link js-open-member-context" data-user-idx="1377">jung***@kakao.com<span class="sr-target-sub">정유진 · #1377</span></span></td>
+                    <td>
+                        <div class="adm-security-review-summary">
+                            <strong>해외 출장 중 신규 기기 로그인 — 본인 확인 완료</strong>
+                            <span>일본(도쿄) 신규 단말 접속. 등록 연락처 SMS 인증 통과. 정상 사용자로 판단, 알림만 발송.</span>
+                        </div>
+                    </td>
+                    <td>2026-06-24 16:52</td>
+                    <td>
+                        <div class="adm-security-review-row-actions">
+                            <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-open" data-target="srDetail2035">상세</button>
+                            <button type="button" class="adm-btn adm-btn-ghost" disabled="">처리됨</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr data-row-id="2034"
+                    data-sort-status="HOLD" data-sort-severity="HIGH" data-sort-type="USER_SECURITY_REVIEW"
+                    data-sort-target="kang***@gmail.com" data-sort-summary="환불 어뷰징 의심" data-sort-date="2026-06-23 13:24">
+                    <td class="sr-cell-check"><input type="checkbox" class="js-sr-row-check" value="2034" onchange="srUpdateBulkCount()" aria-label="select-2034"></td>
+                    <td><span class="sr-status-badge sr-status-hold">보류</span></td>
+                    <td><span class="sr-severity sr-severity-high">HIGH</span></td>
+                    <td><span class="sr-type-chip">USER_SECURITY_REVIEW</span></td>
+                    <td><span class="sr-target-link js-open-member-context" data-user-idx="1209">kang***@naver.com<span class="sr-target-sub">강시우 · #1209</span></span></td>
+                    <td>
+                        <div class="adm-security-review-summary">
+                            <strong>단기 다중 계정 생성 후 신규가입 쿠폰 반복 사용</strong>
+                            <span>동일 결제수단·기기 지문으로 신규 계정 6개 확인. 프로모션 정책 위반 가능성, 재무팀 협의 보류 중.</span>
+                        </div>
+                    </td>
+                    <td>2026-06-23 13:24</td>
+                    <td>
+                        <div class="adm-security-review-row-actions">
+                            <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-open" data-target="srDetail2034">상세</button>
+                            <button type="button" class="adm-btn adm-btn-primary">승인</button>
+                            <button type="button" class="adm-btn adm-btn-ghost">미승인</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr data-row-id="2033"
+                    data-sort-status="REJECTED" data-sort-severity="LOW" data-sort-type="CONTENT_REVIEW"
+                    data-sort-target="윤하늘" data-sort-summary="오탐 신고 반려" data-sort-date="2026-06-22 10:16">
+                    <td class="sr-cell-check"><input type="checkbox" class="js-sr-row-check" value="2033" onchange="srUpdateBulkCount()" aria-label="select-2033"></td>
+                    <td><span class="sr-status-badge sr-status-rejected">미승인</span></td>
+                    <td><span class="sr-severity sr-severity-low">LOW</span></td>
+                    <td><span class="sr-type-chip">CONTENT_REVIEW</span></td>
+                    <td><span class="sr-target-link js-open-member-context" data-user-idx="1044">yoon***@gmail.com<span class="sr-target-sub">윤하늘 · #1044</span></span></td>
+                    <td>
+                        <div class="adm-security-review-summary">
+                            <strong>여행 후기 게시글 신고 — 검토 결과 정상 콘텐츠</strong>
+                            <span>경쟁 업체 추정 계정의 무더기 신고로 확인. 정책 위반 없음, 신고 반려 및 게시글 정상 유지 처리.</span>
+                        </div>
+                    </td>
+                    <td>2026-06-22 10:16</td>
+                    <td>
+                        <div class="adm-security-review-row-actions">
+                            <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-open" data-target="srDetail2033">상세</button>
+                            <button type="button" class="adm-btn adm-btn-ghost" disabled="">처리됨</button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
             </table>
             <div class="sr-empty adm-is-hidden" id="srEmptyState">검토 대상이 없습니다.</div>
         </div>
@@ -598,7 +809,204 @@ window.ADMIN_TRANSLATION_UI = {
             </div>
         </div>
 
-        
+        <div class="review-detail-modal" id="srDetail2041" role="dialog" aria-modal="true">
+            <div class="review-detail-card">
+                <div class="review-detail-head">
+                    <h2 class="review-detail-title">검토 #2041 · 다중 IP 동시 로그인</h2>
+                    <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-close" data-target="srDetail2041">닫기</button>
+                </div>
+                <div class="review-detail-body">
+                    <div class="review-detail-grid">
+                        <div class="review-detail-item"><strong>상태</strong><span class="sr-status-badge sr-status-pending">검토 대기</span></div>
+                        <div class="review-detail-item"><strong>심각도</strong><span class="sr-severity sr-severity-critical">CRITICAL</span></div>
+                        <div class="review-detail-item"><strong>검토 유형</strong>USER_SECURITY_REVIEW</div>
+                        <div class="review-detail-item"><strong>대상</strong>kim***@gmail.com (#2041)</div>
+                        <div class="review-detail-item"><strong>접속 IP</strong>203.0.113.18, 198.51.100.5 외 2건</div>
+                        <div class="review-detail-item"><strong>생성일</strong>2026-06-27 23:18</div>
+                    </div>
+                    <div class="review-detail-item"><strong>요약 / 근거</strong>
+                        <div class="review-detail-pre">15분 내 서울 → 암스테르담 → 상파울루 순으로 물리적으로 불가능한 위치 점프가 발생했습니다. 동시에 2단계 인증(2FA) 우회 시도가 2건 탐지되었으며, 외부 위험 판단 엔진 점수는 92/100입니다. 계정 동결 후 본인 이메일 재인증을 권고합니다.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-detail-modal" id="srDetail2040" role="dialog" aria-modal="true">
+            <div class="review-detail-card">
+                <div class="review-detail-head">
+                    <h2 class="review-detail-title">검토 #2040 · 자동화 트래픽 의심 IP</h2>
+                    <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-close" data-target="srDetail2040">닫기</button>
+                </div>
+                <div class="review-detail-body">
+                    <div class="review-detail-grid">
+                        <div class="review-detail-item"><strong>상태</strong><span class="sr-status-badge sr-status-pending">검토 대기</span></div>
+                        <div class="review-detail-item"><strong>심각도</strong><span class="sr-severity sr-severity-high">HIGH</span></div>
+                        <div class="review-detail-item"><strong>검토 유형</strong>IP_RULE_REVIEW</div>
+                        <div class="review-detail-item"><strong>대상 IP</strong>203.0.113.47 (NL · 클라우드 호스팅)</div>
+                        <div class="review-detail-item"><strong>실패 횟수</strong>318회 / 1시간</div>
+                        <div class="review-detail-item"><strong>생성일</strong>2026-06-27 18:42</div>
+                    </div>
+                    <div class="review-detail-item"><strong>요약 / 근거</strong>
+                        <div class="review-detail-pre">단일 IP에서 1시간 내 로그인 실패 318회가 기록되었습니다. User-Agent가 단일 값으로 고정되어 있고 요청 간격이 평균 0.4초로, 전형적인 크리덴셜 스터핑 패턴입니다. WAF 임시 차단(24시간) 적용을 권고합니다.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-detail-modal" id="srDetail2039" role="dialog" aria-modal="true">
+            <div class="review-detail-card">
+                <div class="review-detail-head">
+                    <h2 class="review-detail-title">검토 #2039 · 커뮤니티 게시글 신고 누적</h2>
+                    <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-close" data-target="srDetail2039">닫기</button>
+                </div>
+                <div class="review-detail-body">
+                    <div class="review-detail-grid">
+                        <div class="review-detail-item"><strong>상태</strong><span class="sr-status-badge sr-status-hold">보류</span></div>
+                        <div class="review-detail-item"><strong>심각도</strong><span class="sr-severity sr-severity-medium">MEDIUM</span></div>
+                        <div class="review-detail-item"><strong>검토 유형</strong>CONTENT_REVIEW</div>
+                        <div class="review-detail-item"><strong>대상</strong>이서연 (#1882)</div>
+                        <div class="review-detail-item"><strong>신고 건수</strong>12건</div>
+                        <div class="review-detail-item"><strong>생성일</strong>2026-06-26 14:05</div>
+                    </div>
+                    <div class="review-detail-item"><strong>요약 / 근거</strong>
+                        <div class="review-detail-pre">광고성 외부 단축 URL이 포함된 게시글 7건을 반복 게시하여 신고 12건이 누적되었습니다. 1차 경고 발송 후 작성자 소명을 요청한 상태로, 답변 수신 시까지 처리를 보류합니다.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-detail-modal" id="srDetail2038" role="dialog" aria-modal="true">
+            <div class="review-detail-card">
+                <div class="review-detail-head">
+                    <h2 class="review-detail-title">검토 #2038 · 비밀번호 무차별 대입</h2>
+                    <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-close" data-target="srDetail2038">닫기</button>
+                </div>
+                <div class="review-detail-body">
+                    <div class="review-detail-grid">
+                        <div class="review-detail-item"><strong>상태</strong><span class="sr-status-badge sr-status-approved">승인 완료</span></div>
+                        <div class="review-detail-item"><strong>심각도</strong><span class="sr-severity sr-severity-high">HIGH</span></div>
+                        <div class="review-detail-item"><strong>검토 유형</strong>USER_SECURITY_REVIEW</div>
+                        <div class="review-detail-item"><strong>대상</strong>park***@daum.net (#1640)</div>
+                        <div class="review-detail-item"><strong>처리자</strong>최고관리자</div>
+                        <div class="review-detail-item"><strong>생성일</strong>2026-06-26 09:31</div>
+                    </div>
+                    <div class="review-detail-item"><strong>요약 / 근거</strong>
+                        <div class="review-detail-pre">계정 대상 비밀번호 무차별 대입이 탐지되어 자동 잠금되었습니다. 이메일 OTP 재인증이 완료되었고 신규 기기 등록이 정상 확인되어, 계정 잠금을 해제하고 보안 알림을 발송했습니다.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-detail-modal" id="srDetail2037" role="dialog" aria-modal="true">
+            <div class="review-detail-card">
+                <div class="review-detail-head">
+                    <h2 class="review-detail-title">검토 #2037 · 계정 탈취 확정</h2>
+                    <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-close" data-target="srDetail2037">닫기</button>
+                </div>
+                <div class="review-detail-body">
+                    <div class="review-detail-grid">
+                        <div class="review-detail-item"><strong>상태</strong><span class="sr-status-badge sr-status-rejected">미승인</span></div>
+                        <div class="review-detail-item"><strong>심각도</strong><span class="sr-severity sr-severity-critical">CRITICAL</span></div>
+                        <div class="review-detail-item"><strong>검토 유형</strong>ACCOUNT_TAKEOVER</div>
+                        <div class="review-detail-item"><strong>대상</strong>choi***@gmail.com (#1510)</div>
+                        <div class="review-detail-item"><strong>접속 IP</strong>198.51.100.22 (해외 VPN)</div>
+                        <div class="review-detail-item"><strong>생성일</strong>2026-06-25 21:47</div>
+                    </div>
+                    <div class="review-detail-item"><strong>요약 / 근거</strong>
+                        <div class="review-detail-pre">해외 VPN 접속 직후 등록 이메일과 연락처가 무단 변경되었고, 이어서 포인트 환급(결제)이 시도되었습니다. 계정 탈취로 확정하여 계정을 동결하고 진행 중이던 거래를 취소했습니다. 본인에게 비밀번호 재설정 안내를 발송했습니다.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-detail-modal" id="srDetail2036" role="dialog" aria-modal="true">
+            <div class="review-detail-card">
+                <div class="review-detail-head">
+                    <h2 class="review-detail-title">검토 #2036 · 정책기관 차단 요청 IP</h2>
+                    <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-close" data-target="srDetail2036">닫기</button>
+                </div>
+                <div class="review-detail-body">
+                    <div class="review-detail-grid">
+                        <div class="review-detail-item"><strong>상태</strong><span class="sr-status-badge sr-status-pending">검토 대기</span></div>
+                        <div class="review-detail-item"><strong>심각도</strong><span class="sr-severity sr-severity-medium">MEDIUM</span></div>
+                        <div class="review-detail-item"><strong>검토 유형</strong>POLICY_AGENCY_REVIEW</div>
+                        <div class="review-detail-item"><strong>대상 IP</strong>198.51.100.77 (KISA 협조 대역)</div>
+                        <div class="review-detail-item"><strong>출처</strong>외부 위협 인텔리전스 피드</div>
+                        <div class="review-detail-item"><strong>생성일</strong>2026-06-25 11:09</div>
+                    </div>
+                    <div class="review-detail-item"><strong>요약 / 근거</strong>
+                        <div class="review-detail-pre">제3자 정책기관 판단(blocklist 등재)을 수신했습니다. 해당 IP가 자체 서비스 트래픽에 미치는 영향도를 확인한 뒤 차단 정책 반영 여부를 결정해야 합니다. 최근 30일 내 해당 대역의 정상 로그인 이력은 없습니다.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-detail-modal" id="srDetail2035" role="dialog" aria-modal="true">
+            <div class="review-detail-card">
+                <div class="review-detail-head">
+                    <h2 class="review-detail-title">검토 #2035 · 신규 기기 로그인</h2>
+                    <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-close" data-target="srDetail2035">닫기</button>
+                </div>
+                <div class="review-detail-body">
+                    <div class="review-detail-grid">
+                        <div class="review-detail-item"><strong>상태</strong><span class="sr-status-badge sr-status-approved">승인 완료</span></div>
+                        <div class="review-detail-item"><strong>심각도</strong><span class="sr-severity sr-severity-low">LOW</span></div>
+                        <div class="review-detail-item"><strong>검토 유형</strong>DEVICE_REVIEW</div>
+                        <div class="review-detail-item"><strong>대상</strong>jung***@kakao.com (#1377)</div>
+                        <div class="review-detail-item"><strong>접속 위치</strong>일본 도쿄</div>
+                        <div class="review-detail-item"><strong>생성일</strong>2026-06-24 16:52</div>
+                    </div>
+                    <div class="review-detail-item"><strong>요약 / 근거</strong>
+                        <div class="review-detail-pre">해외 출장 중 신규 단말에서 로그인이 발생했습니다. 등록 연락처 SMS 인증을 통과했고 이용 패턴이 평소와 일치하여 정상 사용자로 판단했습니다. 별도 조치 없이 보안 알림만 발송했습니다.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-detail-modal" id="srDetail2034" role="dialog" aria-modal="true">
+            <div class="review-detail-card">
+                <div class="review-detail-head">
+                    <h2 class="review-detail-title">검토 #2034 · 환불 어뷰징 의심</h2>
+                    <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-close" data-target="srDetail2034">닫기</button>
+                </div>
+                <div class="review-detail-body">
+                    <div class="review-detail-grid">
+                        <div class="review-detail-item"><strong>상태</strong><span class="sr-status-badge sr-status-hold">보류</span></div>
+                        <div class="review-detail-item"><strong>심각도</strong><span class="sr-severity sr-severity-high">HIGH</span></div>
+                        <div class="review-detail-item"><strong>검토 유형</strong>USER_SECURITY_REVIEW</div>
+                        <div class="review-detail-item"><strong>대상</strong>kang***@naver.com (#1209)</div>
+                        <div class="review-detail-item"><strong>연관 계정</strong>6개 (동일 기기 지문)</div>
+                        <div class="review-detail-item"><strong>생성일</strong>2026-06-23 13:24</div>
+                    </div>
+                    <div class="review-detail-item"><strong>요약 / 근거</strong>
+                        <div class="review-detail-pre">동일 결제수단과 기기 지문으로 단기간에 신규 계정 6개가 생성되어 신규가입 쿠폰을 반복 사용했습니다. 프로모션 정책 위반 가능성이 있어 재무팀과의 협의가 필요하며, 결과 수신 시까지 보류 상태입니다.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-detail-modal" id="srDetail2033" role="dialog" aria-modal="true">
+            <div class="review-detail-card">
+                <div class="review-detail-head">
+                    <h2 class="review-detail-title">검토 #2033 · 오탐 신고 반려</h2>
+                    <button type="button" class="adm-btn adm-btn-ghost js-security-review-detail-close" data-target="srDetail2033">닫기</button>
+                </div>
+                <div class="review-detail-body">
+                    <div class="review-detail-grid">
+                        <div class="review-detail-item"><strong>상태</strong><span class="sr-status-badge sr-status-rejected">미승인</span></div>
+                        <div class="review-detail-item"><strong>심각도</strong><span class="sr-severity sr-severity-low">LOW</span></div>
+                        <div class="review-detail-item"><strong>검토 유형</strong>CONTENT_REVIEW</div>
+                        <div class="review-detail-item"><strong>대상</strong>윤하늘 (#1044)</div>
+                        <div class="review-detail-item"><strong>신고 건수</strong>9건 (동일 출처 추정)</div>
+                        <div class="review-detail-item"><strong>생성일</strong>2026-06-22 10:16</div>
+                    </div>
+                    <div class="review-detail-item"><strong>요약 / 근거</strong>
+                        <div class="review-detail-pre">여행 후기 게시글에 대한 신고를 검토한 결과 정책 위반 사항이 없는 정상 콘텐츠로 확인되었습니다. 경쟁 업체로 추정되는 계정의 무더기 신고로 판단하여 신고를 반려하고 게시글을 정상 유지했습니다.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -917,6 +1325,35 @@ body.sa-light .adm-security-review-page .sr-th .sr-sort-ico { color: #2563eb; }
 .adm-security-review-page .sr-empty,
 .adm-security-review-page .sr-empty-cell { padding: 16px; text-align: center; color: #94a3b8; }
 .adm-security-review-page .adm-is-hidden { display: none !important; }
+
+/* status / severity 배지 (sr-) */
+.adm-security-review-page .sr-status-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+    border: 1px solid transparent; white-space: nowrap;
+}
+.adm-security-review-page .sr-status-pending  { background: rgba(251,191,36,0.16); color: #fbbf24; border-color: rgba(251,191,36,0.34); }
+.adm-security-review-page .sr-status-hold     { background: rgba(148,163,184,0.16); color: #cbd5e1; border-color: rgba(148,163,184,0.34); }
+.adm-security-review-page .sr-status-approved { background: rgba(34,197,94,0.16);  color: #22c55e; border-color: rgba(34,197,94,0.34); }
+.adm-security-review-page .sr-status-rejected { background: rgba(239,68,68,0.16);  color: #f87171; border-color: rgba(239,68,68,0.34); }
+
+.adm-security-review-page .sr-severity { font-size: 12px; font-weight: 700; letter-spacing: 0.02em; }
+.adm-security-review-page .sr-severity-critical { color: #ef4444; }
+.adm-security-review-page .sr-severity-high     { color: #fb923c; }
+.adm-security-review-page .sr-severity-medium   { color: #fbbf24; }
+.adm-security-review-page .sr-severity-low      { color: #94a3b8; }
+
+.adm-security-review-page .sr-type-chip {
+    display: inline-block; font-size: 11px; font-weight: 600; font-family: "Inter", monospace;
+    color: #93c5fd; background: rgba(59,130,246,0.10); border: 1px solid rgba(59,130,246,0.24);
+    padding: 2px 7px; border-radius: 6px; white-space: nowrap;
+}
+.adm-security-review-page .sr-target-link {
+    color: #60a5fa; text-decoration: none; font-weight: 600; cursor: pointer;
+}
+.adm-security-review-page .sr-target-link:hover { text-decoration: underline; }
+.adm-security-review-page .sr-target-sub { display: block; font-size: 11px; color: #94a3b8; margin-top: 2px; }
+body.sa-light .adm-security-review-page .sr-status-hold { color: #475569; }
 
 @media (max-width: 1180px) {
     .adm-security-review-page .adm-security-review-filterbar { flex-wrap: wrap; }

@@ -486,7 +486,7 @@ window.ADMIN_TRANSLATION_UI = {
         <div class="adm-card-head">
             <div class="adm-card-title">
                 계정 복구 / 인증 / 변경 이력
-                <span id="securityTotalLabel" class="adm-section-total-inline">총 0건</span>
+                <span id="securityTotalLabel" class="adm-section-total-inline">총 9건</span>
             </div>
             <div class="adm-section-head-actions">
                 <select class="adm-select adm-audit-export-format" id="securityExportFormat">
@@ -592,7 +592,158 @@ window.ADMIN_TRANSLATION_UI = {
 
 
 
-    <tr class="adm-local-empty"><td colspan="13" style="text-align:center;padding:40px;color:#64748b;">조회 결과가 없습니다.</td></tr>
+    <tr class="js-security-row"
+        data-time="1782098765000" data-target-member="여행자은우 sunny_woo 10428" data-actor="SYSTEM  " data-event-type="RESET_PASSWORD" data-event-stage="COMPLETE" data-input="sunny_woo" data-target-email="kim***@gmail.com" data-success="1" data-reason="" data-ip="203.0.113.24" data-request-id="REQ-20260628-7F3A19" data-original-index="0">
+        <td class="adm-check-cell"><input type="checkbox" class="adm-check js-security-row-check" value="50128" onchange="updateSecuritySelectionState()"></td>
+        <td><button type="button" class="adm-cell-link" data-date="2026-06-28" onclick="filterSecurityByDate(this.dataset.date)"><span>2026.06.28 21:46:05</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+        <td><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10428" data-default-tab="security" style="font-weight:700;color:#93c5fd;">여행자은우</button><div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10428" data-default-tab="security" style="color:#94a3b8;">@sunny_woo</button></div></td>
+        <td><span style="color:#64748b;">시스템</span></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventType" data-param-value="RESET_PASSWORD" onclick="applySecuritySelectFilter(this)"><span>비밀번호 재설정</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventStage" data-param-value="COMPLETE" onclick="applySecuritySelectFilter(this)"><span>완료</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="sunny_woo" onclick="applySecurityKeywordFilter(this)"><span>sunny_woo</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="kim***@gmail.com" onclick="applySecurityKeywordFilter(this)"><span>kim***@gmail.com</span><span class="adm-cell-link-note">같은 이메일</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySecuritySelectFilter(this)"><span class="status-badge ACTIVE">성공</span></button></td>
+        <td><div class="adm-ellipsis-block"><span>-</span></div></td>
+        <td><button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.24" data-default-tab="security"><span style="color:#93c5fd;">203.0.113.24</span><span class="adm-cell-link-note">같은 IP</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-request-key="REQ-20260628-7F3A19" onclick="applySecurityRequestFlowFilter(this)"><span class="adm-ellipsis-line" style="font-size:12px;color:#cbd5e1;">REQ-20260628-7F3A19</span></button></td>
+        <td><button type="button" class="adm-row-btn detail" data-time="2026.06.28 21:46:05" data-target-user="여행자은우 (@sunny_woo)" data-actor="시스템" data-event-type="RESET_PASSWORD" data-event-stage="COMPLETE" data-identifier="sunny_woo" data-target-email="kim***@gmail.com" data-success="SUCCESS" data-fail-reason="" data-detail-msg="비밀번호 재설정이 정상 완료됨." data-ip="203.0.113.24" data-request-id="REQ-20260628-7F3A19" data-request-key="REQ-20260628-7F3A19" data-flow-trace="FLOW-9C12AD" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0" onclick="openSecurityDetail(this)">상세 보기</button></td>
+    </tr>
+
+    <tr class="js-security-row"
+        data-time="1782090132000" data-target-member="박서연 seoyeon_p 10193" data-actor="SYSTEM  " data-event-type="FIND_PASSWORD" data-event-stage="REQUEST" data-input="seoyeon_p" data-target-email="seo***@naver.com" data-success="0" data-reason="가입되지 않은 이메일" data-ip="198.51.100.77" data-request-id="REQ-20260628-2B8C04" data-original-index="1">
+        <td class="adm-check-cell"><input type="checkbox" class="adm-check js-security-row-check" value="50127" onchange="updateSecuritySelectionState()"></td>
+        <td><button type="button" class="adm-cell-link" data-date="2026-06-28" onclick="filterSecurityByDate(this.dataset.date)"><span>2026.06.28 19:22:12</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+        <td><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10193" data-default-tab="security" style="font-weight:700;color:#93c5fd;">박서연</button><div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10193" data-default-tab="security" style="color:#94a3b8;">@seoyeon_p</button></div></td>
+        <td><span style="color:#64748b;">시스템</span></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventType" data-param-value="FIND_PASSWORD" onclick="applySecuritySelectFilter(this)"><span>비밀번호 찾기</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventStage" data-param-value="REQUEST" onclick="applySecuritySelectFilter(this)"><span>요청</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="seoyeon_p" onclick="applySecurityKeywordFilter(this)"><span>seoyeon_p</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="seo***@naver.com" onclick="applySecurityKeywordFilter(this)"><span>seo***@naver.com</span><span class="adm-cell-link-note">같은 이메일</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="success" data-param-value="FAIL" onclick="applySecuritySelectFilter(this)"><span class="status-badge DELETED">실패</span></button></td>
+        <td><div class="adm-ellipsis-block"><button type="button" class="adm-cell-link" data-keyword="가입되지 않은 이메일" onclick="applySecurityKeywordFilter(this)"><span>가입되지 않은 이메일</span><span class="adm-cell-link-note">같은 값</span></button></div></td>
+        <td><button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="198.51.100.77" data-default-tab="security"><span style="color:#93c5fd;">198.51.100.77</span><span class="adm-cell-link-note">같은 IP</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-request-key="REQ-20260628-2B8C04" onclick="applySecurityRequestFlowFilter(this)"><span class="adm-ellipsis-line" style="font-size:12px;color:#cbd5e1;">REQ-20260628-2B8C04</span></button></td>
+        <td><button type="button" class="adm-row-btn detail" data-time="2026.06.28 19:22:12" data-target-user="박서연 (@seoyeon_p)" data-actor="시스템" data-event-type="FIND_PASSWORD" data-event-stage="REQUEST" data-identifier="seoyeon_p" data-target-email="seo***@naver.com" data-success="FAIL" data-fail-reason="가입되지 않은 이메일" data-detail-msg="입력한 이메일로 가입된 계정을 찾을 수 없음." data-ip="198.51.100.77" data-request-id="REQ-20260628-2B8C04" data-request-key="REQ-20260628-2B8C04" data-flow-trace="FLOW-44E1B2" data-user-agent="Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) Safari/605.1" onclick="openSecurityDetail(this)">상세 보기</button></td>
+    </tr>
+
+    <tr class="js-security-row"
+        data-time="1782071489000" data-target-member="이준호 junho.lee 9982" data-actor="관리자 admin_choi 1" data-event-type="EMAIL_LOGIN_TOGGLE" data-event-stage="COMPLETE" data-input="junho.lee" data-target-email="lee***@gmail.com" data-success="1" data-reason="" data-ip="192.0.2.51" data-request-id="REQ-20260628-91DD7E" data-original-index="2">
+        <td class="adm-check-cell"><input type="checkbox" class="adm-check js-security-row-check" value="50125" onchange="updateSecuritySelectionState()"></td>
+        <td><button type="button" class="adm-cell-link" data-date="2026-06-28" onclick="filterSecurityByDate(this.dataset.date)"><span>2026.06.28 14:11:29</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+        <td><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="9982" data-default-tab="security" style="font-weight:700;color:#93c5fd;">이준호</button><div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="9982" data-default-tab="security" style="color:#94a3b8;">@junho.lee</button></div></td>
+        <td><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="1" data-default-tab="security" style="font-weight:700;color:#93c5fd;">관리자</button><div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="1" data-default-tab="security" style="color:#94a3b8;">@admin_choi</button></div></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventType" data-param-value="EMAIL_LOGIN_TOGGLE" onclick="applySecuritySelectFilter(this)"><span>이메일 로그인 전환</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventStage" data-param-value="COMPLETE" onclick="applySecuritySelectFilter(this)"><span>완료</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="junho.lee" onclick="applySecurityKeywordFilter(this)"><span>junho.lee</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="lee***@gmail.com" onclick="applySecurityKeywordFilter(this)"><span>lee***@gmail.com</span><span class="adm-cell-link-note">같은 이메일</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySecuritySelectFilter(this)"><span class="status-badge ACTIVE">성공</span></button></td>
+        <td><div class="adm-ellipsis-block"><span>-</span><div class="adm-cell-link-note adm-ellipsis-line" style="margin-top:6px;">관리자에 의해 이메일 로그인이 활성화됨.</div></div></td>
+        <td><button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="192.0.2.51" data-default-tab="security"><span style="color:#93c5fd;">192.0.2.51</span><span class="adm-cell-link-note">같은 IP</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-request-key="REQ-20260628-91DD7E" onclick="applySecurityRequestFlowFilter(this)"><span class="adm-ellipsis-line" style="font-size:12px;color:#cbd5e1;">REQ-20260628-91DD7E</span></button></td>
+        <td><button type="button" class="adm-row-btn detail" data-time="2026.06.28 14:11:29" data-target-user="이준호 (@junho.lee)" data-actor="관리자 (@admin_choi)" data-event-type="EMAIL_LOGIN_TOGGLE" data-event-stage="COMPLETE" data-identifier="junho.lee" data-target-email="lee***@gmail.com" data-success="SUCCESS" data-fail-reason="" data-detail-msg="관리자에 의해 이메일 로그인이 활성화됨." data-ip="192.0.2.51" data-request-id="REQ-20260628-91DD7E" data-request-key="REQ-20260628-91DD7E" data-flow-trace="FLOW-71AA39" data-user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Chrome/125.0" onclick="openSecurityDetail(this)">상세 보기</button></td>
+    </tr>
+
+    <tr class="js-security-row"
+        data-time="1782020041000" data-target-member="최민지 minji_c 10510" data-actor="SYSTEM  " data-event-type="EMAIL_VERIFY" data-event-stage="VERIFY" data-input="minji_c" data-target-email="cho***@daum.net" data-success="1" data-reason="" data-ip="203.0.113.88" data-request-id="REQ-20260627-A4F8C1" data-original-index="3">
+        <td class="adm-check-cell"><input type="checkbox" class="adm-check js-security-row-check" value="50121" onchange="updateSecuritySelectionState()"></td>
+        <td><button type="button" class="adm-cell-link" data-date="2026-06-27" onclick="filterSecurityByDate(this.dataset.date)"><span>2026.06.27 23:54:01</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+        <td><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10510" data-default-tab="security" style="font-weight:700;color:#93c5fd;">최민지</button><div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10510" data-default-tab="security" style="color:#94a3b8;">@minji_c</button></div></td>
+        <td><span style="color:#64748b;">시스템</span></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventType" data-param-value="EMAIL_VERIFY" onclick="applySecuritySelectFilter(this)"><span>이메일 인증</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventStage" data-param-value="VERIFY" onclick="applySecuritySelectFilter(this)"><span>검증</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="minji_c" onclick="applySecurityKeywordFilter(this)"><span>minji_c</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="cho***@daum.net" onclick="applySecurityKeywordFilter(this)"><span>cho***@daum.net</span><span class="adm-cell-link-note">같은 이메일</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySecuritySelectFilter(this)"><span class="status-badge ACTIVE">성공</span></button></td>
+        <td><div class="adm-ellipsis-block"><span>-</span></div></td>
+        <td><button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.88" data-default-tab="security"><span style="color:#93c5fd;">203.0.113.88</span><span class="adm-cell-link-note">같은 IP</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-request-key="REQ-20260627-A4F8C1" onclick="applySecurityRequestFlowFilter(this)"><span class="adm-ellipsis-line" style="font-size:12px;color:#cbd5e1;">REQ-20260627-A4F8C1</span></button></td>
+        <td><button type="button" class="adm-row-btn detail" data-time="2026.06.27 23:54:01" data-target-user="최민지 (@minji_c)" data-actor="시스템" data-event-type="EMAIL_VERIFY" data-event-stage="VERIFY" data-identifier="minji_c" data-target-email="cho***@daum.net" data-success="SUCCESS" data-fail-reason="" data-detail-msg="이메일 인증 토큰 검증 성공." data-ip="203.0.113.88" data-request-id="REQ-20260627-A4F8C1" data-request-key="REQ-20260627-A4F8C1" data-flow-trace="FLOW-2D90F5" data-user-agent="Mozilla/5.0 (Linux; Android 14; SM-S921N) Chrome/125.0 Mobile" onclick="openSecurityDetail(this)">상세 보기</button></td>
+    </tr>
+
+    <tr class="js-security-row"
+        data-time="1781998623000" data-target-member="정우성 woosung.j 10044" data-actor="SYSTEM  " data-event-type="PASSWORD_CHANGE" data-event-stage="COMPLETE" data-input="woosung.j" data-target-email="jun***@gmail.com" data-success="1" data-reason="" data-ip="198.51.100.12" data-request-id="REQ-20260627-55E2B0" data-original-index="4">
+        <td class="adm-check-cell"><input type="checkbox" class="adm-check js-security-row-check" value="50117" onchange="updateSecuritySelectionState()"></td>
+        <td><button type="button" class="adm-cell-link" data-date="2026-06-27" onclick="filterSecurityByDate(this.dataset.date)"><span>2026.06.27 18:03:43</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+        <td><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10044" data-default-tab="security" style="font-weight:700;color:#93c5fd;">정우성</button><div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10044" data-default-tab="security" style="color:#94a3b8;">@woosung.j</button></div></td>
+        <td><span style="color:#64748b;">시스템</span></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventType" data-param-value="PASSWORD_CHANGE" onclick="applySecuritySelectFilter(this)"><span>비밀번호 변경</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventStage" data-param-value="COMPLETE" onclick="applySecuritySelectFilter(this)"><span>완료</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="woosung.j" onclick="applySecurityKeywordFilter(this)"><span>woosung.j</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="jun***@gmail.com" onclick="applySecurityKeywordFilter(this)"><span>jun***@gmail.com</span><span class="adm-cell-link-note">같은 이메일</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySecuritySelectFilter(this)"><span class="status-badge ACTIVE">성공</span></button></td>
+        <td><div class="adm-ellipsis-block"><span>-</span></div></td>
+        <td><button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="198.51.100.12" data-default-tab="security"><span style="color:#93c5fd;">198.51.100.12</span><span class="adm-cell-link-note">같은 IP</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-request-key="REQ-20260627-55E2B0" onclick="applySecurityRequestFlowFilter(this)"><span class="adm-ellipsis-line" style="font-size:12px;color:#cbd5e1;">REQ-20260627-55E2B0</span></button></td>
+        <td><button type="button" class="adm-row-btn detail" data-time="2026.06.27 18:03:43" data-target-user="정우성 (@woosung.j)" data-actor="시스템" data-event-type="PASSWORD_CHANGE" data-event-stage="COMPLETE" data-identifier="woosung.j" data-target-email="jun***@gmail.com" data-success="SUCCESS" data-fail-reason="" data-detail-msg="마이페이지에서 비밀번호 변경 완료." data-ip="198.51.100.12" data-request-id="REQ-20260627-55E2B0" data-request-key="REQ-20260627-55E2B0" data-flow-trace="FLOW-83BC10" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Edge/125.0" onclick="openSecurityDetail(this)">상세 보기</button></td>
+    </tr>
+
+    <tr class="js-security-row"
+        data-time="1781972210000" data-target-member="강하늘 haneul_k 10302" data-actor="SYSTEM  " data-event-type="RESET_PASSWORD" data-event-stage="VERIFY" data-input="haneul_k" data-target-email="kan***@nate.com" data-success="0" data-reason="만료된 인증 토큰" data-ip="203.0.113.140" data-request-id="REQ-20260627-1C77AA" data-original-index="5">
+        <td class="adm-check-cell"><input type="checkbox" class="adm-check js-security-row-check" value="50112" onchange="updateSecuritySelectionState()"></td>
+        <td><button type="button" class="adm-cell-link" data-date="2026-06-27" onclick="filterSecurityByDate(this.dataset.date)"><span>2026.06.27 10:43:30</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+        <td><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10302" data-default-tab="security" style="font-weight:700;color:#93c5fd;">강하늘</button><div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10302" data-default-tab="security" style="color:#94a3b8;">@haneul_k</button></div></td>
+        <td><span style="color:#64748b;">시스템</span></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventType" data-param-value="RESET_PASSWORD" onclick="applySecuritySelectFilter(this)"><span>비밀번호 재설정</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventStage" data-param-value="VERIFY" onclick="applySecuritySelectFilter(this)"><span>검증</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="haneul_k" onclick="applySecurityKeywordFilter(this)"><span>haneul_k</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="kan***@nate.com" onclick="applySecurityKeywordFilter(this)"><span>kan***@nate.com</span><span class="adm-cell-link-note">같은 이메일</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="success" data-param-value="FAIL" onclick="applySecuritySelectFilter(this)"><span class="status-badge DELETED">실패</span></button></td>
+        <td><div class="adm-ellipsis-block"><button type="button" class="adm-cell-link" data-keyword="만료된 인증 토큰" onclick="applySecurityKeywordFilter(this)"><span>만료된 인증 토큰</span><span class="adm-cell-link-note">같은 값</span></button><div class="adm-cell-link-note adm-ellipsis-line" style="margin-top:6px;">토큰 발급 후 30분 경과로 검증 거부됨.</div></div></td>
+        <td><button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.140" data-default-tab="security"><span style="color:#93c5fd;">203.0.113.140</span><span class="adm-cell-link-note">같은 IP</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-request-key="REQ-20260627-1C77AA" onclick="applySecurityRequestFlowFilter(this)"><span class="adm-ellipsis-line" style="font-size:12px;color:#cbd5e1;">REQ-20260627-1C77AA</span></button></td>
+        <td><button type="button" class="adm-row-btn detail" data-time="2026.06.27 10:43:30" data-target-user="강하늘 (@haneul_k)" data-actor="시스템" data-event-type="RESET_PASSWORD" data-event-stage="VERIFY" data-identifier="haneul_k" data-target-email="kan***@nate.com" data-success="FAIL" data-fail-reason="만료된 인증 토큰" data-detail-msg="토큰 발급 후 30분 경과로 검증 거부됨." data-ip="203.0.113.140" data-request-id="REQ-20260627-1C77AA" data-request-key="REQ-20260627-1C77AA" data-flow-trace="FLOW-5E2207" data-user-agent="Mozilla/5.0 (iPad; CPU OS 17_5 like Mac OS X) Safari/605.1" onclick="openSecurityDetail(this)">상세 보기</button></td>
+    </tr>
+
+    <tr class="js-security-row"
+        data-time="1781940088000" data-target-member="윤지아 jia_yoon 10227" data-actor="SYSTEM  " data-event-type="FIND_ID" data-event-stage="COMPLETE" data-input="jia***@kakao.com" data-target-email="jia***@kakao.com" data-success="1" data-reason="" data-ip="192.0.2.203" data-request-id="REQ-20260627-08B3D2" data-original-index="6">
+        <td class="adm-check-cell"><input type="checkbox" class="adm-check js-security-row-check" value="50108" onchange="updateSecuritySelectionState()"></td>
+        <td><button type="button" class="adm-cell-link" data-date="2026-06-27" onclick="filterSecurityByDate(this.dataset.date)"><span>2026.06.27 01:48:08</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+        <td><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10227" data-default-tab="security" style="font-weight:700;color:#93c5fd;">윤지아</button><div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10227" data-default-tab="security" style="color:#94a3b8;">@jia_yoon</button></div></td>
+        <td><span style="color:#64748b;">시스템</span></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventType" data-param-value="FIND_ID" onclick="applySecuritySelectFilter(this)"><span>아이디 찾기</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventStage" data-param-value="COMPLETE" onclick="applySecuritySelectFilter(this)"><span>완료</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="jia***@kakao.com" onclick="applySecurityKeywordFilter(this)"><span>jia***@kakao.com</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="jia***@kakao.com" onclick="applySecurityKeywordFilter(this)"><span>jia***@kakao.com</span><span class="adm-cell-link-note">같은 이메일</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySecuritySelectFilter(this)"><span class="status-badge ACTIVE">성공</span></button></td>
+        <td><div class="adm-ellipsis-block"><span>-</span></div></td>
+        <td><button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="192.0.2.203" data-default-tab="security"><span style="color:#93c5fd;">192.0.2.203</span><span class="adm-cell-link-note">같은 IP</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-request-key="REQ-20260627-08B3D2" onclick="applySecurityRequestFlowFilter(this)"><span class="adm-ellipsis-line" style="font-size:12px;color:#cbd5e1;">REQ-20260627-08B3D2</span></button></td>
+        <td><button type="button" class="adm-row-btn detail" data-time="2026.06.27 01:48:08" data-target-user="윤지아 (@jia_yoon)" data-actor="시스템" data-event-type="FIND_ID" data-event-stage="COMPLETE" data-identifier="jia***@kakao.com" data-target-email="jia***@kakao.com" data-success="SUCCESS" data-fail-reason="" data-detail-msg="이메일로 아이디 안내 메일 발송 완료." data-ip="192.0.2.203" data-request-id="REQ-20260627-08B3D2" data-request-key="REQ-20260627-08B3D2" data-flow-trace="FLOW-1A6F44" data-user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0" onclick="openSecurityDetail(this)">상세 보기</button></td>
+    </tr>
+
+    <tr class="js-security-row"
+        data-time="1781901456000" data-target-member="임수빈 subin.lim 10389" data-actor="SYSTEM  " data-event-type="FIND_PASSWORD" data-event-stage="ISSUE" data-input="subin.lim" data-target-email="lim***@gmail.com" data-success="1" data-reason="" data-ip="198.51.100.205" data-request-id="REQ-20260626-D0C9E7" data-original-index="7">
+        <td class="adm-check-cell"><input type="checkbox" class="adm-check js-security-row-check" value="50101" onchange="updateSecuritySelectionState()"></td>
+        <td><button type="button" class="adm-cell-link" data-date="2026-06-26" onclick="filterSecurityByDate(this.dataset.date)"><span>2026.06.26 15:04:16</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+        <td><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10389" data-default-tab="security" style="font-weight:700;color:#93c5fd;">임수빈</button><div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="10389" data-default-tab="security" style="color:#94a3b8;">@subin.lim</button></div></td>
+        <td><span style="color:#64748b;">시스템</span></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventType" data-param-value="FIND_PASSWORD" onclick="applySecuritySelectFilter(this)"><span>비밀번호 찾기</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventStage" data-param-value="ISSUE" onclick="applySecuritySelectFilter(this)"><span>발급</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="subin.lim" onclick="applySecurityKeywordFilter(this)"><span>subin.lim</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="lim***@gmail.com" onclick="applySecurityKeywordFilter(this)"><span>lim***@gmail.com</span><span class="adm-cell-link-note">같은 이메일</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="success" data-param-value="SUCCESS" onclick="applySecuritySelectFilter(this)"><span class="status-badge ACTIVE">성공</span></button></td>
+        <td><div class="adm-ellipsis-block"><span>-</span><div class="adm-cell-link-note adm-ellipsis-line" style="margin-top:6px;">재설정 토큰 발급 및 메일 발송 완료.</div></div></td>
+        <td><button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="198.51.100.205" data-default-tab="security"><span style="color:#93c5fd;">198.51.100.205</span><span class="adm-cell-link-note">같은 IP</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-request-key="REQ-20260626-D0C9E7" onclick="applySecurityRequestFlowFilter(this)"><span class="adm-ellipsis-line" style="font-size:12px;color:#cbd5e1;">REQ-20260626-D0C9E7</span></button></td>
+        <td><button type="button" class="adm-row-btn detail" data-time="2026.06.26 15:04:16" data-target-user="임수빈 (@subin.lim)" data-actor="시스템" data-event-type="FIND_PASSWORD" data-event-stage="ISSUE" data-identifier="subin.lim" data-target-email="lim***@gmail.com" data-success="SUCCESS" data-fail-reason="" data-detail-msg="재설정 토큰 발급 및 메일 발송 완료." data-ip="198.51.100.205" data-request-id="REQ-20260626-D0C9E7" data-request-key="REQ-20260626-D0C9E7" data-flow-trace="FLOW-6B8E91" data-user-agent="Mozilla/5.0 (Linux; Android 13; Pixel 7) Chrome/124.0 Mobile" onclick="openSecurityDetail(this)">상세 보기</button></td>
+    </tr>
+
+    <tr class="js-security-row"
+        data-time="1781858900000" data-target-member="알 수 없음  " data-actor="SYSTEM  " data-event-type="EMAIL_VERIFY" data-event-stage="REQUEST" data-input="hong***@gmail.com" data-target-email="hong***@gmail.com" data-success="0" data-reason="동일 IP 단시간 다수 요청(레이트리밋)" data-ip="203.0.113.7" data-request-id="REQ-20260626-3FA0B5" data-original-index="8">
+        <td class="adm-check-cell"><input type="checkbox" class="adm-check js-security-row-check" value="50094" onchange="updateSecuritySelectionState()"></td>
+        <td><button type="button" class="adm-cell-link" data-date="2026-06-26" onclick="filterSecurityByDate(this.dataset.date)"><span>2026.06.26 03:15:00</span><span class="adm-cell-link-note">같은 날짜</span></button></td>
+        <td><span style="color:#64748b;">미식별</span></td>
+        <td><span style="color:#64748b;">시스템</span></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventType" data-param-value="EMAIL_VERIFY" onclick="applySecuritySelectFilter(this)"><span>이메일 인증</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="eventStage" data-param-value="REQUEST" onclick="applySecuritySelectFilter(this)"><span>요청</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="hong***@gmail.com" onclick="applySecurityKeywordFilter(this)"><span>hong***@gmail.com</span><span class="adm-cell-link-note">같은 값</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-keyword="hong***@gmail.com" onclick="applySecurityKeywordFilter(this)"><span>hong***@gmail.com</span><span class="adm-cell-link-note">같은 이메일</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-param-name="success" data-param-value="FAIL" onclick="applySecuritySelectFilter(this)"><span class="status-badge DELETED">실패</span></button></td>
+        <td><div class="adm-ellipsis-block"><button type="button" class="adm-cell-link" data-keyword="동일 IP 단시간 다수 요청(레이트리밋)" onclick="applySecurityKeywordFilter(this)"><span>동일 IP 단시간 다수 요청(레이트리밋)</span><span class="adm-cell-link-note">같은 값</span></button><div class="adm-cell-link-note adm-ellipsis-line" style="margin-top:6px;">1분 내 6회 인증 요청으로 차단됨.</div></div></td>
+        <td><button type="button" class="adm-cell-link js-open-ip-context" data-ip-address="203.0.113.7" data-default-tab="security"><span style="color:#93c5fd;">203.0.113.7</span><span class="adm-cell-link-note">같은 IP</span></button></td>
+        <td><button type="button" class="adm-cell-link" data-request-key="REQ-20260626-3FA0B5" onclick="applySecurityRequestFlowFilter(this)"><span class="adm-ellipsis-line" style="font-size:12px;color:#cbd5e1;">REQ-20260626-3FA0B5</span></button></td>
+        <td><button type="button" class="adm-row-btn detail" data-time="2026.06.26 03:15:00" data-target-user="알 수 없음" data-actor="시스템" data-event-type="EMAIL_VERIFY" data-event-stage="REQUEST" data-identifier="hong***@gmail.com" data-target-email="hong***@gmail.com" data-success="FAIL" data-fail-reason="동일 IP 단시간 다수 요청(레이트리밋)" data-detail-msg="1분 내 6회 인증 요청으로 차단됨." data-ip="203.0.113.7" data-request-id="REQ-20260626-3FA0B5" data-request-key="REQ-20260626-3FA0B5" data-flow-trace="FLOW-0D44C8" data-user-agent="python-requests/2.31.0" onclick="openSecurityDetail(this)">상세 보기</button></td>
+    </tr>
 
 
                 </tbody>
@@ -600,7 +751,7 @@ window.ADMIN_TRANSLATION_UI = {
         </div>
 
         <div class="adm-local-pagination" data-section="securityAudits" id="securityPaging">
-            <div class="adm-local-page-info js-security-page-info" data-section="securityAudits">총 0건 / 현재 0건</div>
+            <div class="adm-local-page-info js-security-page-info" data-section="securityAudits">총 9건 / 현재 9건</div>
             <div class="adm-local-page-actions">
                 <button type="button" class="adm-btn adm-btn-ghost js-security-prev" onclick="goSecurityPage(securitySectionState.page - 1)" disabled="">이전</button>
                 <span class="js-security-page-state" data-section="securityAudits">1 / 1</span>
@@ -1053,10 +1204,7 @@ function securityRowsToExcelHtml(rows) {
         html += '<tr>' + securityRowToExportValues(row).map(function (v) { return '<td>' + esc(v) + '</td>'; }).join('') + '</tr>';
     });
     html += '</tbody></table>';
-    return '\ufeff<html><head><meta charset="UTF-8"></head><body>' + html + '
-<script>window.__DEMO_BASE__="../";</script>
-<script src="../assets/demo-mock.js"></script>
-</body></html>';
+    return '\ufeff<html><head><meta charset="UTF-8"></head><body>' + html + '</body></html>';
 }
 function downloadSecurityBlob(content, filename, mime) {
     const blob = new Blob([content], {type: mime});
@@ -1196,7 +1344,7 @@ function initSecuritySection() {
     markSecurityOriginalIndices(existingRows);
     const pageState = document.querySelector('.js-security-page-state');
     const totalPages = pageState && pageState.textContent.indexOf('/') >= 0 ? Number(pageState.textContent.split('/')[1].trim()) : 1;
-    updateSecurityPaginationMeta(securitySectionState.page, totalPages, Number('0' || existingRows.length), existingRows.length);
+    updateSecurityPaginationMeta(securitySectionState.page, totalPages, existingRows.length, existingRows.length);
     updateSecuritySortIndicators();
     updateSecuritySelectionState();
     if (securitySectionState.mode === 'CLIENT') renderSecurityByMode(1);
@@ -2185,4 +2333,6 @@ document.addEventListener('keydown', e => {
 
 
 
+<script>window.__DEMO_BASE__="../";</script>
+<script src="../assets/demo-mock.js"></script>
 </body></html>

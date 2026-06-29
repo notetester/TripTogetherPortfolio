@@ -431,15 +431,83 @@ window.ADMIN_TRANSLATION_UI = {
         <div class="adm-card-head">
             <div class="adm-card-title">
                 운영 정책 센터
-                <span class="adm-section-total-inline">총 0건</span>
+                <span class="adm-section-total-inline">총 8건</span>
             </div>
         </div>
         <div class="adm-card-body">
             <div class="policy-overview-grid">
-                
-                
-                    <div class="adm-policy-empty">데이터가 없습니다.</div>
-                
+                <div class="policy-overview-card">
+                    <div class="policy-overview-eyebrow">회원 관리</div>
+                    <div class="policy-overview-title">휴면 계정 전환</div>
+                    <div class="policy-overview-meta">
+                        상태: <span class="status-badge ACTIVE">활성</span>
+                    </div>
+                    <div class="policy-overview-meta">다음 실행: 2026.06.30 03:00</div>
+                    <div class="policy-overview-meta">최근 실행: 2026.06.29 03:00 / SUCCESS</div>
+                </div>
+                <div class="policy-overview-card">
+                    <div class="policy-overview-eyebrow">회원 관리</div>
+                    <div class="policy-overview-title">회원 등급 정산</div>
+                    <div class="policy-overview-meta">
+                        상태: <span class="status-badge ACTIVE">활성</span>
+                    </div>
+                    <div class="policy-overview-meta">다음 실행: 2026.07.01 04:30</div>
+                    <div class="policy-overview-meta">최근 실행: 2026.06.01 04:30 / SUCCESS</div>
+                </div>
+                <div class="policy-overview-card">
+                    <div class="policy-overview-eyebrow">인증</div>
+                    <div class="policy-overview-title">만료 토큰 정리</div>
+                    <div class="policy-overview-meta">
+                        상태: <span class="status-badge ACTIVE">활성</span>
+                    </div>
+                    <div class="policy-overview-meta">다음 실행: 2026.06.29 18:00</div>
+                    <div class="policy-overview-meta">최근 실행: 2026.06.29 12:00 / SUCCESS</div>
+                </div>
+                <div class="policy-overview-card">
+                    <div class="policy-overview-eyebrow">보안</div>
+                    <div class="policy-overview-title">로그인 감사 로그 보존</div>
+                    <div class="policy-overview-meta">
+                        상태: <span class="status-badge ACTIVE">활성</span>
+                    </div>
+                    <div class="policy-overview-meta">다음 실행: 2026.06.30 04:00</div>
+                    <div class="policy-overview-meta">최근 실행: 2026.06.29 04:00 / SUCCESS</div>
+                </div>
+                <div class="policy-overview-card">
+                    <div class="policy-overview-eyebrow">AI</div>
+                    <div class="policy-overview-title">챗봇 일일 할당량 초기화</div>
+                    <div class="policy-overview-meta">
+                        상태: <span class="status-badge ACTIVE">활성</span>
+                    </div>
+                    <div class="policy-overview-meta">다음 실행: 2026.06.30 00:00</div>
+                    <div class="policy-overview-meta">최근 실행: 2026.06.29 00:00 / SUCCESS</div>
+                </div>
+                <div class="policy-overview-card">
+                    <div class="policy-overview-eyebrow">콘텐츠</div>
+                    <div class="policy-overview-title">신고 자동 종결</div>
+                    <div class="policy-overview-meta">
+                        상태: <span class="status-badge DORMANT">비활성</span>
+                    </div>
+                    <div class="policy-overview-meta">다음 실행: 미예약</div>
+                    <div class="policy-overview-meta">최근 실행: 2026.06.18 10:24 / SUCCESS</div>
+                </div>
+                <div class="policy-overview-card">
+                    <div class="policy-overview-eyebrow">운영</div>
+                    <div class="policy-overview-title">임시 업로드 파일 정리</div>
+                    <div class="policy-overview-meta">
+                        상태: <span class="status-badge ACTIVE">활성</span>
+                    </div>
+                    <div class="policy-overview-meta">다음 실행: 2026.06.30 02:30</div>
+                    <div class="policy-overview-meta">최근 실행: 2026.06.29 02:30 / FAILED</div>
+                </div>
+                <div class="policy-overview-card">
+                    <div class="policy-overview-eyebrow">알림</div>
+                    <div class="policy-overview-title">알림 다이제스트 발송</div>
+                    <div class="policy-overview-meta">
+                        상태: <span class="status-badge ACTIVE">활성</span>
+                    </div>
+                    <div class="policy-overview-meta">다음 실행: 2026.06.30 00:00</div>
+                    <div class="policy-overview-meta">최근 실행: 2026.06.29 12:00 / SUCCESS</div>
+                </div>
             </div>
         </div>
     </div>
@@ -448,7 +516,7 @@ window.ADMIN_TRANSLATION_UI = {
         <div class="adm-card-head">
             <div class="adm-card-title">
                 운영 정책 센터
-                <span class="adm-section-total-inline">총 0건</span>
+                <span class="adm-section-total-inline">총 8건</span>
             </div>
         </div>
         <div class="adm-card-body">
@@ -466,11 +534,154 @@ window.ADMIN_TRANSLATION_UI = {
                     </tr>
                     </thead>
                     <tbody>
-                    
-                    
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="width:42px; text-align:center;"><input type="checkbox" class="adm-check" aria-label="행 선택"></td>
+                        <td>
+                            <button type="button" class="adm-policy-title-link js-policy-modal-open" data-modal-id="policy-modal-DORMANT_ACCOUNT_POLICY">휴면 계정 전환</button>
+                            <div class="adm-page-muted">회원 관리 · DORMANT_ACCOUNT_POLICY</div>
+                        </td>
+                        <td><span class="status-badge ACTIVE">활성</span></td>
+                        <td>DAILY_TIME</td>
+                        <td>2026.06.30 03:00</td>
+                        <td>2026.06.29 03:00<div class="adm-page-muted">SUCCESS</div></td>
+                        <td><span class="adm-policy-message-preview">휴면 전환 대상 18명 처리 완료 (기준 365일)</span></td>
+                        <td>
+                            <div class="adm-policy-row-actions">
+                                <button type="button" class="adm-btn adm-btn-ghost js-policy-modal-open" data-modal-id="policy-modal-DORMANT_ACCOUNT_POLICY">상세</button>
+                                <button type="button" class="adm-btn" onclick="runPolicyNow('DORMANT_ACCOUNT_POLICY', this)">즉시 실행</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="width:42px; text-align:center;"><input type="checkbox" class="adm-check" aria-label="행 선택"></td>
+                        <td>
+                            <button type="button" class="adm-policy-title-link js-policy-modal-open" data-modal-id="policy-modal-MEMBER_LEVEL_SETTLEMENT_POLICY">회원 등급 정산</button>
+                            <div class="adm-page-muted">회원 관리 · MEMBER_LEVEL_SETTLEMENT_POLICY</div>
+                        </td>
+                        <td><span class="status-badge ACTIVE">활성</span></td>
+                        <td>MONTHLY_DAY_TIME</td>
+                        <td>2026.07.01 04:30</td>
+                        <td>2026.06.01 04:30<div class="adm-page-muted">SUCCESS</div></td>
+                        <td><span class="adm-policy-message-preview">활성 회원 2,431명 등급 재산정 (승급 86 · 강등 12)</span></td>
+                        <td>
+                            <div class="adm-policy-row-actions">
+                                <button type="button" class="adm-btn adm-btn-ghost js-policy-modal-open" data-modal-id="policy-modal-MEMBER_LEVEL_SETTLEMENT_POLICY">상세</button>
+                                <button type="button" class="adm-btn" onclick="runPolicyNow('MEMBER_LEVEL_SETTLEMENT_POLICY', this)">즉시 실행</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="width:42px; text-align:center;"><input type="checkbox" class="adm-check" aria-label="행 선택"></td>
+                        <td>
+                            <button type="button" class="adm-policy-title-link js-policy-modal-open" data-modal-id="policy-modal-INACTIVE_TOKEN_CLEANUP_POLICY">만료 토큰 정리</button>
+                            <div class="adm-page-muted">인증 · INACTIVE_TOKEN_CLEANUP_POLICY</div>
+                        </td>
+                        <td><span class="status-badge ACTIVE">활성</span></td>
+                        <td>INTERVAL_HOURS</td>
+                        <td>2026.06.29 18:00</td>
+                        <td>2026.06.29 12:00<div class="adm-page-muted">SUCCESS</div></td>
+                        <td><span class="adm-policy-message-preview">만료 이메일 토큰 342건 삭제 완료</span></td>
+                        <td>
+                            <div class="adm-policy-row-actions">
+                                <button type="button" class="adm-btn adm-btn-ghost js-policy-modal-open" data-modal-id="policy-modal-INACTIVE_TOKEN_CLEANUP_POLICY">상세</button>
+                                <button type="button" class="adm-btn" onclick="runPolicyNow('INACTIVE_TOKEN_CLEANUP_POLICY', this)">즉시 실행</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="width:42px; text-align:center;"><input type="checkbox" class="adm-check" aria-label="행 선택"></td>
+                        <td>
+                            <button type="button" class="adm-policy-title-link js-policy-modal-open" data-modal-id="policy-modal-LOGIN_AUDIT_RETENTION_POLICY">로그인 감사 로그 보존</button>
+                            <div class="adm-page-muted">보안 · LOGIN_AUDIT_RETENTION_POLICY</div>
+                        </td>
+                        <td><span class="status-badge ACTIVE">활성</span></td>
+                        <td>DAILY_TIME</td>
+                        <td>2026.06.30 04:00</td>
+                        <td>2026.06.29 04:00<div class="adm-page-muted">SUCCESS</div></td>
+                        <td><span class="adm-policy-message-preview">보존기간(180일) 초과 로그 4,910건 아카이브 후 삭제</span></td>
+                        <td>
+                            <div class="adm-policy-row-actions">
+                                <button type="button" class="adm-btn adm-btn-ghost js-policy-modal-open" data-modal-id="policy-modal-LOGIN_AUDIT_RETENTION_POLICY">상세</button>
+                                <button type="button" class="adm-btn" onclick="runPolicyNow('LOGIN_AUDIT_RETENTION_POLICY', this)">즉시 실행</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="width:42px; text-align:center;"><input type="checkbox" class="adm-check" aria-label="행 선택"></td>
+                        <td>
+                            <button type="button" class="adm-policy-title-link js-policy-modal-open" data-modal-id="policy-modal-CHATBOT_QUOTA_RESET_POLICY">챗봇 일일 할당량 초기화</button>
+                            <div class="adm-page-muted">AI · CHATBOT_QUOTA_RESET_POLICY</div>
+                        </td>
+                        <td><span class="status-badge ACTIVE">활성</span></td>
+                        <td>DAILY_TIME</td>
+                        <td>2026.06.30 00:00</td>
+                        <td>2026.06.29 00:00<div class="adm-page-muted">SUCCESS</div></td>
+                        <td><span class="adm-policy-message-preview">등급별 일일 사용량 카운터 초기화 (대상 사용자 1,208명)</span></td>
+                        <td>
+                            <div class="adm-policy-row-actions">
+                                <button type="button" class="adm-btn adm-btn-ghost js-policy-modal-open" data-modal-id="policy-modal-CHATBOT_QUOTA_RESET_POLICY">상세</button>
+                                <button type="button" class="adm-btn" onclick="runPolicyNow('CHATBOT_QUOTA_RESET_POLICY', this)">즉시 실행</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="width:42px; text-align:center;"><input type="checkbox" class="adm-check" aria-label="행 선택"></td>
+                        <td>
+                            <button type="button" class="adm-policy-title-link js-policy-modal-open" data-modal-id="policy-modal-COMMUNITY_REPORT_AUTOCLOSE_POLICY">신고 자동 종결</button>
+                            <div class="adm-page-muted">콘텐츠 · COMMUNITY_REPORT_AUTOCLOSE_POLICY</div>
+                        </td>
+                        <td><span class="status-badge DORMANT">비활성</span></td>
+                        <td>MANUAL</td>
+                        <td>미예약</td>
+                        <td>2026.06.18 10:24<div class="adm-page-muted">SUCCESS</div></td>
+                        <td><span class="adm-policy-message-preview">7일 이상 미처리 신고 23건 자동 종결 (수동 실행)</span></td>
+                        <td>
+                            <div class="adm-policy-row-actions">
+                                <button type="button" class="adm-btn adm-btn-ghost js-policy-modal-open" data-modal-id="policy-modal-COMMUNITY_REPORT_AUTOCLOSE_POLICY">상세</button>
+                                <button type="button" class="adm-btn" onclick="runPolicyNow('COMMUNITY_REPORT_AUTOCLOSE_POLICY', this)">즉시 실행</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="width:42px; text-align:center;"><input type="checkbox" class="adm-check" aria-label="행 선택"></td>
+                        <td>
+                            <button type="button" class="adm-policy-title-link js-policy-modal-open" data-modal-id="policy-modal-UPLOAD_TEMP_CLEANUP_POLICY">임시 업로드 파일 정리</button>
+                            <div class="adm-page-muted">운영 · UPLOAD_TEMP_CLEANUP_POLICY</div>
+                        </td>
+                        <td><span class="status-badge ACTIVE">활성</span></td>
+                        <td>DAILY_TIME</td>
+                        <td>2026.06.30 02:30</td>
+                        <td>2026.06.29 02:30<div class="adm-page-muted">FAILED</div></td>
+                        <td><span class="adm-policy-message-preview">업로드 디렉터리 접근 거부 — 3개 파일 정리 실패, 재시도 예약됨</span></td>
+                        <td>
+                            <div class="adm-policy-row-actions">
+                                <button type="button" class="adm-btn adm-btn-ghost js-policy-modal-open" data-modal-id="policy-modal-UPLOAD_TEMP_CLEANUP_POLICY">상세</button>
+                                <button type="button" class="adm-btn" onclick="runPolicyNow('UPLOAD_TEMP_CLEANUP_POLICY', this)">즉시 실행</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="width:42px; text-align:center;"><input type="checkbox" class="adm-check" aria-label="행 선택"></td>
+                        <td>
+                            <button type="button" class="adm-policy-title-link js-policy-modal-open" data-modal-id="policy-modal-NOTIFICATION_DIGEST_POLICY">알림 다이제스트 발송</button>
+                            <div class="adm-page-muted">알림 · NOTIFICATION_DIGEST_POLICY</div>
+                        </td>
+                        <td><span class="status-badge ACTIVE">활성</span></td>
+                        <td>INTERVAL_HOURS</td>
+                        <td>2026.06.30 00:00</td>
+                        <td>2026.06.29 12:00<div class="adm-page-muted">SUCCESS</div></td>
+                        <td><span class="adm-policy-message-preview">미확인 알림 요약 메일 발송 (수신 동의 회원 964명)</span></td>
+                        <td>
+                            <div class="adm-policy-row-actions">
+                                <button type="button" class="adm-btn adm-btn-ghost js-policy-modal-open" data-modal-id="policy-modal-NOTIFICATION_DIGEST_POLICY">상세</button>
+                                <button type="button" class="adm-btn" onclick="runPolicyNow('NOTIFICATION_DIGEST_POLICY', this)">즉시 실행</button>
+                            </div>
+                        </td>
+                    </tr>
+
                         <tr data-admin-list-original-empty-row="true" style="display: none;"><td colspan="7" class="adm-empty">데이터가 없습니다.</td></tr>
-                    
-                    <tr data-admin-list-empty-row="true"><td colspan="8" style="text-align: center; color: rgb(100, 116, 139); padding: 28px 12px;">현재 조건에 맞는 항목이 없습니다.</td></tr></tbody>
+
+                    </tbody>
                 </table>
             </div><div class="adm-section-list-footer js-admin-list-tools-footer" data-table-id="admSectionListTable0"><span class="adm-section-list-page-info js-admin-list-page-info">0건 중 0건 표시 · 1/1쪽</span><div class="adm-section-list-page-tools"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev" disabled="">이전</button><button type="button" class="adm-btn adm-btn-ghost js-admin-list-next" disabled="">다음</button></div></div>
         </div>
@@ -478,21 +689,457 @@ window.ADMIN_TRANSLATION_UI = {
 
     <div class="policy-layout">
         <div class="policy-main-column">
-            
+            <div class="adm-modal-overlay adm-policy-edit-modal" id="policy-modal-DORMANT_ACCOUNT_POLICY">
+                <div class="adm-modal adm-policy-edit-dialog policy-card" data-policy-code="DORMANT_ACCOUNT_POLICY" data-config-json="{&quot;inactiveDays&quot;:365,&quot;notifyBeforeDays&quot;:14}" data-schedule-type="DAILY_TIME" data-schedule-interval="" data-schedule-day="" data-schedule-time="03:00">
+                    <div class="adm-modal-head">
+                        <div>
+                            <div class="adm-modal-title">휴면 계정 전환</div>
+                            <div class="adm-card-subtitle">DORMANT_ACCOUNT_POLICY</div>
+                        </div>
+                        <div class="policy-card-head-actions">
+                            <span class="status-badge ACTIVE">활성</span>
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('DORMANT_ACCOUNT_POLICY', this)">즉시 실행</button>
+                            <button type="button" class="adm-modal-close js-policy-modal-close" aria-label="닫기">&times;</button>
+                        </div>
+                    </div>
+                    <div class="adm-modal-body">
+                        <div class="policy-form-grid">
+                            <div class="policy-config-dormant" hidden>
+                                <div class="adm-filter-label">휴면 기준 일수</div>
+                                <input class="adm-input js-policy-inactive-days" type="number" min="30" step="1">
+                            </div>
+                            <div class="policy-config-level" hidden>
+                                <div class="adm-filter-label">등급 정산 범위</div>
+                                <label class="policy-inline-check"><input class="js-policy-only-active" type="checkbox"> 활성 회원만 대상</label>
+                            </div>
+                            <div>
+                                <div class="adm-filter-label">실행 방식</div>
+                                <select class="adm-select js-policy-schedule-type"><option value="DAILY_TIME">매일 지정 시각</option><option value="INTERVAL_HOURS">N시간 주기</option><option value="MONTHLY_DAY_TIME">매월 지정일</option><option value="MANUAL">수동 실행</option></select>
+                            </div>
+                            <div class="js-policy-interval-wrap"><div class="adm-filter-label">실행 주기(시간)</div><input class="adm-input js-policy-interval" type="number" min="1" step="1"></div>
+                            <div class="js-policy-day-wrap"><div class="adm-filter-label">실행일(일)</div><input class="adm-input js-policy-day" type="number" min="1" max="28" step="1"></div>
+                            <div class="js-policy-time-wrap"><div class="adm-filter-label">실행 시각</div><input class="adm-input js-policy-time" type="time"></div>
+                            <div><div class="adm-filter-label">정책 활성화</div><label class="policy-inline-check"><input class="js-policy-active" type="checkbox" checked> 자동 실행 사용</label></div>
+                        </div>
+                        <div class="policy-config-json-wrap">
+                            <div class="policy-config-json-head"><div class="adm-filter-label">설정 JSON</div><button type="button" class="adm-btn adm-btn-ghost js-policy-format-json">정렬</button></div>
+                            <textarea class="adm-input js-policy-config-json" rows="8" spellcheck="false">{"inactiveDays":365,"notifyBeforeDays":14}</textarea>
+                            <div class="adm-card-subtitle policy-config-json-help">정책별 세부 설정값을 JSON 형식으로 입력합니다.</div>
+                        </div>
+                        <div class="policy-card-foot">
+                            <div class="policy-card-foot-note">마지막 메시지: <span class="policy-card-foot-value">휴면 전환 대상 18명 처리 완료 (기준 365일)</span></div>
+                            <div class="policy-card-save-actions"><button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('DORMANT_ACCOUNT_POLICY', this)">저장</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="adm-modal-overlay adm-policy-edit-modal" id="policy-modal-MEMBER_LEVEL_SETTLEMENT_POLICY">
+                <div class="adm-modal adm-policy-edit-dialog policy-card" data-policy-code="MEMBER_LEVEL_SETTLEMENT_POLICY" data-config-json="{&quot;onlyActiveMembers&quot;:true,&quot;gracePeriodDays&quot;:7}" data-schedule-type="MONTHLY_DAY_TIME" data-schedule-interval="" data-schedule-day="1" data-schedule-time="04:30">
+                    <div class="adm-modal-head">
+                        <div>
+                            <div class="adm-modal-title">회원 등급 정산</div>
+                            <div class="adm-card-subtitle">MEMBER_LEVEL_SETTLEMENT_POLICY</div>
+                        </div>
+                        <div class="policy-card-head-actions">
+                            <span class="status-badge ACTIVE">활성</span>
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('MEMBER_LEVEL_SETTLEMENT_POLICY', this)">즉시 실행</button>
+                            <button type="button" class="adm-modal-close js-policy-modal-close" aria-label="닫기">&times;</button>
+                        </div>
+                    </div>
+                    <div class="adm-modal-body">
+                        <div class="policy-form-grid">
+                            <div class="policy-config-dormant" hidden><div class="adm-filter-label">휴면 기준 일수</div><input class="adm-input js-policy-inactive-days" type="number" min="30" step="1"></div>
+                            <div class="policy-config-level" hidden><div class="adm-filter-label">등급 정산 범위</div><label class="policy-inline-check"><input class="js-policy-only-active" type="checkbox"> 활성 회원만 대상</label></div>
+                            <div><div class="adm-filter-label">실행 방식</div><select class="adm-select js-policy-schedule-type"><option value="DAILY_TIME">매일 지정 시각</option><option value="INTERVAL_HOURS">N시간 주기</option><option value="MONTHLY_DAY_TIME">매월 지정일</option><option value="MANUAL">수동 실행</option></select></div>
+                            <div class="js-policy-interval-wrap"><div class="adm-filter-label">실행 주기(시간)</div><input class="adm-input js-policy-interval" type="number" min="1" step="1"></div>
+                            <div class="js-policy-day-wrap"><div class="adm-filter-label">실행일(일)</div><input class="adm-input js-policy-day" type="number" min="1" max="28" step="1"></div>
+                            <div class="js-policy-time-wrap"><div class="adm-filter-label">실행 시각</div><input class="adm-input js-policy-time" type="time"></div>
+                            <div><div class="adm-filter-label">정책 활성화</div><label class="policy-inline-check"><input class="js-policy-active" type="checkbox" checked> 자동 실행 사용</label></div>
+                        </div>
+                        <div class="policy-config-json-wrap">
+                            <div class="policy-config-json-head"><div class="adm-filter-label">설정 JSON</div><button type="button" class="adm-btn adm-btn-ghost js-policy-format-json">정렬</button></div>
+                            <textarea class="adm-input js-policy-config-json" rows="8" spellcheck="false">{"onlyActiveMembers":true,"gracePeriodDays":7}</textarea>
+                            <div class="adm-card-subtitle policy-config-json-help">정책별 세부 설정값을 JSON 형식으로 입력합니다.</div>
+                        </div>
+                        <div class="policy-card-foot">
+                            <div class="policy-card-foot-note">마지막 메시지: <span class="policy-card-foot-value">활성 회원 2,431명 등급 재산정 (승급 86 · 강등 12)</span></div>
+                            <div class="policy-card-save-actions"><button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('MEMBER_LEVEL_SETTLEMENT_POLICY', this)">저장</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="adm-modal-overlay adm-policy-edit-modal" id="policy-modal-INACTIVE_TOKEN_CLEANUP_POLICY">
+                <div class="adm-modal adm-policy-edit-dialog policy-card" data-policy-code="INACTIVE_TOKEN_CLEANUP_POLICY" data-config-json="{&quot;tokenTtlHours&quot;:48,&quot;batchSize&quot;:500}" data-schedule-type="INTERVAL_HOURS" data-schedule-interval="6" data-schedule-day="" data-schedule-time="00:00">
+                    <div class="adm-modal-head">
+                        <div>
+                            <div class="adm-modal-title">만료 토큰 정리</div>
+                            <div class="adm-card-subtitle">INACTIVE_TOKEN_CLEANUP_POLICY</div>
+                        </div>
+                        <div class="policy-card-head-actions">
+                            <span class="status-badge ACTIVE">활성</span>
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('INACTIVE_TOKEN_CLEANUP_POLICY', this)">즉시 실행</button>
+                            <button type="button" class="adm-modal-close js-policy-modal-close" aria-label="닫기">&times;</button>
+                        </div>
+                    </div>
+                    <div class="adm-modal-body">
+                        <div class="policy-form-grid">
+                            <div class="policy-config-dormant" hidden><div class="adm-filter-label">휴면 기준 일수</div><input class="adm-input js-policy-inactive-days" type="number" min="30" step="1"></div>
+                            <div class="policy-config-level" hidden><div class="adm-filter-label">등급 정산 범위</div><label class="policy-inline-check"><input class="js-policy-only-active" type="checkbox"> 활성 회원만 대상</label></div>
+                            <div><div class="adm-filter-label">실행 방식</div><select class="adm-select js-policy-schedule-type"><option value="DAILY_TIME">매일 지정 시각</option><option value="INTERVAL_HOURS">N시간 주기</option><option value="MONTHLY_DAY_TIME">매월 지정일</option><option value="MANUAL">수동 실행</option></select></div>
+                            <div class="js-policy-interval-wrap"><div class="adm-filter-label">실행 주기(시간)</div><input class="adm-input js-policy-interval" type="number" min="1" step="1"></div>
+                            <div class="js-policy-day-wrap"><div class="adm-filter-label">실행일(일)</div><input class="adm-input js-policy-day" type="number" min="1" max="28" step="1"></div>
+                            <div class="js-policy-time-wrap"><div class="adm-filter-label">실행 시각</div><input class="adm-input js-policy-time" type="time"></div>
+                            <div><div class="adm-filter-label">정책 활성화</div><label class="policy-inline-check"><input class="js-policy-active" type="checkbox" checked> 자동 실행 사용</label></div>
+                        </div>
+                        <div class="policy-config-json-wrap">
+                            <div class="policy-config-json-head"><div class="adm-filter-label">설정 JSON</div><button type="button" class="adm-btn adm-btn-ghost js-policy-format-json">정렬</button></div>
+                            <textarea class="adm-input js-policy-config-json" rows="8" spellcheck="false">{"tokenTtlHours":48,"batchSize":500}</textarea>
+                            <div class="adm-card-subtitle policy-config-json-help">정책별 세부 설정값을 JSON 형식으로 입력합니다.</div>
+                        </div>
+                        <div class="policy-card-foot">
+                            <div class="policy-card-foot-note">마지막 메시지: <span class="policy-card-foot-value">만료 이메일 토큰 342건 삭제 완료</span></div>
+                            <div class="policy-card-save-actions"><button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('INACTIVE_TOKEN_CLEANUP_POLICY', this)">저장</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="adm-modal-overlay adm-policy-edit-modal" id="policy-modal-LOGIN_AUDIT_RETENTION_POLICY">
+                <div class="adm-modal adm-policy-edit-dialog policy-card" data-policy-code="LOGIN_AUDIT_RETENTION_POLICY" data-config-json="{&quot;retentionDays&quot;:180,&quot;archiveBeforeDelete&quot;:true}" data-schedule-type="DAILY_TIME" data-schedule-interval="" data-schedule-day="" data-schedule-time="04:00">
+                    <div class="adm-modal-head">
+                        <div>
+                            <div class="adm-modal-title">로그인 감사 로그 보존</div>
+                            <div class="adm-card-subtitle">LOGIN_AUDIT_RETENTION_POLICY</div>
+                        </div>
+                        <div class="policy-card-head-actions">
+                            <span class="status-badge ACTIVE">활성</span>
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('LOGIN_AUDIT_RETENTION_POLICY', this)">즉시 실행</button>
+                            <button type="button" class="adm-modal-close js-policy-modal-close" aria-label="닫기">&times;</button>
+                        </div>
+                    </div>
+                    <div class="adm-modal-body">
+                        <div class="policy-form-grid">
+                            <div class="policy-config-dormant" hidden><div class="adm-filter-label">휴면 기준 일수</div><input class="adm-input js-policy-inactive-days" type="number" min="30" step="1"></div>
+                            <div class="policy-config-level" hidden><div class="adm-filter-label">등급 정산 범위</div><label class="policy-inline-check"><input class="js-policy-only-active" type="checkbox"> 활성 회원만 대상</label></div>
+                            <div><div class="adm-filter-label">실행 방식</div><select class="adm-select js-policy-schedule-type"><option value="DAILY_TIME">매일 지정 시각</option><option value="INTERVAL_HOURS">N시간 주기</option><option value="MONTHLY_DAY_TIME">매월 지정일</option><option value="MANUAL">수동 실행</option></select></div>
+                            <div class="js-policy-interval-wrap"><div class="adm-filter-label">실행 주기(시간)</div><input class="adm-input js-policy-interval" type="number" min="1" step="1"></div>
+                            <div class="js-policy-day-wrap"><div class="adm-filter-label">실행일(일)</div><input class="adm-input js-policy-day" type="number" min="1" max="28" step="1"></div>
+                            <div class="js-policy-time-wrap"><div class="adm-filter-label">실행 시각</div><input class="adm-input js-policy-time" type="time"></div>
+                            <div><div class="adm-filter-label">정책 활성화</div><label class="policy-inline-check"><input class="js-policy-active" type="checkbox" checked> 자동 실행 사용</label></div>
+                        </div>
+                        <div class="policy-config-json-wrap">
+                            <div class="policy-config-json-head"><div class="adm-filter-label">설정 JSON</div><button type="button" class="adm-btn adm-btn-ghost js-policy-format-json">정렬</button></div>
+                            <textarea class="adm-input js-policy-config-json" rows="8" spellcheck="false">{"retentionDays":180,"archiveBeforeDelete":true}</textarea>
+                            <div class="adm-card-subtitle policy-config-json-help">정책별 세부 설정값을 JSON 형식으로 입력합니다.</div>
+                        </div>
+                        <div class="policy-card-foot">
+                            <div class="policy-card-foot-note">마지막 메시지: <span class="policy-card-foot-value">보존기간(180일) 초과 로그 4,910건 아카이브 후 삭제</span></div>
+                            <div class="policy-card-save-actions"><button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('LOGIN_AUDIT_RETENTION_POLICY', this)">저장</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="adm-modal-overlay adm-policy-edit-modal" id="policy-modal-CHATBOT_QUOTA_RESET_POLICY">
+                <div class="adm-modal adm-policy-edit-dialog policy-card" data-policy-code="CHATBOT_QUOTA_RESET_POLICY" data-config-json="{&quot;resetScope&quot;:&quot;DAILY&quot;,&quot;includeGuests&quot;:true}" data-schedule-type="DAILY_TIME" data-schedule-interval="" data-schedule-day="" data-schedule-time="00:00">
+                    <div class="adm-modal-head">
+                        <div>
+                            <div class="adm-modal-title">챗봇 일일 할당량 초기화</div>
+                            <div class="adm-card-subtitle">CHATBOT_QUOTA_RESET_POLICY</div>
+                        </div>
+                        <div class="policy-card-head-actions">
+                            <span class="status-badge ACTIVE">활성</span>
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('CHATBOT_QUOTA_RESET_POLICY', this)">즉시 실행</button>
+                            <button type="button" class="adm-modal-close js-policy-modal-close" aria-label="닫기">&times;</button>
+                        </div>
+                    </div>
+                    <div class="adm-modal-body">
+                        <div class="policy-form-grid">
+                            <div class="policy-config-dormant" hidden><div class="adm-filter-label">휴면 기준 일수</div><input class="adm-input js-policy-inactive-days" type="number" min="30" step="1"></div>
+                            <div class="policy-config-level" hidden><div class="adm-filter-label">등급 정산 범위</div><label class="policy-inline-check"><input class="js-policy-only-active" type="checkbox"> 활성 회원만 대상</label></div>
+                            <div><div class="adm-filter-label">실행 방식</div><select class="adm-select js-policy-schedule-type"><option value="DAILY_TIME">매일 지정 시각</option><option value="INTERVAL_HOURS">N시간 주기</option><option value="MONTHLY_DAY_TIME">매월 지정일</option><option value="MANUAL">수동 실행</option></select></div>
+                            <div class="js-policy-interval-wrap"><div class="adm-filter-label">실행 주기(시간)</div><input class="adm-input js-policy-interval" type="number" min="1" step="1"></div>
+                            <div class="js-policy-day-wrap"><div class="adm-filter-label">실행일(일)</div><input class="adm-input js-policy-day" type="number" min="1" max="28" step="1"></div>
+                            <div class="js-policy-time-wrap"><div class="adm-filter-label">실행 시각</div><input class="adm-input js-policy-time" type="time"></div>
+                            <div><div class="adm-filter-label">정책 활성화</div><label class="policy-inline-check"><input class="js-policy-active" type="checkbox" checked> 자동 실행 사용</label></div>
+                        </div>
+                        <div class="policy-config-json-wrap">
+                            <div class="policy-config-json-head"><div class="adm-filter-label">설정 JSON</div><button type="button" class="adm-btn adm-btn-ghost js-policy-format-json">정렬</button></div>
+                            <textarea class="adm-input js-policy-config-json" rows="8" spellcheck="false">{"resetScope":"DAILY","includeGuests":true}</textarea>
+                            <div class="adm-card-subtitle policy-config-json-help">정책별 세부 설정값을 JSON 형식으로 입력합니다.</div>
+                        </div>
+                        <div class="policy-card-foot">
+                            <div class="policy-card-foot-note">마지막 메시지: <span class="policy-card-foot-value">등급별 일일 사용량 카운터 초기화 (대상 사용자 1,208명)</span></div>
+                            <div class="policy-card-save-actions"><button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('CHATBOT_QUOTA_RESET_POLICY', this)">저장</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="adm-modal-overlay adm-policy-edit-modal" id="policy-modal-COMMUNITY_REPORT_AUTOCLOSE_POLICY">
+                <div class="adm-modal adm-policy-edit-dialog policy-card" data-policy-code="COMMUNITY_REPORT_AUTOCLOSE_POLICY" data-config-json="{&quot;staleDays&quot;:7,&quot;closeAction&quot;:&quot;DISMISS&quot;}" data-schedule-type="MANUAL" data-schedule-interval="" data-schedule-day="" data-schedule-time="00:00">
+                    <div class="adm-modal-head">
+                        <div>
+                            <div class="adm-modal-title">신고 자동 종결</div>
+                            <div class="adm-card-subtitle">COMMUNITY_REPORT_AUTOCLOSE_POLICY</div>
+                        </div>
+                        <div class="policy-card-head-actions">
+                            <span class="status-badge DORMANT">비활성</span>
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('COMMUNITY_REPORT_AUTOCLOSE_POLICY', this)">즉시 실행</button>
+                            <button type="button" class="adm-modal-close js-policy-modal-close" aria-label="닫기">&times;</button>
+                        </div>
+                    </div>
+                    <div class="adm-modal-body">
+                        <div class="policy-form-grid">
+                            <div class="policy-config-dormant" hidden><div class="adm-filter-label">휴면 기준 일수</div><input class="adm-input js-policy-inactive-days" type="number" min="30" step="1"></div>
+                            <div class="policy-config-level" hidden><div class="adm-filter-label">등급 정산 범위</div><label class="policy-inline-check"><input class="js-policy-only-active" type="checkbox"> 활성 회원만 대상</label></div>
+                            <div><div class="adm-filter-label">실행 방식</div><select class="adm-select js-policy-schedule-type"><option value="DAILY_TIME">매일 지정 시각</option><option value="INTERVAL_HOURS">N시간 주기</option><option value="MONTHLY_DAY_TIME">매월 지정일</option><option value="MANUAL">수동 실행</option></select></div>
+                            <div class="js-policy-interval-wrap"><div class="adm-filter-label">실행 주기(시간)</div><input class="adm-input js-policy-interval" type="number" min="1" step="1"></div>
+                            <div class="js-policy-day-wrap"><div class="adm-filter-label">실행일(일)</div><input class="adm-input js-policy-day" type="number" min="1" max="28" step="1"></div>
+                            <div class="js-policy-time-wrap"><div class="adm-filter-label">실행 시각</div><input class="adm-input js-policy-time" type="time"></div>
+                            <div><div class="adm-filter-label">정책 활성화</div><label class="policy-inline-check"><input class="js-policy-active" type="checkbox"> 자동 실행 사용</label></div>
+                        </div>
+                        <div class="policy-config-json-wrap">
+                            <div class="policy-config-json-head"><div class="adm-filter-label">설정 JSON</div><button type="button" class="adm-btn adm-btn-ghost js-policy-format-json">정렬</button></div>
+                            <textarea class="adm-input js-policy-config-json" rows="8" spellcheck="false">{"staleDays":7,"closeAction":"DISMISS"}</textarea>
+                            <div class="adm-card-subtitle policy-config-json-help">정책별 세부 설정값을 JSON 형식으로 입력합니다.</div>
+                        </div>
+                        <div class="policy-card-foot">
+                            <div class="policy-card-foot-note">마지막 메시지: <span class="policy-card-foot-value">7일 이상 미처리 신고 23건 자동 종결 (수동 실행)</span></div>
+                            <div class="policy-card-save-actions"><button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('COMMUNITY_REPORT_AUTOCLOSE_POLICY', this)">저장</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="adm-modal-overlay adm-policy-edit-modal" id="policy-modal-UPLOAD_TEMP_CLEANUP_POLICY">
+                <div class="adm-modal adm-policy-edit-dialog policy-card" data-policy-code="UPLOAD_TEMP_CLEANUP_POLICY" data-config-json="{&quot;tempTtlHours&quot;:24,&quot;targetDir&quot;:&quot;upload/tmp&quot;}" data-schedule-type="DAILY_TIME" data-schedule-interval="" data-schedule-day="" data-schedule-time="02:30">
+                    <div class="adm-modal-head">
+                        <div>
+                            <div class="adm-modal-title">임시 업로드 파일 정리</div>
+                            <div class="adm-card-subtitle">UPLOAD_TEMP_CLEANUP_POLICY</div>
+                        </div>
+                        <div class="policy-card-head-actions">
+                            <span class="status-badge ACTIVE">활성</span>
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('UPLOAD_TEMP_CLEANUP_POLICY', this)">즉시 실행</button>
+                            <button type="button" class="adm-modal-close js-policy-modal-close" aria-label="닫기">&times;</button>
+                        </div>
+                    </div>
+                    <div class="adm-modal-body">
+                        <div class="policy-form-grid">
+                            <div class="policy-config-dormant" hidden><div class="adm-filter-label">휴면 기준 일수</div><input class="adm-input js-policy-inactive-days" type="number" min="30" step="1"></div>
+                            <div class="policy-config-level" hidden><div class="adm-filter-label">등급 정산 범위</div><label class="policy-inline-check"><input class="js-policy-only-active" type="checkbox"> 활성 회원만 대상</label></div>
+                            <div><div class="adm-filter-label">실행 방식</div><select class="adm-select js-policy-schedule-type"><option value="DAILY_TIME">매일 지정 시각</option><option value="INTERVAL_HOURS">N시간 주기</option><option value="MONTHLY_DAY_TIME">매월 지정일</option><option value="MANUAL">수동 실행</option></select></div>
+                            <div class="js-policy-interval-wrap"><div class="adm-filter-label">실행 주기(시간)</div><input class="adm-input js-policy-interval" type="number" min="1" step="1"></div>
+                            <div class="js-policy-day-wrap"><div class="adm-filter-label">실행일(일)</div><input class="adm-input js-policy-day" type="number" min="1" max="28" step="1"></div>
+                            <div class="js-policy-time-wrap"><div class="adm-filter-label">실행 시각</div><input class="adm-input js-policy-time" type="time"></div>
+                            <div><div class="adm-filter-label">정책 활성화</div><label class="policy-inline-check"><input class="js-policy-active" type="checkbox" checked> 자동 실행 사용</label></div>
+                        </div>
+                        <div class="policy-config-json-wrap">
+                            <div class="policy-config-json-head"><div class="adm-filter-label">설정 JSON</div><button type="button" class="adm-btn adm-btn-ghost js-policy-format-json">정렬</button></div>
+                            <textarea class="adm-input js-policy-config-json" rows="8" spellcheck="false">{"tempTtlHours":24,"targetDir":"upload/tmp"}</textarea>
+                            <div class="adm-card-subtitle policy-config-json-help">정책별 세부 설정값을 JSON 형식으로 입력합니다.</div>
+                        </div>
+                        <div class="policy-card-foot">
+                            <div class="policy-card-foot-note">마지막 메시지: <span class="policy-card-foot-value">업로드 디렉터리 접근 거부 — 3개 파일 정리 실패, 재시도 예약됨</span></div>
+                            <div class="policy-card-save-actions"><button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('UPLOAD_TEMP_CLEANUP_POLICY', this)">저장</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="adm-modal-overlay adm-policy-edit-modal" id="policy-modal-NOTIFICATION_DIGEST_POLICY">
+                <div class="adm-modal adm-policy-edit-dialog policy-card" data-policy-code="NOTIFICATION_DIGEST_POLICY" data-config-json="{&quot;digestIntervalHours&quot;:12,&quot;minUnread&quot;:3}" data-schedule-type="INTERVAL_HOURS" data-schedule-interval="12" data-schedule-day="" data-schedule-time="00:00">
+                    <div class="adm-modal-head">
+                        <div>
+                            <div class="adm-modal-title">알림 다이제스트 발송</div>
+                            <div class="adm-card-subtitle">NOTIFICATION_DIGEST_POLICY</div>
+                        </div>
+                        <div class="policy-card-head-actions">
+                            <span class="status-badge ACTIVE">활성</span>
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('NOTIFICATION_DIGEST_POLICY', this)">즉시 실행</button>
+                            <button type="button" class="adm-modal-close js-policy-modal-close" aria-label="닫기">&times;</button>
+                        </div>
+                    </div>
+                    <div class="adm-modal-body">
+                        <div class="policy-form-grid">
+                            <div class="policy-config-dormant" hidden><div class="adm-filter-label">휴면 기준 일수</div><input class="adm-input js-policy-inactive-days" type="number" min="30" step="1"></div>
+                            <div class="policy-config-level" hidden><div class="adm-filter-label">등급 정산 범위</div><label class="policy-inline-check"><input class="js-policy-only-active" type="checkbox"> 활성 회원만 대상</label></div>
+                            <div><div class="adm-filter-label">실행 방식</div><select class="adm-select js-policy-schedule-type"><option value="DAILY_TIME">매일 지정 시각</option><option value="INTERVAL_HOURS">N시간 주기</option><option value="MONTHLY_DAY_TIME">매월 지정일</option><option value="MANUAL">수동 실행</option></select></div>
+                            <div class="js-policy-interval-wrap"><div class="adm-filter-label">실행 주기(시간)</div><input class="adm-input js-policy-interval" type="number" min="1" step="1"></div>
+                            <div class="js-policy-day-wrap"><div class="adm-filter-label">실행일(일)</div><input class="adm-input js-policy-day" type="number" min="1" max="28" step="1"></div>
+                            <div class="js-policy-time-wrap"><div class="adm-filter-label">실행 시각</div><input class="adm-input js-policy-time" type="time"></div>
+                            <div><div class="adm-filter-label">정책 활성화</div><label class="policy-inline-check"><input class="js-policy-active" type="checkbox" checked> 자동 실행 사용</label></div>
+                        </div>
+                        <div class="policy-config-json-wrap">
+                            <div class="policy-config-json-head"><div class="adm-filter-label">설정 JSON</div><button type="button" class="adm-btn adm-btn-ghost js-policy-format-json">정렬</button></div>
+                            <textarea class="adm-input js-policy-config-json" rows="8" spellcheck="false">{"digestIntervalHours":12,"minUnread":3}</textarea>
+                            <div class="adm-card-subtitle policy-config-json-help">정책별 세부 설정값을 JSON 형식으로 입력합니다.</div>
+                        </div>
+                        <div class="policy-card-foot">
+                            <div class="policy-card-foot-note">마지막 메시지: <span class="policy-card-foot-value">미확인 알림 요약 메일 발송 (수신 동의 회원 964명)</span></div>
+                            <div class="policy-card-save-actions"><button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('NOTIFICATION_DIGEST_POLICY', this)">저장</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="adm-card adm-policy-history-shell">
             <div class="adm-card-head">
                 <div class="adm-card-title">
                     최근 정책 이력
-                    <span class="adm-section-total-inline">총 0건</span>
+                    <span class="adm-section-total-inline">총 8건</span>
                 </div>
             </div>
             <div class="adm-card-body policy-history-column">
-                
-                
-                    <div class="adm-policy-empty">데이터가 없습니다.</div>
-                
+                <div class="policy-history-card">
+                    <div class="policy-history-card-title">휴면 계정 전환</div>
+                    <div class="adm-card-subtitle">DORMANT_ACCOUNT_POLICY</div>
+                    <div class="policy-history-stack">
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">EXECUTE</div>
+                                <div class="policy-history-item-time">06.29 03:00</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">시스템</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">SUCCESS</span> / 휴면 전환 18명</div>
+                        </div>
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">CONFIG_UPDATE</div>
+                                <div class="policy-history-item-time">06.24 16:42</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">최고관리자</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">-</span> / 휴면 기준 300일 → 365일 변경</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="policy-history-card">
+                    <div class="policy-history-card-title">회원 등급 정산</div>
+                    <div class="adm-card-subtitle">MEMBER_LEVEL_SETTLEMENT_POLICY</div>
+                    <div class="policy-history-stack">
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">EXECUTE</div>
+                                <div class="policy-history-item-time">06.01 04:30</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">시스템</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">SUCCESS</span> / 2,431명 재산정</div>
+                        </div>
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">SCHEDULE_UPDATE</div>
+                                <div class="policy-history-item-time">05.28 11:05</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">김민준</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">-</span> / 실행일 매월 5일 → 1일 변경</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="policy-history-card">
+                    <div class="policy-history-card-title">만료 토큰 정리</div>
+                    <div class="adm-card-subtitle">INACTIVE_TOKEN_CLEANUP_POLICY</div>
+                    <div class="policy-history-stack">
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">EXECUTE</div>
+                                <div class="policy-history-item-time">06.29 12:00</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">시스템</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">SUCCESS</span> / 토큰 342건 삭제</div>
+                        </div>
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">EXECUTE</div>
+                                <div class="policy-history-item-time">06.29 06:00</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">시스템</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">SUCCESS</span> / 토큰 287건 삭제</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="policy-history-card">
+                    <div class="policy-history-card-title">로그인 감사 로그 보존</div>
+                    <div class="adm-card-subtitle">LOGIN_AUDIT_RETENTION_POLICY</div>
+                    <div class="policy-history-stack">
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">EXECUTE</div>
+                                <div class="policy-history-item-time">06.29 04:00</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">시스템</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">SUCCESS</span> / 4,910건 아카이브</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="policy-history-card">
+                    <div class="policy-history-card-title">챗봇 일일 할당량 초기화</div>
+                    <div class="adm-card-subtitle">CHATBOT_QUOTA_RESET_POLICY</div>
+                    <div class="policy-history-stack">
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">EXECUTE</div>
+                                <div class="policy-history-item-time">06.29 00:00</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">시스템</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">SUCCESS</span> / 1,208명 초기화</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="policy-history-card">
+                    <div class="policy-history-card-title">신고 자동 종결</div>
+                    <div class="adm-card-subtitle">COMMUNITY_REPORT_AUTOCLOSE_POLICY</div>
+                    <div class="policy-history-stack">
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">EXECUTE</div>
+                                <div class="policy-history-item-time">06.18 10:24</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">이서연</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">SUCCESS</span> / 신고 23건 종결 (수동)</div>
+                        </div>
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">STATUS_CHANGE</div>
+                                <div class="policy-history-item-time">06.18 10:20</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">이서연</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">-</span> / 자동 실행 비활성화</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="policy-history-card">
+                    <div class="policy-history-card-title">임시 업로드 파일 정리</div>
+                    <div class="adm-card-subtitle">UPLOAD_TEMP_CLEANUP_POLICY</div>
+                    <div class="policy-history-stack">
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">EXECUTE</div>
+                                <div class="policy-history-item-time">06.29 02:30</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">시스템</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">FAILED</span> / 디렉터리 접근 거부</div>
+                        </div>
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">EXECUTE</div>
+                                <div class="policy-history-item-time">06.28 02:30</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">시스템</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">SUCCESS</span> / 임시 파일 41개 삭제</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="policy-history-card">
+                    <div class="policy-history-card-title">알림 다이제스트 발송</div>
+                    <div class="adm-card-subtitle">NOTIFICATION_DIGEST_POLICY</div>
+                    <div class="policy-history-stack">
+                        <div class="policy-history-item">
+                            <div class="policy-history-item-head">
+                                <div class="policy-history-item-title">EXECUTE</div>
+                                <div class="policy-history-item-time">06.29 12:00</div>
+                            </div>
+                            <div class="policy-history-item-meta">실행자: <span class="policy-history-item-value">시스템</span></div>
+                            <div class="policy-history-item-meta">결과: <span class="policy-history-item-value">SUCCESS</span> / 요약 메일 964건 발송</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -428,7 +428,27 @@ window.ADMIN_TRANSLATION_UI = {
 
 <div class="adm-content adm-inquiry-page">
 
-    
+    <style>
+    /* 제목 열 비율 보정: 제목 열을 넓혀 가독성 확보, 보조 열들은 소폭 축소 */
+    .adm-inquiry-table { table-layout: fixed; }
+    .adm-inquiry-table .adm-inquiry-col-id { width: 70px; }
+    .adm-inquiry-table .adm-inquiry-col-author { width: 152px; }
+    .adm-inquiry-table .adm-inquiry-col-title { width: auto; min-width: 320px; }
+    .adm-inquiry-table .adm-inquiry-col-category { width: 104px; }
+    .adm-inquiry-table .adm-inquiry-col-status,
+    .adm-inquiry-table .adm-inquiry-col-answer { width: 116px; }
+    .adm-inquiry-table .adm-inquiry-col-date { width: 138px; }
+    /* 제목 셀: 넓어진 폭을 채우되, 너무 긴 제목은 한 줄 말줄임 */
+    .adm-inquiry-table td .mem-name {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+    </style>
+
+
     <div class="adm-summary-grid">
         <div class="adm-card adm-summary-card">
             <div class="adm-summary-label">전체 문의</div>
@@ -533,9 +553,10 @@ window.ADMIN_TRANSLATION_UI = {
         <div class="adm-section-list-toolbar adm-admin-list-controlbar js-admin-list-tools-toolbar" data-table-id="admSectionListTable0"><div class="adm-admin-list-selection adm-admin-list-bulkbar" aria-live="polite" aria-hidden="true"><span class="adm-admin-list-selected-count">선택 0건</span><button type="button" class="adm-btn adm-btn-ghost js-admin-list-clear-selection" disabled="">선택 해제</button></div><div class="adm-admin-list-toolcluster"><div class="adm-admin-list-primary-tools js-admin-list-primary-tools"><label class="adm-admin-list-tool adm-section-list-mode"><span>로드 방식</span><select class="adm-select js-admin-list-mode" title="전체 로드 시 최대 500건까지 서버에서 다시 불러옵니다."><option value="page">페이지 로드</option><option value="full">전체 로드</option></select></label><label class="adm-admin-list-tool adm-section-list-size"><span>표시</span><select class="adm-select js-admin-list-page-size"><option value="10">10</option><option value="20" selected="">20</option><option value="50">50</option><option value="100">100</option><option value="all">전체</option></select></label><div class="adm-export-control adm-admin-list-export-tool"><select class="adm-select js-admin-list-export-format"><option value="csv">CSV</option><option value="excel">Excel</option></select><div class="adm-export-menu"><button type="button" class="adm-btn adm-btn-ghost js-export-toggle">내보내기 ▾</button><div class="adm-export-dropdown"><button type="button" class="js-admin-list-export" data-scope="page">현재 페이지 내보내기</button><button type="button" class="js-admin-list-export" data-scope="filtered">검색 결과 내보내기</button><button type="button" class="js-admin-list-export js-admin-list-export-selected" data-scope="selected" disabled="">선택 내보내기 (0)</button></div></div></div></div><div class="adm-admin-list-overflow-menu js-admin-list-overflow-menu has-items"><button type="button" class="adm-btn adm-btn-ghost adm-admin-list-overflow-toggle js-admin-list-overflow-toggle" aria-expanded="false">옵션 ▾</button><div class="adm-admin-list-overflow-panel js-admin-list-overflow-panel"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-sort-reset" style="display:none;">↺ 정렬 초기화</button><div class="adm-admin-list-tool adm-section-list-filter"><select class="adm-select js-admin-list-field" title="현재 화면 기준 필드"><option value="all">현재 화면 전체</option><option value="1">ID</option><option value="2">작성자</option><option value="3">제목</option><option value="4">카테고리</option><option value="5">상태</option><option value="6">답변</option><option value="7">등록일</option></select><div class="adm-search-box adm-section-list-search"><span class="adm-search-ico adm-admin-list-search-ico" aria-hidden="true"></span><input type="text" class="adm-input js-admin-list-keyword" placeholder="현재 화면 내 검색"></div><button type="button" class="adm-btn adm-btn-ghost js-admin-list-filter-reset">↺ 필터 초기화</button></div></div></div></div></div><div class="adm-table-wrap">
             <table class="adm-table adm-inquiry-table adm-admin-list-table adm-admin-list-server-table" data-admin-list-ignore="true" id="admSectionListTable0" data-admin-list-tools-enhanced="true" data-admin-list-server-sort="true">
                 <colgroup>
+                    <col class="adm-inquiry-col-check" style="width:42px">
                     <col class="adm-inquiry-col-id">
                     <col class="adm-inquiry-col-author">
-                    <col>
+                    <col class="adm-inquiry-col-title">
                     <col class="adm-inquiry-col-category">
                     <col class="adm-inquiry-col-status">
                     <col class="adm-inquiry-col-answer">
@@ -721,7 +742,7 @@ window.ADMIN_TRANSLATION_UI = {
                             <a href="/TripTogether/admin/inquiries/4?page=1&size=20&status=ALL&category=ALL&answered=ALL&searchType=all&keyword=" class="adm-cell-link" onclick="event.stopPropagation();">
                                 <span class="mem-name">회원 탈퇴 후 재가입 문의</span>
                                 <span class="adm-cell-link-note">
-                                    ?? 비공개 · 
+                                    🔒 비공개 ·
                                     조회 1
                                 </span>
                             </a>
@@ -849,7 +870,7 @@ window.ADMIN_TRANSLATION_UI = {
                             <a href="/TripTogether/admin/inquiries/2?page=1&size=20&status=ALL&category=ALL&answered=ALL&searchType=all&keyword=" class="adm-cell-link" onclick="event.stopPropagation();">
                                 <span class="mem-name">캐시 충전이 안 됩니다</span>
                                 <span class="adm-cell-link-note">
-                                    ?? 비공개 · 
+                                    🔒 비공개 ·
                                     조회 2
                                 </span>
                             </a>
@@ -913,7 +934,7 @@ window.ADMIN_TRANSLATION_UI = {
                             <a href="../admin/inquiries/1.html" class="adm-cell-link" onclick="event.stopPropagation();">
                                 <span class="mem-name">패키지 예약 취소는 어떻게 하나요?</span>
                                 <span class="adm-cell-link-note">
-                                    ?? 비공개 · 
+                                    🔒 비공개 ·
                                     조회 8
                                 </span>
                             </a>
@@ -1041,7 +1062,7 @@ window.ADMIN_TRANSLATION_UI = {
                             <a href="/TripTogether/admin/inquiries/6?page=1&size=20&status=ALL&category=ALL&answered=ALL&searchType=all&keyword=" class="adm-cell-link" onclick="event.stopPropagation();">
                                 <span class="mem-name">판매자 등록 절차 문의</span>
                                 <span class="adm-cell-link-note">
-                                    ?? 비공개 · 
+                                    🔒 비공개 ·
                                     조회 4
                                 </span>
                             </a>

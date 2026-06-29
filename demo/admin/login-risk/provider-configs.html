@@ -3042,4 +3042,236 @@ document.addEventListener('keydown', e => {
 
 <script>window.__DEMO_BASE__="../../";</script>
 <script src="../../assets/demo-mock.js"></script>
+<script>
+/* ── 데모용 목 데이터: provider-configs API 가로채기 ──
+   demo-mock.js 가 window.fetch 를 먼저 감싸 빈 응답을 주므로,
+   그 위에 한 겹 더 감싸 이 페이지의 Provider API 만 현실적 데이터로 응답한다.
+   페이지 본래의 렌더/정렬/페이징/필터 로직을 그대로 태운다. */
+(function () {
+    const PROVIDERS = [
+        {
+            providerIdx: 1, providerKind: 'WAF_PROVIDER', providerName: 'AWS WAF (ap-northeast-2)',
+            providerCode: 'WAF-AWS-SEOUL', usageCategories: 'WAF_SYNC,LOGIN_RISK', triggerEvents: 'LOGIN_ATTEMPT,SIGNUP',
+            status: 'READY', enabled: true, priority: 950, tags: 'aws,waf,prod',
+            endpointUrl: 'https://wafv2.ap-northeast-2.amazonaws.com', apiKeyRef: 'ENV:AWS_WAF_KEY',
+            modelName: 'managed-rule-acl-prod', requestMethod: 'POST',
+            timeoutMillis: 2500, failOpen: 1, maxConcurrent: 50, ratePerMinute: 6000, retryCount: 2, retryBackoffMs: 400,
+            healthCheckIntervalSec: 300, lastCheckedAt: '2026-06-29T08:42:00', nextHealthCheckAt: '2026-06-29T08:47:00',
+            description: '프로덕션 차단 ACL 동기화 및 로그인 IP 평판 1차 판단.', deletedAt: null
+        },
+        {
+            providerIdx: 2, providerKind: 'WAF_CDN', providerName: 'Cloudflare WAF + CDN',
+            providerCode: 'WAF-CF-EDGE', usageCategories: 'WAF_SYNC,IP_REPUTATION', triggerEvents: 'LOGIN_ATTEMPT',
+            status: 'READY', enabled: true, priority: 900, tags: 'cloudflare,edge,cdn',
+            endpointUrl: 'https://api.cloudflare.com/client/v4', apiKeyRef: 'ENV:CF_API_TOKEN',
+            modelName: 'zone-firewall-managed', requestMethod: 'POST',
+            timeoutMillis: 2000, failOpen: 1, maxConcurrent: 80, ratePerMinute: 12000, retryCount: 1, retryBackoffMs: 300,
+            healthCheckIntervalSec: 300, lastCheckedAt: '2026-06-29T08:40:00', nextHealthCheckAt: '2026-06-29T08:45:00',
+            description: '엣지 차단 룰 동기화 + 봇 스코어 기반 IP 평판 조회.', deletedAt: null
+        },
+        {
+            providerIdx: 3, providerKind: 'IP_REPUTATION', providerName: 'AbuseIPDB',
+            providerCode: 'IPREP-ABUSEIPDB', usageCategories: 'IP_REPUTATION,LOGIN_RISK', triggerEvents: 'LOGIN_ATTEMPT,REPORT_CREATED',
+            status: 'READY', enabled: true, priority: 820, tags: 'ip,reputation,blacklist',
+            endpointUrl: 'https://api.abuseipdb.com/api/v2/check', apiKeyRef: 'ENV:ABUSEIPDB_KEY',
+            modelName: 'confidence-score-v2', requestMethod: 'GET',
+            timeoutMillis: 3000, failOpen: 1, maxConcurrent: 20, ratePerMinute: 1000, retryCount: 2, retryBackoffMs: 500,
+            healthCheckIntervalSec: 600, lastCheckedAt: '2026-06-29T08:31:00', nextHealthCheckAt: '2026-06-29T08:41:00',
+            description: '로그인 시도 IP의 신고 누적 점수 조회(95% 이상 시 차단 후보).', deletedAt: null
+        },
+        {
+            providerIdx: 4, providerKind: 'AI_MODEL', providerName: 'Claude 위험판단 (Haiku)',
+            providerCode: 'AI-CLAUDE-HAIKU', usageCategories: 'LOGIN_RISK', triggerEvents: 'LOGIN_ATTEMPT,PASSWORD_RESET',
+            status: 'READY', enabled: true, priority: 780, tags: 'ai,claude,llm',
+            endpointUrl: 'https://api.anthropic.com/v1/messages', apiKeyRef: 'ENV:CLAUDE_API_KEY',
+            modelName: 'claude-3-5-haiku-20241022', requestMethod: 'POST',
+            timeoutMillis: 6000, failOpen: 1, maxConcurrent: 8, ratePerMinute: 240, retryCount: 1, retryBackoffMs: 800,
+            healthCheckIntervalSec: 900, lastCheckedAt: '2026-06-29T08:15:00', nextHealthCheckAt: '2026-06-29T08:30:00',
+            description: '디바이스·시간대·이동거리 신호를 종합한 로그인 이상징후 LLM 판단.', deletedAt: null
+        },
+        {
+            providerIdx: 5, providerKind: 'EMAIL_REPUTATION', providerName: 'Have I Been Pwned',
+            providerCode: 'EMAILREP-HIBP', usageCategories: 'EMAIL_REPUTATION', triggerEvents: 'SIGNUP,PASSWORD_RESET',
+            status: 'READY_NEEDS_SECRET', enabled: true, priority: 700, tags: 'email,breach,signup',
+            endpointUrl: 'https://haveibeenpwned.com/api/v3/breachedaccount', apiKeyRef: 'ENV:HIBP_API_KEY',
+            modelName: 'breach-lookup', requestMethod: 'GET',
+            timeoutMillis: 4000, failOpen: 1, maxConcurrent: 10, ratePerMinute: 120, retryCount: 0, retryBackoffMs: 0,
+            healthCheckIntervalSec: 1800, lastCheckedAt: '2026-06-29T07:50:00', nextHealthCheckAt: '2026-06-29T08:20:00',
+            description: '회원가입·비번재설정 시 이메일 유출 이력 조회. API 키 갱신 필요.', deletedAt: null
+        },
+        {
+            providerIdx: 6, providerKind: 'CONTENT_MODERATION', providerName: 'Perspective API (Toxicity)',
+            providerCode: 'MOD-PERSPECTIVE', usageCategories: 'CONTENT_MODERATION', triggerEvents: 'COMMUNITY_POST_CREATED',
+            status: 'READY', enabled: true, priority: 650, tags: 'moderation,toxicity,community',
+            endpointUrl: 'https://commentanalyzer.googleapis.com/v1alpha1', apiKeyRef: 'ENV:PERSPECTIVE_KEY',
+            modelName: 'TOXICITY,SEVERE_TOXICITY', requestMethod: 'POST',
+            timeoutMillis: 3500, failOpen: 1, maxConcurrent: 15, ratePerMinute: 600, retryCount: 1, retryBackoffMs: 400,
+            healthCheckIntervalSec: 600, lastCheckedAt: '2026-06-29T08:38:00', nextHealthCheckAt: '2026-06-29T08:48:00',
+            description: '커뮤니티 글·댓글 작성 시 독성 점수 산출(0.85↑ 검토 큐 이관).', deletedAt: null
+        },
+        {
+            providerIdx: 7, providerKind: 'POLICY_AUTHORITY', providerName: 'KISA 사이버위협 인텔리전스',
+            providerCode: 'POLICY-KISA-CTI', usageCategories: 'IP_REPUTATION,WAF_SYNC', triggerEvents: 'LOGIN_ATTEMPT',
+            status: 'READY', enabled: true, priority: 600, tags: 'kisa,policy,korea',
+            endpointUrl: 'https://cti.krcert.or.kr/api/v1/indicators', apiKeyRef: 'ENV:KISA_CTI_KEY',
+            modelName: 'ioc-feed-daily', requestMethod: 'GET',
+            timeoutMillis: 5000, failOpen: 1, maxConcurrent: 5, ratePerMinute: 60, retryCount: 2, retryBackoffMs: 1000,
+            healthCheckIntervalSec: 3600, lastCheckedAt: '2026-06-29T06:00:00', nextHealthCheckAt: '2026-06-29T09:00:00',
+            description: '국내 악성 IP/도메인 IOC 피드를 일 단위로 수신해 차단셋 보강.', deletedAt: null
+        },
+        {
+            providerIdx: 8, providerKind: 'RULE_ALGORITHM', providerName: '내부 휴리스틱 룰엔진',
+            providerCode: 'RULE-INTERNAL-V3', usageCategories: 'LOGIN_RISK', triggerEvents: 'LOGIN_ATTEMPT,SIGNUP,PASSWORD_RESET',
+            status: 'READY', enabled: true, priority: 500, tags: 'internal,rules,heuristic',
+            endpointUrl: '', apiKeyRef: '', modelName: 'velocity+geo+device-fingerprint',
+            requestMethod: '', timeoutMillis: 800, failOpen: 0, maxConcurrent: null, ratePerMinute: null, retryCount: 0, retryBackoffMs: 0,
+            healthCheckIntervalSec: 300, lastCheckedAt: '2026-06-29T08:43:00', nextHealthCheckAt: '2026-06-29T08:48:00',
+            description: '로컬 속도/지리/디바이스 핑거프린트 규칙. Fail-closed 운영.', deletedAt: null
+        },
+        {
+            providerIdx: 9, providerKind: 'CUSTOM_WEBHOOK', providerName: '보안팀 Slack 알림 Webhook',
+            providerCode: 'HOOK-SEC-SLACK', usageCategories: 'LOGIN_RISK,CONTENT_MODERATION', triggerEvents: 'REPORT_CREATED',
+            status: 'READY', enabled: false, priority: 300, tags: 'webhook,slack,notify',
+            endpointUrl: 'https://hooks.slack.com/services/T000/B000/XXXX', apiKeyRef: '',
+            modelName: '', requestMethod: 'POST',
+            timeoutMillis: 2000, failOpen: 1, maxConcurrent: 5, ratePerMinute: 30, retryCount: 3, retryBackoffMs: 1000,
+            healthCheckIntervalSec: 1800, lastCheckedAt: '2026-06-28T22:10:00', nextHealthCheckAt: '2026-06-29T08:40:00',
+            description: '고위험 신고 발생 시 보안팀 채널로 알림. 현재 임시 비활성화.', deletedAt: null
+        },
+        {
+            providerIdx: 10, providerKind: 'AI_MODEL', providerName: 'OpenAI Moderation (레거시)',
+            providerCode: 'AI-OPENAI-MOD', usageCategories: 'CONTENT_MODERATION', triggerEvents: 'COMMUNITY_POST_CREATED',
+            status: 'ERROR', enabled: false, priority: 250, tags: 'openai,legacy,deprecated',
+            endpointUrl: 'https://api.openai.com/v1/moderations', apiKeyRef: 'ENV:OPENAI_KEY',
+            modelName: 'omni-moderation-latest', requestMethod: 'POST',
+            timeoutMillis: 4000, failOpen: 1, maxConcurrent: 10, ratePerMinute: 500, retryCount: 1, retryBackoffMs: 500,
+            healthCheckIntervalSec: 600, lastCheckedAt: '2026-06-29T03:12:00', nextHealthCheckAt: '2026-06-29T03:22:00',
+            description: '연속 401 응답으로 헬스체크 실패. Perspective API 로 대체 예정.', deletedAt: null
+        },
+        {
+            providerIdx: 11, providerKind: 'IP_REPUTATION', providerName: 'IPQualityScore',
+            providerCode: 'IPREP-IPQS', usageCategories: 'IP_REPUTATION,LOGIN_RISK', triggerEvents: 'LOGIN_ATTEMPT,SIGNUP',
+            status: 'READY_NEEDS_SECRET', enabled: false, priority: 200, tags: 'ip,proxy,vpn',
+            endpointUrl: 'https://ipqualityscore.com/api/json/ip', apiKeyRef: 'ENV:IPQS_KEY',
+            modelName: 'fraud-score', requestMethod: 'GET',
+            timeoutMillis: 3000, failOpen: 1, maxConcurrent: 10, ratePerMinute: 300, retryCount: 1, retryBackoffMs: 400,
+            healthCheckIntervalSec: 900, lastCheckedAt: '2026-06-28T19:05:00', nextHealthCheckAt: '2026-06-29T09:30:00',
+            description: 'VPN/프록시/봇 탐지 보조 채널. 시크릿 미설정으로 대기 중.', deletedAt: null
+        },
+        {
+            providerIdx: 12, providerKind: 'EDGE_SECURITY', providerName: 'Imperva Edge (구 채널)',
+            providerCode: 'EDGE-IMPERVA-OLD', usageCategories: 'WAF_SYNC', triggerEvents: 'LOGIN_ATTEMPT',
+            status: 'DISABLED', enabled: false, priority: 100, tags: 'imperva,edge,retired',
+            endpointUrl: 'https://my.imperva.com/api/prov/v1', apiKeyRef: 'ENV:IMPERVA_KEY',
+            modelName: 'incapsula-acl', requestMethod: 'POST',
+            timeoutMillis: 4000, failOpen: 1, maxConcurrent: 10, ratePerMinute: 200, retryCount: 1, retryBackoffMs: 500,
+            healthCheckIntervalSec: 3600, lastCheckedAt: '2026-06-20T11:00:00', nextHealthCheckAt: null,
+            description: 'Cloudflare 로 이관 후 폐기 예정. 비활성 보관.', deletedAt: null
+        },
+        {
+            providerIdx: 13, providerKind: 'CUSTOM_WEBHOOK', providerName: '구 SMS 알림 Webhook (삭제됨)',
+            providerCode: 'HOOK-SMS-OLD', usageCategories: 'LOGIN_RISK', triggerEvents: 'LOGIN_ATTEMPT',
+            status: 'DISABLED', enabled: false, priority: 50, tags: 'webhook,sms,deleted',
+            endpointUrl: 'https://api.example.com/sms/notify', apiKeyRef: '',
+            modelName: '', requestMethod: 'POST',
+            timeoutMillis: 2000, failOpen: 1, maxConcurrent: 5, ratePerMinute: 60, retryCount: 0, retryBackoffMs: 0,
+            healthCheckIntervalSec: 1800, lastCheckedAt: '2026-06-10T09:00:00', nextHealthCheckAt: null,
+            description: 'Slack 알림으로 통합되어 소프트 삭제됨.', deletedAt: '2026-06-12T14:20:00'
+        }
+    ];
+
+    function jsonResponse(obj) {
+        return new Response(JSON.stringify(obj), {
+            status: 200, headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
+    function matchesFilters(r, p) {
+        const onlyDeleted = p.get('onlyDeleted') === 'true';
+        const includeDeleted = p.get('includeDeleted') === 'true';
+        if (onlyDeleted) { if (!r.deletedAt) return false; }
+        else if (!includeDeleted) { if (r.deletedAt) return false; }
+        const kind = p.get('kind'); if (kind && r.providerKind !== kind) return false;
+        const stat = p.get('status'); if (stat && r.status !== stat) return false;
+        const en = p.get('enabled');
+        if (en === '1' && !r.enabled) return false;
+        if (en === '0' && r.enabled) return false;
+        const cat = p.get('category');
+        if (cat && !((r.usageCategories || '').split(',').map(s => s.trim()).includes(cat))) return false;
+        const trig = p.get('triggerEvent');
+        if (trig && !((r.triggerEvents || '').split(',').map(s => s.trim()).includes(trig))) return false;
+        const kw = (p.get('keyword') || '').trim().toLowerCase();
+        if (kw) {
+            const hay = [r.providerName, r.providerCode, r.endpointUrl, r.tags, r.description]
+                .map(x => (x || '').toString().toLowerCase()).join(' ');
+            if (hay.indexOf(kw) < 0) return false;
+        }
+        return true;
+    }
+
+    function sortRows(rows, sortKey) {
+        const m = (sortKey || 'priority_desc').match(/^(.+)_(asc|desc)$/);
+        const field = m ? m[1] : 'priority';
+        const dir = m && m[2] === 'desc' ? -1 : 1;
+        const valOf = (row) => {
+            switch (field) {
+                case 'priority': return row.priority == null ? -Infinity : Number(row.priority);
+                case 'kind': return row.providerKind || '';
+                case 'name': return row.providerName || '';
+                case 'code': return row.providerCode || '';
+                case 'category': return row.usageCategories || '';
+                case 'status': return row.status || '';
+                case 'enabled': return row.enabled ? 1 : 0;
+                case 'last_checked': return row.lastCheckedAt || '';
+                case 'next_check': return row.nextHealthCheckAt || '';
+                default: return '';
+            }
+        };
+        return rows.slice().sort((a, b) => {
+            const av = valOf(a), bv = valOf(b);
+            if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir;
+            return String(av).localeCompare(String(bv)) * dir;
+        });
+    }
+
+    function handleListApi(url) {
+        const qs = url.indexOf('?') >= 0 ? url.substring(url.indexOf('?') + 1) : '';
+        const p = new URLSearchParams(qs);
+        let rows = PROVIDERS.filter(r => matchesFilters(r, p));
+        rows = sortRows(rows, p.get('sort'));
+        const total = rows.length;
+        const pageSize = parseInt(p.get('pageSize') || '20', 10);
+        const page = parseInt(p.get('page') || '1', 10);
+        let pageRows, totalPage;
+        if (!pageSize || pageSize <= 0) {
+            pageRows = rows; totalPage = 1;
+        } else {
+            totalPage = Math.max(1, Math.ceil(total / pageSize));
+            const start = (page - 1) * pageSize;
+            pageRows = rows.slice(start, start + pageSize);
+        }
+        return jsonResponse({ rows: pageRows, total: total, totalPage: totalPage });
+    }
+
+    function handleDetailApi(idx) {
+        const row = PROVIDERS.find(r => r.providerIdx === idx);
+        return jsonResponse(row || {});
+    }
+
+    const _fetch = window.fetch;
+    window.fetch = function (input) {
+        const url = (typeof input === 'string') ? input : (input && input.url) || '';
+        // 목록 API: /admin/login-risk/provider-configs/api?...
+        if (/\/admin\/login-risk\/provider-configs\/api(\?|$)/.test(url)) {
+            return Promise.resolve(handleListApi(url));
+        }
+        // 상세 API: /admin/login-risk/provider-configs/{idx}/api
+        const detail = url.match(/\/admin\/login-risk\/provider-configs\/(\d+)\/api(\?|$)/);
+        if (detail) {
+            return Promise.resolve(handleDetailApi(parseInt(detail[1], 10)));
+        }
+        return _fetch.apply(this, arguments);
+    };
+})();
+</script>
 </body></html>

@@ -582,7 +582,211 @@ window.ADMIN_TRANSLATION_UI = {
                     <tbody>
                     
                     
-                        <tr class="adm-local-empty"><td colspan="6" class="adm-local-empty-cell">정책 변경 이력이 없습니다.</td></tr>
+                        <tr>
+                            <td class="aph-cell-check"><input type="checkbox" aria-label="행 선택"></td>
+                            <td>v7</td>
+                            <td><span class="aph-change-pill aph-change-update">설정 변경</span></td>
+                            <td>최고관리자</td>
+                            <td>2026-06-27 14:22</td>
+                            <td>
+                                <details>
+                                    <summary>스냅샷 보기</summary>
+                                    <div class="adm-appeal-policy-snapshot-grid">
+                                        <div>
+                                            <div class="aph-snap-label">변경 전</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "maxOpenAppealsPerCase": 2,
+  "rejectedCooldownMinutes": 4320,
+  "maxRejectedCount": 2,
+  "ipDailyAppealLimit": 3
+}</div>
+                                        </div>
+                                        <div>
+                                            <div class="aph-snap-label">변경 후</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "maxOpenAppealsPerCase": 3,
+  "rejectedCooldownMinutes": 10080,
+  "maxRejectedCount": 2,
+  "ipDailyAppealLimit": 3
+}</div>
+                                        </div>
+                                    </div>
+                                </details>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aph-cell-check"><input type="checkbox" aria-label="행 선택"></td>
+                            <td>v6</td>
+                            <td><span class="aph-change-pill aph-change-update">설정 변경</span></td>
+                            <td>보안운영팀</td>
+                            <td>2026-06-24 10:08</td>
+                            <td>
+                                <details>
+                                    <summary>스냅샷 보기</summary>
+                                    <div class="adm-appeal-policy-snapshot-grid">
+                                        <div>
+                                            <div class="aph-snap-label">변경 전</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "verificationTokenTtlMinutes": 60,
+  "maxVerificationEmails": 5,
+  "verificationWindowMinutes": 120
+}</div>
+                                        </div>
+                                        <div>
+                                            <div class="aph-snap-label">변경 후</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "verificationTokenTtlMinutes": 30,
+  "maxVerificationEmails": 3,
+  "verificationWindowMinutes": 60
+}</div>
+                                        </div>
+                                    </div>
+                                </details>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aph-cell-check"><input type="checkbox" aria-label="행 선택"></td>
+                            <td>v5</td>
+                            <td><span class="aph-change-pill aph-change-enable">활성화</span></td>
+                            <td>최고관리자</td>
+                            <td>2026-06-21 17:45</td>
+                            <td>
+                                <details>
+                                    <summary>스냅샷 보기</summary>
+                                    <div class="adm-appeal-policy-snapshot-grid">
+                                        <div>
+                                            <div class="aph-snap-label">변경 전</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "active": false,
+  "closedBlocksNewAppeals": false
+}</div>
+                                        </div>
+                                        <div>
+                                            <div class="aph-snap-label">변경 후</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "active": true,
+  "closedBlocksNewAppeals": true
+}</div>
+                                        </div>
+                                    </div>
+                                </details>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aph-cell-check"><input type="checkbox" aria-label="행 선택"></td>
+                            <td>v4</td>
+                            <td><span class="aph-change-pill aph-change-update">설정 변경</span></td>
+                            <td>보안운영팀</td>
+                            <td>2026-06-18 09:31</td>
+                            <td>
+                                <details>
+                                    <summary>스냅샷 보기</summary>
+                                    <div class="adm-appeal-policy-snapshot-grid">
+                                        <div>
+                                            <div class="aph-snap-label">변경 전</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "blockedEmailDomains": "",
+  "allowedEmailDomains": ""
+}</div>
+                                        </div>
+                                        <div>
+                                            <div class="aph-snap-label">변경 후</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "blockedEmailDomains": "spam.example.com,*.temp-mail.example",
+  "allowedEmailDomains": ""
+}</div>
+                                        </div>
+                                    </div>
+                                </details>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aph-cell-check"><input type="checkbox" aria-label="행 선택"></td>
+                            <td>v3</td>
+                            <td><span class="aph-change-pill aph-change-update">설정 변경</span></td>
+                            <td>최고관리자</td>
+                            <td>2026-06-14 13:02</td>
+                            <td>
+                                <details>
+                                    <summary>스냅샷 보기</summary>
+                                    <div class="adm-appeal-policy-snapshot-grid">
+                                        <div>
+                                            <div class="aph-snap-label">변경 전</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "maxResultLookupFailures": 10,
+  "resultLookupWindowMinutes": 30,
+  "resultLookupRetentionDays": 180
+}</div>
+                                        </div>
+                                        <div>
+                                            <div class="aph-snap-label">변경 후</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "maxResultLookupFailures": 5,
+  "resultLookupWindowMinutes": 60,
+  "resultLookupRetentionDays": 365
+}</div>
+                                        </div>
+                                    </div>
+                                </details>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aph-cell-check"><input type="checkbox" aria-label="행 선택"></td>
+                            <td>v2</td>
+                            <td><span class="aph-change-pill aph-change-update">설정 변경</span></td>
+                            <td>보안운영팀</td>
+                            <td>2026-06-09 11:50</td>
+                            <td>
+                                <details>
+                                    <summary>스냅샷 보기</summary>
+                                    <div class="adm-appeal-policy-snapshot-grid">
+                                        <div>
+                                            <div class="aph-snap-label">변경 전</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "captchaEnabled": false,
+  "captchaProviderCode": ""
+}</div>
+                                        </div>
+                                        <div>
+                                            <div class="aph-snap-label">변경 후</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "captchaEnabled": false,
+  "captchaProviderCode": "MOCK_TURNSTILE"
+}</div>
+                                        </div>
+                                    </div>
+                                </details>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="aph-cell-check"><input type="checkbox" aria-label="행 선택"></td>
+                            <td>v1</td>
+                            <td><span class="aph-change-pill aph-change-create">최초 생성</span></td>
+                            <td>최고관리자</td>
+                            <td>2026-06-03 16:18</td>
+                            <td>
+                                <details>
+                                    <summary>스냅샷 보기</summary>
+                                    <div class="adm-appeal-policy-snapshot-grid">
+                                        <div>
+                                            <div class="aph-snap-label">변경 전</div>
+                                            <div class="adm-appeal-policy-snapshot">—</div>
+                                        </div>
+                                        <div>
+                                            <div class="aph-snap-label">변경 후</div>
+                                            <div class="adm-appeal-policy-snapshot">{
+  "policyCode": "DEFAULT",
+  "active": false,
+  "allowMultipleOpenAppeals": true,
+  "maxOpenAppealsPerCase": 2,
+  "rejectedCooldownMinutes": 4320,
+  "maxRejectedCount": 2
+}</div>
+                                        </div>
+                                    </div>
+                                </details>
+                            </td>
+                        </tr>
                     
                     </tbody>
                 </table>
@@ -679,6 +883,26 @@ body.sa-light .aph-table td .adm-appeal-policy-snapshot { background: #f1f5f9; }
 @media (max-width: 720px) {
     .aph-table td .adm-appeal-policy-snapshot-grid { grid-template-columns: 1fr; }
 }
+
+/* 변경 유형 배지 */
+.aph-change-pill {
+    display: inline-block; padding: 2px 9px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; line-height: 1.6;
+    border: 1px solid transparent; white-space: nowrap;
+}
+.aph-change-create { color: #6ee7b7; background: rgba(16,185,129,.14); border-color: rgba(16,185,129,.35); }
+.aph-change-update { color: #93c5fd; background: rgba(59,130,246,.14); border-color: rgba(59,130,246,.35); }
+.aph-change-enable { color: #fcd34d; background: rgba(245,158,11,.14); border-color: rgba(245,158,11,.35); }
+body.sa-light .aph-change-create { color: #047857; background: #d1fae5; border-color: #6ee7b7; }
+body.sa-light .aph-change-update { color: #1d4ed8; background: #dbeafe; border-color: #93c5fd; }
+body.sa-light .aph-change-enable { color: #b45309; background: #fef3c7; border-color: #fcd34d; }
+
+/* 스냅샷 변경 전/후 라벨 */
+.aph-snap-label {
+    font-size: 10px; font-weight: 600; letter-spacing: .03em;
+    color: #94a3b8; margin-bottom: 3px; text-transform: uppercase;
+}
+body.sa-light .aph-snap-label { color: #64748b; }
 </style>
 
 

@@ -1144,10 +1144,62 @@ window.ADMIN_TRANSLATION_UI = {
                                     <th onclick="openFirstBlockSectionAction('batches')">액션</th>
                                 </tr></thead>
                                 <tbody>
-                                
-                                
-                                    <tr data-orig-order="0"><td colspan="4" class="adm-local-empty-cell">데이터가 없습니다.</td></tr>
-                                
+                                    <tr data-orig-order="0">
+                                        <td>
+                                            <div style="font-weight:600;color:#e2e8f0;">크롤러/스크래퍼 차단</div>
+                                            <div style="font-size:12px;color:#94a3b8;">BOT-SCRAPER · 자동 탐지</div>
+                                        </td>
+                                        <td><span class="status-badge DORMANT">차단</span></td>
+                                        <td>
+                                            <div>ON 201 / 만료 12</div>
+                                            <div style="font-size:12px;color:#94a3b8;">06.25 14:07</div>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="adm-cell-link js-apply-block-filter" data-section="batches" data-field="batch" data-keyword="BOT-SCRAPER" onclick="applyBlockLocalFilter(this.dataset.section, this.dataset.field, this.dataset.keyword)"><span>보기</span></button>
+                                        </td>
+                                    </tr>
+                                    <tr data-orig-order="1">
+                                        <td>
+                                            <div style="font-weight:600;color:#e2e8f0;">스팸 발신 IP 자동 차단</div>
+                                            <div style="font-size:12px;color:#94a3b8;">SPAM-AUTO · 스팸 피드</div>
+                                        </td>
+                                        <td><span class="status-badge DORMANT">차단</span></td>
+                                        <td>
+                                            <div>ON 598 / 만료 44</div>
+                                            <div style="font-size:12px;color:#94a3b8;">06.22 06:00</div>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="adm-cell-link js-apply-block-filter" data-section="batches" data-field="batch" data-keyword="SPAM-AUTO" onclick="applyBlockLocalFilter(this.dataset.section, this.dataset.field, this.dataset.keyword)"><span>보기</span></button>
+                                        </td>
+                                    </tr>
+                                    <tr data-orig-order="2">
+                                        <td>
+                                            <div style="font-weight:600;color:#e2e8f0;">상용 VPN/프록시 차단</div>
+                                            <div style="font-size:12px;color:#94a3b8;">VPN-2026Q2 · VPN 피드</div>
+                                        </td>
+                                        <td><span class="status-badge DORMANT">차단</span></td>
+                                        <td>
+                                            <div>ON 1,284 / 만료 0</div>
+                                            <div style="font-size:12px;color:#94a3b8;">06.20 09:42</div>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="adm-cell-link js-apply-block-filter" data-section="batches" data-field="batch" data-keyword="VPN-2026Q2" onclick="applyBlockLocalFilter(this.dataset.section, this.dataset.field, this.dataset.keyword)"><span>보기</span></button>
+                                        </td>
+                                    </tr>
+                                    <tr data-orig-order="3">
+                                        <td>
+                                            <div style="font-weight:600;color:#e2e8f0;">제재 지역 접근 제한</div>
+                                            <div style="font-size:12px;color:#94a3b8;">GEO-SANCTION · 지역 정책</div>
+                                        </td>
+                                        <td><span class="status-badge DORMANT">일시중지</span></td>
+                                        <td>
+                                            <div>ON 0 / 만료 0</div>
+                                            <div style="font-size:12px;color:#94a3b8;">06.10 11:50</div>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="adm-cell-link js-apply-block-filter" data-section="batches" data-field="batch" data-keyword="GEO-SANCTION" onclick="applyBlockLocalFilter(this.dataset.section, this.dataset.field, this.dataset.keyword)"><span>보기</span></button>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1994,11 +2046,342 @@ window.ADMIN_TRANSLATION_UI = {
                         <th class="js-local-sort adm-th-w14" data-sort-index="6" onclick="sectionSort('batches',6)">설명</th>
                         <th class="adm-th-w14" onclick="openFirstBlockSectionAction('batches')">액션</th>
                     </tr></thead>
-                    <tbody><tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;">데이터가 없습니다.</td></tr></tbody>
+                    <tbody>
+                    <tr class="js-local-row" data-section="batches" data-search="vpn-2026q2 상용 vpn/프록시 차단 vpn_feed vpn 피드 상용 vpn·익명 프록시 출구 노드 일괄 차단 block 차단 1 active 활성 2026.06.20" data-batch="상용 VPN/프록시 차단 VPN-2026Q2" data-source="VPN_FEED VPN 피드" data-description="상용 VPN·익명 프록시 출구 노드 일괄 차단" data-policy="block 차단" data-priority="1" data-status="active 활성" data-updated-at="2026.06.20 09:42">
+                        <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="11" value="11" onchange="updateBlockBulkBar('batches')"></td>
+                        <td data-sort-value="상용 VPN/프록시 차단">
+                            <button type="button" class="adm-link-btn js-open-batch-editor" data-batch-id="11" data-source-type="VPN_FEED" data-batch-name="상용 VPN/프록시 차단" data-batch-code="VPN-2026Q2" data-status-label="활성" data-batch-rule-action="BLOCK" data-default-priority="1" data-source-name="threatfeed.example.org" data-total-rules="1284" data-active-rules="1284" data-effective-rules="1190" data-expired-rules="0" data-default-disable-strategy="BATCH_ONLY" data-default-enable-strategy="RESTORE_BATCH_CONTROL" data-description="상용 VPN·익명 프록시 출구 노드 일괄 차단" data-updated-at="2026.06.20 09:42" data-created-at="2026.04.01 10:00">
+                                <span style="font-weight:700;color:#e2e8f0;">상용 VPN/프록시 차단</span>
+                                <span style="display:block;font-size:12px;color:#94a3b8;">VPN-2026Q2</span>
+                                <span style="display:block;font-size:11px;color:#64748b;">VPN 피드</span>
+                            </button>
+                            <div class="adm-inline-actions">
+                                <button type="button" class="adm-inline-chip js-apply-block-filter" data-section="batches" data-field="source" data-keyword="VPN_FEED">동일 출처</button>
+                            </div>
+                        </td>
+                        <td data-sort-value="block">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="11">
+                                <span><span class="status-badge DORMANT">차단</span></span>
+                                <span style="font-size:12px;color:#94a3b8;">OFF: BATCH_ONLY</span>
+                                <span class="adm-cell-link-note">ON: RESTORE_BATCH_CONTROL</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="1">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="11">
+                                <span>1</span>
+                                <span class="adm-cell-link-note">기본 우선순위</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="active">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="11">
+                                <span><span class="status-badge ACTIVE">활성</span></span>
+                                <span style="font-size:12px;color:#94a3b8;">정상 동기화</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="1284">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="11">
+                                <span>총 1,284 / ON 1,284</span>
+                                <span class="adm-cell-link-note">적용 1,190 / 만료 0</span>
+                            </button>
+                        </td>
+                        <td style="max-width:240px;white-space:normal;" data-sort-value="상용 vpn·익명 프록시 출구 노드 일괄 차단">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="11">
+                                <span>상용 VPN·익명 프록시 출구 노드 일괄 차단</span>
+                                <span class="adm-cell-link-note">06.20 09:42</span>
+                            </button>
+                        </td>
+                        <td>
+                            <div class="adm-row-actions">
+                                <button type="button" class="adm-row-btn detail js-open-batch-editor" data-batch-id="11" data-source-type="VPN_FEED" data-batch-name="상용 VPN/프록시 차단" data-batch-code="VPN-2026Q2" data-status-label="활성" data-batch-rule-action="BLOCK" data-default-priority="1" data-source-name="threatfeed.example.org" data-total-rules="1284" data-active-rules="1284" data-effective-rules="1190" data-expired-rules="0" data-default-disable-strategy="BATCH_ONLY" data-default-enable-strategy="RESTORE_BATCH_CONTROL" data-description="상용 VPN·익명 프록시 출구 노드 일괄 차단" data-updated-at="2026.06.20 09:42" data-created-at="2026.04.01 10:00">설정</button>
+                                <div class="action-menu-wrap">
+                                    <button type="button" class="adm-row-btn detail adm-row-btn-more" onclick="admToggleActionMenu(this)">…</button>
+                                    <div class="action-menu">
+                                        <button type="button" class="action-menu-item js-open-batch-toggle" data-batch-id="11" data-batch-name="상용 VPN/프록시 차단" data-active="true">배치 비활성</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="js-local-row" data-section="batches" data-search="bot-scraper 크롤러/스크래퍼 차단 auto_detection 자동 탐지 비정상 크롤링·스크래핑 탐지 자동 등록 block 차단 2 active 활성 2026.06.25" data-batch="크롤러/스크래퍼 차단 BOT-SCRAPER" data-source="AUTO_DETECTION 자동 탐지" data-description="비정상 크롤링·스크래핑 탐지 자동 등록" data-policy="block 차단" data-priority="2" data-status="active 활성" data-updated-at="2026.06.25 14:07">
+                        <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="10" value="10" onchange="updateBlockBulkBar('batches')"></td>
+                        <td data-sort-value="크롤러/스크래퍼 차단">
+                            <button type="button" class="adm-link-btn js-open-batch-editor" data-batch-id="10" data-source-type="AUTO_DETECTION" data-batch-name="크롤러/스크래퍼 차단" data-batch-code="BOT-SCRAPER" data-status-label="활성" data-batch-rule-action="BLOCK" data-default-priority="2" data-source-name="rate-limit-engine" data-total-rules="213" data-active-rules="201" data-effective-rules="201" data-expired-rules="12" data-default-disable-strategy="CASCADE_ACTIVE_RULES" data-default-enable-strategy="BATCH_ONLY" data-description="비정상 크롤링·스크래핑 탐지 자동 등록" data-updated-at="2026.06.25 14:07" data-created-at="2026.05.12 11:30">
+                                <span style="font-weight:700;color:#e2e8f0;">크롤러/스크래퍼 차단</span>
+                                <span style="display:block;font-size:12px;color:#94a3b8;">BOT-SCRAPER</span>
+                                <span style="display:block;font-size:11px;color:#64748b;">자동 탐지</span>
+                            </button>
+                            <div class="adm-inline-actions">
+                                <button type="button" class="adm-inline-chip js-apply-block-filter" data-section="batches" data-field="source" data-keyword="AUTO_DETECTION">동일 출처</button>
+                            </div>
+                        </td>
+                        <td data-sort-value="block">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="10">
+                                <span><span class="status-badge DORMANT">차단</span></span>
+                                <span style="font-size:12px;color:#94a3b8;">OFF: CASCADE_ACTIVE_RULES</span>
+                                <span class="adm-cell-link-note">ON: BATCH_ONLY</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="2">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="10">
+                                <span>2</span>
+                                <span class="adm-cell-link-note">기본 우선순위</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="active">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="10">
+                                <span><span class="status-badge ACTIVE">활성</span></span>
+                                <span style="font-size:12px;color:#94a3b8;">정상 동기화</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="213">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="10">
+                                <span>총 213 / ON 201</span>
+                                <span class="adm-cell-link-note">적용 201 / 만료 12</span>
+                            </button>
+                        </td>
+                        <td style="max-width:240px;white-space:normal;" data-sort-value="비정상 크롤링·스크래핑 탐지 자동 등록">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="10">
+                                <span>비정상 크롤링·스크래핑 탐지 자동 등록</span>
+                                <span class="adm-cell-link-note">06.25 14:07</span>
+                            </button>
+                        </td>
+                        <td>
+                            <div class="adm-row-actions">
+                                <button type="button" class="adm-row-btn detail js-open-batch-editor" data-batch-id="10" data-source-type="AUTO_DETECTION" data-batch-name="크롤러/스크래퍼 차단" data-batch-code="BOT-SCRAPER" data-status-label="활성" data-batch-rule-action="BLOCK" data-default-priority="2" data-source-name="rate-limit-engine" data-total-rules="213" data-active-rules="201" data-effective-rules="201" data-expired-rules="12" data-default-disable-strategy="CASCADE_ACTIVE_RULES" data-default-enable-strategy="BATCH_ONLY" data-description="비정상 크롤링·스크래핑 탐지 자동 등록" data-updated-at="2026.06.25 14:07" data-created-at="2026.05.12 11:30">설정</button>
+                                <div class="action-menu-wrap">
+                                    <button type="button" class="adm-row-btn detail adm-row-btn-more" onclick="admToggleActionMenu(this)">…</button>
+                                    <div class="action-menu">
+                                        <button type="button" class="action-menu-item js-open-batch-toggle" data-batch-id="10" data-batch-name="크롤러/스크래퍼 차단" data-active="true">배치 비활성</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="js-local-row" data-section="batches" data-search="tor-exit tor 출구 노드 차단 auto_detection 자동 탐지 tor 네트워크 출구 노드 일괄 차단 block 차단 1 active 활성 2026.06.18" data-batch="Tor 출구 노드 차단 TOR-EXIT" data-source="AUTO_DETECTION 자동 탐지" data-description="Tor 네트워크 출구 노드 일괄 차단" data-policy="block 차단" data-priority="1" data-status="active 활성" data-updated-at="2026.06.18 03:15">
+                        <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="9" value="9" onchange="updateBlockBulkBar('batches')"></td>
+                        <td data-sort-value="tor 출구 노드 차단">
+                            <button type="button" class="adm-link-btn js-open-batch-editor" data-batch-id="9" data-source-type="AUTO_DETECTION" data-batch-name="Tor 출구 노드 차단" data-batch-code="TOR-EXIT" data-status-label="활성" data-batch-rule-action="BLOCK" data-default-priority="1" data-source-name="tor-exit-node-list" data-total-rules="1567" data-active-rules="1567" data-effective-rules="1488" data-expired-rules="0" data-default-disable-strategy="BATCH_ONLY" data-default-enable-strategy="RESTORE_BATCH_CONTROL" data-description="Tor 네트워크 출구 노드 일괄 차단" data-updated-at="2026.06.18 03:15" data-created-at="2026.03.18 08:20">
+                                <span style="font-weight:700;color:#e2e8f0;">Tor 출구 노드 차단</span>
+                                <span style="display:block;font-size:12px;color:#94a3b8;">TOR-EXIT</span>
+                                <span style="display:block;font-size:11px;color:#64748b;">자동 탐지</span>
+                            </button>
+                            <div class="adm-inline-actions">
+                                <button type="button" class="adm-inline-chip js-apply-block-filter" data-section="batches" data-field="source" data-keyword="AUTO_DETECTION">동일 출처</button>
+                            </div>
+                        </td>
+                        <td data-sort-value="block">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="9">
+                                <span><span class="status-badge DORMANT">차단</span></span>
+                                <span style="font-size:12px;color:#94a3b8;">OFF: BATCH_ONLY</span>
+                                <span class="adm-cell-link-note">ON: RESTORE_BATCH_CONTROL</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="1">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="9">
+                                <span>1</span>
+                                <span class="adm-cell-link-note">기본 우선순위</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="active">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="9">
+                                <span><span class="status-badge ACTIVE">활성</span></span>
+                                <span style="font-size:12px;color:#94a3b8;">정상 동기화</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="1567">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="9">
+                                <span>총 1,567 / ON 1,567</span>
+                                <span class="adm-cell-link-note">적용 1,488 / 만료 0</span>
+                            </button>
+                        </td>
+                        <td style="max-width:240px;white-space:normal;" data-sort-value="tor 네트워크 출구 노드 일괄 차단">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="9">
+                                <span>Tor 네트워크 출구 노드 일괄 차단</span>
+                                <span class="adm-cell-link-note">06.18 03:15</span>
+                            </button>
+                        </td>
+                        <td>
+                            <div class="adm-row-actions">
+                                <button type="button" class="adm-row-btn detail js-open-batch-editor" data-batch-id="9" data-source-type="AUTO_DETECTION" data-batch-name="Tor 출구 노드 차단" data-batch-code="TOR-EXIT" data-status-label="활성" data-batch-rule-action="BLOCK" data-default-priority="1" data-source-name="tor-exit-node-list" data-total-rules="1567" data-active-rules="1567" data-effective-rules="1488" data-expired-rules="0" data-default-disable-strategy="BATCH_ONLY" data-default-enable-strategy="RESTORE_BATCH_CONTROL" data-description="Tor 네트워크 출구 노드 일괄 차단" data-updated-at="2026.06.18 03:15" data-created-at="2026.03.18 08:20">설정</button>
+                                <div class="action-menu-wrap">
+                                    <button type="button" class="adm-row-btn detail adm-row-btn-more" onclick="admToggleActionMenu(this)">…</button>
+                                    <div class="action-menu">
+                                        <button type="button" class="action-menu-item js-open-batch-toggle" data-batch-id="9" data-batch-name="Tor 출구 노드 차단" data-active="true">배치 비활성</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="js-local-row" data-section="batches" data-search="spam-auto 스팸 발신 ip 자동 차단 spam_feed 스팸 피드 스팸 정책기관 피드 자동 동기화 block 차단 2 active 활성 2026.06.22" data-batch="스팸 발신 IP 자동 차단 SPAM-AUTO" data-source="SPAM_FEED 스팸 피드" data-description="스팸 정책기관 피드 자동 동기화" data-policy="block 차단" data-priority="2" data-status="active 활성" data-updated-at="2026.06.22 06:00">
+                        <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="8" value="8" onchange="updateBlockBulkBar('batches')"></td>
+                        <td data-sort-value="스팸 발신 ip 자동 차단">
+                            <button type="button" class="adm-link-btn js-open-batch-editor" data-batch-id="8" data-source-type="SPAM_FEED" data-batch-name="스팸 발신 IP 자동 차단" data-batch-code="SPAM-AUTO" data-status-label="활성" data-batch-rule-action="BLOCK" data-default-priority="2" data-source-name="spamhaus-drop.example.net" data-total-rules="642" data-active-rules="598" data-effective-rules="598" data-expired-rules="44" data-default-disable-strategy="BATCH_ONLY" data-default-enable-strategy="BATCH_ONLY" data-description="스팸 정책기관 피드 자동 동기화" data-updated-at="2026.06.22 06:00" data-created-at="2026.02.20 09:00">
+                                <span style="font-weight:700;color:#e2e8f0;">스팸 발신 IP 자동 차단</span>
+                                <span style="display:block;font-size:12px;color:#94a3b8;">SPAM-AUTO</span>
+                                <span style="display:block;font-size:11px;color:#64748b;">스팸 피드</span>
+                            </button>
+                            <div class="adm-inline-actions">
+                                <button type="button" class="adm-inline-chip js-apply-block-filter" data-section="batches" data-field="source" data-keyword="SPAM_FEED">동일 출처</button>
+                            </div>
+                        </td>
+                        <td data-sort-value="block">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="8">
+                                <span><span class="status-badge DORMANT">차단</span></span>
+                                <span style="font-size:12px;color:#94a3b8;">OFF: BATCH_ONLY</span>
+                                <span class="adm-cell-link-note">ON: BATCH_ONLY</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="2">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="8">
+                                <span>2</span>
+                                <span class="adm-cell-link-note">기본 우선순위</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="active">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="8">
+                                <span><span class="status-badge ACTIVE">활성</span></span>
+                                <span style="font-size:12px;color:#94a3b8;">정상 동기화</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="642">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="8">
+                                <span>총 642 / ON 598</span>
+                                <span class="adm-cell-link-note">적용 598 / 만료 44</span>
+                            </button>
+                        </td>
+                        <td style="max-width:240px;white-space:normal;" data-sort-value="스팸 정책기관 피드 자동 동기화">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="8">
+                                <span>스팸 정책기관 피드 자동 동기화</span>
+                                <span class="adm-cell-link-note">06.22 06:00</span>
+                            </button>
+                        </td>
+                        <td>
+                            <div class="adm-row-actions">
+                                <button type="button" class="adm-row-btn detail js-open-batch-editor" data-batch-id="8" data-source-type="SPAM_FEED" data-batch-name="스팸 발신 IP 자동 차단" data-batch-code="SPAM-AUTO" data-status-label="활성" data-batch-rule-action="BLOCK" data-default-priority="2" data-source-name="spamhaus-drop.example.net" data-total-rules="642" data-active-rules="598" data-effective-rules="598" data-expired-rules="44" data-default-disable-strategy="BATCH_ONLY" data-default-enable-strategy="BATCH_ONLY" data-description="스팸 정책기관 피드 자동 동기화" data-updated-at="2026.06.22 06:00" data-created-at="2026.02.20 09:00">설정</button>
+                                <div class="action-menu-wrap">
+                                    <button type="button" class="adm-row-btn detail adm-row-btn-more" onclick="admToggleActionMenu(this)">…</button>
+                                    <div class="action-menu">
+                                        <button type="button" class="action-menu-item js-open-batch-toggle" data-batch-id="8" data-batch-name="스팸 발신 IP 자동 차단" data-active="true">배치 비활성</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="js-local-row" data-section="batches" data-search="allow-office 사내 고정 ip 허용 manual 수동 등록 운영팀 사무실·vpn 게이트웨이 화이트리스트 allow 허용 0 active 활성 2026.05.30" data-batch="사내 고정 IP 허용 ALLOW-OFFICE" data-source="MANUAL 수동 등록" data-description="운영팀 사무실·VPN 게이트웨이 화이트리스트" data-policy="allow 허용" data-priority="0" data-status="active 활성" data-updated-at="2026.05.30 17:25">
+                        <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="7" value="7" onchange="updateBlockBulkBar('batches')"></td>
+                        <td data-sort-value="사내 고정 ip 허용">
+                            <button type="button" class="adm-link-btn js-open-batch-editor" data-batch-id="7" data-source-type="MANUAL" data-batch-name="사내 고정 IP 허용" data-batch-code="ALLOW-OFFICE" data-status-label="활성" data-batch-rule-action="ALLOW" data-default-priority="0" data-source-name="운영팀 직접 등록" data-total-rules="8" data-active-rules="8" data-effective-rules="8" data-expired-rules="0" data-default-disable-strategy="BATCH_ONLY" data-default-enable-strategy="FORCE_ENABLE_ALL" data-description="운영팀 사무실·VPN 게이트웨이 화이트리스트" data-updated-at="2026.05.30 17:25" data-created-at="2026.01.10 13:40">
+                                <span style="font-weight:700;color:#e2e8f0;">사내 고정 IP 허용</span>
+                                <span style="display:block;font-size:12px;color:#94a3b8;">ALLOW-OFFICE</span>
+                                <span style="display:block;font-size:11px;color:#64748b;">수동 등록</span>
+                            </button>
+                            <div class="adm-inline-actions">
+                                <button type="button" class="adm-inline-chip js-apply-block-filter" data-section="batches" data-field="source" data-keyword="MANUAL">동일 출처</button>
+                            </div>
+                        </td>
+                        <td data-sort-value="allow">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="7">
+                                <span><span class="status-badge ACTIVE">허용</span></span>
+                                <span style="font-size:12px;color:#94a3b8;">OFF: BATCH_ONLY</span>
+                                <span class="adm-cell-link-note">ON: FORCE_ENABLE_ALL</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="0">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="7">
+                                <span>0</span>
+                                <span class="adm-cell-link-note">최우선 허용</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="active">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="7">
+                                <span><span class="status-badge ACTIVE">활성</span></span>
+                                <span style="font-size:12px;color:#94a3b8;">정상 동기화</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="8">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="7">
+                                <span>총 8 / ON 8</span>
+                                <span class="adm-cell-link-note">적용 8 / 만료 0</span>
+                            </button>
+                        </td>
+                        <td style="max-width:240px;white-space:normal;" data-sort-value="운영팀 사무실·vpn 게이트웨이 화이트리스트">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="7">
+                                <span>운영팀 사무실·VPN 게이트웨이 화이트리스트</span>
+                                <span class="adm-cell-link-note">05.30 17:25</span>
+                            </button>
+                        </td>
+                        <td>
+                            <div class="adm-row-actions">
+                                <button type="button" class="adm-row-btn detail js-open-batch-editor" data-batch-id="7" data-source-type="MANUAL" data-batch-name="사내 고정 IP 허용" data-batch-code="ALLOW-OFFICE" data-status-label="활성" data-batch-rule-action="ALLOW" data-default-priority="0" data-source-name="운영팀 직접 등록" data-total-rules="8" data-active-rules="8" data-effective-rules="8" data-expired-rules="0" data-default-disable-strategy="BATCH_ONLY" data-default-enable-strategy="FORCE_ENABLE_ALL" data-description="운영팀 사무실·VPN 게이트웨이 화이트리스트" data-updated-at="2026.05.30 17:25" data-created-at="2026.01.10 13:40">설정</button>
+                                <div class="action-menu-wrap">
+                                    <button type="button" class="adm-row-btn detail adm-row-btn-more" onclick="admToggleActionMenu(this)">…</button>
+                                    <div class="action-menu">
+                                        <button type="button" class="action-menu-item js-open-batch-toggle" data-batch-id="7" data-batch-name="사내 고정 IP 허용" data-active="true">배치 비활성</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="js-local-row" data-section="batches" data-search="geo-sanction 제재 지역 접근 제한 geo_policy 지역 정책 국가 단위 정책 차단 검토 중 일시중지 block 차단 3 paused 일시중지 2026.06.10" data-batch="제재 지역 접근 제한 GEO-SANCTION" data-source="GEO_POLICY 지역 정책" data-description="국가 단위 정책 차단 (법무 검토 중)" data-policy="block 차단" data-priority="3" data-status="paused 일시중지" data-updated-at="2026.06.10 11:50">
+                        <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="6" value="6" onchange="updateBlockBulkBar('batches')"></td>
+                        <td data-sort-value="제재 지역 접근 제한">
+                            <button type="button" class="adm-link-btn js-open-batch-editor" data-batch-id="6" data-source-type="GEO_POLICY" data-batch-name="제재 지역 접근 제한" data-batch-code="GEO-SANCTION" data-status-label="일시중지" data-batch-rule-action="BLOCK" data-default-priority="3" data-source-name="국가 정책 매핑" data-total-rules="12" data-active-rules="0" data-effective-rules="0" data-expired-rules="0" data-default-disable-strategy="BATCH_ONLY" data-default-enable-strategy="BATCH_ONLY" data-description="국가 단위 정책 차단 (법무 검토 중)" data-updated-at="2026.06.10 11:50" data-created-at="2026.06.05 15:10">
+                                <span style="font-weight:700;color:#e2e8f0;">제재 지역 접근 제한</span>
+                                <span style="display:block;font-size:12px;color:#94a3b8;">GEO-SANCTION</span>
+                                <span style="display:block;font-size:11px;color:#64748b;">지역 정책</span>
+                            </button>
+                            <div class="adm-inline-actions">
+                                <button type="button" class="adm-inline-chip js-apply-block-filter" data-section="batches" data-field="source" data-keyword="GEO_POLICY">동일 출처</button>
+                            </div>
+                        </td>
+                        <td data-sort-value="block">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="6">
+                                <span><span class="status-badge DORMANT">차단</span></span>
+                                <span style="font-size:12px;color:#94a3b8;">OFF: BATCH_ONLY</span>
+                                <span class="adm-cell-link-note">ON: BATCH_ONLY</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="3">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="6">
+                                <span>3</span>
+                                <span class="adm-cell-link-note">기본 우선순위</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="paused">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="6">
+                                <span><span class="status-badge DORMANT">일시중지</span></span>
+                                <span style="font-size:12px;color:#94a3b8;">적용 보류</span>
+                            </button>
+                        </td>
+                        <td data-sort-value="12">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="6">
+                                <span>총 12 / ON 0</span>
+                                <span class="adm-cell-link-note">적용 0 / 만료 0</span>
+                            </button>
+                        </td>
+                        <td style="max-width:240px;white-space:normal;" data-sort-value="국가 단위 정책 차단 (법무 검토 중)">
+                            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="6">
+                                <span>국가 단위 정책 차단 (법무 검토 중)</span>
+                                <span class="adm-cell-link-note">06.10 11:50</span>
+                            </button>
+                        </td>
+                        <td>
+                            <div class="adm-row-actions">
+                                <button type="button" class="adm-row-btn detail js-open-batch-editor" data-batch-id="6" data-source-type="GEO_POLICY" data-batch-name="제재 지역 접근 제한" data-batch-code="GEO-SANCTION" data-status-label="일시중지" data-batch-rule-action="BLOCK" data-default-priority="3" data-source-name="국가 정책 매핑" data-total-rules="12" data-active-rules="0" data-effective-rules="0" data-expired-rules="0" data-default-disable-strategy="BATCH_ONLY" data-default-enable-strategy="BATCH_ONLY" data-description="국가 단위 정책 차단 (법무 검토 중)" data-updated-at="2026.06.10 11:50" data-created-at="2026.06.05 15:10">설정</button>
+                                <div class="action-menu-wrap">
+                                    <button type="button" class="adm-row-btn detail adm-row-btn-more" onclick="admToggleActionMenu(this)">…</button>
+                                    <div class="action-menu">
+                                        <button type="button" class="action-menu-item js-open-batch-toggle" data-batch-id="6" data-batch-name="제재 지역 접근 제한" data-active="false">배치 활성</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
                 </table>
             </div>
             <div class="adm-local-pagination" data-section="batches">
-                <div class="adm-local-page-info js-local-page-info" data-section="batches">총 0건 / 현재 0건</div>
+                <div class="adm-local-page-info js-local-page-info" data-section="batches">총 6건 / 현재 6건</div>
                 <div class="adm-local-page-actions">
                     <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="batches" disabled="">이전</button>
                     <span class="js-local-page-state" data-section="batches">1 / 1</span>

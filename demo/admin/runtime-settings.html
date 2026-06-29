@@ -520,7 +520,7 @@ window.ADMIN_TRANSLATION_UI = {
             <div>
                 <div class="adm-card-title">
                     런타임 설정
-                    <span class="adm-section-total-inline">총 0건</span>
+                    <span class="adm-section-total-inline">총 11건</span>
                 </div>
                 <div class="adm-muted">properties/env 성격의 설정값을 DB에서 우선 관리합니다. 값이 비어 있으면 fallback 또는 기존 설정을 사용합니다.</div>
             </div>
@@ -541,13 +541,135 @@ window.ADMIN_TRANSLATION_UI = {
                     </tr>
                     </thead>
                     <tbody>
-                    
-                    
+
+
                         <tr data-admin-list-original-empty-row="true" style="display: none;"><td colspan="8" class="adm-empty">데이터가 없습니다.</td></tr>
-                    
-                    <tr data-admin-list-empty-row="true"><td colspan="9" style="text-align: center; color: rgb(100, 116, 139); padding: 28px 12px;">현재 조건에 맞는 항목이 없습니다.</td></tr></tbody>
+
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td><span class="adm-badge">AUTH</span></td>
+                        <td><button class="adm-runtime-key-link js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-101">auth.session.timeout-minutes</button></td>
+                        <td>세션 만료(분)</td>
+                        <td>NUMBER</td>
+                        <td><span class="adm-runtime-value-preview">120</span></td>
+                        <td>2026-06-27 14:32</td>
+                        <td><span class="adm-badge ACTIVE">활성</span></td>
+                        <td><div class="adm-runtime-row-actions"><button class="adm-btn adm-btn-ghost js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-101">상세</button></div></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td><span class="adm-badge">AUTH</span></td>
+                        <td><button class="adm-runtime-key-link js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-102">auth.login.max-fail-count</button></td>
+                        <td>로그인 실패 잠금 횟수</td>
+                        <td>NUMBER</td>
+                        <td><span class="adm-runtime-value-preview">5</span></td>
+                        <td>2026-06-25 09:11</td>
+                        <td><span class="adm-badge ACTIVE">활성</span></td>
+                        <td><div class="adm-runtime-row-actions"><button class="adm-btn adm-btn-ghost js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-102">상세</button></div></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td><span class="adm-badge">OAUTH</span></td>
+                        <td><button class="adm-runtime-key-link js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-103">oauth.kakao.client-id</button></td>
+                        <td>카카오 REST 키</td>
+                        <td>STRING</td>
+                        <td><span class="adm-runtime-value-preview">a1b2c3d4e5f6•••••••••••••</span></td>
+                        <td>2026-06-22 17:48</td>
+                        <td><span class="adm-badge ACTIVE">활성</span></td>
+                        <td><div class="adm-runtime-row-actions"><button class="adm-btn adm-btn-ghost js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-103">상세</button></div></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td><span class="adm-badge">OAUTH</span></td>
+                        <td><button class="adm-runtime-key-link js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-104">oauth.kakao.client-secret</button></td>
+                        <td>카카오 클라이언트 시크릿</td>
+                        <td>SECRET</td>
+                        <td><span class="adm-runtime-secret-value">SECRET</span></td>
+                        <td>2026-06-22 17:49</td>
+                        <td><span class="adm-badge ACTIVE">활성</span></td>
+                        <td><div class="adm-runtime-row-actions"><button class="adm-btn adm-btn-ghost js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-104">상세</button></div></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td><span class="adm-badge">OAUTH</span></td>
+                        <td><button class="adm-runtime-key-link js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-105">oauth.naver.callback-url</button></td>
+                        <td>네이버 콜백 URL</td>
+                        <td>URL</td>
+                        <td><span class="adm-runtime-value-preview">https://triptogether.kr/TripTogether/oauth/naver/callback</span></td>
+                        <td>2026-06-18 11:05</td>
+                        <td><span class="adm-badge ACTIVE">활성</span></td>
+                        <td><div class="adm-runtime-row-actions"><button class="adm-btn adm-btn-ghost js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-105">상세</button></div></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td><span class="adm-badge">MAIL</span></td>
+                        <td><button class="adm-runtime-key-link js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-106">mail.smtp.host</button></td>
+                        <td>SMTP 호스트</td>
+                        <td>STRING</td>
+                        <td><span class="adm-runtime-value-preview">smtp.gmail.com</span></td>
+                        <td>2026-06-15 08:20</td>
+                        <td><span class="adm-badge ACTIVE">활성</span></td>
+                        <td><div class="adm-runtime-row-actions"><button class="adm-btn adm-btn-ghost js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-106">상세</button></div></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td><span class="adm-badge">MAIL</span></td>
+                        <td><button class="adm-runtime-key-link js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-107">mail.smtp.password</button></td>
+                        <td>SMTP 앱 비밀번호</td>
+                        <td>SECRET</td>
+                        <td><span class="adm-runtime-secret-value">SECRET</span></td>
+                        <td>2026-06-15 08:22</td>
+                        <td><span class="adm-badge ACTIVE">활성</span></td>
+                        <td><div class="adm-runtime-row-actions"><button class="adm-btn adm-btn-ghost js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-107">상세</button></div></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td><span class="adm-badge">UPLOAD</span></td>
+                        <td><button class="adm-runtime-key-link js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-108">file.upload.max-size-mb</button></td>
+                        <td>업로드 최대 용량(MB)</td>
+                        <td>NUMBER</td>
+                        <td><span class="adm-runtime-value-preview">10</span></td>
+                        <td>2026-06-12 16:40</td>
+                        <td><span class="adm-badge ACTIVE">활성</span></td>
+                        <td><div class="adm-runtime-row-actions"><button class="adm-btn adm-btn-ghost js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-108">상세</button></div></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td><span class="adm-badge">AI</span></td>
+                        <td><button class="adm-runtime-key-link js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-109">chatbot.daily.guest-quota</button></td>
+                        <td>비회원 챗봇 일일 한도</td>
+                        <td>NUMBER</td>
+                        <td><span class="adm-runtime-value-preview">5</span></td>
+                        <td>2026-06-10 13:27</td>
+                        <td><span class="adm-badge ACTIVE">활성</span></td>
+                        <td><div class="adm-runtime-row-actions"><button class="adm-btn adm-btn-ghost js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-109">상세</button></div></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td><span class="adm-badge">GENERAL</span></td>
+                        <td><button class="adm-runtime-key-link js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-110">site.maintenance.enabled</button></td>
+                        <td>점검 모드</td>
+                        <td>BOOLEAN</td>
+                        <td><span class="adm-runtime-value-preview">false</span></td>
+                        <td>2026-06-08 10:02</td>
+                        <td><span class="adm-badge ACTIVE">활성</span></td>
+                        <td><div class="adm-runtime-row-actions"><button class="adm-btn adm-btn-ghost js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-110">상세</button></div></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable0" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td><span class="adm-badge">SECURITY</span></td>
+                        <td><button class="adm-runtime-key-link js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-111">security.recaptcha.legacy-key</button></td>
+                        <td>구버전 reCAPTCHA 키</td>
+                        <td>STRING</td>
+                        <td><span class="adm-runtime-value-preview">6Lc•••••••••• (사용 중단)</span></td>
+                        <td>2026-05-30 19:14</td>
+                        <td><span class="adm-badge DORMANT">비활성</span> <span class="adm-badge">수정 허용 OFF</span></td>
+                        <td><div class="adm-runtime-row-actions"><button class="adm-btn adm-btn-ghost js-runtime-setting-open" type="button" data-modal-id="runtime-setting-modal-111">상세</button></div></td>
+                    </tr>
+
+                    <tr data-admin-list-empty-row="true" style="display:none;"><td colspan="9" style="text-align: center; color: rgb(100, 116, 139); padding: 28px 12px;">현재 조건에 맞는 항목이 없습니다.</td></tr></tbody>
                 </table>
-            </div><div class="adm-section-list-footer js-admin-list-tools-footer" data-table-id="admSectionListTable0"><span class="adm-section-list-page-info js-admin-list-page-info">0건 중 0건 표시 · 1/1쪽</span><div class="adm-section-list-page-tools"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev" disabled="">이전</button><button type="button" class="adm-btn adm-btn-ghost js-admin-list-next" disabled="">다음</button></div></div>
+            </div><div class="adm-section-list-footer js-admin-list-tools-footer" data-table-id="admSectionListTable0"><span class="adm-section-list-page-info js-admin-list-page-info">11건 중 11건 표시 · 1/1쪽</span><div class="adm-section-list-page-tools"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev" disabled="">이전</button><button type="button" class="adm-btn adm-btn-ghost js-admin-list-next" disabled="">다음</button></div></div>
         </div>
     </div>
 
@@ -558,7 +680,7 @@ window.ADMIN_TRANSLATION_UI = {
             <div>
                 <div class="adm-card-title">
                     설정 변경 이력
-                    <span class="adm-section-total-inline">총 0건</span>
+                    <span class="adm-section-total-inline">총 8건</span>
                 </div>
                 <div class="adm-muted">최근 설정 변경 전/후 스냅샷을 확인합니다.</div>
             </div>
@@ -580,10 +702,83 @@ window.ADMIN_TRANSLATION_UI = {
                     
                     
                         <tr data-admin-list-original-empty-row="true" style="display: none;"><td colspan="6" class="adm-empty">설정 변경 이력이 없습니다.</td></tr>
-                    
-                    <tr data-admin-list-empty-row="true"><td colspan="7" style="text-align: center; color: rgb(100, 116, 139); padding: 28px 12px;">현재 조건에 맞는 항목이 없습니다.</td></tr></tbody>
+
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable1" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>v4</td>
+                        <td>auth.session.timeout-minutes</td>
+                        <td><span class="adm-badge">UPDATE</span></td>
+                        <td>#1 (최고관리자)</td>
+                        <td>2026-06-27 14:32</td>
+                        <td><details><summary>스냅샷 보기</summary><div class="adm-runtime-snapshot-grid"><div><div class="adm-muted">변경 전</div><pre class="adm-runtime-snapshot-pre">{ "settingValue": "60", "active": true }</pre></div><div><div class="adm-muted">변경 후</div><pre class="adm-runtime-snapshot-pre">{ "settingValue": "120", "active": true }</pre></div></div></details></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable1" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>v2</td>
+                        <td>auth.login.max-fail-count</td>
+                        <td><span class="adm-badge">UPDATE</span></td>
+                        <td>#1 (최고관리자)</td>
+                        <td>2026-06-25 09:11</td>
+                        <td><details><summary>스냅샷 보기</summary><div class="adm-runtime-snapshot-grid"><div><div class="adm-muted">변경 전</div><pre class="adm-runtime-snapshot-pre">{ "settingValue": "10", "active": true }</pre></div><div><div class="adm-muted">변경 후</div><pre class="adm-runtime-snapshot-pre">{ "settingValue": "5", "active": true }</pre></div></div></details></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable1" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>v3</td>
+                        <td>oauth.kakao.client-secret</td>
+                        <td><span class="adm-badge">UPDATE</span></td>
+                        <td>#1 (최고관리자)</td>
+                        <td>2026-06-22 17:49</td>
+                        <td><details><summary>스냅샷 보기</summary><div class="adm-runtime-snapshot-grid"><div><div class="adm-muted">변경 전</div><pre class="adm-runtime-snapshot-pre">{ "settingValue": "***", "secret": true }</pre></div><div><div class="adm-muted">변경 후</div><pre class="adm-runtime-snapshot-pre">{ "settingValue": "***", "secret": true }</pre></div></div></details></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable1" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>v1</td>
+                        <td>oauth.naver.callback-url</td>
+                        <td><span class="adm-badge">CREATE</span></td>
+                        <td>#1 (최고관리자)</td>
+                        <td>2026-06-18 11:05</td>
+                        <td><details><summary>스냅샷 보기</summary><div class="adm-runtime-snapshot-grid"><div><div class="adm-muted">변경 전</div><pre class="adm-runtime-snapshot-pre">null</pre></div><div><div class="adm-muted">변경 후</div><pre class="adm-runtime-snapshot-pre">{ "settingValue": "https://triptogether.kr/TripTogether/oauth/naver/callback", "valueType": "URL" }</pre></div></div></details></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable1" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>v2</td>
+                        <td>mail.smtp.host</td>
+                        <td><span class="adm-badge">UPDATE</span></td>
+                        <td>#1 (최고관리자)</td>
+                        <td>2026-06-15 08:20</td>
+                        <td><details><summary>스냅샷 보기</summary><div class="adm-runtime-snapshot-grid"><div><div class="adm-muted">변경 전</div><pre class="adm-runtime-snapshot-pre">{ "settingValue": "smtp.naver.com" }</pre></div><div><div class="adm-muted">변경 후</div><pre class="adm-runtime-snapshot-pre">{ "settingValue": "smtp.gmail.com" }</pre></div></div></details></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable1" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>v1</td>
+                        <td>file.upload.max-size-mb</td>
+                        <td><span class="adm-badge">CREATE</span></td>
+                        <td>#1 (최고관리자)</td>
+                        <td>2026-06-12 16:40</td>
+                        <td><details><summary>스냅샷 보기</summary><div class="adm-runtime-snapshot-grid"><div><div class="adm-muted">변경 전</div><pre class="adm-runtime-snapshot-pre">null</pre></div><div><div class="adm-muted">변경 후</div><pre class="adm-runtime-snapshot-pre">{ "settingValue": "10", "valueType": "NUMBER" }</pre></div></div></details></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable1" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>v1</td>
+                        <td>chatbot.daily.guest-quota</td>
+                        <td><span class="adm-badge">CREATE</span></td>
+                        <td>#1 (최고관리자)</td>
+                        <td>2026-06-10 13:27</td>
+                        <td><details><summary>스냅샷 보기</summary><div class="adm-runtime-snapshot-grid"><div><div class="adm-muted">변경 전</div><pre class="adm-runtime-snapshot-pre">null</pre></div><div><div class="adm-muted">변경 후</div><pre class="adm-runtime-snapshot-pre">{ "settingValue": "5", "valueType": "NUMBER" }</pre></div></div></details></td>
+                    </tr>
+                    <tr>
+                        <td class="adm-admin-list-check-cell" style="text-align:center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="admSectionListTable1" data-admin-list-select="true" aria-label="행 선택"></td>
+                        <td>v3</td>
+                        <td>security.recaptcha.legacy-key</td>
+                        <td><span class="adm-badge">UPDATE</span></td>
+                        <td>#1 (최고관리자)</td>
+                        <td>2026-05-30 19:14</td>
+                        <td><details><summary>스냅샷 보기</summary><div class="adm-runtime-snapshot-grid"><div><div class="adm-muted">변경 전</div><pre class="adm-runtime-snapshot-pre">{ "active": true }</pre></div><div><div class="adm-muted">변경 후</div><pre class="adm-runtime-snapshot-pre">{ "active": false, "editable": false }</pre></div></div></details></td>
+                    </tr>
+
+                    <tr data-admin-list-empty-row="true" style="display:none;"><td colspan="7" style="text-align: center; color: rgb(100, 116, 139); padding: 28px 12px;">현재 조건에 맞는 항목이 없습니다.</td></tr></tbody>
                 </table>
-            </div><div class="adm-section-list-footer js-admin-list-tools-footer" data-table-id="admSectionListTable1"><span class="adm-section-list-page-info js-admin-list-page-info">0건 중 0건 표시 · 1/1쪽</span><div class="adm-section-list-page-tools"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev" disabled="">이전</button><button type="button" class="adm-btn adm-btn-ghost js-admin-list-next" disabled="">다음</button></div></div>
+            </div><div class="adm-section-list-footer js-admin-list-tools-footer" data-table-id="admSectionListTable1"><span class="adm-section-list-page-info js-admin-list-page-info">8건 중 8건 표시 · 1/1쪽</span><div class="adm-section-list-page-tools"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev" disabled="">이전</button><button type="button" class="adm-btn adm-btn-ghost js-admin-list-next" disabled="">다음</button></div></div>
         </div>
     </div>
 </div>
