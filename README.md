@@ -84,13 +84,23 @@ TripTogether는 여행지 탐색, AI 추천, 여행 코스 작성, 커뮤니티,
 
 ## 🖼️ 화면 미리보기
 
+### 사용자 화면
+
 | 홈 | 커뮤니티 | 여행 패키지 |
 | :---: | :---: | :---: |
 | [<img src="demo/docs/screenshots/home.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/) | [<img src="demo/docs/screenshots/community.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/community/list.html) | [<img src="demo/docs/screenshots/packages.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/packages.html) |
 | **마이페이지** | **포인트샵** | **커뮤니티 게시글** |
 | [<img src="demo/docs/screenshots/mypage.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/mypage.html) | [<img src="demo/docs/screenshots/shop.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/shop.html) | [<img src="demo/docs/screenshots/community-post.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/community/1.html) |
-| **🛠 관리자 대시보드** | **🛠 관리자 · 회원 관리** | **🛠 관리자 · 보안/차단** |
-| [<img src="demo/docs/screenshots/admin-dashboard.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin.html?demoacct=admin) | [<img src="demo/docs/screenshots/admin-members.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin/members.html?demoacct=admin) | [<img src="demo/docs/screenshots/admin-security.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin/blocks.html?demoacct=admin) |
+
+### 🛠 관리자 화면
+
+> 관리자 계정(`admin` / `1234`)으로 로그인하거나 아래 링크(`?demoacct=admin`)로 바로 진입할 수 있습니다.
+
+| 대시보드 | 회원 관리 | 보안 · 차단 |
+| :---: | :---: | :---: |
+| [<img src="demo/docs/screenshots/admin-dashboard-v2.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin.html?demoacct=admin) | [<img src="demo/docs/screenshots/admin-members-v2.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin/members.html?demoacct=admin) | [<img src="demo/docs/screenshots/admin-blocks-v2.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin/blocks.html?demoacct=admin) |
+| **내지갑 · 재정 관리** | **보안 이력(감사)** | **로그인 위험 검토** |
+| [<img src="demo/docs/screenshots/admin-finance-v2.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin/finance.html?demoacct=admin) | [<img src="demo/docs/screenshots/admin-security-v2.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin/security.html?demoacct=admin) | [<img src="demo/docs/screenshots/admin-loginrisk-v2.png" width="260">](https://notetester.github.io/TripTogetherPortfolio/admin/login-risk/reviews.html?demoacct=admin) |
 
 ## 🧱 아키텍처 한눈에
 
