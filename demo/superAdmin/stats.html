@@ -128,19 +128,19 @@ function saToggleTheme() {
     
     <div class="sa-stats-summary">
         <div class="sa-stats-kpi">
-            <div class="sa-stats-kpi-value">2</div>
+            <div class="sa-stats-kpi-value">14</div>
             <div class="sa-stats-kpi-label">총 관리자</div>
         </div>
         <div class="sa-stats-kpi">
-            <div class="sa-stats-kpi-value">1</div>
+            <div class="sa-stats-kpi-value">7</div>
             <div class="sa-stats-kpi-label">부서 수</div>
         </div>
         <div class="sa-stats-kpi">
-            <div class="sa-stats-kpi-value">1</div>
+            <div class="sa-stats-kpi-value">9</div>
             <div class="sa-stats-kpi-label">권한 종류</div>
         </div>
         <div class="sa-stats-kpi">
-            <div class="sa-stats-kpi-value">1</div>
+            <div class="sa-stats-kpi-value">11</div>
             <div class="sa-stats-kpi-label">직책 종류</div>
         </div>
     </div>
@@ -193,17 +193,41 @@ function saToggleTheme() {
             <div class="adm-card-head">
                 <div class="adm-card-title">
                     장기 미접속 관리자
-                    <span class="adm-section-total-inline">총 0건</span>
+                    <span class="adm-section-total-inline">총 4건</span>
                     <span class="sa-exception-count">(90일+)</span>
                 </div>
             </div>
             <div class="adm-card-body sa-table-card-body sa-table-scroll">
-                
-                    
-                        <div class="sa-exception-empty">해당 없음</div>
-                    
-                    
-                
+
+
+                        <table class="sa-exception-table" data-admin-list-ignore="true">
+                            <thead><tr><th onclick="saStatsThClick(this)">닉네임</th><th onclick="saStatsThClick(this)">부서</th><th onclick="saStatsThClick(this)">최근 접속</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td><a href="../superAdmin/members/7/edit.html">콘텐츠지기</a></td>
+                                    <td>콘텐츠팀</td>
+                                    <td>2026-01-12</td>
+                                </tr>
+                                <tr>
+                                    <td><a href="../superAdmin/members/11/edit.html">old_marketer</a></td>
+                                    <td>마케팅팀</td>
+                                    <td>2026-02-03</td>
+                                </tr>
+                                <tr>
+                                    <td><a href="../superAdmin/members/5/edit.html">감사담당J</a></td>
+                                    <td>보안팀</td>
+                                    <td>2026-02-18</td>
+                                </tr>
+                                <tr>
+                                    <td><a href="../superAdmin/members/9/edit.html">cs_yoon</a></td>
+                                    <td>CS팀</td>
+                                    <td>2026-03-01</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+
             </div>
         </div>
 
@@ -211,33 +235,34 @@ function saToggleTheme() {
             <div class="adm-card-head">
                 <div class="adm-card-title">
                     권한 없는 관리자
-                    <span class="adm-section-total-inline">총 2건</span>
+                    <span class="adm-section-total-inline">총 3건</span>
                 </div>
             </div>
             <div class="adm-card-body sa-table-card-body sa-table-scroll">
-                
-                    
-                    
+
+
                         <table class="sa-exception-table" data-admin-list-ignore="true">
                             <thead><tr><th onclick="saStatsThClick(this)">닉네임</th><th onclick="saStatsThClick(this)">부서</th><th onclick="saStatsThClick(this)">직함</th></tr></thead>
                             <tbody>
-                            
                                 <tr>
-                                    <td><a href="/TripTogether/superAdmin/members/3/edit">보안관리자</a></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td><a href="../superAdmin/members/12/edit.html">신입_park</a></td>
+                                    <td>플랫폼개발팀</td>
+                                    <td>주니어 개발자</td>
                                 </tr>
-                            
                                 <tr>
-                                    <td><a href="../superAdmin/members/2/edit.html">운영관리자</a></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td><a href="../superAdmin/members/14/edit.html">인턴_seo</a></td>
+                                    <td>콘텐츠팀</td>
+                                    <td>인턴</td>
                                 </tr>
-                            
+                                <tr>
+                                    <td><a href="../superAdmin/members/8/edit.html">design_oh</a></td>
+                                    <td>마케팅팀</td>
+                                    <td>UX 디자이너</td>
+                                </tr>
                             </tbody>
                         </table>
-                    
-                
+
+
             </div>
         </div>
 
@@ -245,33 +270,44 @@ function saToggleTheme() {
             <div class="adm-card-head">
                 <div class="adm-card-title">
                     상급자 미지정 관리자
-                    <span class="adm-section-total-inline">총 2건</span>
+                    <span class="adm-section-total-inline">총 5건</span>
                 </div>
             </div>
             <div class="adm-card-body sa-table-card-body sa-table-scroll">
-                
-                    
-                    
+
+
                         <table class="sa-exception-table" data-admin-list-ignore="true">
                             <thead><tr><th onclick="saStatsThClick(this)">닉네임</th><th onclick="saStatsThClick(this)">부서</th><th onclick="saStatsThClick(this)">직함</th></tr></thead>
                             <tbody>
-                            
-                                <tr>
-                                    <td><a href="/TripTogether/superAdmin/members/3/edit">보안관리자</a></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            
                                 <tr>
                                     <td><a href="../superAdmin/members/2/edit.html">운영관리자</a></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>운영팀</td>
+                                    <td>운영총괄</td>
                                 </tr>
-                            
+                                <tr>
+                                    <td><a href="../superAdmin/members/3/edit.html">보안관리자</a></td>
+                                    <td>보안팀</td>
+                                    <td>보안팀장</td>
+                                </tr>
+                                <tr>
+                                    <td><a href="../superAdmin/members/6/edit.html">infra_kang</a></td>
+                                    <td>인프라팀</td>
+                                    <td>DevOps 엔지니어</td>
+                                </tr>
+                                <tr>
+                                    <td><a href="../superAdmin/members/10/edit.html">ai_jung</a></td>
+                                    <td>플랫폼개발팀</td>
+                                    <td>AI엔지니어</td>
+                                </tr>
+                                <tr>
+                                    <td><a href="../superAdmin/members/13/edit.html">growth_yoon</a></td>
+                                    <td>마케팅팀</td>
+                                    <td>그로스매니저</td>
+                                </tr>
                             </tbody>
                         </table>
-                    
-                
+
+
             </div>
         </div>
 
@@ -282,20 +318,20 @@ function saToggleTheme() {
 
 <script>
 const dataPosition = {
-    labels: ['미지정'],
-    counts: [2]
+    labels: ['선임매니저', '팀장', 'AI엔지니어', 'DevOps 엔지니어', '콘텐츠에디터', '그로스매니저', '운영총괄', '기타'],
+    counts: [3, 3, 2, 1, 1, 1, 1, 2]
 };
 const dataPermCode = {
-    labels: ['미지정'],
-    counts: [2]
+    labels: ['일반 운영자', '콘텐츠 관리자', '보안 감사자', '읽기 전용', '시스템 관리자', '미지정'],
+    counts: [5, 3, 2, 2, 1, 1]
 };
 const dataTier = {
-    labels: ['미지정'],
-    counts: [2]
+    labels: ['T1', 'T2', 'T3', 'T4', 'T5'],
+    counts: [1, 2, 5, 4, 2]
 };
 const dataDept = {
-    labels: ['미지정'],
-    counts: [2]
+    labels: ['운영팀', '플랫폼개발팀', '보안팀', '인프라팀', 'CS팀', '마케팅팀', '콘텐츠팀'],
+    counts: [3, 3, 2, 2, 2, 1, 1]
 };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>

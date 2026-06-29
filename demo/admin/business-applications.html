@@ -461,8 +461,8 @@ window.ADMIN_TRANSLATION_UI = {
                     <div>
                         <div class="adm-filter-label">신청 상태</div>
                         <select class="adm-select" name="status">
-                            <option value="ALL">전체</option>
-                            <option value="PENDING" selected="">검토 대기</option>
+                            <option value="ALL" selected="">전체</option>
+                            <option value="PENDING">검토 대기</option>
                             <option value="APPROVED">승인</option>
                             <option value="REJECTED">반려</option>
                         </select>
@@ -504,7 +504,7 @@ window.ADMIN_TRANSLATION_UI = {
         <div class="adm-card-head adm-business-list-head">
             <div class="adm-card-title">
                 🏢 기업 회원 신청 관리
-                <span id="businessTotalLabel" class="adm-business-total-label">총 1건</span>
+                <span id="businessTotalLabel" class="adm-business-total-label">총 11건</span>
             </div>
             <div class="adm-business-export-control adm-export-control">
                 <select class="adm-select adm-business-export-format" id="businessExportFormat">
@@ -598,91 +598,533 @@ window.ADMIN_TRANSLATION_UI = {
 
     
     
-    <tr class="js-business-row" data-application-idx="4" data-user-idx="7" data-nickname="여행가김철수" data-user-id="kimcs" data-user-email="kimcs@triptogether.demo" data-current-role="USER" data-applicant="여행가김철수 kimcs kimcs@triptogether.demo" data-requested-role="BUSINESS" data-company-name="철수트래블" data-business-number="456-78-90123" data-manager-name="김철수" data-manager-phone="010-7777-8888" data-description="개인 가이드로 활동하다 정식 등록 신청합니다." data-company="철수트래블 456-78-90123" data-status="PENDING" data-reviewer="" data-reject-reason="" data-created-at="2026-06-14T16:18:17" data-created-at-display="26. 6. 14. 오후 4:18" data-reviewed-at="" data-reviewed-at-display="" data-original-index="0">
+    <tr class="js-business-row" data-application-idx="14" data-user-idx="7" data-nickname="여행가김철수" data-user-id="kimcs" data-user-email="kim***@gmail.com" data-current-role="USER" data-applicant="여행가김철수 kimcs kim***@gmail.com" data-requested-role="BUSINESS" data-company-name="철수트래블" data-business-number="456-78-9****" data-manager-name="김철수" data-manager-phone="010-7777-****" data-description="개인 가이드로 활동하다 정식 등록을 신청합니다. 제주 동부 오름 트레킹 코스 위주로 운영 예정입니다." data-company="철수트래블 456-78-9****" data-status="PENDING" data-reviewer="" data-reject-reason="" data-created-at="2026-06-28T16:18:17" data-created-at-display="26. 6. 28. 오후 4:18" data-reviewed-at="" data-reviewed-at-display="" data-original-index="0">
         <td class="adm-business-check-cell">
-            <input type="checkbox" class="adm-check js-business-row-check" value="4" onchange="updateBusinessBulkBar()">
+            <input type="checkbox" class="adm-check js-business-row-check" value="14" onchange="updateBusinessBulkBar()">
         </td>
         <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'applicant')">
             <button type="button" class="adm-cell-link js-open-member-context" data-user-idx="7" data-default-tab="actions">
                 <span class="mem-name">여행가김철수</span>
-                <span class="mem-uid">
-                    
-                        @kimcs
-                        
-                    
-                </span>
+                <span class="mem-uid">@kimcs</span>
                 <span class="adm-cell-link-note">현재 일반회원</span>
             </button>
         </td>
         <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'role')">
             <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="role">
-                <span class="role-badge BUSINESS">
-                    
-                        비즈니스
-                        
-                        
-                    
-                </span>
+                <span class="role-badge BUSINESS">비즈니스</span>
                 <span class="adm-cell-link-note">상세 보기</span>
             </button>
         </td>
         <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'company')">
             <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="company">
                 <span class="adm-business-company-name">철수트래블</span>
-                <span class="adm-cell-link-note adm-business-company-number">
-                    사업자번호:
-                    
-                        456-78-90123
-                        
-                    
-                </span>
-                <span class="adm-cell-link-note">
-                    담당자 김철수 · 010-7777-8888
-                </span>
+                <span class="adm-cell-link-note adm-business-company-number">사업자번호: 456-78-9****</span>
+                <span class="adm-cell-link-note">담당자 김철수 · 010-7777-****</span>
+                <span class="adm-cell-link-note">관광사업 · 첨부 2건</span>
                 <span class="adm-cell-link-note">상세 보기</span>
             </button>
-            
-                <div class="adm-business-description-cell">개인 가이드로 활동하다 정식 등록 신청합니다.</div>
-                <div class="adm-tr-inline js-admin-translation-widget" data-label="비즈니스 신청 소개글 번역" data-source-type="BUSINESS_APPLICATION" data-source-idx="4" data-field-name="description" data-default-source-lang="ko" data-source-text="개인 가이드로 활동하다 정식 등록 신청합니다." data-translation-mounted="true"><div class="adm-tr-widget-box">  <div class="adm-tr-head">    <div class="adm-tr-title">비즈니스 신청 소개글 번역</div>    <div class="adm-tr-head-actions">      <button type="button" class="adm-btn adm-btn-ghost js-translation-toggle">번역 보기</button>    </div>  </div>  <div class="adm-tr-body js-translation-body">    <div class="adm-tr-toolbar">      <select class="adm-input js-translation-select"><option value="">번역 없음</option></select>      <button type="button" class="adm-btn adm-btn-ghost js-translation-refresh">새로고침</button>      <button type="button" class="adm-btn adm-btn-ghost js-translation-create-toggle">새로 만들기</button>    </div>    <div class="adm-tr-create js-create-box">      <div class="adm-tr-create-grid">        <div><label class="adm-tr-label">원문 언어</label><select class="adm-input js-create-source-lang"><option value="ko" selected="">한국어</option><option value="en">English</option><option value="ja">日本語</option><option value="zh">中文</option></select></div>        <div><label class="adm-tr-label">번역 언어</label><select class="adm-input js-create-target-lang"><option value="ko">한국어</option><option value="en" selected="">English</option><option value="ja">日本語</option><option value="zh">中文</option></select></div>      </div>      <div class="adm-tr-row"><label class="adm-tr-label">제목</label><input type="text" class="adm-input js-create-title" placeholder="예: ko→en 초안"></div>      <label class="adm-tr-check"><input type="checkbox" class="js-create-auto" checked=""> 자동 번역 초안 생성</label>      <div class="adm-tr-row js-create-manual-wrap" style="display:none;"><label class="adm-tr-label">초기 번역문</label><textarea class="adm-input adm-tr-note js-create-translated-text"></textarea></div>      <div class="adm-tr-actions"><button type="button" class="adm-btn adm-btn-primary js-create-submit">생성</button></div>    </div>    <div class="js-translation-detail"><div class="adm-tr-empty">펼쳐서 번역을 불러옵니다</div></div>  </div></div></div>
-            
+            <div class="adm-business-description-cell">개인 가이드로 활동하다 정식 등록을 신청합니다. 제주 동부 오름 트레킹 코스 위주로 운영 예정입니다.</div>
         </td>
         <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'status')">
-            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="4">
-                <span class="status-badge PENDING">
-                    
-                        검토 대기
-                        
-                        
-                        
-                    
-                </span>
-                
-                
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="14">
+                <span class="status-badge PENDING">검토 대기</span>
                 <span class="adm-cell-link-note">상세 보기</span>
             </button>
-            
         </td>
         <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'date')">
-            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="4">
-                <span>26. 6. 14. 오후 4:18</span>
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="14">
+                <span>26. 6. 28. 오후 4:18</span>
                 <span class="adm-cell-link-note">상세 보기</span>
             </button>
         </td>
         <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'review')">
-            
-                
-                    <div class="business-review-actions js-business-review-actions" id="business-review-actions-4">
-                        <form method="post" class="js-business-review-form" action="/TripTogether/admin/business-applications/4/approve">
-                            <button type="submit" class="adm-row-btn detail" onclick="return confirm('이 신청을 승인하고 회원 권한을 변경할까요?')">승인</button>
-                        </form>
-                        <form method="post" class="js-business-review-form" action="/TripTogether/admin/business-applications/4/reject">
-                            <input class="adm-input" name="rejectReason" maxlength="500" placeholder="반려 사유" required="">
-                            <button type="submit" class="adm-row-btn danger">반려</button>
-                        </form>
-                    </div>
-                
-                
-            
+            <div class="business-review-actions js-business-review-actions" id="business-review-actions-14">
+                <form method="post" class="js-business-review-form" action="/TripTogether/admin/business-applications/14/approve">
+                    <button type="submit" class="adm-row-btn detail" onclick="return confirm('이 신청을 승인하고 회원 권한을 변경할까요?')">승인</button>
+                </form>
+                <form method="post" class="js-business-review-form" action="/TripTogether/admin/business-applications/14/reject">
+                    <input class="adm-input" name="rejectReason" maxlength="500" placeholder="반려 사유" required="">
+                    <button type="submit" class="adm-row-btn danger">반려</button>
+                </form>
+            </div>
+        </td>
+    </tr>
+
+    <tr class="js-business-row" data-application-idx="13" data-user-idx="22" data-nickname="해변러버" data-user-id="seaview" data-user-email="lee***@naver.com" data-current-role="USER" data-applicant="해변러버 seaview lee***@naver.com" data-requested-role="PARTNER" data-company-name="블루오션 마린투어" data-business-number="312-45-6****" data-manager-name="이서연" data-manager-phone="010-2233-****" data-description="부산·통영 해양 레저(요트·서핑) 파트너 등록을 희망합니다. 성수기 패키지 연동 제휴를 원합니다." data-company="블루오션 마린투어 312-45-6****" data-status="PENDING" data-reviewer="" data-reject-reason="" data-created-at="2026-06-27T11:02:40" data-created-at-display="26. 6. 27. 오전 11:02" data-reviewed-at="" data-reviewed-at-display="" data-original-index="1">
+        <td class="adm-business-check-cell">
+            <input type="checkbox" class="adm-check js-business-row-check" value="13" onchange="updateBusinessBulkBar()">
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'applicant')">
+            <button type="button" class="adm-cell-link js-open-member-context" data-user-idx="22" data-default-tab="actions">
+                <span class="mem-name">해변러버</span>
+                <span class="mem-uid">@seaview</span>
+                <span class="adm-cell-link-note">현재 일반회원</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'role')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="role">
+                <span class="role-badge PARTNER">파트너</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'company')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="company">
+                <span class="adm-business-company-name">블루오션 마린투어</span>
+                <span class="adm-cell-link-note adm-business-company-number">사업자번호: 312-45-6****</span>
+                <span class="adm-cell-link-note">담당자 이서연 · 010-2233-****</span>
+                <span class="adm-cell-link-note">해양레저 · 첨부 3건</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+            <div class="adm-business-description-cell">부산·통영 해양 레저(요트·서핑) 파트너 등록을 희망합니다. 성수기 패키지 연동 제휴를 원합니다.</div>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'status')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="13">
+                <span class="status-badge PENDING">검토 대기</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'date')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="13">
+                <span>26. 6. 27. 오전 11:02</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'review')">
+            <div class="business-review-actions js-business-review-actions" id="business-review-actions-13">
+                <form method="post" class="js-business-review-form" action="/TripTogether/admin/business-applications/13/approve">
+                    <button type="submit" class="adm-row-btn detail" onclick="return confirm('이 신청을 승인하고 회원 권한을 변경할까요?')">승인</button>
+                </form>
+                <form method="post" class="js-business-review-form" action="/TripTogether/admin/business-applications/13/reject">
+                    <input class="adm-input" name="rejectReason" maxlength="500" placeholder="반려 사유" required="">
+                    <button type="submit" class="adm-row-btn danger">반려</button>
+                </form>
+            </div>
+        </td>
+    </tr>
+
+    <tr class="js-business-row" data-application-idx="12" data-user-idx="31" data-nickname="산정상까지" data-user-id="hiking_park" data-user-email="park***@gmail.com" data-current-role="USER" data-applicant="산정상까지 hiking_park park***@gmail.com" data-requested-role="BUSINESS" data-company-name="강원트레킹컴퍼니" data-business-number="208-81-3****" data-manager-name="박준호" data-manager-phone="010-5566-****" data-description="설악산·오대산 가이드 트레킹 상품을 등록하려 합니다. 안전관리 보험 가입 증빙 첨부했습니다." data-company="강원트레킹컴퍼니 208-81-3****" data-status="PENDING" data-reviewer="" data-reject-reason="" data-created-at="2026-06-26T09:41:12" data-created-at-display="26. 6. 26. 오전 9:41" data-reviewed-at="" data-reviewed-at-display="" data-original-index="2">
+        <td class="adm-business-check-cell">
+            <input type="checkbox" class="adm-check js-business-row-check" value="12" onchange="updateBusinessBulkBar()">
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'applicant')">
+            <button type="button" class="adm-cell-link js-open-member-context" data-user-idx="31" data-default-tab="actions">
+                <span class="mem-name">산정상까지</span>
+                <span class="mem-uid">@hiking_park</span>
+                <span class="adm-cell-link-note">현재 일반회원</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'role')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="role">
+                <span class="role-badge BUSINESS">비즈니스</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'company')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="company">
+                <span class="adm-business-company-name">강원트레킹컴퍼니</span>
+                <span class="adm-cell-link-note adm-business-company-number">사업자번호: 208-81-3****</span>
+                <span class="adm-cell-link-note">담당자 박준호 · 010-5566-****</span>
+                <span class="adm-cell-link-note">관광사업 · 첨부 4건</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+            <div class="adm-business-description-cell">설악산·오대산 가이드 트레킹 상품을 등록하려 합니다. 안전관리 보험 가입 증빙 첨부했습니다.</div>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'status')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="12">
+                <span class="status-badge PENDING">검토 대기</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'date')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="12">
+                <span>26. 6. 26. 오전 9:41</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'review')">
+            <div class="business-review-actions js-business-review-actions" id="business-review-actions-12">
+                <form method="post" class="js-business-review-form" action="/TripTogether/admin/business-applications/12/approve">
+                    <button type="submit" class="adm-row-btn detail" onclick="return confirm('이 신청을 승인하고 회원 권한을 변경할까요?')">승인</button>
+                </form>
+                <form method="post" class="js-business-review-form" action="/TripTogether/admin/business-applications/12/reject">
+                    <input class="adm-input" name="rejectReason" maxlength="500" placeholder="반려 사유" required="">
+                    <button type="submit" class="adm-row-btn danger">반려</button>
+                </form>
+            </div>
+        </td>
+    </tr>
+
+    <tr class="js-business-row" data-application-idx="11" data-user-idx="44" data-nickname="미식로드" data-user-id="foodtrip" data-user-email="jung***@daum.net" data-current-role="USER" data-applicant="미식로드 foodtrip jung***@daum.net" data-requested-role="PARTNER" data-company-name="전주맛길투어협동조합" data-business-number="402-86-5****" data-manager-name="정다은" data-manager-phone="010-8899-****" data-description="전주 한옥마을 미식 투어 파트너 등록 요청드립니다. 현지 식당 12곳과 제휴 협약 완료했습니다." data-company="전주맛길투어협동조합 402-86-5****" data-status="PENDING" data-reviewer="" data-reject-reason="" data-created-at="2026-06-25T14:55:03" data-created-at-display="26. 6. 25. 오후 2:55" data-reviewed-at="" data-reviewed-at-display="" data-original-index="3">
+        <td class="adm-business-check-cell">
+            <input type="checkbox" class="adm-check js-business-row-check" value="11" onchange="updateBusinessBulkBar()">
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'applicant')">
+            <button type="button" class="adm-cell-link js-open-member-context" data-user-idx="44" data-default-tab="actions">
+                <span class="mem-name">미식로드</span>
+                <span class="mem-uid">@foodtrip</span>
+                <span class="adm-cell-link-note">현재 일반회원</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'role')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="role">
+                <span class="role-badge PARTNER">파트너</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'company')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="company">
+                <span class="adm-business-company-name">전주맛길투어협동조합</span>
+                <span class="adm-cell-link-note adm-business-company-number">사업자번호: 402-86-5****</span>
+                <span class="adm-cell-link-note">담당자 정다은 · 010-8899-****</span>
+                <span class="adm-cell-link-note">식음·체험 · 첨부 1건</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+            <div class="adm-business-description-cell">전주 한옥마을 미식 투어 파트너 등록 요청드립니다. 현지 식당 12곳과 제휴 협약 완료했습니다.</div>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'status')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="11">
+                <span class="status-badge PENDING">검토 대기</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'date')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="11">
+                <span>26. 6. 25. 오후 2:55</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'review')">
+            <div class="business-review-actions js-business-review-actions" id="business-review-actions-11">
+                <form method="post" class="js-business-review-form" action="/TripTogether/admin/business-applications/11/approve">
+                    <button type="submit" class="adm-row-btn detail" onclick="return confirm('이 신청을 승인하고 회원 권한을 변경할까요?')">승인</button>
+                </form>
+                <form method="post" class="js-business-review-form" action="/TripTogether/admin/business-applications/11/reject">
+                    <input class="adm-input" name="rejectReason" maxlength="500" placeholder="반려 사유" required="">
+                    <button type="submit" class="adm-row-btn danger">반려</button>
+                </form>
+            </div>
+        </td>
+    </tr>
+
+    <tr class="js-business-row" data-application-idx="10" data-user-idx="58" data-nickname="도시야경" data-user-id="nightcity" data-user-email="choi***@gmail.com" data-current-role="BUSINESS" data-applicant="도시야경 nightcity choi***@gmail.com" data-requested-role="BUSINESS" data-company-name="서울나이트워크" data-business-number="120-87-1****" data-manager-name="최민지" data-manager-phone="010-3344-****" data-description="서울 야경·도보 투어 전문 업체입니다. 가이드 자격증 및 사업자등록증 모두 첨부 완료." data-company="서울나이트워크 120-87-1****" data-status="APPROVED" data-reviewer="최고관리자" data-reject-reason="" data-created-at="2026-06-22T18:30:21" data-created-at-display="26. 6. 22. 오후 6:30" data-reviewed-at="2026-06-23T10:12:44" data-reviewed-at-display="26. 6. 23. 오전 10:12" data-original-index="4">
+        <td class="adm-business-check-cell">
+            <input type="checkbox" class="adm-check js-business-row-check" value="10" onchange="updateBusinessBulkBar()">
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'applicant')">
+            <button type="button" class="adm-cell-link js-open-member-context" data-user-idx="58" data-default-tab="actions">
+                <span class="mem-name">도시야경</span>
+                <span class="mem-uid">@nightcity</span>
+                <span class="adm-cell-link-note">현재 기업회원</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'role')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="role">
+                <span class="role-badge BUSINESS">비즈니스</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'company')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="company">
+                <span class="adm-business-company-name">서울나이트워크</span>
+                <span class="adm-cell-link-note adm-business-company-number">사업자번호: 120-87-1****</span>
+                <span class="adm-cell-link-note">담당자 최민지 · 010-3344-****</span>
+                <span class="adm-cell-link-note">관광사업 · 첨부 3건</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+            <div class="adm-business-description-cell">서울 야경·도보 투어 전문 업체입니다. 가이드 자격증 및 사업자등록증 모두 첨부 완료.</div>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'status')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="10">
+                <span class="status-badge APPROVED">승인</span>
+                <span class="adm-cell-link-note">검토자 최고관리자</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'date')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="10">
+                <span>26. 6. 22. 오후 6:30</span>
+                <span class="adm-cell-link-note">처리 26. 6. 23. 오전 10:12</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'review')">
+            <span class="adm-cell-link-note">처리 완료</span>
+        </td>
+    </tr>
+
+    <tr class="js-business-row" data-application-idx="9" data-user-idx="63" data-nickname="캠핑매니아" data-user-id="campzip" data-user-email="kang***@naver.com" data-current-role="PARTNER" data-applicant="캠핑매니아 campzip kang***@naver.com" data-requested-role="PARTNER" data-company-name="가평글램핑파크" data-business-number="517-32-8****" data-manager-name="강현우" data-manager-phone="010-6677-****" data-description="가평 글램핑·차박 시설 파트너 등록 신청. 객실 24동 운영, 패키지 연동 제휴 희망." data-company="가평글램핑파크 517-32-8****" data-status="APPROVED" data-reviewer="운영관리자" data-reject-reason="" data-created-at="2026-06-20T13:08:55" data-created-at-display="26. 6. 20. 오후 1:08" data-reviewed-at="2026-06-21T09:47:30" data-reviewed-at-display="26. 6. 21. 오전 9:47" data-original-index="5">
+        <td class="adm-business-check-cell">
+            <input type="checkbox" class="adm-check js-business-row-check" value="9" onchange="updateBusinessBulkBar()">
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'applicant')">
+            <button type="button" class="adm-cell-link js-open-member-context" data-user-idx="63" data-default-tab="actions">
+                <span class="mem-name">캠핑매니아</span>
+                <span class="mem-uid">@campzip</span>
+                <span class="adm-cell-link-note">현재 파트너</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'role')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="role">
+                <span class="role-badge PARTNER">파트너</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'company')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="company">
+                <span class="adm-business-company-name">가평글램핑파크</span>
+                <span class="adm-cell-link-note adm-business-company-number">사업자번호: 517-32-8****</span>
+                <span class="adm-cell-link-note">담당자 강현우 · 010-6677-****</span>
+                <span class="adm-cell-link-note">숙박·캠핑 · 첨부 5건</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+            <div class="adm-business-description-cell">가평 글램핑·차박 시설 파트너 등록 신청. 객실 24동 운영, 패키지 연동 제휴 희망.</div>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'status')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="9">
+                <span class="status-badge APPROVED">승인</span>
+                <span class="adm-cell-link-note">검토자 운영관리자</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'date')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="9">
+                <span>26. 6. 20. 오후 1:08</span>
+                <span class="adm-cell-link-note">처리 26. 6. 21. 오전 9:47</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'review')">
+            <span class="adm-cell-link-note">처리 완료</span>
+        </td>
+    </tr>
+
+    <tr class="js-business-row" data-application-idx="8" data-user-idx="71" data-nickname="문화탐방" data-user-id="culture_yoon" data-user-email="yoon***@gmail.com" data-current-role="USER" data-applicant="문화탐방 culture_yoon yoon***@gmail.com" data-requested-role="BUSINESS" data-company-name="경주역사문화원" data-business-number="611-90-2****" data-manager-name="윤지훈" data-manager-phone="010-1122-****" data-description="경주 문화재 해설 투어 등록 신청. 문화관광해설사 자격 보유 인력 4명 운영." data-company="경주역사문화원 611-90-2****" data-status="APPROVED" data-reviewer="최고관리자" data-reject-reason="" data-created-at="2026-06-18T10:25:17" data-created-at-display="26. 6. 18. 오전 10:25" data-reviewed-at="2026-06-19T15:40:09" data-reviewed-at-display="26. 6. 19. 오후 3:40" data-original-index="6">
+        <td class="adm-business-check-cell">
+            <input type="checkbox" class="adm-check js-business-row-check" value="8" onchange="updateBusinessBulkBar()">
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'applicant')">
+            <button type="button" class="adm-cell-link js-open-member-context" data-user-idx="71" data-default-tab="actions">
+                <span class="mem-name">문화탐방</span>
+                <span class="mem-uid">@culture_yoon</span>
+                <span class="adm-cell-link-note">현재 일반회원</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'role')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="role">
+                <span class="role-badge BUSINESS">비즈니스</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'company')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="company">
+                <span class="adm-business-company-name">경주역사문화원</span>
+                <span class="adm-cell-link-note adm-business-company-number">사업자번호: 611-90-2****</span>
+                <span class="adm-cell-link-note">담당자 윤지훈 · 010-1122-****</span>
+                <span class="adm-cell-link-note">관광사업 · 첨부 2건</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+            <div class="adm-business-description-cell">경주 문화재 해설 투어 등록 신청. 문화관광해설사 자격 보유 인력 4명 운영.</div>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'status')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="8">
+                <span class="status-badge APPROVED">승인</span>
+                <span class="adm-cell-link-note">검토자 최고관리자</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'date')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="8">
+                <span>26. 6. 18. 오전 10:25</span>
+                <span class="adm-cell-link-note">처리 26. 6. 19. 오후 3:40</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'review')">
+            <span class="adm-cell-link-note">처리 완료</span>
+        </td>
+    </tr>
+
+    <tr class="js-business-row" data-application-idx="7" data-user-idx="80" data-nickname="제주한달살이" data-user-id="jejulife" data-user-email="oh***@kakao.com" data-current-role="USER" data-applicant="제주한달살이 jejulife oh***@kakao.com" data-requested-role="PARTNER" data-company-name="올레스테이" data-business-number="729-15-4****" data-manager-name="오세영" data-manager-phone="010-4455-****" data-description="제주 장기 숙박(한달살이) 파트너 신청. 사업자등록 업종이 숙박업과 불일치하여 보완 요청드립니다." data-company="올레스테이 729-15-4****" data-status="REJECTED" data-reviewer="운영관리자" data-reject-reason="제출된 사업자등록증 업종(소매업)이 신청 분야(숙박업)와 일치하지 않습니다. 숙박업 등록 후 재신청 바랍니다." data-created-at="2026-06-16T16:47:38" data-created-at-display="26. 6. 16. 오후 4:47" data-reviewed-at="2026-06-17T11:20:55" data-reviewed-at-display="26. 6. 17. 오전 11:20" data-original-index="7">
+        <td class="adm-business-check-cell">
+            <input type="checkbox" class="adm-check js-business-row-check" value="7" onchange="updateBusinessBulkBar()">
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'applicant')">
+            <button type="button" class="adm-cell-link js-open-member-context" data-user-idx="80" data-default-tab="actions">
+                <span class="mem-name">제주한달살이</span>
+                <span class="mem-uid">@jejulife</span>
+                <span class="adm-cell-link-note">현재 일반회원</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'role')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="role">
+                <span class="role-badge PARTNER">파트너</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'company')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="company">
+                <span class="adm-business-company-name">올레스테이</span>
+                <span class="adm-cell-link-note adm-business-company-number">사업자번호: 729-15-4****</span>
+                <span class="adm-cell-link-note">담당자 오세영 · 010-4455-****</span>
+                <span class="adm-cell-link-note">숙박 · 첨부 1건</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+            <div class="adm-business-description-cell">제주 장기 숙박(한달살이) 파트너 신청. 사업자등록 업종이 숙박업과 불일치하여 보완 요청드립니다.</div>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'status')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="7">
+                <span class="status-badge REJECTED">반려</span>
+                <span class="adm-cell-link-note">검토자 운영관리자</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'date')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="7">
+                <span>26. 6. 16. 오후 4:47</span>
+                <span class="adm-cell-link-note">처리 26. 6. 17. 오전 11:20</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'review')">
+            <span class="adm-cell-link-note">처리 완료</span>
+        </td>
+    </tr>
+
+    <tr class="js-business-row" data-application-idx="6" data-user-idx="92" data-nickname="레저킹" data-user-id="leisure_king" data-user-email="seo***@gmail.com" data-current-role="USER" data-applicant="레저킹 leisure_king seo***@gmail.com" data-requested-role="BUSINESS" data-company-name="한강수상레저" data-business-number="833-26-7****" data-manager-name="서동현" data-manager-phone="010-9900-****" data-description="한강 수상레저(카약·패들보드) 사업자 등록 신청합니다." data-company="한강수상레저 833-26-7****" data-status="REJECTED" data-reviewer="최고관리자" data-reject-reason="첨부된 사업자등록증 이미지 식별 불가. 선명한 스캔본으로 재첨부 후 재신청 바랍니다." data-created-at="2026-06-13T08:59:02" data-created-at-display="26. 6. 13. 오전 8:59" data-reviewed-at="2026-06-13T17:05:41" data-reviewed-at-display="26. 6. 13. 오후 5:05" data-original-index="8">
+        <td class="adm-business-check-cell">
+            <input type="checkbox" class="adm-check js-business-row-check" value="6" onchange="updateBusinessBulkBar()">
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'applicant')">
+            <button type="button" class="adm-cell-link js-open-member-context" data-user-idx="92" data-default-tab="actions">
+                <span class="mem-name">레저킹</span>
+                <span class="mem-uid">@leisure_king</span>
+                <span class="adm-cell-link-note">현재 일반회원</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'role')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="role">
+                <span class="role-badge BUSINESS">비즈니스</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'company')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="company">
+                <span class="adm-business-company-name">한강수상레저</span>
+                <span class="adm-cell-link-note adm-business-company-number">사업자번호: 833-26-7****</span>
+                <span class="adm-cell-link-note">담당자 서동현 · 010-9900-****</span>
+                <span class="adm-cell-link-note">수상레저 · 첨부 1건</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+            <div class="adm-business-description-cell">한강 수상레저(카약·패들보드) 사업자 등록 신청합니다.</div>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'status')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="6">
+                <span class="status-badge REJECTED">반려</span>
+                <span class="adm-cell-link-note">검토자 최고관리자</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'date')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="6">
+                <span>26. 6. 13. 오전 8:59</span>
+                <span class="adm-cell-link-note">처리 26. 6. 13. 오후 5:05</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'review')">
+            <span class="adm-cell-link-note">처리 완료</span>
+        </td>
+    </tr>
+
+    <tr class="js-business-row" data-application-idx="5" data-user-idx="104" data-nickname="기차여행자" data-user-id="railway" data-user-email="lim***@naver.com" data-current-role="BUSINESS" data-applicant="기차여행자 railway lim***@naver.com" data-requested-role="BUSINESS" data-company-name="레일로드코리아" data-business-number="945-37-1****" data-manager-name="임수빈" data-manager-phone="010-5511-****" data-description="기차 테마 여행 패키지 운영 업체입니다. 전국 주요 노선 연계 상품을 등록 예정입니다." data-company="레일로드코리아 945-37-1****" data-status="APPROVED" data-reviewer="운영관리자" data-reject-reason="" data-created-at="2026-06-10T15:33:48" data-created-at-display="26. 6. 10. 오후 3:33" data-reviewed-at="2026-06-11T09:18:22" data-reviewed-at-display="26. 6. 11. 오전 9:18" data-original-index="9">
+        <td class="adm-business-check-cell">
+            <input type="checkbox" class="adm-check js-business-row-check" value="5" onchange="updateBusinessBulkBar()">
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'applicant')">
+            <button type="button" class="adm-cell-link js-open-member-context" data-user-idx="104" data-default-tab="actions">
+                <span class="mem-name">기차여행자</span>
+                <span class="mem-uid">@railway</span>
+                <span class="adm-cell-link-note">현재 기업회원</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'role')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="role">
+                <span class="role-badge BUSINESS">비즈니스</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'company')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="company">
+                <span class="adm-business-company-name">레일로드코리아</span>
+                <span class="adm-cell-link-note adm-business-company-number">사업자번호: 945-37-1****</span>
+                <span class="adm-cell-link-note">담당자 임수빈 · 010-5511-****</span>
+                <span class="adm-cell-link-note">관광사업 · 첨부 3건</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+            <div class="adm-business-description-cell">기차 테마 여행 패키지 운영 업체입니다. 전국 주요 노선 연계 상품을 등록 예정입니다.</div>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'status')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="5">
+                <span class="status-badge APPROVED">승인</span>
+                <span class="adm-cell-link-note">검토자 운영관리자</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'date')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="5">
+                <span>26. 6. 10. 오후 3:33</span>
+                <span class="adm-cell-link-note">처리 26. 6. 11. 오전 9:18</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'review')">
+            <span class="adm-cell-link-note">처리 완료</span>
+        </td>
+    </tr>
+
+    <tr class="js-business-row" data-application-idx="4" data-user-idx="118" data-nickname="둘레길산책" data-user-id="trailwalk" data-user-email="han***@gmail.com" data-current-role="USER" data-applicant="둘레길산책 trailwalk han***@gmail.com" data-requested-role="PARTNER" data-company-name="지리산둘레길협동조합" data-business-number="156-44-9****" data-manager-name="한가람" data-manager-phone="010-7788-****" data-description="지리산 둘레길 도보 여행 파트너 등록 신청. 지역 민박·식당 연계 코스 제공." data-company="지리산둘레길협동조합 156-44-9****" data-status="APPROVED" data-reviewer="최고관리자" data-reject-reason="" data-created-at="2026-06-07T12:14:30" data-created-at-display="26. 6. 7. 오후 12:14" data-reviewed-at="2026-06-08T10:02:11" data-reviewed-at-display="26. 6. 8. 오전 10:02" data-original-index="10">
+        <td class="adm-business-check-cell">
+            <input type="checkbox" class="adm-check js-business-row-check" value="4" onchange="updateBusinessBulkBar()">
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'applicant')">
+            <button type="button" class="adm-cell-link js-open-member-context" data-user-idx="118" data-default-tab="actions">
+                <span class="mem-name">둘레길산책</span>
+                <span class="mem-uid">@trailwalk</span>
+                <span class="adm-cell-link-note">현재 일반회원</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'role')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="role">
+                <span class="role-badge PARTNER">파트너</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'company')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="company">
+                <span class="adm-business-company-name">지리산둘레길협동조합</span>
+                <span class="adm-cell-link-note adm-business-company-number">사업자번호: 156-44-9****</span>
+                <span class="adm-cell-link-note">담당자 한가람 · 010-7788-****</span>
+                <span class="adm-cell-link-note">관광사업 · 첨부 2건</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+            <div class="adm-business-description-cell">지리산 둘레길 도보 여행 파트너 등록 신청. 지역 민박·식당 연계 코스 제공.</div>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'status')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="status" data-application-idx="4">
+                <span class="status-badge APPROVED">승인</span>
+                <span class="adm-cell-link-note">검토자 최고관리자</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'date')">
+            <button type="button" class="adm-cell-link js-open-business-detail" data-default-focus="date" data-application-idx="4">
+                <span>26. 6. 7. 오후 12:14</span>
+                <span class="adm-cell-link-note">처리 26. 6. 8. 오전 10:02</span>
+                <span class="adm-cell-link-note">상세 보기</span>
+            </button>
+        </td>
+        <td class="adm-business-action-cell" onclick="openBusinessCellAction(event, this, 'review')">
+            <span class="adm-cell-link-note">처리 완료</span>
         </td>
     </tr>
 
@@ -694,7 +1136,7 @@ window.ADMIN_TRANSLATION_UI = {
         </div>
 
         <div class="adm-local-pagination" data-section="businessApplications" id="businessPaging">
-            <div class="adm-local-page-info js-business-page-info" data-section="businessApplications">총 1건 / 현재 1건</div>
+            <div class="adm-local-page-info js-business-page-info" data-section="businessApplications">총 11건 / 현재 11건</div>
             <div class="adm-local-page-actions">
                 <button type="button" class="adm-btn adm-btn-ghost js-business-prev" onclick="goBusinessPage(businessSectionState.page - 1)" disabled="">이전</button>
                 <span class="js-business-page-state" data-section="businessApplications">1 / 1</span>
@@ -1246,7 +1688,7 @@ function initBusinessSection() {
         else adm_toast('처리 중 오류가 발생했습니다.', 'error');
     });
     markBusinessOriginal(Array.from(document.querySelectorAll('#businessRowsBody .js-business-row')));
-    updateBusinessPaginationMeta(businessSectionState.page, Number('1' || 1), Number('1' || 0), document.querySelectorAll('#businessRowsBody .js-business-row').length);
+    updateBusinessPaginationMeta(businessSectionState.page, Number('1' || 1), Number('11' || 0), document.querySelectorAll('#businessRowsBody .js-business-row').length);
     updateBusinessSortIndicators();
     updateBusinessBulkBar();
     initBusinessControlOverflow();

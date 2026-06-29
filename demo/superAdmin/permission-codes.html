@@ -131,7 +131,7 @@ function saToggleTheme() {
                 <div>
                     <div class="sa-policy-head-title">
                         실효 권한 코드 목록
-                        <span class="adm-section-total-inline">총 0건</span>
+                        <span class="adm-section-total-inline">총 11건</span>
                     </div>
                     <div class="sa-card-subtitle">관리자 계정에 일괄 적용할 권한 번들을 관리합니다. 개별 권한과 권한 그룹을 조합할 수 있습니다.</div>
                 </div>
@@ -142,12 +142,216 @@ function saToggleTheme() {
 
     <div class="adm-card">
         <div class="adm-card-body sa-table-card-body">
-            
-                
-                    <div class="sa-empty-cell sa-empty-cell-large">등록된 권한 코드가 없습니다.</div>
-                
-                
-            
+
+            <div class="sa-group-row">
+                <div>
+                    <span class="sa-group-code">SUPER_ADMIN_FULL</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">최고관리자 전체권한</div>
+                    <div class="sa-group-desc">시스템 전 영역에 대한 무제한 접근 — 최고관리자 계정 전용 번들</div>
+                </div>
+                <div class="sa-group-cnt">권한 1개 · 그룹 0개</div>
+                <div>
+                    <span class="adm-badge adm-badge-green">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="SUPER_ADMIN_FULL" data-name="최고관리자 전체권한" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="SUPER_ADMIN_FULL" onclick="toggleCode(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="SUPER_ADMIN_FULL" onclick="deleteCode(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row">
+                <div>
+                    <span class="sa-group-code">OPS_MANAGER_L2</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">운영 매니저 L2</div>
+                    <div class="sa-group-desc">회원·신고·문의 관리 전반을 담당하는 운영 총괄 권한 번들</div>
+                </div>
+                <div class="sa-group-cnt">권한 6개 · 그룹 3개</div>
+                <div>
+                    <span class="adm-badge adm-badge-green">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="OPS_MANAGER_L2" data-name="운영 매니저 L2" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="OPS_MANAGER_L2" onclick="toggleCode(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="OPS_MANAGER_L2" onclick="deleteCode(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row">
+                <div>
+                    <span class="sa-group-code">CS_MANAGER_L1</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">고객지원 매니저 L1</div>
+                    <div class="sa-group-desc">1:1 문의 응대 및 회원 상태 조회 중심의 고객지원 1차 권한</div>
+                </div>
+                <div class="sa-group-cnt">권한 4개 · 그룹 2개</div>
+                <div>
+                    <span class="adm-badge adm-badge-green">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="CS_MANAGER_L1" data-name="고객지원 매니저 L1" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="CS_MANAGER_L1" onclick="toggleCode(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="CS_MANAGER_L1" onclick="deleteCode(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row">
+                <div>
+                    <span class="sa-group-code">CONTENT_EDITOR</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">콘텐츠 에디터</div>
+                    <div class="sa-group-desc">커뮤니티 게시글·여행코스 검수 및 수정/숨김 처리 권한</div>
+                </div>
+                <div class="sa-group-cnt">권한 5개 · 그룹 1개</div>
+                <div>
+                    <span class="adm-badge adm-badge-green">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="CONTENT_EDITOR" data-name="콘텐츠 에디터" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="CONTENT_EDITOR" onclick="toggleCode(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="CONTENT_EDITOR" onclick="deleteCode(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row">
+                <div>
+                    <span class="sa-group-code">REPORT_MODERATOR</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">신고 처리 담당</div>
+                    <div class="sa-group-desc">신고 접수 검토 및 게시글/댓글 블로킹 처리 전담 권한</div>
+                </div>
+                <div class="sa-group-cnt">권한 3개 · 그룹 2개</div>
+                <div>
+                    <span class="adm-badge adm-badge-green">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="REPORT_MODERATOR" data-name="신고 처리 담당" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="REPORT_MODERATOR" onclick="toggleCode(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="REPORT_MODERATOR" onclick="deleteCode(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row">
+                <div>
+                    <span class="sa-group-code">AI_HELPER_ADMIN</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">AI 헬퍼 운영</div>
+                    <div class="sa-group-desc">챗봇/어시스턴트 차단·쿼터·대화로그 관리 권한 번들</div>
+                </div>
+                <div class="sa-group-cnt">권한 4개 · 그룹 1개</div>
+                <div>
+                    <span class="adm-badge adm-badge-green">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="AI_HELPER_ADMIN" data-name="AI 헬퍼 운영" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="AI_HELPER_ADMIN" onclick="toggleCode(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="AI_HELPER_ADMIN" onclick="deleteCode(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row">
+                <div>
+                    <span class="sa-group-code">SECURITY_AUDITOR</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">보안 감사관</div>
+                    <div class="sa-group-desc">로그인 감사로그·보안 이벤트 열람 전용(읽기 전용) 권한</div>
+                </div>
+                <div class="sa-group-cnt">권한 2개 · 그룹 1개</div>
+                <div>
+                    <span class="adm-badge adm-badge-green">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="SECURITY_AUDITOR" data-name="보안 감사관" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="SECURITY_AUDITOR" onclick="toggleCode(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="SECURITY_AUDITOR" onclick="deleteCode(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row">
+                <div>
+                    <span class="sa-group-code">MARKETING_VIEWER</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">마케팅 뷰어</div>
+                    <div class="sa-group-desc">통계 대시보드 및 회원 가입 추이 조회 전용 권한</div>
+                </div>
+                <div class="sa-group-cnt">권한 2개 · 그룹 0개</div>
+                <div>
+                    <span class="adm-badge adm-badge-green">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="MARKETING_VIEWER" data-name="마케팅 뷰어" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="MARKETING_VIEWER" onclick="toggleCode(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="MARKETING_VIEWER" onclick="deleteCode(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row">
+                <div>
+                    <span class="sa-group-code">BILLING_MANAGER</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">결제/정산 관리</div>
+                    <div class="sa-group-desc">결제 내역 조회 및 환불 승인 처리 권한 번들</div>
+                </div>
+                <div class="sa-group-cnt">권한 3개 · 그룹 1개</div>
+                <div>
+                    <span class="adm-badge adm-badge-green">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="BILLING_MANAGER" data-name="결제/정산 관리" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="BILLING_MANAGER" onclick="toggleCode(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="BILLING_MANAGER" onclick="deleteCode(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row sa-group-inactive">
+                <div>
+                    <span class="sa-group-code">INTERN_READONLY</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">인턴 읽기 전용</div>
+                    <div class="sa-group-desc">신규 인턴 온보딩용 임시 조회 권한 — 2026-06 채용 종료로 비활성</div>
+                </div>
+                <div class="sa-group-cnt">권한 1개 · 그룹 0개</div>
+                <div>
+                    <span class="adm-badge">비활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="INTERN_READONLY" data-name="인턴 읽기 전용" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-primary" data-code="INTERN_READONLY" onclick="toggleCode(this.getAttribute('data-code'), true)">활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="INTERN_READONLY" onclick="deleteCode(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row sa-group-inactive">
+                <div>
+                    <span class="sa-group-code">LEGACY_OPS_V1</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">구 운영 권한 v1</div>
+                    <div class="sa-group-desc">권한 체계 개편 전 사용하던 레거시 번들 — OPS_MANAGER_L2로 대체됨</div>
+                </div>
+                <div class="sa-group-cnt">권한 8개 · 그룹 2개</div>
+                <div>
+                    <span class="adm-badge">비활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="LEGACY_OPS_V1" data-name="구 운영 권한 v1" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-primary" data-code="LEGACY_OPS_V1" onclick="toggleCode(this.getAttribute('data-code'), true)">활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="LEGACY_OPS_V1" onclick="deleteCode(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

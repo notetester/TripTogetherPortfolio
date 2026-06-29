@@ -128,7 +128,7 @@ function saToggleTheme() {
         <div class="adm-card-head">
             <div class="adm-card-title">
                 급여·역량 현황 일람표
-                <span class="adm-section-total-inline">2명</span>
+                <span class="adm-section-total-inline">10명</span>
             </div>
             <div class="sa-card-subtitle">전체 관리자의 직급·역량·급여 정보를 확인하고 수정합니다.</div>
         </div>
@@ -155,7 +155,7 @@ function saToggleTheme() {
                     <a href="/TripTogether/superAdmin/salary/export?keyword=&filterDepartment=&filterPermissionCode=&filterAccountStatus=" class="adm-btn adm-btn-ghost">
                         ⬇ Excel 내보내기
                     </a>
-                    <span class="sa-salary-count">2명</span>
+                    <span class="sa-salary-count">10명</span>
                 </div>
             </form>
 
@@ -181,72 +181,189 @@ function saToggleTheme() {
                         </tr>
                     </thead>
                     <tbody>
-                        
-                        
-                        
-                        
-                        
-                    <tr data-idx="3" data-seniority="" data-tier="" data-level="" data-band="" data-grade="" data-step="" data-nickname="보안관리자" data-admin-list-orig-order="0" data-admin-list-visible="true" style="">
-                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td><td>
-                                <a href="/TripTogether/superAdmin/members/3/edit" class="sa-salary-name">보안관리자</a>
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                
-                                —
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                
-                                —
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                
-                                —
-                            </td>
-                            <td></td>
-                            <td>
-                                <button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button>
-                            </td>
-                        </tr><tr data-idx="2" data-seniority="" data-tier="" data-level="" data-band="" data-grade="" data-step="" data-nickname="운영관리자" data-admin-list-orig-order="1" data-admin-list-visible="true" style="">
-                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td><td>
-                                <a href="../superAdmin/members/2/edit.html" class="sa-salary-name">운영관리자</a>
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                
-                                —
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                
-                                —
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                
-                                —
-                            </td>
-                            <td></td>
-                            <td>
-                                <button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button>
-                            </td>
-                        </tr></tbody>
+                        <tr data-idx="1" data-seniority="펠로우" data-tier="T5" data-level="L7" data-band="B10" data-grade="G10" data-step="14호봉" data-nickname="최고관리자" data-admin-list-orig-order="0" data-admin-list-visible="true" style="">
+                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td>
+                            <td><a href="../superAdmin/members/1/edit.html" class="sa-salary-name">최고관리자</a></td>
+                            <td>경영지원본부</td>
+                            <td>운영총괄팀</td>
+                            <td>EXEC</td>
+                            <td>최고운영책임자</td>
+                            <td>임원</td>
+                            <td>11년차</td>
+                            <td>T5</td>
+                            <td>L7</td>
+                            <td>B10</td>
+                            <td>G10</td>
+                            <td>14호봉</td>
+                            <td>SUPER_ADMIN</td>
+                            <td>—</td>
+                            <td><button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button></td>
+                        </tr>
+                        <tr data-idx="2" data-seniority="프린시펄" data-tier="T5" data-level="L6" data-band="B9" data-grade="G9" data-step="12호봉" data-nickname="김보안" data-admin-list-orig-order="1" data-admin-list-visible="true" style="">
+                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td>
+                            <td><a href="../superAdmin/members/2/edit.html" class="sa-salary-name">김보안</a></td>
+                            <td>보안운영본부</td>
+                            <td>정보보안팀</td>
+                            <td>DIR</td>
+                            <td>보안실장</td>
+                            <td>이사</td>
+                            <td>9년차</td>
+                            <td>T5</td>
+                            <td>L6</td>
+                            <td>B9</td>
+                            <td>G9</td>
+                            <td>12호봉</td>
+                            <td>SECURITY_ADMIN</td>
+                            <td>최고관리자</td>
+                            <td><button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button></td>
+                        </tr>
+                        <tr data-idx="3" data-seniority="리드" data-tier="T4" data-level="L5" data-band="B7" data-grade="G7" data-step="9호봉" data-nickname="이운영" data-admin-list-orig-order="2" data-admin-list-visible="true" style="">
+                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td>
+                            <td><a href="../superAdmin/members/3/edit.html" class="sa-salary-name">이운영</a></td>
+                            <td>운영본부</td>
+                            <td>커뮤니티운영팀</td>
+                            <td>LEAD</td>
+                            <td>운영팀장</td>
+                            <td>부장</td>
+                            <td>7년차</td>
+                            <td>T4</td>
+                            <td>L5</td>
+                            <td>B7</td>
+                            <td>G7</td>
+                            <td>9호봉</td>
+                            <td>OPS_ADMIN</td>
+                            <td>김보안</td>
+                            <td><button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button></td>
+                        </tr>
+                        <tr data-idx="4" data-seniority="시니어" data-tier="T4" data-level="L5" data-band="B6" data-grade="G6" data-step="8호봉" data-nickname="박지원" data-admin-list-orig-order="3" data-admin-list-visible="true" style="">
+                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td>
+                            <td><a href="../superAdmin/members/4/edit.html" class="sa-salary-name">박지원</a></td>
+                            <td>운영본부</td>
+                            <td>신고관리팀</td>
+                            <td>SR</td>
+                            <td>선임운영자</td>
+                            <td>차장</td>
+                            <td>6년차</td>
+                            <td>T4</td>
+                            <td>L5</td>
+                            <td>B6</td>
+                            <td>G6</td>
+                            <td>8호봉</td>
+                            <td>REPORT_ADMIN</td>
+                            <td>이운영</td>
+                            <td><button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button></td>
+                        </tr>
+                        <tr data-idx="5" data-seniority="시니어" data-tier="T3" data-level="L4" data-band="B6" data-grade="G6" data-step="7호봉" data-nickname="정유진" data-admin-list-orig-order="4" data-admin-list-visible="true" style="">
+                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td>
+                            <td><a href="../superAdmin/members/5/edit.html" class="sa-salary-name">정유진</a></td>
+                            <td>콘텐츠본부</td>
+                            <td>여행콘텐츠팀</td>
+                            <td>SR</td>
+                            <td>콘텐츠 매니저</td>
+                            <td>과장</td>
+                            <td>5년차</td>
+                            <td>T3</td>
+                            <td>L4</td>
+                            <td>B6</td>
+                            <td>G6</td>
+                            <td>7호봉</td>
+                            <td>CONTENT_ADMIN</td>
+                            <td>이운영</td>
+                            <td><button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button></td>
+                        </tr>
+                        <tr data-idx="6" data-seniority="미드레벨" data-tier="T3" data-level="L4" data-band="B5" data-grade="G5" data-step="6호봉" data-nickname="강민서" data-admin-list-orig-order="5" data-admin-list-visible="true" style="">
+                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td>
+                            <td><a href="../superAdmin/members/6/edit.html" class="sa-salary-name">강민서</a></td>
+                            <td>고객지원본부</td>
+                            <td>문의응대팀</td>
+                            <td>MID</td>
+                            <td>고객지원 담당</td>
+                            <td>대리</td>
+                            <td>4년차</td>
+                            <td>T3</td>
+                            <td>L4</td>
+                            <td>B5</td>
+                            <td>G5</td>
+                            <td>6호봉</td>
+                            <td>INQUIRY_ADMIN</td>
+                            <td>박지원</td>
+                            <td><button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button></td>
+                        </tr>
+                        <tr data-idx="7" data-seniority="미드레벨" data-tier="T2" data-level="L3" data-band="B4" data-grade="G4" data-step="5호봉" data-nickname="윤서연" data-admin-list-orig-order="6" data-admin-list-visible="true" style="">
+                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td>
+                            <td><a href="../superAdmin/members/7/edit.html" class="sa-salary-name">윤서연</a></td>
+                            <td>콘텐츠본부</td>
+                            <td>AI어시스턴트팀</td>
+                            <td>MID</td>
+                            <td>AI 운영 담당</td>
+                            <td>대리</td>
+                            <td>3년차</td>
+                            <td>T2</td>
+                            <td>L3</td>
+                            <td>B4</td>
+                            <td>G4</td>
+                            <td>5호봉</td>
+                            <td>AI_CHATBOT_ADMIN</td>
+                            <td>정유진</td>
+                            <td><button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button></td>
+                        </tr>
+                        <tr data-idx="8" data-seniority="주니어" data-tier="T2" data-level="L2" data-band="B3" data-grade="G3" data-step="3호봉" data-nickname="조현우" data-admin-list-orig-order="7" data-admin-list-visible="true" style="">
+                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td>
+                            <td><a href="../superAdmin/members/8/edit.html" class="sa-salary-name">조현우</a></td>
+                            <td>운영본부</td>
+                            <td>커뮤니티운영팀</td>
+                            <td>JR</td>
+                            <td>운영 담당</td>
+                            <td>사원</td>
+                            <td>2년차</td>
+                            <td>T2</td>
+                            <td>L2</td>
+                            <td>B3</td>
+                            <td>G3</td>
+                            <td>3호봉</td>
+                            <td>OPS_VIEWER</td>
+                            <td>이운영</td>
+                            <td><button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button></td>
+                        </tr>
+                        <tr data-idx="9" data-seniority="주니어" data-tier="T1" data-level="L2" data-band="B2" data-grade="G2" data-step="2호봉" data-nickname="한소희" data-admin-list-orig-order="8" data-admin-list-visible="true" style="">
+                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td>
+                            <td><a href="../superAdmin/members/9/edit.html" class="sa-salary-name">한소희</a></td>
+                            <td>고객지원본부</td>
+                            <td>문의응대팀</td>
+                            <td>JR</td>
+                            <td>문의 응대 담당</td>
+                            <td>사원</td>
+                            <td>1년차</td>
+                            <td>T1</td>
+                            <td>L2</td>
+                            <td>B2</td>
+                            <td>G2</td>
+                            <td>2호봉</td>
+                            <td>INQUIRY_VIEWER</td>
+                            <td>강민서</td>
+                            <td><button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button></td>
+                        </tr>
+                        <tr data-idx="10" data-seniority="어소시에이트" data-tier="T1" data-level="L1" data-band="B1" data-grade="G1" data-step="1호봉" data-nickname="임도윤" data-admin-list-orig-order="9" data-admin-list-visible="true" style="">
+                            <td class="adm-admin-list-check-cell" style="text-align: center;"><input type="checkbox" class="adm-check js-admin-list-row-check" data-table-id="salaryTable" data-admin-list-select="true" aria-label="행 선택"></td>
+                            <td><a href="../superAdmin/members/10/edit.html" class="sa-salary-name">임도윤</a></td>
+                            <td>콘텐츠본부</td>
+                            <td>여행콘텐츠팀</td>
+                            <td>ASC</td>
+                            <td>콘텐츠 보조</td>
+                            <td>인턴</td>
+                            <td>신입</td>
+                            <td>T1</td>
+                            <td>L1</td>
+                            <td>B1</td>
+                            <td>G1</td>
+                            <td>1호봉</td>
+                            <td>CONTENT_VIEWER</td>
+                            <td>정유진</td>
+                            <td><button class="adm-btn adm-btn-sm adm-btn-ghost" onclick="openSalaryEdit(this.closest('tr'))">편집</button></td>
+                        </tr>
+                    </tbody>
                 </table>
-            </div><div class="adm-section-list-footer js-admin-list-tools-footer" data-table-id="salaryTable"><span class="adm-section-list-page-info js-admin-list-page-info">2건 중 2건 표시 · 1/1쪽</span><div class="adm-section-list-page-tools"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev" disabled="">이전</button><button type="button" class="adm-btn adm-btn-ghost js-admin-list-next" disabled="">다음</button></div></div>
+            </div><div class="adm-section-list-footer js-admin-list-tools-footer" data-table-id="salaryTable"><span class="adm-section-list-page-info js-admin-list-page-info">10건 중 10건 표시 · 1/1쪽</span><div class="adm-section-list-page-tools"><button type="button" class="adm-btn adm-btn-ghost js-admin-list-prev" disabled="">이전</button><button type="button" class="adm-btn adm-btn-ghost js-admin-list-next" disabled="">다음</button></div></div>
 
             
 

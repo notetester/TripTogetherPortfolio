@@ -132,7 +132,7 @@ function saToggleTheme() {
                 <div>
                     <div class="sa-policy-head-title">
                         권한 그룹 목록
-                        <span class="adm-section-total-inline">총 0건</span>
+                        <span class="adm-section-total-inline">총 8건</span>
                     </div>
                     <div class="sa-card-subtitle">관리자에게 일괄 부여할 권한 묶음을 관리합니다.</div>
                 </div>
@@ -143,12 +143,202 @@ function saToggleTheme() {
 
     <div class="adm-card">
         <div class="adm-card-body sa-table-card-body">
-            
-                
-                    <div class="sa-empty-cell sa-empty-cell-large">등록된 권한 그룹이 없습니다.</div>
-                
-                
-            
+
+            <div class="sa-group-row ">
+                <div>
+                    <span class="sa-group-code">COMMUNITY_OPS</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">커뮤니티 운영팀 기본 권한</div>
+                    <div class="sa-group-desc">게시글/댓글 신고 처리, 블라인드, 태그 관리 등 커뮤니티 일상 운영 권한 묶음 · 생성일 2026-06-03</div>
+                    <div class="sa-group-desc">
+                        <span class="sa-group-code">COMMUNITY_POST_MANAGE</span>
+                        <span class="sa-group-code">COMMUNITY_COMMENT_MANAGE</span>
+                        <span class="sa-group-code">REPORT_HANDLE</span>
+                        <span class="sa-group-code">+5</span>
+                    </div>
+                </div>
+                <div class="sa-group-cnt">소속 9명 · 권한 8개</div>
+                <div class="sa-row-actions">
+                    <span class="sa-status-active">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="COMMUNITY_OPS" data-name="커뮤니티 운영팀 기본 권한" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="COMMUNITY_OPS" onclick="toggleGroup(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="COMMUNITY_OPS" data-cnt="8" onclick="deleteGroup(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row ">
+                <div>
+                    <span class="sa-group-code">CS_SUPPORT</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">고객지원 상담팀</div>
+                    <div class="sa-group-desc">1:1 문의 답변, 챗봇 응대 이력 조회, 회원 기본정보 열람 권한 묶음 · 생성일 2026-06-05</div>
+                    <div class="sa-group-desc">
+                        <span class="sa-group-code">INQUIRY_ANSWER</span>
+                        <span class="sa-group-code">CHATBOT_LOG_VIEW</span>
+                        <span class="sa-group-code">MEMBER_VIEW</span>
+                        <span class="sa-group-code">+2</span>
+                    </div>
+                </div>
+                <div class="sa-group-cnt">소속 12명 · 권한 5개</div>
+                <div class="sa-row-actions">
+                    <span class="sa-status-active">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="CS_SUPPORT" data-name="고객지원 상담팀" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="CS_SUPPORT" onclick="toggleGroup(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="CS_SUPPORT" data-cnt="5" onclick="deleteGroup(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row ">
+                <div>
+                    <span class="sa-group-code">CONTENT_EDITOR</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">콘텐츠 에디터</div>
+                    <div class="sa-group-desc">추천 코스/여행지 콘텐츠 등록·수정, 배너 노출 관리, 이미지 업로드 권한 묶음 · 생성일 2026-06-08</div>
+                    <div class="sa-group-desc">
+                        <span class="sa-group-code">COURSE_MANAGE</span>
+                        <span class="sa-group-code">BANNER_MANAGE</span>
+                        <span class="sa-group-code">UPLOAD_MANAGE</span>
+                        <span class="sa-group-code">+1</span>
+                    </div>
+                </div>
+                <div class="sa-group-cnt">소속 6명 · 권한 4개</div>
+                <div class="sa-row-actions">
+                    <span class="sa-status-active">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="CONTENT_EDITOR" data-name="콘텐츠 에디터" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="CONTENT_EDITOR" onclick="toggleGroup(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="CONTENT_EDITOR" data-cnt="4" onclick="deleteGroup(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row ">
+                <div>
+                    <span class="sa-group-code">SECURITY_AUDIT</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">보안 감사팀</div>
+                    <div class="sa-group-desc">로그인 감사 로그, 보안 이벤트, 차단 규칙 조회 및 IP/계정 차단 권한 묶음 · 생성일 2026-06-02</div>
+                    <div class="sa-group-desc">
+                        <span class="sa-group-code">LOGIN_AUDIT_VIEW</span>
+                        <span class="sa-group-code">SECURITY_AUDIT_VIEW</span>
+                        <span class="sa-group-code">BLOCK_MANAGE</span>
+                        <span class="sa-group-code">+3</span>
+                    </div>
+                </div>
+                <div class="sa-group-cnt">소속 4명 · 권한 6개</div>
+                <div class="sa-row-actions">
+                    <span class="sa-status-active">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="SECURITY_AUDIT" data-name="보안 감사팀" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="SECURITY_AUDIT" onclick="toggleGroup(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="SECURITY_AUDIT" data-cnt="6" onclick="deleteGroup(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row ">
+                <div>
+                    <span class="sa-group-code">MEMBER_MANAGER</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">회원 관리팀</div>
+                    <div class="sa-group-desc">회원 상세 조회·등급 조정, 계정 정지/해제, 탈퇴 처리 권한 묶음 · 생성일 2026-06-06</div>
+                    <div class="sa-group-desc">
+                        <span class="sa-group-code">MEMBER_VIEW</span>
+                        <span class="sa-group-code">MEMBER_GRADE_EDIT</span>
+                        <span class="sa-group-code">MEMBER_SUSPEND</span>
+                        <span class="sa-group-code">+2</span>
+                    </div>
+                </div>
+                <div class="sa-group-cnt">소속 7명 · 권한 5개</div>
+                <div class="sa-row-actions">
+                    <span class="sa-status-active">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="MEMBER_MANAGER" data-name="회원 관리팀" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="MEMBER_MANAGER" onclick="toggleGroup(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="MEMBER_MANAGER" data-cnt="5" onclick="deleteGroup(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row ">
+                <div>
+                    <span class="sa-group-code">AI_HELPER_ADMIN</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">AI 어시스턴트 운영</div>
+                    <div class="sa-group-desc">챗봇 등급별 쿼터 설정, 챗봇 차단 관리, AI 어시스턴트 프롬프트 관리 권한 묶음 · 생성일 2026-06-11</div>
+                    <div class="sa-group-desc">
+                        <span class="sa-group-code">AI_CHATBOT_ADMIN</span>
+                        <span class="sa-group-code">CHATBOT_QUOTA_EDIT</span>
+                        <span class="sa-group-code">ASSISTANT_ADMIN</span>
+                    </div>
+                </div>
+                <div class="sa-group-cnt">소속 3명 · 권한 3개</div>
+                <div class="sa-row-actions">
+                    <span class="sa-status-active">활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="AI_HELPER_ADMIN" data-name="AI 어시스턴트 운영" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-danger" data-code="AI_HELPER_ADMIN" onclick="toggleGroup(this.getAttribute('data-code'), false)">비활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="AI_HELPER_ADMIN" data-cnt="3" onclick="deleteGroup(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row sa-group-inactive">
+                <div>
+                    <span class="sa-group-code">MARKETING_TEMP</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">마케팅 캠페인(한시)</div>
+                    <div class="sa-group-desc">여름 프로모션 기간 한정 배너·푸시 발송 권한 묶음, 캠페인 종료 후 비활성 처리됨 · 생성일 2026-06-01</div>
+                    <div class="sa-group-desc">
+                        <span class="sa-group-code">BANNER_MANAGE</span>
+                        <span class="sa-group-code">PUSH_SEND</span>
+                    </div>
+                </div>
+                <div class="sa-group-cnt">소속 2명 · 권한 2개</div>
+                <div class="sa-row-actions">
+                    <span class="sa-status-inactive">비활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="MARKETING_TEMP" data-name="마케팅 캠페인(한시)" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-primary" data-code="MARKETING_TEMP" onclick="toggleGroup(this.getAttribute('data-code'), true)">활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="MARKETING_TEMP" data-cnt="2" onclick="deleteGroup(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
+            <div class="sa-group-row sa-group-inactive">
+                <div>
+                    <span class="sa-group-code">READONLY_VIEWER</span>
+                </div>
+                <div class="sa-group-main">
+                    <div class="sa-group-name">통계 열람 전용</div>
+                    <div class="sa-group-desc">통계 대시보드와 현황 리포트만 열람 가능한 읽기 전용 권한 묶음, 현재 미사용 · 생성일 2026-06-09</div>
+                    <div class="sa-group-desc">
+                        <span class="sa-group-code">STATS_VIEW</span>
+                        <span class="sa-group-code">REPORT_VIEW</span>
+                    </div>
+                </div>
+                <div class="sa-group-cnt">소속 0명 · 권한 2개</div>
+                <div class="sa-row-actions">
+                    <span class="sa-status-inactive">비활성</span>
+                </div>
+                <div class="sa-row-actions">
+                    <button class="adm-btn adm-btn-sm adm-btn-ghost" data-code="READONLY_VIEWER" data-name="통계 열람 전용" onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                    <button class="adm-btn adm-btn-sm adm-btn-primary" data-code="READONLY_VIEWER" onclick="toggleGroup(this.getAttribute('data-code'), true)">활성화</button>
+                    <button class="adm-btn adm-btn-sm sa-muted-button" data-code="READONLY_VIEWER" data-cnt="2" onclick="deleteGroup(this.getAttribute('data-code'))">삭제</button>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
