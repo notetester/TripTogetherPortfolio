@@ -53,6 +53,17 @@
   //   demoacct 파라미터를 지우기 전에 계정을 먼저 설정해야 한다.
   applyDeepLink();
 
+  function isTripTogetherServerUrl(href) {
+    var value = String(href || '');
+    if (/^\/TripTogether(?:\/|$)/.test(value)) return true;
+    try {
+      var url = new URL(value, window.location.href);
+      return /^\/TripTogether(?:\/|$)/.test(url.pathname);
+    } catch (e) {
+      return false;
+    }
+  }
+
   // ---------- history 가로채기 ----------
   // 정적 데모인데 페이지 스크립트가 history.replaceState/pushState로 URL을
   // 서버 컨텍스트(/TripTogether/...)로 바꿔 주소창을 오염시키고 새로고침 시 404를 유발한다.
@@ -60,11 +71,11 @@
   try {
     var _rs = history.replaceState, _ps = history.pushState;
     history.replaceState = function (s, t, u) {
-      if (typeof u === 'string' && /\/TripTogether\//.test(u)) return;
+      if (typeof u === 'string' && isTripTogetherServerUrl(u)) return;
       return _rs.apply(history, arguments);
     };
     history.pushState = function (s, t, u) {
-      if (typeof u === 'string' && /\/TripTogether\//.test(u)) return;
+      if (typeof u === 'string' && isTripTogetherServerUrl(u)) return;
       return _ps.apply(history, arguments);
     };
   } catch (e) {}
@@ -334,8 +345,8 @@
   var _fetch = window.fetch;
   window.fetch = function (input) {
     var url = (typeof input === 'string') ? input : (input && input.url) || '';
-    if (/\/TripTogether\//.test(url) || /^\/(?!\/)/.test(url)) {
-      return Promise.resolve(new Response(JSON.stringify({ demo: true, message: '데모 모드', data: [], list: [], content: [] }), {
+    if (isTripTogetherServerUrl(url) || /^\/(?!\/)/.test(url)) {
+      return Promise.resolve(new Response(JSON.stringify({ demo: true, success: true, message: '데모 모드', data: [], list: [], content: [] }), {
         status: 200, headers: { 'Content-Type': 'application/json' }
       }));
     }
@@ -348,13 +359,13 @@
   XMLHttpRequest.prototype.open = function (m, url) { this.__demoUrl = url || ''; return _open.apply(this, arguments); };
   XMLHttpRequest.prototype.send = function () {
     var u = this.__demoUrl || '';
-    if (/\/TripTogether\//.test(u) || /^\/(?!\/)/.test(u)) {
+    if (isTripTogetherServerUrl(u) || /^\/(?!\/)/.test(u)) {
       var self = this;
       setTimeout(function () {
         Object.defineProperty(self, 'readyState', { value: 4, configurable: true });
         Object.defineProperty(self, 'status', { value: 200, configurable: true });
-        Object.defineProperty(self, 'responseText', { value: '{"demo":true,"data":[],"list":[]}', configurable: true });
-        Object.defineProperty(self, 'response', { value: '{"demo":true,"data":[],"list":[]}', configurable: true });
+        Object.defineProperty(self, 'responseText', { value: '{"demo":true,"success":true,"data":[],"list":[]}', configurable: true });
+        Object.defineProperty(self, 'response', { value: '{"demo":true,"success":true,"data":[],"list":[]}', configurable: true });
         if (typeof self.onreadystatechange === 'function') self.onreadystatechange();
         if (typeof self.onload === 'function') self.onload();
       }, 50);
@@ -363,13 +374,86 @@
     return _send.apply(this, arguments);
   };
 
+  // ---------- EventSource 가로채기 ----------
+  // 공통 알림 SSE가 정적 데모에서 /TripTogether/sse/*로 실제 요청을 내지 않게 막는다.
+  if (window.EventSource) {
+    var _EventSource = window.EventSource;
+    function DemoEventSource(url, config) {
+      var u = String(url || '');
+      if (!isTripTogetherServerUrl(u) && !/^\/(?!\/)/.test(u)) {
+        return new _EventSource(url, config);
+      }
+      this.url = u;
+      this.withCredentials = !!(config && config.withCredentials);
+      this.readyState = DemoEventSource.OPEN;
+      this.__listeners = {};
+      var self = this;
+      setTimeout(function () { self.__emit('open', { type: 'open' }); }, 0);
+    }
+    DemoEventSource.CONNECTING = 0;
+    DemoEventSource.OPEN = 1;
+    DemoEventSource.CLOSED = 2;
+    DemoEventSource.prototype.addEventListener = function (type, handler) {
+      if (!handler) return;
+      (this.__listeners[type] || (this.__listeners[type] = [])).push(handler);
+    };
+    DemoEventSource.prototype.removeEventListener = function (type, handler) {
+      var list = this.__listeners[type] || [];
+      this.__listeners[type] = list.filter(function (fn) { return fn !== handler; });
+    };
+    DemoEventSource.prototype.close = function () {
+      this.readyState = DemoEventSource.CLOSED;
+    };
+    DemoEventSource.prototype.__emit = function (type, event) {
+      var list = this.__listeners[type] || [];
+      for (var i = 0; i < list.length; i++) {
+        try { list[i].call(this, event); } catch (e) {}
+      }
+      var prop = this['on' + type];
+      if (typeof prop === 'function') {
+        try { prop.call(this, event); } catch (e) {}
+      }
+    };
+    window.EventSource = DemoEventSource;
+  }
+
   // ---------- 서버(/TripTogether/) 링크 → 정적 페이지 매핑 ----------
   // 정적 데모이므로 /TripTogether/* 절대경로 링크는 404가 난다.
   // 존재하는 정적 파일이면 그 경로로 재작성하고, 없으면 안내 토스트로 막아 404를 원천 차단한다.
   var PAGES = new Set(['admin.html','admin/activity-logs.html','admin/ads.html','admin/ads/1/edit.html','admin/ads/new.html','admin/ai-helper.html','admin/ai-helper/chatbot.html','admin/blocks.html','admin/blocks/api/batches/1/detail.html','admin/blocks/api/batches/fragment.html','admin/blocks/api/histories/1/detail.html','admin/blocks/api/histories/fragment.html','admin/blocks/api/ip-rules/1/detail.html','admin/blocks/api/ip-rules/fragment.html','admin/blocks/api/user-blocks/1/detail.html','admin/blocks/api/user-blocks/fragment.html','admin/business-applications.html','admin/business-applications/fragment.html','admin/community.html','admin/community/comments.html','admin/community/posts/1.html','admin/courses.html','admin/courses/1.html','admin/email-tokens.html','admin/email-verifications.html','admin/explore.html','admin/explore/reviews.html','admin/explore/spots/1.html','admin/finance.html','admin/finance/policy.html','admin/finance/refund.html','admin/finance/users/4.html','admin/initial-settings.html','admin/inquiries.html','admin/inquiries/1.html','admin/login-risk/appeal-policy.html','admin/login-risk/appeals.html','admin/login-risk/assessments.html','admin/login-risk/notification-preferences.html','admin/login-risk/policies.html','admin/login-risk/provider-configs.html','admin/login-risk/provider-health-history.html','admin/login-risk/reviews.html','admin/login-risk/security-assessments.html','admin/login-risk/security-reviews.html','admin/login-risk/waf-sync.html','admin/logins.html','admin/logins/fragment.html','admin/members.html','admin/members/fragment.html','admin/moderation.html','admin/packages.html','admin/policies.html','admin/policy-history.html','admin/reports.html','admin/reports/1.html','admin/runtime-settings.html','admin/security.html','admin/security/fragment.html','assistant.html','auth/find-id.html','auth/find-pw.html','auth/login.html','auth/register.html','auth/social/complete.html','blocked-access.html','community/1.html','community/1/comments.html','community/12.html','community/edit/1.html','community/list.html','community/write.html','courses.html','courses/ai/form.html','courses/detail.html','courses/edit.html','courses/my.html','courses/public.html','courses/write.html','detail/1.html','detail/10.html','explore.html','index.html','inquiry/1.html','inquiry/8.html','inquiry/list.html','inquiry/write.html','mypage.html','mypage/bookings/flights.html','mypage/bookings/packages.html','mypage/edit-confirm.html','mypage/edit.html','mypage/history.html','packages.html','packages/manage.html','packages/manage/1/edit.html','packages/manage/write.html','report/1.html','report/list.html','security/appeal.html','security/appeal/new.html','security/appeal/result.html','shop.html','superAdmin/groups.html','superAdmin/members.html','superAdmin/members/2/edit.html','superAdmin/org.html','superAdmin/permission-codes.html','superAdmin/permissions.html','superAdmin/salary.html','superAdmin/stats.html','wallet.html']);
-  var PATHMAP = { 'superAdmin': 'superAdmin/members.html' };
+  var PATHMAP = {
+    'admin': 'admin.html',
+    'auth/login': 'auth/login.html',
+    'auth/register': 'auth/register.html',
+    'community': 'community/list.html',
+    'community/list': 'community/list.html',
+    'courses': 'courses.html',
+    'courses/list': 'courses.html',
+    'explore': 'explore.html',
+    'inquiry/list': 'inquiry/list.html',
+    'mypage': 'mypage.html',
+    'mypage/bookings': 'mypage/bookings/packages.html',
+    'mypage/points': 'wallet.html',
+    'packages': 'packages.html',
+    'packages/list': 'packages.html',
+    'report/list': 'report/list.html',
+    'security/appeal': 'security/appeal.html',
+    'shop': 'shop.html',
+    'superAdmin': 'superAdmin/members.html',
+    'wallet': 'wallet.html'
+  };
+  function stripServerPrefix(href) {
+    var value = String(href || '');
+    try {
+      var url = new URL(value, window.location.href);
+      if (/^\/TripTogether(?:\/|$)/.test(url.pathname)) {
+        return url.pathname.replace(/^\/TripTogether\/?/, '') + url.search + url.hash;
+      }
+    } catch (e) {}
+    return value.replace(/^\/TripTogether\/?/, '');
+  }
   function toStatic(href) {
-    var raw = String(href || '').replace(/^\/TripTogether\/?/, '');
+    var raw = stripServerPrefix(href);
     var path = raw.split('#')[0].split('?')[0].replace(/\/+$/, '');
     if (/^auth\/logout/.test(path)) return '__logout__';
     if (path === '') return 'index.html';
@@ -393,15 +477,74 @@
     for (var i = 0; i < SAMPLE.length; i++) { if (SAMPLE[i][0].test(path)) return SAMPLE[i][1]; }
     return null; // 데모에 없는 페이지
   }
-  // 로드 시 + 동적 추가 시: /TripTogether 절대 링크를 정적 경로로 재작성(없으면 표식)
+  function demoHref(staticPath) {
+    return BASE + staticPath;
+  }
+  function navigateDemo(href) {
+    var t = toStatic(href);
+    if (t === '__logout__') { logout(); return true; }
+    if (t) { window.location.href = demoHref(t); return true; }
+    toast('이 화면은 데모에 포함되지 않았습니다.');
+    return true;
+  }
+  function navigateStatic(href) {
+    if (!href) return false;
+    window.location.href = href;
+    return true;
+  }
+  window.__ttDemoNavigate = navigateDemo;
+  function firstTripTogetherUrl(text) {
+    var m = String(text || '').match(/\/TripTogether(?:\/[^'"\s)]*)?/);
+    return m ? m[0] : '';
+  }
+  function isPlainCardClick(target) {
+    return !(target.closest && target.closest('a,button,input,select,textarea,label,.action-btn,.spot-card__actions'));
+  }
+  function inferServerTarget(el, target) {
+    var ds = el.dataset || {};
+    if (ds.url || ds.href || ds.target) return ds.url || ds.href || ds.target;
+    if (!isPlainCardClick(target)) return '';
+    if (el.matches && el.matches('.spot-card[data-spot-idx]')) return '/TripTogether/detail/' + ds.spotIdx;
+    if (el.matches && el.matches('[data-spot-id]')) return '/TripTogether/detail/' + ds.spotId;
+    if (el.matches && el.matches('[data-plan-id]')) return '/TripTogether/courses/detail?planId=' + ds.planId;
+    if (el.matches && el.matches('.post-card-wrap[data-id],.comm-today-card[data-id],#communitySection .cc-wrap[data-id]')) return '/TripTogether/community/' + ds.id;
+    if (el.matches && el.matches('.inq-row[data-id]')) return '/TripTogether/inquiry/' + ds.id;
+    return '';
+  }
+  function rewriteAttr(el, attr) {
+    var v = el.getAttribute(attr);
+    if (!isTripTogetherServerUrl(v)) return;
+    var t = toStatic(v);
+    if (t === '__logout__') {
+      el.setAttribute(attr, '#');
+      el.dataset.ttAction = 'logout';
+    } else if (t) {
+      var staticHref = demoHref(t);
+      el.setAttribute(attr, staticHref);
+      if (attr === 'href') el.removeAttribute('target');
+      else {
+        el.dataset.ttAction = 'navigate';
+        el.dataset.ttStaticTarget = staticHref;
+      }
+    } else {
+      el.setAttribute(attr, '#');
+      el.dataset.ttAction = 'missing';
+    }
+  }
+  // 로드 시 + 동적 추가 시: 서버 컨텍스트 목적지를 정적 경로로 재작성(없으면 표식)
   function rewriteServerLinks(root) {
     var as = (root || document).querySelectorAll('a[href^="/TripTogether"]');
     Array.prototype.forEach.call(as, function (a) {
       if (a.__ttDone) return; a.__ttDone = true;
-      var t = toStatic(a.getAttribute('href') || '');
-      if (t === '__logout__') { a.setAttribute('href', '#'); a.dataset.ttAction = 'logout'; }
-      else if (t) { a.setAttribute('href', BASE + t); a.removeAttribute('target'); }
-      else { a.setAttribute('href', '#'); a.dataset.ttAction = 'missing'; }
+      rewriteAttr(a, 'href');
+    });
+    ['action', 'data-url', 'data-href', 'data-target'].forEach(function (attr) {
+      var sel = attr === 'action'
+        ? 'form[action^="/TripTogether"]'
+        : '[' + attr + '^="/TripTogether"]';
+      Array.prototype.forEach.call((root || document).querySelectorAll(sel), function (el) {
+        rewriteAttr(el, attr);
+      });
     });
   }
   // 페이징 중복 제거: 공유 footer + 로컬 페이징이 둘 다 있으면 기능형 로컬만 남기고 공유 footer 숨김
@@ -458,17 +601,22 @@
   // 클릭 폴백(재작성 전 동적 링크 포함) — 어떤 경우에도 404로 안 가게
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('a');
-    if (!a) return;
-    var act = a.dataset ? a.dataset.ttAction : '';
-    if (act === 'logout') { e.preventDefault(); logout(); return; }
-    if (act === 'missing') { e.preventDefault(); toast('이 화면은 데모에 포함되지 않았습니다.'); return; }
-    var href = a.getAttribute('href') || '';
-    if (href.indexOf('/TripTogether') === 0) {
+    var el = a || (e.target.closest && e.target.closest('[data-url],[data-href],[data-target],[onclick],.spot-card[data-spot-idx],[data-spot-id],[data-plan-id],.post-card-wrap[data-id],.comm-today-card[data-id],#communitySection .cc-wrap[data-id],.inq-row[data-id]'));
+    if (!el) return;
+    var act = el.dataset ? el.dataset.ttAction : '';
+    if (act === 'logout') { e.preventDefault(); e.stopImmediatePropagation(); logout(); return; }
+    if (act === 'navigate' && el.dataset && el.dataset.ttStaticTarget) { e.preventDefault(); e.stopImmediatePropagation(); navigateStatic(el.dataset.ttStaticTarget); return; }
+    if (act === 'missing') { e.preventDefault(); e.stopImmediatePropagation(); toast('이 화면은 데모에 포함되지 않았습니다.'); return; }
+    var href = a ? (a.getAttribute('href') || '') : '';
+    var targetHref = href;
+    if (!targetHref) targetHref = inferServerTarget(el, e.target);
+    if (!targetHref) {
+      targetHref = firstTripTogetherUrl(el.getAttribute('onclick') || '');
+    }
+    if (isTripTogetherServerUrl(targetHref)) {
       e.preventDefault();
-      var t = toStatic(href);
-      if (t === '__logout__') { logout(); }
-      else if (t) { location.href = BASE + t; }
-      else { toast('이 화면은 데모에 포함되지 않았습니다.'); }
+      e.stopImmediatePropagation();
+      navigateDemo(targetHref);
     }
   }, true);
 
