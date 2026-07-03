@@ -199,6 +199,9 @@
       if (nickEl) nickEl.style.display = 'none';
       if (myNav) myNav.style.display = 'none';
       if (outBtn) {
+        // 스냅샷의 inline onclick(서버 logout 경로)이 남아 있으면 광역 클릭 인터셉터가
+        // /TripTogether URL로 오인해 가로채므로, 속성을 제거한 뒤 핸들러를 단다.
+        outBtn.removeAttribute('onclick');
         outBtn.textContent = '로그인';
         outBtn.onclick = function () { location.href = LOGIN; };
         if (!hr.querySelector('.tt-join')) {
@@ -224,7 +227,7 @@
       badge.textContent = acct.role === 'ADMIN' ? '관리자' : acct.method;
       nickEl.appendChild(badge);
     }
-    if (outBtn) { outBtn.textContent = '로그아웃'; outBtn.onclick = function () { logout(); }; }
+    if (outBtn) { outBtn.removeAttribute('onclick'); outBtn.textContent = '로그아웃'; outBtn.onclick = function () { logout(); }; }
     // 관리자 계정이면 헤더에 관리자 진입 버튼
     if (acct.role === 'ADMIN' && outBtn && !hr.querySelector('.tt-admin-entry')) {
       var ab = document.createElement('button');
