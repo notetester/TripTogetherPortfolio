@@ -597,7 +597,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchClear = document.getElementById('searchClear');
 
     function showLoading(on) {
-      overlay.classList.toggle('show', on);
+      if (overlay) overlay.classList.toggle('show', on);
     }
 
     window.addEventListener('pageshow', function () {
@@ -606,6 +606,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function showToast(msg) {
       const t = document.getElementById('toast');
+      if (!t) { if (window.__demoToast) window.__demoToast(msg); return; }
       t.textContent = msg;
       t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), 2500);

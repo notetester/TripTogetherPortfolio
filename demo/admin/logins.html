@@ -4801,10 +4801,7 @@ function loginRowsToExcelHtml(rows) {
         html += '<tr>' + loginRowToExportValues(row).map(function (v) { return '<td>' + esc(v) + '</td>'; }).join('') + '</tr>';
     });
     html += '</tbody></table>';
-    return '\ufeff<html><head><meta charset="UTF-8"></head><body>' + html + '
-<script>window.__DEMO_BASE__="../";</script>
-<script src="../assets/demo-mock.js"></script>
-</body></html>';
+    return '\ufeff<html><head><meta charset="UTF-8"></head><body>' + html + '</body></html>';
 }
 
 function downloadLoginBlob(content, filename, mime) {
@@ -5929,6 +5926,8 @@ document.addEventListener('keydown', e => {
 })();
 </script>
 <script src="../resources/js/admin/admin-list-tools.js"></script>
+<script>window.__DEMO_BASE__="../";</script>
+<script src="../assets/demo-mock.js"></script>
     </div>
     <div class="adm-backdrop" id="admBackdrop" hidden=""></div>
 </div>
