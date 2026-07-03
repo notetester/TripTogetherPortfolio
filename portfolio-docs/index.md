@@ -60,3 +60,18 @@ features:
 - 🧱 **기술 스택**: Spring Boot 4 · Java 21 · MyBatis · MySQL · JSP/JSTL · VitePress(문서)
 
 > 설계 배경과 트레이드오프는 [설계 결정(ADR 종합)](/decisions) 문서에서 다룹니다.
+
+## 데모 이용 안내
+
+[라이브 데모](https://notetester.github.io/TripTogetherPortfolio/)는 **로그아웃 상태로 시작**하며, 로그인 화면의 **🧪 데모 계정 선택 패널**에서 가상 계정으로 로그인해 둘러볼 수 있습니다.
+
+| 로그인 방식 | 자격증명 | 역할 |
+| --- | --- | --- |
+| 카카오 · 네이버 · 구글 | 소셜 버튼 클릭 | 일반 |
+| 이메일 | `user@test.com` / `1234` | 일반 |
+| 아이디 | `user` / `1234` | 일반 |
+| 아이디(관리자) | `admin` / `1234` | **관리자** 🛠 |
+
+::: tip 관리자 화면 바로 보기
+관리자 페이지는 관리자 계정으로 로그인해야 열립니다. 데모 주소 끝에 `?demoacct=admin` 을 붙이면 바로 진입할 수 있습니다 — 예: [관리자 대시보드](https://notetester.github.io/TripTogetherPortfolio/admin.html?demoacct=admin)
+:::

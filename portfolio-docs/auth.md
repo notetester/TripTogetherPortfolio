@@ -102,9 +102,9 @@ TripTogether의 인증 모듈은 자체 아이디/이메일 로그인, 카카오
 
 ## 설계 결정과 트레이드오프
 
-- **Spring Security 인증 대신 자체 세션 인증** — 자체 인증 시스템과 Spring Security 인증 메커니즘의 충돌, 팀원 담당 모듈에 대한 회귀 위험을 피하기 위한 선택입니다. 단, CSRF 보호는 필요하다고 판단해 Spring Security를 **CSRF 필터 전용 모드**로 부분 도입했습니다. `authorizeHttpRequests`는 전부 `permitAll`로 두어 인가는 자체 인터셉터/AOP가 담당하고, formLogin·httpBasic·logout은 비활성화했습니다. 일관성 결여(적용/미적용 영역 혼재)를 트레이드오프로 받아들이되 ADR에 점진적 확장 경로를 명시했습니다. ([ADR-0012](../docs/adr/0012-spring-security-csrf-partial-adoption.md))
+- **Spring Security 인증 대신 자체 세션 인증** — 자체 인증 시스템과 Spring Security 인증 메커니즘의 충돌, 팀원 담당 모듈에 대한 회귀 위험을 피하기 위한 선택입니다. 단, CSRF 보호는 필요하다고 판단해 Spring Security를 **CSRF 필터 전용 모드**로 부분 도입했습니다. `authorizeHttpRequests`는 전부 `permitAll`로 두어 인가는 자체 인터셉터/AOP가 담당하고, formLogin·httpBasic·logout은 비활성화했습니다. 일관성 결여(적용/미적용 영역 혼재)를 트레이드오프로 받아들이되 ADR에 점진적 확장 경로를 명시했습니다. ([ADR-0012](https://github.com/notetester/TripTogetherPortfolio/blob/dev/docs/adr/0012-spring-security-csrf-partial-adoption.md))
 
-- **선언적 권한 체크(AOP)와의 결합** — 컨트롤러마다 반복되던 권한 체크·예외→응답 변환 보일러플레이트를 커스텀 어노테이션(`@RequireLogin`/`@RequireAdmin`) + AOP + `@LoginUser` ArgumentResolver로 대체했습니다. 인증 모듈의 세션 기반 인증과 자연스럽게 맞물립니다. ([ADR-0011](../docs/adr/0011-authorization-aop-and-global-exception-handler.md))
+- **선언적 권한 체크(AOP)와의 결합** — 컨트롤러마다 반복되던 권한 체크·예외→응답 변환 보일러플레이트를 커스텀 어노테이션(`@RequireLogin`/`@RequireAdmin`) + AOP + `@LoginUser` ArgumentResolver로 대체했습니다. 인증 모듈의 세션 기반 인증과 자연스럽게 맞물립니다. ([ADR-0011](https://github.com/notetester/TripTogetherPortfolio/blob/dev/docs/adr/0011-authorization-aop-and-global-exception-handler.md))
 
 - **위험 정책의 DB 외부화** — 실패 임계값·관찰 기간·잠금 시간을 코드 상수가 아닌 `LOGIN_RISK_POLICY` 레코드로 분리해 운영 중 무중단 조정이 가능합니다. 정책 변경은 이력 테이블에 스냅샷으로 남깁니다.
 
